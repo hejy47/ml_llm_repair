@@ -1,0 +1,1 @@
+{"org.joda.time.base.BasePeriod.BasePeriod": {"buggy_content": "protected BasePeriod(long duration) {\n    this(duration, null, null);\n    // bug [3264409]\n}", "method_range": "221-224", "fault_locations": "222"}}

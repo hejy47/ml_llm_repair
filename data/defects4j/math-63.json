@@ -1,0 +1,1 @@
+{"org.apache.commons.math.util.MathUtils.equals": {"buggy_content": "public static boolean equals(double x, double y) {\n    return (Double.isNaN(x) && Double.isNaN(y)) || x == y;\n}", "method_range": "416-418", "fault_locations": "417"}}

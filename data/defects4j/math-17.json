@@ -1,0 +1,1 @@
+{"org.apache.commons.math3.dfp.Dfp.multiply": {"buggy_content": "public Dfp multiply(final int x) {\n    return multiplyFast(x);\n}", "method_range": "1602-1604", "fault_locations": "1603"}}

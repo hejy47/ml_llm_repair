@@ -1,0 +1,1 @@
+{"org.jfree.chart.util.ShapeList.equals": {"buggy_content": "public boolean equals(Object obj) {\n    if (obj == this) {\n        return true;\n    }\n    if (!(obj instanceof ShapeList)) {\n        return false;\n    }\n    return super.equals(obj);\n}", "method_range": "103-113", "fault_locations": "111"}}

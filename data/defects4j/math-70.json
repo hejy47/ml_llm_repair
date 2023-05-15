@@ -1,0 +1,1 @@
+{"org.apache.commons.math.analysis.solvers.BisectionSolver.solve": {"buggy_content": "public double solve(final UnivariateRealFunction f, double min, double max, double initial) throws MaxIterationsExceededException, FunctionEvaluationException {\n    return solve(min, max);\n}", "method_range": "70-73", "fault_locations": "72"}}

@@ -1,0 +1,3 @@
+com.google.javascript.jscomp.CheckGlobalThis.shouldTraverse:90
+com.google.javascript.jscomp.CheckGlobalThis.shouldTraverse:125
+com.google.javascript.jscomp.CheckGlobalThis.shouldTraverse:129

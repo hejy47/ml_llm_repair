@@ -1,0 +1,1 @@
+BUG_DATA_DIR = "./data"

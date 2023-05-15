@@ -1,0 +1,1 @@
+{"org.apache.commons.math.util.FastMath.max": {"buggy_content": "public static float max(final float a, final float b) {\n    return (a <= b) ? b : (Float.isNaN(a + b) ? Float.NaN : b);\n}", "method_range": "3481-3483", "fault_locations": "3482"}}

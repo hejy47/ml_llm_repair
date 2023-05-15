@@ -1,0 +1,1 @@
+{"org.apache.commons.math.fraction.Fraction.compareTo": {"buggy_content": "public int compareTo(Fraction object) {\n    double nOd = doubleValue();\n    double dOn = object.doubleValue();\n    return (nOd < dOn) ? -1 : ((nOd > dOn) ? +1 : 0);\n}", "method_range": "258-262", "fault_locations": "259,260"}}

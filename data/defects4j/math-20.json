@@ -1,0 +1,1 @@
+{"org.apache.commons.math3.optimization.direct.CMAESOptimizer.repairAndDecode": {"buggy_content": "public double[] repairAndDecode(final double[] x) {\n    return decode(x);\n}", "method_range": "920-923", "fault_locations": "921"}}

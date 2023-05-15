@@ -1,0 +1,1 @@
+{"org.apache.commons.lang.LocaleUtils.isAvailableLocale": {"buggy_content": "//-----------------------------------------------------------------------\npublic static boolean isAvailableLocale(Locale locale) {\n    return cAvailableLocaleSet.contains(locale);\n}", "method_range": "222-224", "fault_locations": "223"}}

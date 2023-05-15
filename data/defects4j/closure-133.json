@@ -1,0 +1,1 @@
+{"com.google.javascript.jscomp.parsing.JsDocInfoParser.getRemainingJSDocLine": {"buggy_content": "private String getRemainingJSDocLine() {\n    String result = stream.getRemainingJSDocLine();\n    return result;\n}", "method_range": "2399-2402", "fault_locations": "2400,2401"}}

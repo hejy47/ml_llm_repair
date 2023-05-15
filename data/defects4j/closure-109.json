@@ -1,0 +1,1 @@
+{"com.google.javascript.jscomp.parsing.JsDocInfoParser.parseContextTypeExpression": {"buggy_content": "private Node parseContextTypeExpression(JsDocToken token) {\n    return parseTypeName(token);\n}", "method_range": "1907-1909", "fault_locations": "1908"}}

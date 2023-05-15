@@ -1,0 +1,1 @@
+{"com.google.javascript.jscomp.NodeUtil.mayBeString": {"buggy_content": "static boolean mayBeString(Node n, boolean recurse) {\n    if (recurse) {\n        return allResultsMatch(n, MAY_BE_STRING_PREDICATE);\n    } else {\n        return mayBeStringHelper(n);\n    }\n}", "method_range": "1415-1421", "fault_locations": "1417"}}

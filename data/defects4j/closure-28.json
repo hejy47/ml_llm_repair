@@ -1,0 +1,1 @@
+{"com.google.javascript.jscomp.CodeConsumer.addConstant": {"buggy_content": "void addConstant(String newcode) {\n    add(newcode);\n}", "method_range": "269-271", "fault_locations": "270"}}

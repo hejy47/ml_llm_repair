@@ -1,0 +1,1 @@
+{"org.jfree.data.time.Week.Week": {"buggy_content": "public Week(Date time, TimeZone zone) {\n    // defer argument checking...\n    this(time, RegularTimePeriod.DEFAULT_TIME_ZONE, Locale.getDefault());\n}", "method_range": "173-176", "fault_locations": "175"}}

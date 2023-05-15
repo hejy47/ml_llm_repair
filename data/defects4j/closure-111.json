@@ -1,0 +1,1 @@
+{"com.google.javascript.jscomp.type.ClosureReverseAbstractInterpreter.caseTopType": {"buggy_content": "@Override\nprotected JSType caseTopType(JSType topType) {\n    return topType;\n}", "method_range": "52-55", "fault_locations": "54"}}

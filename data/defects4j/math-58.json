@@ -1,0 +1,1 @@
+{"org.apache.commons.math.optimization.fitting.GaussianFitter.fit": {"buggy_content": "public double[] fit() {\n    final double[] guess = (new ParameterGuesser(getObservations())).guess();\n    return fit(new Gaussian.Parametric(), guess);\n}", "method_range": "119-122", "fault_locations": "121"}}

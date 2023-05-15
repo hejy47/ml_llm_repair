@@ -1,0 +1,1 @@
+{"com.google.javascript.jscomp.FunctionRewriter.isReduceableFunctionExpression": {"buggy_content": "private static boolean isReduceableFunctionExpression(Node n) {\n    return NodeUtil.isFunctionExpression(n);\n}", "method_range": "116-118", "fault_locations": "117"}}

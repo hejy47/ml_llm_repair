@@ -1,0 +1,1 @@
+{"com.google.javascript.jscomp.parsing.IRFactory.processAssignment": {"buggy_content": "@Override\nNode processAssignment(Assignment assignmentNode) {\n    Node assign = processInfixExpression(assignmentNode);\n    return assign;\n}", "method_range": "338-342", "fault_locations": "340,341"}}

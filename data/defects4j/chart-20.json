@@ -1,0 +1,1 @@
+{"org.jfree.chart.plot.ValueMarker.ValueMarker": {"buggy_content": "public ValueMarker(double value, Paint paint, Stroke stroke, Paint outlinePaint, Stroke outlineStroke, float alpha) {\n    super(paint, stroke, paint, stroke, alpha);\n    this.value = value;\n}", "method_range": "93-97", "fault_locations": "95"}}
