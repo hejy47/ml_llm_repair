@@ -1,4 +1,4 @@
-import os
+import os, json
 import shutil
 import logging
 
@@ -60,3 +60,9 @@ def moveFile(src_file, dst_file):
     mkdir_from_file_path(dst_file)
     shutil.copyfile(src_file, dst_file)
     remove_file(src_file)
+
+def read_json_file(file_path):
+    return json.loads(read_file_to_str(file_path))
+
+def write_json_file(json_dict, file_path):
+    write_str_to_file(json.dumps(json_dict), file_path)

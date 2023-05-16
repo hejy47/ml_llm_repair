@@ -1,5 +1,6 @@
-import os, json
+import os
 import config
+from utils import file_util
 from dataset import Dataset
 
 class Defects4J(Dataset.Dataset):
@@ -23,7 +24,7 @@ class Defects4J(Dataset.Dataset):
         for project, bug_ids in self.bug_info.items():
             for bug_id in bug_ids:
                 bug_path = os.path.join(self.bug_info_dir, "{}-{}.json".format(project.lower(), bug_id))
-                bug = json.loads(bug_path)
+                bug = file_util.read_json_file(bug_path)
                 self.bugs["{}-{}".format(project.lower(), bug_id)] = bug
     
     def get_bug(self, project, bug_id):
@@ -38,7 +39,8 @@ class Defects4J(Dataset.Dataset):
         for buggy_function_name, buggy_function in bug.items():
             prompt += "## Buggy Function {}\n".format(function_num)
             prompt += buggy_function["buggy_content"]
-            prompt += "\n"
+            prompt += "\n\n"
+            function_num += 1
         
         prompt += "# Fixed Functions\n"
         return prompt
