@@ -8,10 +8,10 @@ class Defects4J(Dataset.Dataset):
         super().__init__(self.name)
         self.bug_info = {
             "Chart": [i for i in range(1, 27)],
-            "Closure": [i for i in range(1, 134)],
-            "Lang": [i for i in range(1, 66)],
+            "Closure": [i for i in range(1, 134) if i not in [63, 93]],
+            "Lang": [i for i in range(1, 66) if i not in [2]],
             "Math": [i for i in range(1, 106)],
-            "Time": [i for i in range(1, 27)]
+            "Time": [i for i in range(1, 27) if i not in [21]]
         }
         self.bug_info_dir = os.path.join(config.BUG_DATA_DIR, "defects4j")
         self.get_bugs()

@@ -7,7 +7,7 @@ from api_request import create_openai_config, request_engine
 
 openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
 
-def repair_loop(dataset, prompt, project, bug_id, bug, t_chances, stop="# Provide a fix for the buggy function", skip_val=True):
+def repair_loop(dataset, prompt, project, bug_id, bug, t_chances, stop=None, skip_val=True):
     start = time.time()
     repair_result = []
     p_diff = {}
@@ -25,7 +25,7 @@ def repair_loop(dataset, prompt, project, bug_id, bug, t_chances, stop="# Provid
         if ret is None:
             return False, False, []
         output = ret["choices"][0]['text'].strip()
-        diff = diff_util.get_unified_diff(bug['buggy'], output)
+        diff = diff_util.get_unified_diff(bug, output)
         finish_reason = ret["choices"][0]['finish_reason']
         if finish_reason != "stop":
             continue

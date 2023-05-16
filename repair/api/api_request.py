@@ -3,7 +3,7 @@ import time
 
 def create_openai_config(prompt,
                          engine_name="code-davinci-002",
-                         stop="# Provide a fix for the buggy function",
+                         stop=None,
                          max_tokens=3000,
                          top_p=1,
                          temperature=0):
