@@ -1,0 +1,1 @@
+[{"output": "## Fixed Function 1\nprivate boolean hasExceptionHandler(Node cfgNode) {\n    return cfgNode.getCatchBlocks().size() > 0;\n}", "diff": "", "finish_reason": "stop", "valid": false, "num": 5}]

@@ -1,0 +1,1 @@
+[{"output": "## Fixed Function 1\npublic JSType getLeastSupertype(JSType that) {\n    if (that.isUnionType()) {\n        // Union types have their own implementation of getLeastSupertype.\n        return that.toMaybeUnionType().getLeastSupertype(this);\n    }\n    return getLeastSupertype(this, that, false);\n}", "diff": "", "finish_reason": "stop", "valid": false, "num": 5}]

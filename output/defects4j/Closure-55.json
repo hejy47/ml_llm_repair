@@ -1,0 +1,1 @@
+[{"output": "## Fixed Function 1\nprivate static boolean isReduceableFunctionExpression(Node n) {\n    return NodeUtil.isFunctionExpression(n) && n.getFirstChild().getNext() != null;\n}", "diff": "", "finish_reason": "stop", "valid": false, "num": 5}]

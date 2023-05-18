@@ -1,0 +1,1 @@
+[{"output": "## Fixed Function 1\npublic final boolean isEmptyType() {\n    return isNoType() && isNoObjectType() && isNoResolvedType();\n}", "diff": "", "finish_reason": "stop", "valid": false, "num": 5}]
