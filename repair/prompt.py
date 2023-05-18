@@ -1,12 +1,39 @@
 # Used for completion prompts
 
-VARY_BASE_PROMPT = """
-# There exist {bug_num} buggy functions in the {project} project. Provide the correponding fixes for the buggy functions
+EXAMPLE_PROMPT = """
+# There exist an example buggy function in the example project. Provide the correponding fixes for the buggy functions
 
-# Buggy Function
-{bug}
+# Buggy Functions
+## Buggy Function 1
+int binarySearch(int arr[], int l, int r, int x)
+{
+    if (r >= l) {
+        int mid = l + (r + l) / 2;
+        if (arr[mid] == x)
+            return mid;
+        if (arr[mid] > x)
+            return binarySearch(arr, l, mid - 1, x);
+        return binarySearch(arr, mid + 1, r, x);
+    }
+    return -1;
+}
 
-# Fixed Function
+# Fixed Functions
+## Fixed Function 1
+int binarySearch(int arr[], int l, int r, int x)
+{
+    if (r >= l) {
+        int mid = l + (r - l) / 2;
+        if (arr[mid] == x)
+            return mid;
+        if (arr[mid] > x)
+            return binarySearch(arr, l, mid - 1, x);
+        return binarySearch(arr, mid + 1, r, x);
+    }
+    return -1;
+}
+
+
 """
 
 

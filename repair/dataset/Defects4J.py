@@ -1,5 +1,5 @@
 import os
-import config
+import config, prompt
 from utils import file_util
 from dataset import Dataset
 
@@ -32,18 +32,20 @@ class Defects4J(Dataset.Dataset):
     
     def generate_prompt(self, project, bug_id):
         bug = self.bugs["{}-{}".format(project.lower(), bug_id)]
-        prompt = "# There exist {} buggy functions in the {} project. Provide the corresponding fixes for the buggy functions.\n\n".format(len(bug), project)
-        prompt += "# Buggy Functions\n"
+        used_prompt = prompt.EXAMPLE_PROMPT
+
+        used_prompt += "# There exist {} buggy functions in the {} project. Provide the corresponding fixes for the buggy functions.\n\n".format(len(bug), project)
+        used_prompt += "# Buggy Functions\n"
 
         function_num = 1
         for buggy_function_name, buggy_function in bug.items():
-            prompt += "## Buggy Function {}\n".format(function_num)
-            prompt += buggy_function["buggy_content"]
-            prompt += "\n\n"
+            used_prompt += "## Buggy Function {}\n".format(function_num)
+            used_prompt += buggy_function["buggy_content"]
+            used_prompt += "\n\n"
             function_num += 1
         
-        prompt += "# Fixed Functions\n"
-        return prompt
+        used_prompt += "# Fixed Functions\n"
+        return used_prompt
 
     def validate(self, bug, fix, skip_val=True):
         if skip_val:

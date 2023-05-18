@@ -11,7 +11,7 @@ def main():
     parser.add_argument("--folder", type=str, default="Results/test")
     args = parser.parse_args()
     dataset = DatasetFactory.create_dataset(args.dataset)
-    # repair.repair_single(dataset, "Chart", 2, args.chances)
+    # repair.repair_single(dataset, "Chart", 7, args.chances)
     repair.repair_all(dataset, args.chances)
 
 if __name__ == "__main__":
