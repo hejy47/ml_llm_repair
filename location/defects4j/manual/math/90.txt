@@ -1,0 +1,4 @@
+org.apache.commons.math.stat.Frequency#109
+org.apache.commons.math.stat.Frequency#110
+org.apache.commons.math.stat.Frequency#120
+org.apache.commons.math.stat.Frequency#121

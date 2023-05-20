@@ -1,0 +1,2 @@
+com.google.javascript.jscomp.DisambiguateProperties#494
+com.google.javascript.jscomp.DisambiguateProperties#495

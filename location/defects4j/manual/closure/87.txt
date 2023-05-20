@@ -1,0 +1,7 @@
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax#522
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax#523
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax#528
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax#529
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax#531
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax#532
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax#533

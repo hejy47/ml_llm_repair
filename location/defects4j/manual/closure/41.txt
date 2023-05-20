@@ -1,0 +1,4 @@
+com.google.javascript.jscomp.FunctionTypeBuilder#291
+com.google.javascript.jscomp.FunctionTypeBuilder#292
+com.google.javascript.jscomp.FunctionTypeBuilder#482
+com.google.javascript.jscomp.FunctionTypeBuilder#483

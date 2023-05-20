@@ -1,0 +1,15 @@
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#165
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#166
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#246
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#247
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#251
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#252
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#303
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#343
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#344
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#411
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#412
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#413
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#417
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#418
+org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer#419

@@ -1,0 +1,4 @@
+org.apache.commons.lang.builder.EqualsBuilder#379
+org.apache.commons.lang.builder.EqualsBuilder#380
+org.apache.commons.lang.builder.EqualsBuilder#381
+org.apache.commons.lang.builder.EqualsBuilder#382

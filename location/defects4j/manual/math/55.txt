@@ -1,0 +1,8 @@
+org.apache.commons.math.geometry.Vector3D#458
+org.apache.commons.math.geometry.Vector3D#459
+org.apache.commons.math.geometry.Vector3D#461
+org.apache.commons.math.geometry.Vector3D#462
+org.apache.commons.math.geometry.Vector3D#469
+org.apache.commons.math.geometry.Vector3D#470
+org.apache.commons.math.geometry.Vector3D#471
+org.apache.commons.math.geometry.Vector3D#473

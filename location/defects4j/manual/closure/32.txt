@@ -1,0 +1,12 @@
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1357
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1358
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1363
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1364
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1381
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1382
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1388
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1389
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1390
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1414
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1415
+com.google.javascript.jscomp.parsing.JsDocInfoParser#1416

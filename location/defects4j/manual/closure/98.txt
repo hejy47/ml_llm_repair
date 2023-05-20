@@ -1,0 +1,9 @@
+com.google.javascript.jscomp.ReferenceCollectingCallback#360
+com.google.javascript.jscomp.ReferenceCollectingCallback#361
+com.google.javascript.jscomp.ReferenceCollectingCallback#544
+com.google.javascript.jscomp.ReferenceCollectingCallback#545
+com.google.javascript.jscomp.ReferenceCollectingCallback#548
+com.google.javascript.jscomp.ReferenceCollectingCallback#549
+com.google.javascript.jscomp.ReferenceCollectingCallback#560
+com.google.javascript.jscomp.ReferenceCollectingCallback#561
+com.google.javascript.jscomp.ReferenceCollectingCallback#562
