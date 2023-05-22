@@ -12,6 +12,7 @@ class Defects4J(Dataset.Dataset):
             "Closure": [i for i in range(1, 134) if i not in [63, 93]],
             "Lang": [i for i in range(1, 66) if i not in [2]],
             "Math": [i for i in range(1, 106)],
+            "Mockito": [i for i in range(1, 39)],
             "Time": [i for i in range(1, 27) if i not in [21]]
         }
         self.bug_info_dir = os.path.join(config.BUG_DATA_DIR, "defects4j")
