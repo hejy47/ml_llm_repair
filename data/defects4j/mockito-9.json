@@ -1,0 +1,1 @@
+{"org.mockito.internal.stubbing.answers.CallsRealMethods.answer": {"buggy_content": "public Object answer(InvocationOnMock invocation) throws Throwable {\n    return invocation.callRealMethod();\n}", "method_range": "35-37", "fault_locations": "35,36"}}

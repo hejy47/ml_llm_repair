@@ -50,32 +50,35 @@ def get_suspicious_methods(project_dir, fl_result):
             else:
                 suspicious_files[fl_file].append(fl_line)
 
-    suspicious_method_contents = {}
+    suspicious_methods = {}
     for suspicious_file, fl_lines in suspicious_files.items():
         tree = parse_java_file(os.path.join(project_dir, suspicious_file))
 
         suspicious_method_contents = get_method_by_name(tree, fl_lines)
         for i, (method_name, method_position, method_content, map_fl_lines) in enumerate(suspicious_method_contents):
             key = "{}.{}".format(suspicious_file[:-5].replace("/", "."), method_name)
-            if key in suspicious_methods_content: key = key + "{}".format(i)
-            suspicious_methods_content[key] = {
+            if key in suspicious_methods: key = key + "{}".format(i)
+            suspicious_methods[key] = {
                 "buggy_content": method_content,
                 "method_range": "{}-{}".format(method_position[0], method_position[1]),
                 "fault_locations": ",".join(map_fl_lines)
             }
-    return suspicious_methods_content
+    return suspicious_methods
     
 if __name__ == "__main__":
     jar_path = "/mnt/Code/NPR/mfl_llm_apr/data_prepare/JavaParser/javaparser-core-3.25.4-SNAPSHOT.jar"
     jpype.startJVM(classpath=jar_path)
 
+    # d4j_v1_info = {
+    #     "Chart": 26,
+    #     "Closure": 133,
+    #     "Lang": 65,
+    #     "Math": 106,
+    #     "Mockito": 38,
+    #     "Time": 27
+    # }
     d4j_v1_info = {
-        "Chart": 26,
-        "Closure": 133,
-        "Lang": 65,
-        "Math": 106,
-        "Mockito": 38,
-        "Time": 27
+        "Mockito": 38
     }
     for project, sum in d4j_v1_info.items():
         for i in range(1, sum+1):

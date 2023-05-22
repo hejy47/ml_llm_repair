@@ -1,0 +1,1 @@
+{"org.mockito.internal.util.reflection.GenericMetadataSupport.readTypeVariables": {"buggy_content": "private void readTypeVariables() {\n    for (Type type : typeVariable.getBounds()) {\n        registerTypeVariablesOn(type);\n    }\n    registerTypeVariablesOn(getActualTypeArgumentFor(typeVariable));\n}", "method_range": "375-380", "fault_locations": "378,379"}}

@@ -1,0 +1,1 @@
+{"org.mockito.internal.matchers.Same.describeTo": {"buggy_content": "public void describeTo(Description description) {\n    description.appendText(\"same(\");\n    appendQuoting(description);\n    description.appendText(wanted.toString());\n    appendQuoting(description);\n    description.appendText(\")\");\n}", "method_range": "26-32", "fault_locations": "29"}}

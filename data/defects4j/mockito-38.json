@@ -1,0 +1,1 @@
+{"org.mockito.internal.verification.argumentmatching.ArgumentMatchingTool.toStringEquals": {"buggy_content": "private boolean toStringEquals(Matcher m, Object arg) {\n    return StringDescription.toString(m).equals(arg.toString());\n}", "method_range": "47-49", "fault_locations": "48"}}

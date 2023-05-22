@@ -1,0 +1,1 @@
+{"org.mockito.internal.stubbing.defaultanswers.ReturnsSmartNulls.formatMethodCall": {"buggy_content": "private String formatMethodCall() {\n    return invocation.getMethod().getName() + \"()\";\n}", "method_range": "59-61", "fault_locations": "60"}}
