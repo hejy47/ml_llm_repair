@@ -1,6 +1,6 @@
-import os
+import os, re
 import config, prompt
-from utils import file_util
+from utils import file_util, dataset_util, cmd_util
 from dataset import Dataset
 
 class Defects4J(Dataset.Dataset):
@@ -16,6 +16,8 @@ class Defects4J(Dataset.Dataset):
         }
         self.bug_info_dir = os.path.join(config.BUG_DATA_DIR, "defects4j")
         self.get_bugs()
+
+        self.current_bug_id = None
     
     def get_bug_info(self):
         return self.bug_info
@@ -29,6 +31,16 @@ class Defects4J(Dataset.Dataset):
     
     def get_bug(self, project, bug_id):
         return self.bugs["{}-{}".format(project.lower(), bug_id)]
+
+    def set_current_bug(self, project, bug_id):
+        self.current_bug_id = "{}-{}".format(project, bug_id)
+    
+    def get_proj_dir(self):
+        if self.current_bug_id == None:
+            return None
+        
+        proj_dir = os.path.join(config.DATASET_DIR, "defects4j", self.current_bug_id)
+        return proj_dir
     
     def generate_prompt(self, project, bug_id):
         bug = self.bugs["{}-{}".format(project.lower(), bug_id)]
@@ -50,4 +62,49 @@ class Defects4J(Dataset.Dataset):
     def validate(self, bug, fix, skip_val=True):
         if skip_val:
             return False
-        pass
+        else:
+            all_diff_content = {}
+            for buggy_function_name, buggy_function in bug.items():
+                file_name = '/'.join(buggy_function_name.split('.')[:-1]) + ".java"
+
+                buggy_function_content = buggy_function["buggy_content"]
+
+                pattern = "({}.*?\n)".format(buggy_function_content.split('\n')[0])
+                result = re.search(pattern, fix, re.DOTALL)
+                if result == None:
+                    import pdb; pdb.set_trace()
+                    continue
+                fixed_function_content = result[0]
+
+                buggy_range = buggy_function["method_range"]
+
+                if file_name not in all_diff_content:
+                    all_diff_content[file_name] = [(buggy_function_content, fixed_function_content, buggy_range)]
+                else:
+                    all_diff_content[file_name].append((buggy_function_content, fixed_function_content, buggy_range))
+            
+            for diff_file_name, diff_content in all_diff_content.items():
+                diff_file_path = os.path.join(dataset_util.get_proj_source_dir(self.get_proj_dir(), self.name, self.current_bug_id), diff_file_name)
+                backup_diff_file_path = os.path.join(config.TMP_DIR, diff_file_path.replace('/', '#'))
+                file_util.backup_file(diff_file_path, backup_diff_file_path)
+
+                file_lines = file_util.read_file_to_lines(diff_file_path)
+                file_str = file_util.read_file_to_str(diff_file_path)
+                for (buggy_function_content, fixed_function_content, buggy_range) in diff_content:
+                    start_line, end_line = buggy_range.split('-')
+                    start_line, end_line = int(start_line)-1, int(end_line)
+                    buggy_str = ''.join(file_lines[start_line, end_line])
+                    file_str.replace(buggy_str, file_str)
+                file_util.write_str_to_file(file_str, diff_file_path)
+            
+            cmd = "defects4j test"
+            result = cmd_util.run_cmd(cmd, cwd=self.get_proj_dir())
+
+            for backup_file in os.listdir(config.TMP_DIR):
+                origin_file = backup_file.replace('#', '/')
+                file_util.move_file(backup_file, origin_file)
+            
+            if "Failing tests: 0" in result:
+                return True
+            else:
+                return False

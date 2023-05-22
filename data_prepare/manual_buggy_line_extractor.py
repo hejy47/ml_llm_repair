@@ -34,7 +34,7 @@ if __name__ == "__main__":
         "Closure": [i for i in range(1, 134) if i not in [63, 93]],
         "Lang": [i for i in range(1, 66) if i not in [2]],
         "Math": [i for i in range(1, 106)],
-        "Mockito": [i for i in range(1, 38)],
+        "Mockito": [i for i in range(1, 39)],
         "Time": [i for i in range(1, 27) if i not in [21]]
     }
     for project, bug_ids in d4j_info.items():
