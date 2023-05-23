@@ -31,10 +31,10 @@ def get_unified_diff(buggy_content, fixed_content, suffix_name=".java"):
 
         buggy_function_content = buggy_function["buggy_content"]
 
-        pattern = "({}.*?\n)".format(buggy_function_content.split('\n')[0])
+        function_name = buggy_function_content.split('\n')[0].replace('(', '\(').replace(')', '\)')
+        pattern = "({}.*?\n}})".format(function_name)
         result = re.search(pattern, fixed_content, re.DOTALL)
         if result == None:
-            import pdb; pdb.set_trace()
             continue
         fixed_function_content = result[0]
 
