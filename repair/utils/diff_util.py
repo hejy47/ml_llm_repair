@@ -31,7 +31,8 @@ def get_unified_diff(buggy_content, fixed_content, suffix_name=".java"):
 
         buggy_function_content = buggy_function["buggy_content"]
 
-        function_name = buggy_function_content.split('\n')[0].replace('(', '\(').replace(')', '\)')
+        function_name = buggy_function_content.split('\n')[0]
+        function_name = function_name.replace('(', '\(').replace(')', '\)').replace('[', '\[').replace(']', '\]').replace('{', '\{').replace('}', '\}')
         pattern = "({}.*?\n}})".format(function_name)
         result = re.search(pattern, fixed_content, re.DOTALL)
         if result == None:
