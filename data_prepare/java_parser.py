@@ -32,6 +32,9 @@ def get_method_by_name(java_tree, fl_lines):
         if map_fl_lines != []:
             method_range = (start_line, end_line)
             method_content = str(method.removeComment().toString())
+            method_comment = re.search("/\*.*?\*/\n", method_content, re.DOTALL)
+            if method_comment:
+                method_content = method_content.replace(method_comment[0], "")
             suspicious_methods.append((method_name, method_range, method_content, map_fl_lines))
         if all_fl_lines == fl_lines:
             return suspicious_methods
