@@ -1,1 +1,1 @@
-{"com.google.javascript.jscomp.MaybeReachingVariableUse.hasExceptionHandler": {"buggy_content": "private boolean hasExceptionHandler(Node cfgNode) {\n    return false;\n}", "method_range": "159-161", "fault_locations": "160"}}
+{"com.google.javascript.jscomp.MaybeReachingVariableUse.hasExceptionHandler": {"buggy_content": "private boolean hasExceptionHandler(Node cfgNode) {\n    return false;\n}", "method_range": "159-161", "fault_locations": "159,160"}}

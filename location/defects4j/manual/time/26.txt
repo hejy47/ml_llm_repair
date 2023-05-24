@@ -17,3 +17,6 @@ org.joda.time.chrono.ZonedChronology#528
 org.joda.time.chrono.ZonedChronology#533
 org.joda.time.chrono.ZonedChronology#534
 org.joda.time.chrono.ZonedChronology#540
+org.joda.time.DateTimeZone#935
+org.joda.time.DateTimeZone#936
+org.joda.time.field.LenientDateTimeField#75

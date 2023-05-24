@@ -32,9 +32,10 @@ def get_method_by_name(java_tree, fl_lines):
         if map_fl_lines != []:
             method_range = (start_line, end_line)
             method_content = str(method.removeComment().toString())
-            method_comment = re.search("/\*.*?\*/\n", method_content, re.DOTALL)
-            if method_comment:
-                method_content = method_content.replace(method_comment[0], "")
+            method_comments = re.findall("/\*.*?\*/\n", method_content, re.DOTALL)
+            if method_comments:
+                for method_comment in method_comments:
+                    method_content = method_content.replace(method_comment, "")
             suspicious_methods.append((method_name, method_range, method_content, map_fl_lines))
         if all_fl_lines == fl_lines:
             return suspicious_methods
@@ -72,16 +73,13 @@ if __name__ == "__main__":
     jar_path = "/mnt/Code/NPR/mfl_llm_apr/data_prepare/JavaParser/javaparser-core-3.25.4-SNAPSHOT.jar"
     jpype.startJVM(classpath=jar_path)
 
-    # d4j_v1_info = {
-    #     "Chart": 26,
-    #     "Closure": 133,
-    #     "Lang": 65,
-    #     "Math": 106,
-    #     "Mockito": 38,
-    #     "Time": 27
-    # }
     d4j_v1_info = {
-        "Mockito": 38
+        "Chart": 26,
+        "Closure": 133,
+        "Lang": 65,
+        "Math": 106,
+        "Mockito": 38,
+        "Time": 27
     }
     for project, sum in d4j_v1_info.items():
         for i in range(1, sum+1):

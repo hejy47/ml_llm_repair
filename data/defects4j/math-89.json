@@ -1,1 +1,1 @@
-{"org.apache.commons.math.stat.Frequency.addValue": {"buggy_content": "@Deprecated\npublic void addValue(Object v) {\n    addValue((Comparable<?>) v);\n}", "method_range": "108-111", "fault_locations": "110"}}
+{"org.apache.commons.math.stat.Frequency.addValue": {"buggy_content": "@Deprecated\npublic void addValue(Object v) {\n    addValue((Comparable<?>) v);\n}", "method_range": "108-111", "fault_locations": "109,110,111"}}

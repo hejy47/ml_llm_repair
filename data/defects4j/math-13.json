@@ -1,1 +1,1 @@
-{}
+{"org.apache.commons.math3.optimization.general.AbstractLeastSquaresOptimizer.squareRoot": {"buggy_content": "private RealMatrix squareRoot(RealMatrix m) {\n    final EigenDecomposition dec = new EigenDecomposition(m);\n    return dec.getSquareRoot();\n}", "method_range": "561-564", "fault_locations": "561,562,563,564"}}

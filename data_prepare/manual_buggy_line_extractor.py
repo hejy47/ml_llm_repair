@@ -33,13 +33,13 @@ if __name__ == "__main__":
         "Chart": [i for i in range(1, 27)],
         "Closure": [i for i in range(1, 134) if i not in [63, 93]],
         "Lang": [i for i in range(1, 66) if i not in [2]],
-        "Math": [i for i in range(1, 106)],
+        "Math": [i for i in range(1, 107)],
         "Mockito": [i for i in range(1, 39)],
-        "Time": [i for i in range(1, 27) if i not in [21]]
+        "Time": [i for i in range(1, 28) if i not in [21]]
     }
     for project, bug_ids in d4j_info.items():
         for bug_id in bug_ids:
-            diff_path = os.path.join(diff_dir, "{}_{}.human.diff".format(project.lower(), bug_id))
+            diff_path = os.path.join(diff_dir, "{}_{}.diff".format(project.lower(), bug_id))
 
             source_dir = "source"
             if project == "Chart":
@@ -50,7 +50,8 @@ if __name__ == "__main__":
                 source_dir = "src/main/java"
                 if project == "Lang" and bug_id >= 36 or project == "Math" and bug_id >= 85:
                     source_dir = "src/java"
-            project_source_dir = "/mnt/data/d4j-v1.4.0/{}_{}_buggy/{}/".format(project.lower(), bug_id, source_dir)
+            # project_source_dir = "/mnt/data/d4j-v1.4.0/{}_{}_buggy/{}/".format(project.lower(), bug_id, source_dir)
+            project_source_dir = "d4j-v1.4/{}/buggy_version/{}_{}/{}/".format(project, project.lower(), bug_id, source_dir)
 
             modified_lines = extract_buggy_line_from_diff_file(diff_path, project_source_dir)
 
