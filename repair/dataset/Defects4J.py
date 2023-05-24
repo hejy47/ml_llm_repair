@@ -34,7 +34,7 @@ class Defects4J(Dataset.Dataset):
         return self.bugs["{}-{}".format(project.lower(), bug_id)]
 
     def set_current_bug(self, project, bug_id):
-        self.current_bug_id = "{}-{}".format(project, bug_id)
+        self.current_bug_id = "{}-{}".format(project.lower(), bug_id)
     
     def get_proj_dir(self):
         if self.current_bug_id == None:
@@ -70,10 +70,11 @@ class Defects4J(Dataset.Dataset):
 
                 buggy_function_content = buggy_function["buggy_content"]
 
-                pattern = "({}.*?\n)".format(buggy_function_content.split('\n')[0])
+                function_name = buggy_function_content.split('\n')[0]
+                function_name = function_name.replace('(', '\(').replace(')', '\)').replace('[', '\[').replace(']', '\]').replace('{', '\{').replace('}', '\}')
+                pattern = "({}.*?\n)".format(function_name)
                 result = re.search(pattern, fix, re.DOTALL)
                 if result == None:
-                    import pdb; pdb.set_trace()
                     continue
                 fixed_function_content = result[0]
 
@@ -85,7 +86,8 @@ class Defects4J(Dataset.Dataset):
                     all_diff_content[file_name].append((buggy_function_content, fixed_function_content, buggy_range))
             
             for diff_file_name, diff_content in all_diff_content.items():
-                diff_file_path = os.path.join(dataset_util.get_proj_source_dir(self.get_proj_dir(), self.name, self.current_bug_id), diff_file_name)
+                project, bug_id = self.current_bug_id.split('-')
+                diff_file_path = os.path.join(dataset_util.get_proj_source_dir(self.get_proj_dir(), self.name, project, bug_id), diff_file_name)
                 backup_diff_file_path = os.path.join(config.TMP_DIR, diff_file_path.replace('/', '#'))
                 file_util.backup_file(diff_file_path, backup_diff_file_path)
 

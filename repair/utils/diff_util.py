@@ -27,7 +27,7 @@ def get_unified_diff(buggy_content, fixed_content, suffix_name=".java"):
 
     all_diff_content = ""
     for buggy_function_name, buggy_function in buggy_content.items():
-        file_name = '/'.join(buggy_function_name.split('.')[:-1]) + suffix_name + buggy_function_name.split('.')[-1]
+        file_name = '/'.join(buggy_function_name.split('.')[:-1]) + suffix_name + "@" + buggy_function_name.split('.')[-1]
 
         buggy_function_content = buggy_function["buggy_content"]
 
