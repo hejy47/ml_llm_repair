@@ -95,7 +95,6 @@ def repair_single(dataset, project, bug_id, chances):
 def repair_all(dataset, chances):
     bug_info = dataset.get_bug_info()
     for project, bug_ids in bug_info.items():
-        if project.lower() != "mockito": continue
         for bug_id in bug_ids:
             repair_single(dataset, project, bug_id, chances)
 

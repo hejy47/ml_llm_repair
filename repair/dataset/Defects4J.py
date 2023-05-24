@@ -47,7 +47,7 @@ class Defects4J(Dataset.Dataset):
         bug = self.bugs["{}-{}".format(project.lower(), bug_id)]
         used_prompt = prompt.EXAMPLE_PROMPT
 
-        used_prompt += "# There exist {} buggy functions in the {} project. Provide the corresponding fixes for the buggy functions.\n\n".format(len(bug), project)
+        used_prompt += "# There exist {} buggy function(s) in the {} project. Provide the corresponding fixes for the buggy functions.\n\n".format(len(bug), project)
         used_prompt += "# Buggy Functions\n"
 
         function_num = 1
