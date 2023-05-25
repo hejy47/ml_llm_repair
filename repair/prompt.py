@@ -1,7 +1,7 @@
 # Used for completion prompts
 
 EXAMPLE_PROMPT = """
-# There exist an example buggy function in the example project. Provide the correponding fixes for the buggy functions
+# There exist an example buggy function in the example project. Provide the correponding fix(es) for the buggy function(s).
 
 # Buggy Functions
 ## Buggy Function 1
