@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -1,13 +1,12 @@
+ private boolean isInlinableObject(List<Reference> refs) {
+     boolean ret = false;
+-    Set<String> validProperties = Sets.newHashSet();
++    Set<String> validProperties = new HashSet<>();
+     for (Reference ref : refs) {
+         Node name = ref.getNode();
+         Node parent = ref.getParent();
+         Node gramps = ref.getGrandparent();
+         // Ignore most indirect references, like x.y (but not x.y(),
+         // since the function referenced by y might reference 'this').
+-        //
+         if (parent.isGetProp()) {
+             Preconditions.checkState(parent.getFirstChild() == name);
+             // A call target may be using the object as a 'this' value.
+@@ -26,7 +25,8 @@
+             // isn't a perfect algorithm, but it should catch most cases.
+             String propName = parent.getLastChild().getString();
+             if (!validProperties.contains(propName)) {
+-                if (NodeUtil.isVarOrSimpleAssignLhs(parent, gramps)) {
++                // Fix is to add a null check to prevent a null pointer exception
++                if (NodeUtil.isLhsOfAssign(gramps) || NodeUtil.isNameDeclaration(gramps.getParent())) {
+                     validProperties.add(propName);
+                 } else {
+                     return false;

@@ -1,0 +1,21 @@
+--- org/jfree/chart/plot/PiePlot.java@getMaximumExplodePercent
++++ org/jfree/chart/plot/PiePlot.java@getMaximumExplodePercent
+@@ -5,7 +5,7 @@
+         Comparable key = (Comparable) iterator.next();
+         Number explode = (Number) this.explodePercentages.get(key);
+         if (explode != null) {
+-            result = Math.max(result, explode.doubleValue());
++            result = Math.max(result, explode.doubleValue() / 100); //divide by 100 to convert percentage to decimal
+         }
+     }
+     return result;
+--- org/jfree/chart/plot/PiePlot.java@initialise
++++ org/jfree/chart/plot/PiePlot.java@initialise
+@@ -2,6 +2,6 @@
+     PiePlotState state = new PiePlotState(info);
+     state.setPassesRequired(2);
+     state.setTotal(DatasetUtilities.calculatePieDatasetTotal(plot.getDataset()));
+-    state.setLatestAngle(plot.getStartAngle());
++    state.setLatestAngle(plot.getStartAngle() - 90); //subtract 90 degrees to ensure correct starting position
+     return state;
+ }

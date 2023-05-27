@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/CollapseVariableDeclarations.java@canBeRedeclared
++++ com/google/javascript/jscomp/CollapseVariableDeclarations.java@canBeRedeclared
+@@ -7,6 +7,10 @@
+     if (!lhs.isName()) {
+         return false;
+     }
+-    Var var = s.getVar(lhs.getString());
+-    return var != null && var.getScope() == s && !blacklistedVars.contains(var);
++    String varName = lhs.getString();
++    if (varName.startsWith("$jscomp$") || varName.startsWith("JSCompiler_")) {
++        return false;
++    }
++    Var var = s.getVar(varName);
++    return var != null && var.isLet() && var.getScope() == s && !blacklistedVars.contains(var);
+ }

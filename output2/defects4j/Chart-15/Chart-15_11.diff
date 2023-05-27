@@ -1,0 +1,20 @@
+--- org/jfree/chart/plot/PiePlot.java@getMaximumExplodePercent
++++ org/jfree/chart/plot/PiePlot.java@getMaximumExplodePercent
+@@ -6,6 +6,8 @@
+         Number explode = (Number) this.explodePercentages.get(key);
+         if (explode != null) {
+             result = Math.max(result, explode.doubleValue());
++        } else {
++            result = Math.max(result, 0.0);
+         }
+     }
+     return result;
+--- org/jfree/chart/plot/PiePlot.java@initialise
++++ org/jfree/chart/plot/PiePlot.java@initialise
+@@ -3,5 +3,6 @@
+     state.setPassesRequired(2);
+     state.setTotal(DatasetUtilities.calculatePieDatasetTotal(plot.getDataset()));
+     state.setLatestAngle(plot.getStartAngle());
++    state.setExplodedPieArea(new Rectangle2D.Double());
+     return state;
+ }

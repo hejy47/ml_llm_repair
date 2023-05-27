@@ -1,0 +1,9 @@
+--- org/jfree/chart/plot/MultiplePiePlot.java@MultiplePiePlot
++++ org/jfree/chart/plot/MultiplePiePlot.java@MultiplePiePlot
+@@ -11,5 +11,5 @@
+     this.pieChart.setTitle(seriesTitle);
+     this.aggregatedItemsKey = "Other";
+     this.aggregatedItemsPaint = Color.lightGray;
+-    this.sectionPaints = new HashMap();
++    this.sectionPaints = new HashMap<Integer, Paint>(); // Initialize sectionPaints with appropriate type
+ }

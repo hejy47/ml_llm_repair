@@ -1,0 +1,50 @@
+--- org/jfree/chart/plot/XYPlot.java@getDataRange
++++ org/jfree/chart/plot/XYPlot.java@getDataRange
+@@ -12,9 +12,12 @@
+             // grab the plot's annotations
+             Iterator iterator = this.annotations.iterator();
+             while (iterator.hasNext()) {
+-                XYAnnotation annotation = (XYAnnotation) iterator.next();
+-                if (annotation instanceof XYAnnotationBoundsInfo) {
+-                    includedAnnotations.add(annotation);
++                Object obj = iterator.next();
++                if (obj instanceof XYAnnotation) {
++                    XYAnnotation annotation = (XYAnnotation) obj;
++                    if (annotation instanceof XYAnnotationBoundsInfo) {
++                        includedAnnotations.add(annotation);
++                    }
+                 }
+             }
+         }
+@@ -27,9 +30,12 @@
+         if (rangeIndex == 0) {
+             Iterator iterator = this.annotations.iterator();
+             while (iterator.hasNext()) {
+-                XYAnnotation annotation = (XYAnnotation) iterator.next();
+-                if (annotation instanceof XYAnnotationBoundsInfo) {
+-                    includedAnnotations.add(annotation);
++                Object obj = iterator.next();
++                if (obj instanceof XYAnnotation) {
++                    XYAnnotation annotation = (XYAnnotation) obj;
++                    if (annotation instanceof XYAnnotationBoundsInfo) {
++                        includedAnnotations.add(annotation);
++                    }
+                 }
+             }
+         }
+@@ -57,9 +63,12 @@
+             Collection c = r.getAnnotations();
+             Iterator i = c.iterator();
+             while (i.hasNext()) {
+-                XYAnnotation a = (XYAnnotation) i.next();
+-                if (a instanceof XYAnnotationBoundsInfo) {
+-                    includedAnnotations.add(a);
++                Object obj = i.next();
++                if (obj instanceof XYAnnotation) {
++                    XYAnnotation a = (XYAnnotation) obj;
++                    if (a instanceof XYAnnotationBoundsInfo) {
++                        includedAnnotations.add(a);
++                    }
+                 }
+             }
+         }

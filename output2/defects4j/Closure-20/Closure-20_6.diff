@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryFoldSimpleFunctionCall
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryFoldSimpleFunctionCall
+@@ -10,10 +10,14 @@
+         // http://code.google.com/p/closure-compiler/issues/detail?id=759
+         Node value = callTarget.getNext();
+         if (value != null) {
+-            Node addition = IR.add(IR.string("").srcref(callTarget), value.detachFromParent());
+-            n.getParent().replaceChild(n, addition);
+-            reportCodeChange();
+-            return addition;
++            // Check if the value is an immutable or a primitive type
++            boolean isImmutableOrPrimitive = (value.isImmutable() || NodeUtil.isImmutableValue(value));
++            if (isImmutableOrPrimitive) {
++                Node addition = IR.add(IR.string("").srcref(callTarget), value.detachFromParent());
++                n.getParent().replaceChild(n, addition);
++                reportCodeChange();
++                return addition;
++            }
+         }
+     }
+     return n;

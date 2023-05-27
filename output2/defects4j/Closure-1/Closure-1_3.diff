@@ -1,0 +1,45 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -1,13 +1,4 @@
+ private void removeUnreferencedFunctionArgs(Scope fnScope) {
+-    // Notice that removing unreferenced function args breaks
+-    // Function.prototype.length. In advanced mode, we don't really care
+-    // about this: we consider "length" the equivalent of reflecting on
+-    // the function's lexical source.
+-    //
+-    // Rather than create a new option for this, we assume that if the user
+-    // is removing globals, then it's OK to remove unused function args.
+-    //
+-    // See http://code.google.com/p/closure-compiler/issues/detail?id=253
+     Node function = fnScope.getRootNode();
+     Preconditions.checkState(function.isFunction());
+     if (NodeUtil.isGetOrSetKey(function.getParent())) {
+@@ -18,15 +9,24 @@
+     boolean modifyCallers = modifyCallSites && callSiteOptimizer.canModifyCallers(function);
+     if (!modifyCallers) {
+         // Strip unreferenced args off the end of the function declaration.
+-        Node lastArg;
+-        while ((lastArg = argList.getLastChild()) != null) {
++        Node lastArg = argList.getLastChild();
++        while (lastArg != null) {
++            Node prev = lastArg.getPrevious();
+             Var var = fnScope.getVar(lastArg.getString());
+             if (!referenced.contains(var)) {
+                 argList.removeChild(lastArg);
+                 compiler.reportCodeChange();
+-            } else {
+-                break;
++            } else if (prev != null) {
++                // If we didn't remove the last argument, check if its predecessor is unreferenced.
++                // If so, remove it and iterate again.
++                Var prevVar = fnScope.getVar(prev.getString());
++                if (!referenced.contains(prevVar)) {
++                    argList.removeChild(prev);
++                    compiler.reportCodeChange();
++                    continue;
++                }
+             }
++            lastArg = prev;
+         }
+     } else {
+         callSiteOptimizer.optimize(fnScope, referenced);

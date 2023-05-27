@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -29,6 +29,9 @@
+             Node n = input.getAstRoot(this);
+             if (hasErrors()) {
+                 return null;
++            }
++            if (n == null) {
++                continue;
+             }
+             externsRoot.addChildToBack(n);
+         }

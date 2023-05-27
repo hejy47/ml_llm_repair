@@ -1,0 +1,12 @@
+--- com/google/javascript/rhino/jstype/NamedType.java@resolveInternal
++++ com/google/javascript/rhino/jstype/NamedType.java@resolveInternal
+@@ -9,8 +9,8 @@
+         handleTypeCycle(t);
+     }
+     if (resolved) {
++        finishPropertyContinuations();
+         super.resolveInternal(t, enclosing);
+-        finishPropertyContinuations();
+         return registry.isLastGeneration() ? getReferencedType() : this;
+     }
+     resolveViaProperties(t, enclosing);

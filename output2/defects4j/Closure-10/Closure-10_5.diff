@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/NodeUtil.java@mayBeString
++++ com/google/javascript/jscomp/NodeUtil.java@mayBeString
+@@ -2,6 +2,6 @@
+     if (recurse) {
+         return allResultsMatch(n, MAY_BE_STRING_PREDICATE);
+     } else {
+-        return mayBeStringHelper(n);
++        return mayBeStringHelper(n, false); // add false parameter to avoid infinite recursion
+     }
+ }

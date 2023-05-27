@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@AliasedTypeNode
++++ com/google/javascript/jscomp/ScopedAliases.java@AliasedTypeNode
+@@ -1,4 +1,4 @@
+ AliasedTypeNode(Node typeReference, String aliasName) {
+-    this.typeReference = typeReference;
++    this.typeReference = typeReference.cloneTree();
+     this.aliasName = aliasName;
+ }
+--- com/google/javascript/jscomp/ScopedAliases.java@fixTypeNode
++++ com/google/javascript/jscomp/ScopedAliases.java@fixTypeNode
+@@ -8,8 +8,8 @@
+         String baseName = name.substring(0, endIndex);
+         Var aliasVar = aliases.get(baseName);
+         if (aliasVar != null) {
+-            Node aliasedNode = aliasVar.getInitialValue();
+-            aliasUsages.add(new AliasedTypeNode(typeNode, aliasedNode.getQualifiedName() + name.substring(endIndex)));
++            Node aliasedNode = aliasVar.getInitialValue().cloneTree();
++            aliasUsages.add(new AliasedTypeNode(aliasedNode.getFirstChild(), aliasedNode.getQualifiedName() + name.substring(endIndex)));
+         }
+     }
+     for (Node child = typeNode.getFirstChild(); child != null; child = child.getNext()) {

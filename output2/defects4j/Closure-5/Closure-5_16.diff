@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -60,7 +60,16 @@
+                 // ES5 get/set not supported.
+                 return false;
+             }
+-            validProperties.add(child.getString());
++            String childString = child.getString();
++            if (validProperties.contains(childString)) {
++                // This property is already defined on the object literal,
++                // so the value must be a simple reference to it.
++                if (child.getFirstChild() != null) {
++                    return false;
++                }
++            } else {
++                validProperties.add(childString);
++            }
+             Node childVal = child.getFirstChild();
+             // Check if childVal is the parent of any of the passed in
+             // references, as that is how self-referential assignments

@@ -1,0 +1,28 @@
+--- org/jfree/chart/plot/CategoryPlot.java@getDomainAxisIndex
++++ org/jfree/chart/plot/CategoryPlot.java@getDomainAxisIndex
+@@ -1,3 +1,10 @@
+ public int getDomainAxisIndex(CategoryAxis axis) {
+-    return this.domainAxes.indexOf(axis);
++    int index = -1;
++    for (int i = 0; i < this.domainAxes.size(); i++) {
++        if (this.domainAxes.get(i).equals(axis)) {
++            index = i;
++            break;
++        }
++    }
++    return index;
+ }
+--- org/jfree/chart/plot/CategoryPlot.java@getRangeAxisIndex
++++ org/jfree/chart/plot/CategoryPlot.java@getRangeAxisIndex
+@@ -3,9 +3,8 @@
+     if (result < 0) {
+         // try the parent plot
+         Plot parent = getParent();
+-        if (parent instanceof CategoryPlot) {
+-            CategoryPlot p = (CategoryPlot) parent;
+-            result = p.getRangeAxisIndex(axis);
++        if (parent instanceof Plot) {
++            result = ((Plot) parent).getRangeAxisIndex(axis);
+         }
+     }
+     return result;

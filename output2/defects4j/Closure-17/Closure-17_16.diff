@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -34,6 +34,9 @@
+                             return secondClause.getJSType();
+                         }
+                     }
++                } else {
++                    // Return unknown type for constants without a known type.
++                    return JSType.UNKNOWN;
+                 }
+             }
+         }

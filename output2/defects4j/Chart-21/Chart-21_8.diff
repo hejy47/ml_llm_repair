@@ -1,0 +1,61 @@
+--- org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@add
++++ org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@add
+@@ -14,20 +14,12 @@
+     if (item.getMaxOutlier() != null) {
+         maxval = item.getMaxOutlier().doubleValue();
+     }
+-    if (Double.isNaN(this.maximumRangeValue)) {
+-        this.maximumRangeValue = maxval;
+-        this.maximumRangeValueRow = r;
+-        this.maximumRangeValueColumn = c;
+-    } else if (maxval > this.maximumRangeValue) {
++    if (Double.isNaN(this.maximumRangeValue) || maxval > this.maximumRangeValue) {
+         this.maximumRangeValue = maxval;
+         this.maximumRangeValueRow = r;
+         this.maximumRangeValueColumn = c;
+     }
+-    if (Double.isNaN(this.minimumRangeValue)) {
+-        this.minimumRangeValue = minval;
+-        this.minimumRangeValueRow = r;
+-        this.minimumRangeValueColumn = c;
+-    } else if (minval < this.minimumRangeValue) {
++    if (Double.isNaN(this.minimumRangeValue) || minval < this.minimumRangeValue) {
+         this.minimumRangeValue = minval;
+         this.minimumRangeValueRow = r;
+         this.minimumRangeValueColumn = c;
+--- org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@updateBounds
++++ org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@updateBounds
+@@ -1,4 +1,31 @@
+ private void updateBounds() {
+-    this.minimumRangeValue = Double.NaN;
+-    this.maximumRangeValue = Double.NaN;
++    double min = Double.POSITIVE_INFINITY;
++    double max = Double.NEGATIVE_INFINITY;
++    for (int r = 0; r < this.data.getRowCount(); r++) {
++        for (int c = 0; c < this.data.getColumnCount(); c++) {
++            BoxAndWhiskerItem item = this.data.getItem(r, c);
++            if (item != null) {
++                double minOutlier = Double.NaN;
++                double maxOutlier = Double.NaN;
++                if (item.getMinOutlier() != null) {
++                    minOutlier = item.getMinOutlier().doubleValue();
++                }
++                if (item.getMaxOutlier() != null) {
++                    maxOutlier = item.getMaxOutlier().doubleValue();
++                }
++                if (!Double.isNaN(minOutlier) && minOutlier < min) {
++                    min = minOutlier;
++                    this.minimumRangeValueRow = r;
++                    this.minimumRangeValueColumn = c;
++                }
++                if (!Double.isNaN(maxOutlier) && maxOutlier > max) {
++                    max = maxOutlier;
++                    this.maximumRangeValueRow = r;
++                    this.maximumRangeValueColumn = c;
++                }
++            }
++        }
++    }
++    this.minimumRangeValue = min;
++    this.maximumRangeValue = max;
+ }

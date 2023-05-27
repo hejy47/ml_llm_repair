@@ -1,0 +1,26 @@
+--- org/jfree/data/DefaultKeyedValues2D.java@removeColumn
++++ org/jfree/data/DefaultKeyedValues2D.java@removeColumn
+@@ -5,4 +5,5 @@
+         rowData.removeValue(columnKey);
+     }
+     this.columnKeys.remove(columnKey);
++    rebuildIndex(); // Fixed: Rebuild the index after removing a column
+ }
+--- org/jfree/data/DefaultKeyedValues.java@removeValue
++++ org/jfree/data/DefaultKeyedValues.java@removeValue
+@@ -2,6 +2,6 @@
+     this.keys.remove(index);
+     this.values.remove(index);
+     if (index < this.keys.size()) {
+-        rebuildIndex();
++        rebuildIndex(index); // Fixed: Pass the correct index to rebuildIndex method
+     }
+ }
+--- org/jfree/data/DefaultKeyedValues.java@removeValue1
++++ org/jfree/data/DefaultKeyedValues.java@removeValue1
+@@ -4,4 +4,5 @@
+         return;
+     }
+     removeValue(index);
++    rebuildIndex(index); // Fixed: Rebuild the index after removing a value
+ }

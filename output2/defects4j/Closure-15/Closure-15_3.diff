@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
+@@ -18,6 +18,13 @@
+         if (!ControlFlowGraph.isEnteringNewCfgNode(c) && apply(c)) {
+             return true;
+         }
++        if (ControlFlowGraph.isEnteringNewCfgNode(c)) {
++            // If we entered into a new control flow branch, we need to reset the state
++            // of the function call analyzer.
++            // This is required to preserve accurate state analysis as we branch into new program
++            // paths.
++            resetState();
++        }
+     }
+     return false;
+ }

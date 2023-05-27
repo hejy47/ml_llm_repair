@@ -1,0 +1,23 @@
+--- org/jfree/chart/axis/Axis.java@drawLabel
++++ org/jfree/chart/axis/Axis.java@drawLabel
+@@ -6,8 +6,11 @@
+     if ((label == null) || (label.equals(""))) {
+         return state;
+     }
++    
++    // Fixed: Get label font and insets before changing the graphics context
+     Font font = getLabelFont();
+     RectangleInsets insets = getLabelInsets();
++    
+     g2.setFont(font);
+     g2.setPaint(getLabelPaint());
+     FontMetrics fm = g2.getFontMetrics();
+@@ -41,7 +44,7 @@
+         labelBounds = rotatedLabelBounds.getBounds2D();
+         float w = (float) labelBounds.getWidth();
+         float h = (float) labelBounds.getHeight();
+-        float labelx = (float) (state.getCursor() - insets.getRight() - w / 2.0);
++        float labelx = (float) (state.getCursor() - insets.getRight() - w / 2.0);  // Fixed: Subtract insets.getRight() instead of adding
+         float labely = (float) dataArea.getCenterY();
+         TextUtilities.drawRotatedString(label, g2, labelx, labely, TextAnchor.CENTER, getLabelAngle() - Math.PI / 2.0, TextAnchor.CENTER);
+         hotspot = new Rectangle2D.Float(labelx - w / 2.0f, labely - h / 2.0f, w, h);

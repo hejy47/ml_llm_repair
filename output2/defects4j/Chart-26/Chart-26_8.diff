@@ -1,0 +1,20 @@
+--- org/jfree/chart/axis/Axis.java@drawLabel
++++ org/jfree/chart/axis/Axis.java@drawLabel
+@@ -41,7 +41,7 @@
+         labelBounds = rotatedLabelBounds.getBounds2D();
+         float w = (float) labelBounds.getWidth();
+         float h = (float) labelBounds.getHeight();
+-        float labelx = (float) (state.getCursor() - insets.getRight() - w / 2.0);
++        float labelx = (float) (state.getCursor() - insets.getLeft() - w / 2.0); // fixed: minus instead of plus
+         float labely = (float) dataArea.getCenterY();
+         TextUtilities.drawRotatedString(label, g2, labelx, labely, TextAnchor.CENTER, getLabelAngle() - Math.PI / 2.0, TextAnchor.CENTER);
+         hotspot = new Rectangle2D.Float(labelx - w / 2.0f, labely - h / 2.0f, w, h);
+@@ -52,7 +52,7 @@
+         labelBounds = rotatedLabelBounds.getBounds2D();
+         float w = (float) labelBounds.getWidth();
+         float h = (float) labelBounds.getHeight();
+-        float labelx = (float) (state.getCursor() + insets.getLeft() + w / 2.0);
++        float labelx = (float) (state.getCursor() + insets.getRight() + w / 2.0); // fixed: plus instead of minus
+         float labely = (float) (dataArea.getY() + dataArea.getHeight() / 2.0);
+         TextUtilities.drawRotatedString(label, g2, labelx, labely, TextAnchor.CENTER, getLabelAngle() + Math.PI / 2.0, TextAnchor.CENTER);
+         hotspot = new Rectangle2D.Float(labelx - w / 2.0f, labely - h / 2.0f, w, h);

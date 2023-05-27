@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -13,7 +13,7 @@
+     // Do not try to remove a block or an expr result. We already handle
+     // these cases when we visit the child, and the peephole passes will
+     // fix up the tree in more clever ways when these are removed.
+-    if (n.isExprResult()) {
++    if (n.isExprResult() || n.isBlock()) {
+         return;
+     }
+     // This no-op statement was there so that JSDoc information could

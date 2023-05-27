@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
+@@ -1,14 +1,24 @@
+ @Override
+ public boolean apply(Node n) {
+     // When the node is null it means, we reached the implicit return
+-    // where the function returns (possibly without an return statement)
++    // where the function returns (possibly without a return statement)
+     if (n == null) {
+         return false;
+     }
++
+     // TODO(user): We only care about calls to functions that
+-    // passes one of the dependent variable to a non-side-effect free
++    // pass one of the dependent variables to a non-side-effect free
+     // function.
+-    if (n.isCall() && NodeUtil.functionCallHasSideEffects(n)) {
++    if (n.isCall() && !NodeUtil.functionCallHasSideEffects(n)) {
++        Node target = n.getFirstChild();
++        if (target == null) {
++            return false;
++        }
++        // Check if the function being called is a pure function
++        String functionName = target.getQualifiedName();
++        if (functionName != null && purityAnalyzer.isPure(functionName)) {
++            return false;
++        }
+         return true;
+     }
+     if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {

@@ -1,0 +1,11 @@
+--- org/jfree/data/time/TimeSeries.java@clone
++++ org/jfree/data/time/TimeSeries.java@clone
+@@ -1,4 +1,6 @@
+ public Object clone() throws CloneNotSupportedException {
+-    Object clone = createCopy(0, getItemCount() - 1);
+-    return clone;
++    Chart chartClone = (Chart) super.clone();
++    chartClone.data = this.data.clone();
++    chartClone.style = this.style.clone();
++    return chartClone;
+ }

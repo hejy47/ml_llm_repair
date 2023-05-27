@@ -1,0 +1,85 @@
+--- org/jfree/data/KeyedObjects2D.java@getObject
++++ org/jfree/data/KeyedObjects2D.java@getObject
+@@ -8,15 +8,14 @@
+     int row = this.rowKeys.indexOf(rowKey);
+     if (row < 0) {
+         throw new UnknownKeyException("Row key (" + rowKey + ") not recognised.");
++    } else if (row >= this.rows.size()) {
++        // handle case where row exists in row keys but not in rows list
++        return null;
+     }
+     int column = this.columnKeys.indexOf(columnKey);
+     if (column < 0) {
+         throw new UnknownKeyException("Column key (" + columnKey + ") not recognised.");
+     }
+-    if (row >= 0) {
+-        KeyedObjects rowData = (KeyedObjects) this.rows.get(row);
+-        return rowData.getObject(columnKey);
+-    } else {
+-        return null;
+-    }
++    KeyedObjects rowData = (KeyedObjects) this.rows.get(row);
++    return rowData.getObject(columnKey);
+ }
+--- org/jfree/data/KeyedObjects2D.java@removeObject
++++ org/jfree/data/KeyedObjects2D.java@removeObject
+@@ -1,18 +1,14 @@
+ public void removeObject(Comparable rowKey, Comparable columnKey) {
+-    setObject(null, rowKey, columnKey);
+-    // 1. check whether the row is now empty.
+-    boolean allNull = true;
+     int rowIndex = getRowIndex(rowKey);
++    if (rowIndex < 0 || rowIndex >= this.rows.size()) {
++        // handle case where row does not exist
++        return;
++    }
+     KeyedObjects row = (KeyedObjects) this.rows.get(rowIndex);
+-    for (int item = 0, itemCount = row.getItemCount(); item < itemCount; item++) {
+-        if (row.getObject(item) != null) {
+-            allNull = false;
+-            break;
+-        }
++    row.removeValue(columnKey);
++    if (row.getItemCount() == 0) {
++        // remove empty row
++        this.rows.remove(rowIndex);
++        this.rowKeys.remove(rowIndex);
+     }
+-    if (allNull) {
+-        this.rowKeys.remove(rowIndex);
+-        this.rows.remove(rowIndex);
+-    }
+-    // 2. check whether the column is now empty.
+ }
+--- org/jfree/data/KeyedObjects2D.java@removeRow
++++ org/jfree/data/KeyedObjects2D.java@removeRow
+@@ -1,4 +1,9 @@
+ public void removeRow(Comparable rowKey) {
+     int index = getRowIndex(rowKey);
+-    removeRow(index);
++    if (index < 0 || index >= this.rows.size()) {
++        // handle case where row does not exist
++        return;
++    }
++    this.rows.remove(index);
++    this.rowKeys.remove(index);
+ }
+--- org/jfree/data/KeyedObjects2D.java@removeColumn
++++ org/jfree/data/KeyedObjects2D.java@removeColumn
+@@ -1,12 +1,13 @@
+ public void removeColumn(Comparable columnKey) {
+     int index = getColumnIndex(columnKey);
+-    if (index < 0) {
+-        throw new UnknownKeyException("Column key (" + columnKey + ") not recognised.");
++    if (index < 0 || index >= this.columnKeys.size()) {
++        // handle case where column does not exist
++        return;
+     }
++    this.columnKeys.remove(index);
+     Iterator iterator = this.rows.iterator();
+     while (iterator.hasNext()) {
+         KeyedObjects rowData = (KeyedObjects) iterator.next();
+         rowData.removeValue(columnKey);
+     }
+-    this.columnKeys.remove(columnKey);
+ }

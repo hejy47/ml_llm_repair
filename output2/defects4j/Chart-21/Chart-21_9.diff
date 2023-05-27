@@ -1,0 +1,34 @@
+--- org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@updateBounds
++++ org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@updateBounds
+@@ -1,4 +1,29 @@
+ private void updateBounds() {
+-    this.minimumRangeValue = Double.NaN;
+-    this.maximumRangeValue = Double.NaN;
++    double minVal = Double.POSITIVE_INFINITY;
++    double maxVal = Double.NEGATIVE_INFINITY;
++    for (int row = 0; row < data.getRowCount(); row++) {
++        for (int column = 0; column < data.getColumnCount(); column++) {
++            BoxAndWhiskerItem item = data.getItem(row, column);
++            if (item != null) {
++                if (item.getMinOutlier() != null) {
++                    double minOutlierVal = item.getMinOutlier().doubleValue();
++                    if (minOutlierVal < minVal) {
++                        minVal = minOutlierVal;
++                        minimumRangeValueRow = row;
++                        minimumRangeValueColumn = column;
++                    }
++                }
++                if (item.getMaxOutlier() != null) {
++                    double maxOutlierVal = item.getMaxOutlier().doubleValue();
++                    if (maxOutlierVal > maxVal) {
++                        maxVal = maxOutlierVal;
++                        maximumRangeValueRow = row;
++                        maximumRangeValueColumn = column;
++                    }
++                }
++            }
++        }
++    }
++    minimumRangeValue = minVal == Double.POSITIVE_INFINITY ? Double.NaN : minVal;
++    maximumRangeValue = maxVal == Double.NEGATIVE_INFINITY ? Double.NaN : maxVal;
+ }

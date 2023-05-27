@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -50,6 +50,7 @@
+         } else if (isSimpleOp) {
+             msg = "The result of the '" + Token.name(n.getType()).toLowerCase() + "' operator is not being used.";
+         }
++        t.reportCodeChange();
+         t.getCompiler().report(t.makeError(n, level, USELESS_CODE_ERROR, msg));
+         // TODO(johnlenz): determine if it is necessary to
+         // try to protect side-effect free statements as well.

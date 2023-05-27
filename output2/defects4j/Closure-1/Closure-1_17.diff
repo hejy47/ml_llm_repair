@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -20,10 +20,14 @@
+         // Strip unreferenced args off the end of the function declaration.
+         Node lastArg;
+         while ((lastArg = argList.getLastChild()) != null) {
+-            Var var = fnScope.getVar(lastArg.getString());
+-            if (!referenced.contains(var)) {
+-                argList.removeChild(lastArg);
+-                compiler.reportCodeChange();
++            if (lastArg.isName()) {
++                Var var = fnScope.getVar(lastArg.getString());
++                if (!referenced.contains(var)) {
++                    argList.removeChild(lastArg);
++                    compiler.reportCodeChange();
++                } else {
++                    break;
++                }
+             } else {
+                 break;
+             }

@@ -1,0 +1,8 @@
+--- org/jfree/data/time/TimeSeries.java@clone
++++ org/jfree/data/time/TimeSeries.java@clone
+@@ -1,4 +1,3 @@
+ public Object clone() throws CloneNotSupportedException {
+-    Object clone = createCopy(0, getItemCount() - 1);
+-    return clone;
++    return createCopy(0, getItemCount());
+ }

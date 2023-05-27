@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -16,19 +16,23 @@
+     }
+     Node argList = getFunctionArgList(function);
+     boolean modifyCallers = modifyCallSites && callSiteOptimizer.canModifyCallers(function);
+-    if (!modifyCallers) {
+-        // Strip unreferenced args off the end of the function declaration.
+-        Node lastArg;
+-        while ((lastArg = argList.getLastChild()) != null) {
+-            Var var = fnScope.getVar(lastArg.getString());
+-            if (!referenced.contains(var)) {
+-                argList.removeChild(lastArg);
+-                compiler.reportCodeChange();
+-            } else {
+-                break;
+-            }
++    List<Node> toRemove = new ArrayList<>();
++    // Collect unreferenced args to remove.
++    for (Node arg : argList.children()) {
++        Var var = fnScope.getVar(arg.getString());
++        if (!referenced.contains(var)) {
++            toRemove.add(arg);
++        } else if (!toRemove.isEmpty()) {
++            // Stop at the first referenced arg after unreferenced args.
++            break;
+         }
+-    } else {
++    }
++    // Remove collected args.
++    for (Node arg : toRemove) {
++        argList.removeChild(arg);
++        compiler.reportCodeChange();
++    }
++    if (modifyCallers) {
+         callSiteOptimizer.optimize(fnScope, referenced);
+     }
+ }

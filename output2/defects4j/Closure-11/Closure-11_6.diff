@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitGetProp
++++ com/google/javascript/jscomp/TypeCheck.java@visitGetProp
+@@ -6,7 +6,7 @@
+     Node property = n.getLastChild();
+     Node objNode = n.getFirstChild();
+     JSType childType = getJSType(objNode);
+-    if (childType.isDict()) {
++    if (childType != null && childType.isDict()) { // Added null check for childType
+         report(t, property, TypeValidator.ILLEGAL_PROPERTY_ACCESS, "'.'", "dict");
+     } else if (n.getJSType() != null && parent.isAssign()) {
+         return;

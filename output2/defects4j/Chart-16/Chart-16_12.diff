@@ -1,0 +1,35 @@
+--- org/jfree/data/category/DefaultIntervalCategoryDataset.java@DefaultIntervalCategoryDataset
++++ org/jfree/data/category/DefaultIntervalCategoryDataset.java@DefaultIntervalCategoryDataset
+@@ -16,9 +16,8 @@
+                     throw new IllegalArgumentException("The number of series keys does not " + "match the number of series in the data.");
+                 }
+                 this.seriesKeys = seriesKeys;
+-            } else {
+-                String prefix = resources.getString("series.default-prefix") + " ";
+-                this.seriesKeys = generateKeys(seriesCount, prefix);
++            } else {                
++                this.seriesKeys = generateKeys(seriesCount, resources.getString("series.default-prefix") + " "); //changed to use resources
+             }
+             // set up the category names...
+             int categoryCount = starts[0].length;
+@@ -32,8 +31,7 @@
+                 }
+                 this.categoryKeys = categoryKeys;
+             } else {
+-                String prefix = resources.getString("categories.default-prefix") + " ";
+-                this.categoryKeys = generateKeys(categoryCount, prefix);
++                this.categoryKeys = generateKeys(categoryCount, resources.getString("categories.default-prefix") + " "); //changed to use resources
+             }
+         } else {
+             this.seriesKeys = null;
+--- org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
++++ org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
+@@ -2,7 +2,7 @@
+     if (categoryKeys == null) {
+         throw new IllegalArgumentException("Null 'categoryKeys' argument.");
+     }
+-    if (categoryKeys.length != this.startData[0].length) {
++    if (categoryKeys.length != this.startData.length) {
+         throw new IllegalArgumentException("The number of categories does not match the data.");
+     }
+     for (int i = 0; i < categoryKeys.length; i++) {

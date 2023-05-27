@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/MaybeReachingVariableUse.java@hasExceptionHandler
++++ com/google/javascript/jscomp/MaybeReachingVariableUse.java@hasExceptionHandler
+@@ -1,3 +1,9 @@
+ private boolean hasExceptionHandler(Node cfgNode) {
++    List<Node> successors = cfgNode.getSuccessors();
++    for (Node successor : successors) {
++        if (successor.getType().equals(Node.Type.EXCEPTION_HANDLER)) {
++            return true;
++        }
++    }
+     return false;
+ }

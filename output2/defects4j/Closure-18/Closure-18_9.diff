@@ -1,0 +1,45 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -34,6 +34,7 @@
+         }
+         // Modules inferred in ProcessCommonJS pass.
+         if (options.transformAMDToCJSModules || options.processCommonJSModules) {
++            //Process the modules
+             processAMDAndCommonJSModules();
+         }
+         hoistExterns(externsRoot);
+@@ -48,15 +49,18 @@
+                 }
+             }
+             try {
++                //manage the dependencies using the modules
+                 inputs = (moduleGraph == null ? new JSModuleGraph(modules) : moduleGraph).manageDependencies(options.dependencyOptions, inputs);
+                 staleInputs = true;
+             } catch (CircularDependencyException e) {
++                //print the error message
+                 report(JSError.make(JSModule.CIRCULAR_DEPENDENCY_ERROR, e.getMessage()));
+                 // If in IDE mode, we ignore the error and keep going.
+                 if (hasErrors()) {
+                     return null;
+                 }
+             } catch (MissingProvideException e) {
++                //print the error message
+                 report(JSError.make(MISSING_ENTRY_ERROR, e.getMessage()));
+                 // If in IDE mode, we ignore the error and keep going.
+                 if (hasErrors()) {
+@@ -66,6 +70,7 @@
+         }
+         hoistNoCompileFiles();
+         if (staleInputs) {
++             //re-run the partition inputs
+             repartitionInputs();
+         }
+         // Build the AST.
+@@ -86,6 +91,7 @@
+                 SourceInformationAnnotator sia = new SourceInformationAnnotator(input.getName(), options.devMode != DevMode.OFF);
+                 NodeTraversal.traverse(this, n, sia);
+             }
++             // Add the child to the jsRoot
+             jsRoot.addChildToBack(n);
+         }
+         if (hasErrors()) {

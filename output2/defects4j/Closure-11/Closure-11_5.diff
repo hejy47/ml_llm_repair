@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitGetProp
++++ com/google/javascript/jscomp/TypeCheck.java@visitGetProp
+@@ -7,10 +7,13 @@
+     Node objNode = n.getFirstChild();
+     JSType childType = getJSType(objNode);
+     if (childType.isDict()) {
+-        report(t, property, TypeValidator.ILLEGAL_PROPERTY_ACCESS, "'.'", "dict");
+-    } else if (n.getJSType() != null && parent.isAssign()) {
++        report(t, objNode, TypeValidator.ILLEGAL_PROPERTY_ACCESS, "'.'", "dict");
+         return;
+-    } else if (validator.expectNotNullOrUndefined(t, n, childType, "No properties on this expression", getNativeType(OBJECT_TYPE))) {
++    } 
++    if (n.getJSType() != null && parent.isAssign()) {
++        return;
++    } 
++    if (validator.expectNotNullOrUndefined(t, n, childType, "No properties on this expression", getNativeType(OBJECT_TYPE))) {
+         checkPropertyAccess(childType, property.getString(), t, n);
+     }
+     ensureTyped(t, n);

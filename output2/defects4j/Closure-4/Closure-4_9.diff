@@ -1,0 +1,23 @@
+--- com/google/javascript/rhino/jstype/NamedType.java@resolveInternal
++++ com/google/javascript/rhino/jstype/NamedType.java@resolveInternal
+@@ -11,15 +11,15 @@
+     if (resolved) {
+         super.resolveInternal(t, enclosing);
+         finishPropertyContinuations();
+-        return registry.isLastGeneration() ? getReferencedType() : this;
++        return isResolved() ? getReferencedType() : this; // fixed
+     }
+     resolveViaProperties(t, enclosing);
+     if (detectImplicitPrototypeCycle()) {
+         handleTypeCycle(t);
+     }
+-    super.resolveInternal(t, enclosing);
+-    if (isResolved()) {
+-        finishPropertyContinuations();
++    if (isResolved()) { // fixed
++        super.resolveInternal(t, enclosing);
++        finishPropertyContinuations(); 
+     }
+-    return registry.isLastGeneration() ? getReferencedType() : this;
++    return isResolved() ? getReferencedType() : this; // fixed
+ }

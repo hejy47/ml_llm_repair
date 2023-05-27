@@ -1,0 +1,114 @@
+--- org/jfree/data/KeyedObjects2D.java@getObject
++++ org/jfree/data/KeyedObjects2D.java@getObject
+@@ -13,10 +13,14 @@
+     if (column < 0) {
+         throw new UnknownKeyException("Column key (" + columnKey + ") not recognised.");
+     }
+-    if (row >= 0) {
+-        KeyedObjects rowData = (KeyedObjects) this.rows.get(row);
+-        return rowData.getObject(columnKey);
++    if (column >= 0) { // fix: check if column index is valid
++        if (row >= 0) {
++            KeyedObjects rowData = (KeyedObjects) this.rows.get(row);
++            return rowData.getObject(columnKey);
++        } else {
++            return null;
++        }
+     } else {
+-        return null;
++        throw new UnknownKeyException("Column key (" + columnKey + ") not recognised.");
+     }
+ }
+--- org/jfree/data/KeyedObjects2D.java@removeObject
++++ org/jfree/data/KeyedObjects2D.java@removeObject
+@@ -1,18 +1,41 @@
+ public void removeObject(Comparable rowKey, Comparable columnKey) {
++    // 1. set null instead of removeObject
+     setObject(null, rowKey, columnKey);
+-    // 1. check whether the row is now empty.
+-    boolean allNull = true;
+-    int rowIndex = getRowIndex(rowKey);
+-    KeyedObjects row = (KeyedObjects) this.rows.get(rowIndex);
+-    for (int item = 0, itemCount = row.getItemCount(); item < itemCount; item++) {
+-        if (row.getObject(item) != null) {
+-            allNull = false;
+-            break;
++    // 2. check whether the column is now empty
++    int columnIndex = getColumnIndex(columnKey);
++    if (columnIndex >= 0) { // fix: check if column index is valid
++        boolean allNull = true;
++        for (int i = 0; i < this.rows.size(); i++) {
++            KeyedObjects rowData = (KeyedObjects) this.rows.get(i);
++            if (rowData.getObject(columnIndex) != null) {
++                allNull = false;
++                break;
++            }
+         }
++        if (allNull) {
++            for (int i = 0; i < this.rows.size(); i++) {
++                KeyedObjects rowData = (KeyedObjects) this.rows.get(i);
++                rowData.removeValue(columnKey);
++            }
++            this.columnKeys.remove(columnIndex);
++        }
++        // 3. check whether the row is now empty.
++        int rowIndex = getRowIndex(rowKey);
++        if (rowIndex >= 0) { // fix: check if row index is valid
++            boolean isEmpty = true;
++            KeyedObjects row = (KeyedObjects) this.rows.get(rowIndex);
++            for (int i = 0; i < row.getItemCount(); i++) {
++                if (row.getObject(i) != null) {
++                    isEmpty = false;
++                    break;
++                }
++            }
++            if (isEmpty) {
++                this.rowKeys.remove(rowIndex);
++                this.rows.remove(rowIndex);
++            }
++        }
++    } else {
++        throw new UnknownKeyException("Column key (" + columnKey + ") not recognised.");
+     }
+-    if (allNull) {
+-        this.rowKeys.remove(rowIndex);
+-        this.rows.remove(rowIndex);
+-    }
+-    // 2. check whether the column is now empty.
+ }
+--- org/jfree/data/KeyedObjects2D.java@removeRow
++++ org/jfree/data/KeyedObjects2D.java@removeRow
+@@ -1,4 +1,9 @@
+ public void removeRow(Comparable rowKey) {
+     int index = getRowIndex(rowKey);
+-    removeRow(index);
++    if (index >= 0) { // fix: check if row index is valid
++        this.rowKeys.remove(index);
++        this.rows.remove(index);
++    } else {
++        throw new UnknownKeyException("Row key (" + rowKey + ") not recognised.");
++    }
+ }
+--- org/jfree/data/KeyedObjects2D.java@removeColumn
++++ org/jfree/data/KeyedObjects2D.java@removeColumn
+@@ -1,12 +1,13 @@
+ public void removeColumn(Comparable columnKey) {
+     int index = getColumnIndex(columnKey);
+-    if (index < 0) {
++    if (index >= 0) { // fix: check if column index is valid
++        Iterator iterator = this.rows.iterator();
++        while (iterator.hasNext()) {
++            KeyedObjects rowData = (KeyedObjects) iterator.next();
++            rowData.removeValue(columnKey);
++        }
++        this.columnKeys.remove(index);
++    } else {
+         throw new UnknownKeyException("Column key (" + columnKey + ") not recognised.");
+     }
+-    Iterator iterator = this.rows.iterator();
+-    while (iterator.hasNext()) {
+-        KeyedObjects rowData = (KeyedObjects) iterator.next();
+-        rowData.removeValue(columnKey);
+-    }
+-    this.columnKeys.remove(columnKey);
+ }

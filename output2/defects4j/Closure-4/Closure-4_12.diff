@@ -1,0 +1,33 @@
+--- com/google/javascript/rhino/jstype/NamedType.java@resolveInternal
++++ com/google/javascript/rhino/jstype/NamedType.java@resolveInternal
+@@ -5,21 +5,21 @@
+     // makes more sense. Now, resolution via registry is first in order to
+     // avoid triggering the warnings built into the resolution via properties.
+     boolean resolved = resolveViaRegistry(t, enclosing);
+-    if (detectImplicitPrototypeCycle()) {
+-        handleTypeCycle(t);
+-    }
+-    if (resolved) {
++    if (!resolved) {
++        resolveViaProperties(t, enclosing);
++        if (detectImplicitPrototypeCycle()) {
++            handleTypeCycle(t);
++        }
+         super.resolveInternal(t, enclosing);
+-        finishPropertyContinuations();
++        if (isResolved()) {
++            finishPropertyContinuations();
++        }
+         return registry.isLastGeneration() ? getReferencedType() : this;
+     }
+-    resolveViaProperties(t, enclosing);
+     if (detectImplicitPrototypeCycle()) {
+         handleTypeCycle(t);
+     }
+     super.resolveInternal(t, enclosing);
+-    if (isResolved()) {
+-        finishPropertyContinuations();
+-    }
++    finishPropertyContinuations();
+     return registry.isLastGeneration() ? getReferencedType() : this;
+ }

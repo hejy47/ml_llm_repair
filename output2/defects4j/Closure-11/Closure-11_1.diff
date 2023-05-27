@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitGetProp
++++ com/google/javascript/jscomp/TypeCheck.java@visitGetProp
+@@ -10,8 +10,10 @@
+         report(t, property, TypeValidator.ILLEGAL_PROPERTY_ACCESS, "'.'", "dict");
+     } else if (n.getJSType() != null && parent.isAssign()) {
+         return;
+-    } else if (validator.expectNotNullOrUndefined(t, n, childType, "No properties on this expression", getNativeType(OBJECT_TYPE))) {
++    } else if (childType != null && validator.expectNotNullOrUndefined(t, n, childType, "No properties on this expression", getNativeType(OBJECT_TYPE))) {
+         checkPropertyAccess(childType, property.getString(), t, n);
++    } else {
++        report(t, n, TypeValidator.UNKNOWN_EXPR_TYPE, "Could not determine the expression type");
+     }
+     ensureTyped(t, n);
+ }

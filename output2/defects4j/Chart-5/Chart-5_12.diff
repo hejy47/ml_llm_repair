@@ -1,0 +1,21 @@
+--- org/jfree/data/xy/XYSeries.java@addOrUpdate
++++ org/jfree/data/xy/XYSeries.java@addOrUpdate
+@@ -18,11 +18,15 @@
+         // Collections.binarySearch() and tells us where to insert the
+         // new item...otherwise it will be just -1 and we should just
+         // append the value to the list...
+-        if (this.autoSort) {
+-            this.data.add(-index - 1, new XYDataItem(x, y));
++        if (this.autoSort && index >= 0) {
++            // if index is not negative, the element already exists so we should replace the Y value
++            this.data.get(index).setY(y);
+         } else {
+-            this.data.add(new XYDataItem(x, y));
++            // else, it does not exist so we add it in sorted position or at the end
++            int insertAt = -index - 1;
++            this.data.add(insertAt, new XYDataItem(x, y));
+         }
++
+         // check if this addition will exceed the maximum item count...
+         if (getItemCount() > this.maximumItemCount) {
+             this.data.remove(0);

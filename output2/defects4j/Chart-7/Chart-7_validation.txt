@@ -1,0 +1,7 @@
+Chart-7_1:False
+Chart-7_2:False
+Chart-7_3:False
+Chart-7_4:True
+Chart-7_5:True
+Chart-7_6:False
+Chart-7_7:True

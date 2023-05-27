@@ -1,0 +1,15 @@
+--- org/jfree/chart/plot/CategoryPlot.java@getRangeAxisIndex
++++ org/jfree/chart/plot/CategoryPlot.java@getRangeAxisIndex
+@@ -6,6 +6,12 @@
+         if (parent instanceof CategoryPlot) {
+             CategoryPlot p = (CategoryPlot) parent;
+             result = p.getRangeAxisIndex(axis);
++        } else if (parent instanceof CombinedDomainXYPlot) {
++            CombinedDomainXYPlot p = (CombinedDomainXYPlot) parent;
++            result = p.getRangeAxisIndex(axis);
++        } else if (parent instanceof CombinedRangeXYPlot) {
++            CombinedRangeXYPlot p = (CombinedRangeXYPlot) parent;
++            result = p.getRangeAxisIndex(axis);
+         }
+     }
+     return result;

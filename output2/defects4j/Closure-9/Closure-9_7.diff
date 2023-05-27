@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/ProcessCommonJSModules.java@normalizeSourceName
++++ com/google/javascript/jscomp/ProcessCommonJSModules.java@normalizeSourceName
+@@ -1,7 +1,7 @@
+ private String normalizeSourceName(String filename) {
+     // The DOS command shell will normalize "/" to "\", so we have to
+     // wrestle it back.
+-    if (filename.indexOf(filenamePrefix) == 0) {
++    if (filename.startsWith(filenamePrefix)) { // use startswith instead of indexOf to ensure exact match
+         filename = filename.substring(filenamePrefix.length());
+     }
+     return filename;
+--- com/google/javascript/jscomp/ProcessCommonJSModules.java@visitScript
++++ com/google/javascript/jscomp/ProcessCommonJSModules.java@visitScript
+@@ -13,5 +13,5 @@
+     emitOptionalModuleExportsOverride(script, moduleName);
+     // Rename vars to not conflict in global scope.
+     NodeTraversal.traverse(compiler, script, new SuffixVarsCallback(moduleName));
+-    compiler.reportCodeChange();
++    t.reportCodeChange(); // use the provided NodeTraversal instead of the compiler instance
+ }

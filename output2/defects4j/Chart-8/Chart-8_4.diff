@@ -1,0 +1,15 @@
+--- org/jfree/data/time/Week.java@Week
++++ org/jfree/data/time/Week.java@Week
+@@ -1,4 +1,10 @@
+ public Week(Date time, TimeZone zone) {
+-    // defer argument checking...
+-    this(time, RegularTimePeriod.DEFAULT_TIME_ZONE, Locale.getDefault());
++    // check for null argument and use the provided zone
++    if (time == null || zone == null) {
++        throw new IllegalArgumentException("Null argument.");
++    }
++    this.time = time;
++    this.firstDayOfWeek = Calendar.getInstance(zone).getFirstDayOfWeek();
++    this.zone = zone;
++    this.locale = Locale.getDefault();
+ }

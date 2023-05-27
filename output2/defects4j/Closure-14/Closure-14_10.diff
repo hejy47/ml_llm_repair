@@ -1,0 +1,51 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@computeFollowNode
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@computeFollowNode
+@@ -1,5 +1,23 @@
+ private static Node computeFollowNode(Node fromNode, Node node, ControlFlowAnalysis cfa) {
+-        Node parent = node.getParent();
++    /*
++     * This is the case where:
++     *
++     * 1. Parent is null implies that we are transferring control to the end of
++     * the script.
++     *
++     * 2. Parent is a function implies that we are transferring control back to
++     * the caller of the function.
++     *
++     * 3. If the node is a return statement, we should also transfer control
++     * back to the caller of the function.
++     *
++     * 4. If the node is root then we have reached the end of what we have been
++     * asked to traverse.
++     *
++     * In all cases we should transfer control to a "symbolic return" node.
++     * This will make life easier for DFAs.
++     */
++    Node parent = node.getParent();
+     if (parent == null || parent.isFunction() || (cfa != null && node == cfa.root)) {
+         return null;
+     }
+@@ -18,17 +36,20 @@
+                 } else if (parent.getNext().isDefaultCase()) {
+                     return parent.getNext().getFirstChild();
+                 } else {
+-                    Preconditions.checkState(false, "Not reachable");
++                    throw new IllegalStateException("Not reachable");
+                 }
+             } else {
+                 return computeFollowNode(fromNode, parent, cfa);
+             }
+-            break;
+         case Token.FOR:
+             if (NodeUtil.isForIn(parent)) {
+                 return parent;
+             } else {
+-                return parent.getFirstChild().getNext().getNext();
++                Node cond = parent.getFirstChild().getNext();
++                if (cond != null) {
++                    return cond;
++                }
++                return computeFallThrough(parent.getLastChild());
+             }
+         case Token.WHILE:
+         case Token.DO:

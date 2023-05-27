@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -47,17 +47,16 @@
+                     getTypeRegistry().forwardDeclareType(provide);
+                 }
+             }
++            // Add try catch block to catch possible circular dependencies or missing provide exceptions
+             try {
+                 inputs = (moduleGraph == null ? new JSModuleGraph(modules) : moduleGraph).manageDependencies(options.dependencyOptions, inputs);
+                 staleInputs = true;
+-            } catch (CircularDependencyException e) {
+-                report(JSError.make(JSModule.CIRCULAR_DEPENDENCY_ERROR, e.getMessage()));
+-                // If in IDE mode, we ignore the error and keep going.
+-                if (hasErrors()) {
+-                    return null;
++            } catch (Exception e) {
++                if (e instanceof CircularDependencyException) {
++                    report(JSError.make(JSModule.CIRCULAR_DEPENDENCY_ERROR, e.getMessage()));
++                } else if (e instanceof MissingProvideException) {
++                    report(JSError.make(MISSING_ENTRY_ERROR, e.getMessage()));
+                 }
+-            } catch (MissingProvideException e) {
+-                report(JSError.make(MISSING_ENTRY_ERROR, e.getMessage()));
+                 // If in IDE mode, we ignore the error and keep going.
+                 if (hasErrors()) {
+                     return null;

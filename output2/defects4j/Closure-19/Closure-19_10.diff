@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java@declareNameInScope
++++ com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java@declareNameInScope
+@@ -1,9 +1,9 @@
+ protected void declareNameInScope(FlowScope scope, Node node, JSType type) {
+-    switch(node.getType()) {
+-        case Token.NAME:
++    switch(node.getToken()) { //use getToken() instead of getType()
++        case NAME:
+             scope.inferSlotType(node.getString(), type);
+             break;
+-        case Token.GETPROP:
++        case GETPROP:
+             String qualifiedName = node.getQualifiedName();
+             Preconditions.checkNotNull(qualifiedName);
+             JSType origType = node.getJSType();

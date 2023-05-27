@@ -11,9 +11,9 @@ class Defects4J(Dataset.Dataset):
             "Chart": [i for i in range(1, 27)],
             "Closure": [i for i in range(1, 134) if i not in [63, 93]],
             "Lang": [i for i in range(1, 66) if i not in [2]],
-            "Math": [i for i in range(1, 106)],
+            "Math": [i for i in range(1, 107)],
             "Mockito": [i for i in range(1, 39)],
-            "Time": [i for i in range(1, 27) if i not in [21]]
+            "Time": [i for i in range(1, 28) if i not in [21]]
         }
         self.bug_info_dir = os.path.join(config.BUG_DATA_DIR, "defects4j")
         self.get_bugs()
@@ -72,7 +72,7 @@ class Defects4J(Dataset.Dataset):
 
                 function_name = buggy_function_content.split('\n')[0]
                 function_name = function_name.replace('(', '\(').replace(')', '\)').replace('[', '\[').replace(']', '\]').replace('{', '\{').replace('}', '\}')
-                pattern = "({}.*?\n)".format(function_name)
+                pattern = "({}.*?\n}})".format(function_name)
                 result = re.search(pattern, fix, re.DOTALL)
                 if result == None:
                     continue
@@ -85,9 +85,12 @@ class Defects4J(Dataset.Dataset):
                 else:
                     all_diff_content[file_name].append((buggy_function_content, fixed_function_content, buggy_range))
             
+            if all_diff_content == {}:
+                return False
+
             for diff_file_name, diff_content in all_diff_content.items():
                 project, bug_id = self.current_bug_id.split('-')
-                diff_file_path = os.path.join(dataset_util.get_proj_source_dir(self.get_proj_dir(), self.name, project, bug_id), diff_file_name)
+                diff_file_path = os.path.realpath(os.path.join(dataset_util.get_proj_source_dir(self.get_proj_dir(), self.name, project, bug_id), diff_file_name))
                 backup_diff_file_path = os.path.join(config.TMP_DIR, diff_file_path.replace('/', '#'))
                 file_util.backup_file(diff_file_path, backup_diff_file_path)
 
@@ -96,8 +99,8 @@ class Defects4J(Dataset.Dataset):
                 for (buggy_function_content, fixed_function_content, buggy_range) in diff_content:
                     start_line, end_line = buggy_range.split('-')
                     start_line, end_line = int(start_line)-1, int(end_line)
-                    buggy_str = ''.join(file_lines[start_line, end_line])
-                    file_str.replace(buggy_str, file_str)
+                    buggy_str = ''.join(file_lines[start_line:end_line])
+                    file_str = file_str.replace(buggy_str, fixed_function_content)
                 file_util.write_str_to_file(file_str, diff_file_path)
             
             cmd = "defects4j test"
@@ -105,7 +108,8 @@ class Defects4J(Dataset.Dataset):
 
             for backup_file in os.listdir(config.TMP_DIR):
                 origin_file = backup_file.replace('#', '/')
-                file_util.move_file(backup_file, origin_file)
+                file_util.move_file(os.path.join(config.TMP_DIR, backup_file), origin_file)
+            file_util.remove_dir(config.TMP_DIR)
             
             if "Failing tests: 0" in result:
                 return True

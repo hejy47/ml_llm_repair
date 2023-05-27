@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -29,6 +29,6 @@
+             }
+         }
+     } else {
+-        callSiteOptimizer.optimize(fnScope, referenced);
++        callSiteOptimizer.optimize(fnScope, referenced, compiler);
+     }
+ }

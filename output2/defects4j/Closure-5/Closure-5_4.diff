@@ -1,0 +1,58 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -1,6 +1,5 @@
+ private boolean isInlinableObject(List<Reference> refs) {
+-    boolean ret = false;
+-    Set<String> validProperties = Sets.newHashSet();
++    Set<String> validProperties = new HashSet<>(); // Moved initialization outside of loop
+     for (Reference ref : refs) {
+         Node name = ref.getNode();
+         Node parent = ref.getParent();
+@@ -55,17 +54,21 @@
+         // but x = {a: 1, b: x.a} is.
+         //
+         // Also, ES5 getters/setters aren't handled by this pass.
++        Set<Node> childValues = new HashSet<>(); // Added set of child values
+         for (Node child = val.getFirstChild(); child != null; child = child.getNext()) {
+             if (child.isGetterDef() || child.isSetterDef()) {
+                 // ES5 get/set not supported.
+                 return false;
+             }
+-            validProperties.add(child.getString());
++            String childString = child.getString();
++            validProperties.add(childString);
+             Node childVal = child.getFirstChild();
+             // Check if childVal is the parent of any of the passed in
+             // references, as that is how self-referential assignments
+             // will happen.
+-            for (Reference t : refs) {
++            List<Reference> childRefs = new ArrayList<>(refs); // Copy of refs list
++            childRefs.remove(ref);
++            for (Reference t : childRefs) { 
+                 Node refNode = t.getParent();
+                 while (!NodeUtil.isStatementBlock(refNode)) {
+                     if (refNode == childVal) {
+@@ -75,11 +78,18 @@
+                     refNode = refNode.getParent();
+                 }
+             }
++            childValues.add(childVal); // Added child value to set
+         }
+-        // We have found an acceptable object literal assignment. As
+-        // long as there are no other assignments that mess things up,
+-        // we can inline.
+-        ret = true;
++        // Check for other assignments to the children of the object literal
++        for (Reference t : refs) {
++            Node refNode = t.getParent();
++            while (!NodeUtil.isStatementBlock(refNode)) {
++                if (childValues.contains(refNode)) { // Check if reference is to a child value
++                    return false;
++                }
++                refNode = refNode.getParent();
++            }
++        }
+     }
+-    return ret;
++    return true; // If no false cases have returned, we can inline
+ }

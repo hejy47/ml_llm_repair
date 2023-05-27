@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -38,8 +38,14 @@
+                     break;
+             }
+         }
+-    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+-        if (!(parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext()))) {
++    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK && parent.getType() != Token.FOR) {
++        return;
++    } else if (parent.getType() == Token.FOR) {
++        if (parent.getChildCount() != 4) {
++            return;
++        }
++        Node firstChild = parent.getFirstChild();
++        if (firstChild != null && (n == firstChild || n == firstChild.getNext().getNext())) {
+             return;
+         }
+     }

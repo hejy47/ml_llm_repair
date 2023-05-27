@@ -1,0 +1,20 @@
+--- org/jfree/chart/plot/MultiplePiePlot.java@MultiplePiePlot
++++ org/jfree/chart/plot/MultiplePiePlot.java@MultiplePiePlot
+@@ -4,12 +4,12 @@
+     PiePlot piePlot = new PiePlot(null);
+     this.pieChart = new JFreeChart(piePlot);
+     this.pieChart.removeLegend();
+-    this.dataExtractOrder = TableOrder.BY_COLUMN;
+-    this.pieChart.setBackgroundPaint(null);
++    this.setDataExtractOrder(TableOrder.BY_COLUMN);
++    this.pieChart.setBackgroundPaint(Color.white); // Set a non-null background paint
+     TextTitle seriesTitle = new TextTitle("Series Title", new Font("SansSerif", Font.BOLD, 12));
+     seriesTitle.setPosition(RectangleEdge.BOTTOM);
+     this.pieChart.setTitle(seriesTitle);
+-    this.aggregatedItemsKey = "Other";
+-    this.aggregatedItemsPaint = Color.lightGray;
+-    this.sectionPaints = new HashMap();
++    this.setAggregatedItemsKey("Other");
++    this.setAggregatedItemsPaint(Color.lightGray);
++    this.setSectionPaints(new HashMap<Integer, Paint>()); // Specify the generic type of HashMap
+ }

@@ -1,0 +1,11 @@
+--- org/jfree/data/time/TimeSeries.java@createCopy
++++ org/jfree/data/time/TimeSeries.java@createCopy
+@@ -7,7 +7,7 @@
+     }
+     TimeSeries copy = (TimeSeries) super.clone();
+     copy.data = new java.util.ArrayList();
+-    if (this.data.size() > 0) {
++    if (this.data.size() > 0 && end<this.data.size()) { // Fixing the index out of bounds error
+         for (int index = start; index <= end; index++) {
+             TimeSeriesDataItem item = (TimeSeriesDataItem) this.data.get(index);
+             TimeSeriesDataItem clone = (TimeSeriesDataItem) item.clone();

@@ -1,0 +1,12 @@
+--- org/jfree/data/xy/XYSeries.java@addOrUpdate
++++ org/jfree/data/xy/XYSeries.java@addOrUpdate
+@@ -28,6 +28,9 @@
+             this.data.remove(0);
+         }
+     }
++    if (this.data.indexOf(null) != -1) {
++        this.data.removeAll(Collections.singleton(null));
++    }
+     fireSeriesChanged();
+     return overwritten;
+ }

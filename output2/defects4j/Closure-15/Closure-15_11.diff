@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
+@@ -8,8 +8,12 @@
+     // TODO(user): We only care about calls to functions that
+     // passes one of the dependent variable to a non-side-effect free
+     // function.
+-    if (n.isCall() && NodeUtil.functionCallHasSideEffects(n)) {
+-        return true;
++    if (n.isCall() && !NodeUtil.functionCallHasSideEffects(n)) {
++        for (Node arg : n.getChildren()) {
++            if (dependencyProps_.contains(NodeUtil.getBestJSDocInfo(arg).getEffectiveType())) {
++                return true;
++            }
++        }
+     }
+     if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {
+         return true;

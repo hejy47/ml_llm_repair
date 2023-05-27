@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -86,7 +86,7 @@
+                 SourceInformationAnnotator sia = new SourceInformationAnnotator(input.getName(), options.devMode != DevMode.OFF);
+                 NodeTraversal.traverse(this, n, sia);
+             }
+-            jsRoot.addChildToBack(n);
++            jsRoot.addChildrenToBack(NodeUtil.getFunctionBody(n));
+         }
+         if (hasErrors()) {
+             return null;

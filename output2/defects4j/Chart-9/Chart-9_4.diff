@@ -1,0 +1,44 @@
+--- org/jfree/data/time/TimeSeries.java@createCopy
++++ org/jfree/data/time/TimeSeries.java@createCopy
+@@ -8,31 +8,24 @@
+     if (start.compareTo(end) > 0) {
+         throw new IllegalArgumentException("Requires start on or before end.");
+     }
+-    boolean emptyRange = false;
++
+     int startIndex = getIndex(start);
+     if (startIndex < 0) {
+         startIndex = -(startIndex + 1);
+-        if (startIndex == this.data.size()) {
++        if (startIndex >= this.data.size()) {
+             // start is after last data item
+-            emptyRange = true;
++            return new TimeSeries(this.getKey(), this.getTimePeriodClass());
+         }
+     }
+     int endIndex = getIndex(end);
+     if (endIndex < 0) {
+-        // end period is not in original series
+-        // this is first item AFTER end period
+         endIndex = -(endIndex + 1);
+-        // so this is last item BEFORE end
+-        endIndex = endIndex - 1;
++        if (endIndex <= 0) {
++            // end is before the first item
++            return new TimeSeries(this.getKey(), this.getTimePeriodClass());
++        } else {
++            endIndex = endIndex - 1;
++        }
+     }
+-    if (endIndex < 0) {
+-        emptyRange = true;
+-    }
+-    if (emptyRange) {
+-        TimeSeries copy = (TimeSeries) super.clone();
+-        copy.data = new java.util.ArrayList();
+-        return copy;
+-    } else {
+-        return createCopy(startIndex, endIndex);
+-    }
++    return createCopy(startIndex, endIndex);
+ }

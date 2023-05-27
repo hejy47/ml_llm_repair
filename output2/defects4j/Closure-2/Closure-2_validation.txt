@@ -1,0 +1,17 @@
+Closure-2_1:True
+Closure-2_2:True
+Closure-2_3:True
+Closure-2_4:True
+Closure-2_5:False
+Closure-2_6:True
+Closure-2_7:True
+Closure-2_8:False
+Closure-2_9:True
+Closure-2_10:False
+Closure-2_11:False
+Closure-2_12:False
+Closure-2_13:True
+Closure-2_14:True
+Closure-2_15:False
+Closure-2_16:True
+Closure-2_17:False

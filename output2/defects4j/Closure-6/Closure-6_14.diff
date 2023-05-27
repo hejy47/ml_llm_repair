@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
+@@ -10,7 +10,7 @@
+             JSType ownerType = getJSType(owner);
+             if (ownerType.isFunctionPrototypeType()) {
+                 FunctionType ownerFn = ownerType.toObjectType().getOwnerFunction();
+-                if (ownerFn.isInterface() && rightType.isFunctionType() && leftType.isFunctionType()) {
++                if (ownerFn != null && ownerFn.isInterface() && rightType.isFunctionType() && leftType.isFunctionType()) {
+                     return true;
+                 }
+             }
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
+@@ -1,5 +1,5 @@
+ boolean expectCanAssignTo(NodeTraversal t, Node n, JSType rightType, JSType leftType, String msg) {
+-    if (!rightType.canAssignTo(leftType)) {
++    if (!rightType.isUnknownType() && !rightType.canAssignTo(leftType)) {
+         if ((leftType.isConstructor() || leftType.isEnumType()) && (rightType.isConstructor() || rightType.isEnumType())) {
+             registerMismatch(rightType, leftType, null);
+         } else {

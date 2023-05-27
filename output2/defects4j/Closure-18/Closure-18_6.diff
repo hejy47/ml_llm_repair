@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -86,7 +86,12 @@
+                 SourceInformationAnnotator sia = new SourceInformationAnnotator(input.getName(), options.devMode != DevMode.OFF);
+                 NodeTraversal.traverse(this, n, sia);
+             }
+-            jsRoot.addChildToBack(n);
++            // When building the AST, don't attach the root to the tree
++            // until it has been fully built.
++            jsRoot.addChildrenToBack(n.removeChildren());
++            for (Node script : n.children()) {
++                jsRoot.addChildToBack(script);
++            }
+         }
+         if (hasErrors()) {
+             return null;

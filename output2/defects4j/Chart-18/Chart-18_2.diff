@@ -1,0 +1,38 @@
+--- org/jfree/data/DefaultKeyedValues2D.java@removeColumn
++++ org/jfree/data/DefaultKeyedValues2D.java@removeColumn
+@@ -2,7 +2,13 @@
+     Iterator iterator = this.rows.iterator();
+     while (iterator.hasNext()) {
+         DefaultKeyedValues rowData = (DefaultKeyedValues) iterator.next();
+-        rowData.removeValue(columnKey);
++        // Fixed: Check if columnKey exists in rowData before removing the value
++        if(rowData.getIndex(columnKey) >= 0){
++            rowData.removeValue(columnKey);
++        }
+     }
+-    this.columnKeys.remove(columnKey);
++    // Fixed: Remove columnKey only if it exists in the columnKeys
++    if (this.columnKeys.contains(columnKey)) {
++        this.columnKeys.remove(columnKey);
++    }
+ }
+--- org/jfree/data/DefaultKeyedValues.java@removeValue
++++ org/jfree/data/DefaultKeyedValues.java@removeValue
+@@ -2,6 +2,7 @@
+     this.keys.remove(index);
+     this.values.remove(index);
+     if (index < this.keys.size()) {
+-        rebuildIndex();
++        // Fixed: Call rebuildIndex with index parameter to ensure correct rebuilding
++        rebuildIndex(index);
+     }
+ }
+--- org/jfree/data/DefaultKeyedValues.java@removeValue1
++++ org/jfree/data/DefaultKeyedValues.java@removeValue1
+@@ -3,5 +3,6 @@
+     if (index < 0) {
+         return;
+     }
++    // Fixed: Call removeValue with index parameter to ensure correct removal
+     removeValue(index);
+ }

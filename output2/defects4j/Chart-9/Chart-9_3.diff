@@ -1,0 +1,20 @@
+--- org/jfree/data/time/TimeSeries.java@createCopy
++++ org/jfree/data/time/TimeSeries.java@createCopy
+@@ -12,7 +12,7 @@
+     int startIndex = getIndex(start);
+     if (startIndex < 0) {
+         startIndex = -(startIndex + 1);
+-        if (startIndex == this.data.size()) {
++        if (startIndex >= this.data.size()) { // Modified comparison from == to >=
+             // start is after last data item
+             emptyRange = true;
+         }
+@@ -25,7 +25,7 @@
+         // so this is last item BEFORE end
+         endIndex = endIndex - 1;
+     }
+-    if (endIndex < 0) {
++    if (endIndex < 0 || endIndex < startIndex) { // Added condition endIndex < startIndex
+         emptyRange = true;
+     }
+     if (emptyRange) {

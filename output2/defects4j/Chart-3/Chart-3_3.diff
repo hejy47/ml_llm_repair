@@ -1,0 +1,18 @@
+--- org/jfree/data/time/TimeSeries.java@createCopy
++++ org/jfree/data/time/TimeSeries.java@createCopy
+@@ -1,12 +1,9 @@
+ public TimeSeries createCopy(int start, int end) throws CloneNotSupportedException {
+-    if (start < 0) {
+-        throw new IllegalArgumentException("Requires start >= 0.");
+-    }
+-    if (end < start) {
+-        throw new IllegalArgumentException("Requires start <= end.");
++    if (start < 0 || end >= this.getItemCount() || start > end) { // added condition for end >= getItemCount()
++        throw new IllegalArgumentException("Invalid start or end index.");
+     }
+     TimeSeries copy = (TimeSeries) super.clone();
+-    copy.data = new java.util.ArrayList();
++    copy.data = new ArrayList<>();
+     if (this.data.size() > 0) {
+         for (int index = start; index <= end; index++) {
+             TimeSeriesDataItem item = (TimeSeriesDataItem) this.data.get(index);

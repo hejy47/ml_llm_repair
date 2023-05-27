@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -34,6 +34,12 @@
+                             return secondClause.getJSType();
+                         }
+                     }
++                } else {
++                    // If there is no rValue and the lValue is a name node with a constant value, we can infer the type from its value.
++                    JSType inferredType = getInferredTypeFromName(lValue);
++                    if (inferredType != null) {
++                        return inferredType;
++                    }
+                 }
+             }
+         }

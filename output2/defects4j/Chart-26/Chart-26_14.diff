@@ -1,0 +1,79 @@
+--- org/jfree/chart/axis/Axis.java@drawLabel
++++ org/jfree/chart/axis/Axis.java@drawLabel
+@@ -1,9 +1,8 @@
+ protected AxisState drawLabel(String label, Graphics2D g2, Rectangle2D plotArea, Rectangle2D dataArea, RectangleEdge edge, AxisState state, PlotRenderingInfo plotState) {
+-    // it is unlikely that 'state' will be null, but check anyway...
+     if (state == null) {
+         throw new IllegalArgumentException("Null 'state' argument.");
+     }
+-    if ((label == null) || (label.equals(""))) {
++    if ((label == null) || (label.isBlank())) { // use isBlank() method to check if string is empty or contains only white spaces
+         return state;
+     }
+     Font font = getLabelFont();
+@@ -17,45 +16,45 @@
+         AffineTransform t = AffineTransform.getRotateInstance(getLabelAngle(), labelBounds.getCenterX(), labelBounds.getCenterY());
+         Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
+         labelBounds = rotatedLabelBounds.getBounds2D();
+-        float w = (float) labelBounds.getWidth();
+-        float h = (float) labelBounds.getHeight();
+-        float labelx = (float) dataArea.getCenterX();
+-        float labely = (float) (state.getCursor() - insets.getBottom() - h / 2.0);
++        double w = labelBounds.getWidth(); // cast width and height to double
++        double h = labelBounds.getHeight();
++        double labelx = dataArea.getCenterX();
++        double labely = state.getCursor() - insets.getBottom() - h / 2.0;
+         TextUtilities.drawRotatedString(label, g2, labelx, labely, TextAnchor.CENTER, getLabelAngle(), TextAnchor.CENTER);
+-        hotspot = new Rectangle2D.Float(labelx - w / 2.0f, labely - h / 2.0f, w, h);
++        hotspot = new Rectangle2D.Double(labelx - w / 2.0, labely - h / 2.0, w, h); // create a new Double instead of Float
+         state.cursorUp(insets.getTop() + labelBounds.getHeight() + insets.getBottom());
+     } else if (edge == RectangleEdge.BOTTOM) {
+         AffineTransform t = AffineTransform.getRotateInstance(getLabelAngle(), labelBounds.getCenterX(), labelBounds.getCenterY());
+         Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
+         labelBounds = rotatedLabelBounds.getBounds2D();
+-        float w = (float) labelBounds.getWidth();
+-        float h = (float) labelBounds.getHeight();
+-        float labelx = (float) dataArea.getCenterX();
+-        float labely = (float) (state.getCursor() + insets.getTop() + h / 2.0);
++        double w = labelBounds.getWidth();
++        double h = labelBounds.getHeight();
++        double labelx = dataArea.getCenterX();
++        double labely = state.getCursor() + insets.getTop() + h / 2.0;
+         TextUtilities.drawRotatedString(label, g2, labelx, labely, TextAnchor.CENTER, getLabelAngle(), TextAnchor.CENTER);
+-        hotspot = new Rectangle2D.Float(labelx - w / 2.0f, labely - h / 2.0f, w, h);
++        hotspot = new Rectangle2D.Double(labelx - w / 2.0, labely - h / 2.0, w, h);
+         state.cursorDown(insets.getTop() + labelBounds.getHeight() + insets.getBottom());
+     } else if (edge == RectangleEdge.LEFT) {
+         AffineTransform t = AffineTransform.getRotateInstance(getLabelAngle() - Math.PI / 2.0, labelBounds.getCenterX(), labelBounds.getCenterY());
+         Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
+         labelBounds = rotatedLabelBounds.getBounds2D();
+-        float w = (float) labelBounds.getWidth();
+-        float h = (float) labelBounds.getHeight();
+-        float labelx = (float) (state.getCursor() - insets.getRight() - w / 2.0);
+-        float labely = (float) dataArea.getCenterY();
++        double w = labelBounds.getWidth();
++        double h = labelBounds.getHeight();
++        double labelx = state.getCursor() - insets.getRight() - w / 2.0; // fix width calculation
++        double labely = dataArea.getCenterY();
+         TextUtilities.drawRotatedString(label, g2, labelx, labely, TextAnchor.CENTER, getLabelAngle() - Math.PI / 2.0, TextAnchor.CENTER);
+-        hotspot = new Rectangle2D.Float(labelx - w / 2.0f, labely - h / 2.0f, w, h);
++        hotspot = new Rectangle2D.Double(labelx - w / 2.0, labely - h / 2.0, w, h);
+         state.cursorLeft(insets.getLeft() + labelBounds.getWidth() + insets.getRight());
+     } else if (edge == RectangleEdge.RIGHT) {
+         AffineTransform t = AffineTransform.getRotateInstance(getLabelAngle() + Math.PI / 2.0, labelBounds.getCenterX(), labelBounds.getCenterY());
+         Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
+         labelBounds = rotatedLabelBounds.getBounds2D();
+-        float w = (float) labelBounds.getWidth();
+-        float h = (float) labelBounds.getHeight();
+-        float labelx = (float) (state.getCursor() + insets.getLeft() + w / 2.0);
+-        float labely = (float) (dataArea.getY() + dataArea.getHeight() / 2.0);
++        double w = labelBounds.getWidth();
++        double h = labelBounds.getHeight();
++        double labelx = state.getCursor() + insets.getLeft() + w / 2.0; // fix width calculation
++        double labely = dataArea.getCenterY();
+         TextUtilities.drawRotatedString(label, g2, labelx, labely, TextAnchor.CENTER, getLabelAngle() + Math.PI / 2.0, TextAnchor.CENTER);
+-        hotspot = new Rectangle2D.Float(labelx - w / 2.0f, labely - h / 2.0f, w, h);
++        hotspot = new Rectangle2D.Double(labelx - w / 2.0, labely - h / 2.0, w, h);
+         state.cursorRight(insets.getLeft() + labelBounds.getWidth() + insets.getRight());
+     }
+     if (plotState != null && hotspot != null) {

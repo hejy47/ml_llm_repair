@@ -1,0 +1,34 @@
+--- org/jfree/chart/plot/XYPlot.java@getDataRange
++++ org/jfree/chart/plot/XYPlot.java@getDataRange
+@@ -43,15 +43,27 @@
+             XYItemRenderer r = getRendererForDataset(d);
+             if (isDomainAxis) {
+                 if (r != null) {
+-                    result = Range.combine(result, r.findDomainBounds(d));
++                    Range domainBounds = r.findDomainBounds(d);
++                    if (domainBounds != null) {
++                        result = Range.combine(result, domainBounds);
++                    }
+                 } else {
+-                    result = Range.combine(result, DatasetUtilities.findDomainBounds(d));
++                    Range domainBounds = DatasetUtilities.findDomainBounds(d);
++                    if (domainBounds != null) {
++                        result = Range.combine(result, domainBounds);
++                    }
+                 }
+             } else {
+                 if (r != null) {
+-                    result = Range.combine(result, r.findRangeBounds(d));
++                    Range rangeBounds = r.findRangeBounds(d);
++                    if (rangeBounds != null) {
++                        result = Range.combine(result, rangeBounds);
++                    }
+                 } else {
+-                    result = Range.combine(result, DatasetUtilities.findRangeBounds(d));
++                    Range rangeBounds = DatasetUtilities.findRangeBounds(d);
++                    if (rangeBounds != null) {
++                        result = Range.combine(result, rangeBounds);
++                    }
+                 }
+             }
+             Collection c = r.getAnnotations();

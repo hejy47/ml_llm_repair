@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
+@@ -8,9 +8,9 @@
+             // they will have dummy implementations that do not match the type
+             // annotations.
+             JSType ownerType = getJSType(owner);
+-            if (ownerType.isFunctionPrototypeType()) {
++            if (ownerType != null && ownerType.isFunctionPrototypeType()) {
+                 FunctionType ownerFn = ownerType.toObjectType().getOwnerFunction();
+-                if (ownerFn.isInterface() && rightType.isFunctionType() && leftType.isFunctionType()) {
++                if (ownerFn != null && ownerFn.isInterface() && rightType.isFunctionType() && leftType.isFunctionType()) {
+                     return true;
+                 }
+             }
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
+@@ -1,6 +1,6 @@
+ boolean expectCanAssignTo(NodeTraversal t, Node n, JSType rightType, JSType leftType, String msg) {
+-    if (!rightType.canAssignTo(leftType)) {
+-        if ((leftType.isConstructor() || leftType.isEnumType()) && (rightType.isConstructor() || rightType.isEnumType())) {
++    if (leftType == null || !rightType.canAssignTo(leftType)) {
++        if ((leftType != null && leftType.isConstructor() || leftType.isEnumType()) && (rightType.isConstructor() || rightType.isEnumType())) {
+             registerMismatch(rightType, leftType, null);
+         } else {
+             mismatch(t, n, msg, rightType, leftType);

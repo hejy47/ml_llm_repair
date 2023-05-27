@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@AliasedTypeNode
++++ com/google/javascript/jscomp/ScopedAliases.java@AliasedTypeNode
+@@ -1,4 +1,4 @@
+ AliasedTypeNode(Node typeReference, String aliasName) {
+-    this.typeReference = typeReference;
++    this.typeReference = typeReference.cloneTree();
+     this.aliasName = aliasName;
+ }
+--- com/google/javascript/jscomp/ScopedAliases.java@applyAlias
++++ com/google/javascript/jscomp/ScopedAliases.java@applyAlias
+@@ -1,4 +1,8 @@
+ @Override
+ public void applyAlias() {
+-    typeReference.setString(aliasName);
++    if (typeReference.isString()) {
++        typeReference.setString(aliasName);
++    } else {
++        throw new IllegalStateException("Cannot apply alias to non-string type reference");
++    }
+ }
+--- com/google/javascript/jscomp/ScopedAliases.java@fixTypeNode
++++ com/google/javascript/jscomp/ScopedAliases.java@fixTypeNode
+@@ -9,7 +9,10 @@
+         Var aliasVar = aliases.get(baseName);
+         if (aliasVar != null) {
+             Node aliasedNode = aliasVar.getInitialValue();
+-            aliasUsages.add(new AliasedTypeNode(typeNode, aliasedNode.getQualifiedName() + name.substring(endIndex)));
++            Node aliasedTypeNode = aliasedNode.cloneTree();
++            aliasedTypeNode.setString(name.substring(endIndex));
++            aliasUsages.add(new AliasedTypeNode(aliasedTypeNode, aliasedNode.getQualifiedName() + name.substring(endIndex)));
++            return;
+         }
+     }
+     for (Node child = typeNode.getFirstChild(); child != null; child = child.getNext()) {

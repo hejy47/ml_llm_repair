@@ -53,6 +53,7 @@ def write_str_to_file(file_str, file_path, append=False):
 def backup_file(src_file, dst_file):
     assert os.path.isfile(src_file)
     remove_file(dst_file)
+    mkdir_from_file_path(dst_file)
     shutil.copyfile(src_file, dst_file)
 
 def move_file(src_file, dst_file):

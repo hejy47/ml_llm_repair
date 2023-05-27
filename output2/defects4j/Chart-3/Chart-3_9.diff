@@ -1,0 +1,23 @@
+--- org/jfree/data/time/TimeSeries.java@createCopy
++++ org/jfree/data/time/TimeSeries.java@createCopy
+@@ -6,13 +6,17 @@
+         throw new IllegalArgumentException("Requires start <= end.");
+     }
+     TimeSeries copy = (TimeSeries) super.clone();
+-    copy.data = new java.util.ArrayList();
++    // Use diamond operator for better type inference
++    copy.data = new ArrayList<>();
+     if (this.data.size() > 0) {
+-        for (int index = start; index <= end; index++) {
++        // Use Math.min() to avoid OutOfBoundsException
++        for (int index = start; index <= Math.min(end, this.getItemCount() - 1); index++) {
+             TimeSeriesDataItem item = (TimeSeriesDataItem) this.data.get(index);
+             TimeSeriesDataItem clone = (TimeSeriesDataItem) item.clone();
+             try {
+-                copy.add(clone);
++                // Use TimeSeries.addOrUpdate() instead of TimeSeries.add() to handle duplicates
++                // and maintain data ordering
++                copy.addOrUpdate(clone);
+             } catch (SeriesException e) {
+                 e.printStackTrace();
+             }

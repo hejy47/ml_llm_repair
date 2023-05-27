@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -22,6 +22,10 @@
+         while ((lastArg = argList.getLastChild()) != null) {
+             Var var = fnScope.getVar(lastArg.getString());
+             if (!referenced.contains(var)) {
++                Node name = lastArg.getFirstChild();
++                if (name.isName()) {
++                    fnScope.undeclare(name.getString());
++                }
+                 argList.removeChild(lastArg);
+                 compiler.reportCodeChange();
+             } else {

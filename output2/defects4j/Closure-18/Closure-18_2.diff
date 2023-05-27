@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -76,9 +76,9 @@
+             }
+             if (devMode) {
+                 runSanityCheck();
+-                if (hasErrors()) {
+-                    return null;
+-                }
++            }
++            if (hasErrors()) {
++                return null;
+             }
+             if (options.sourceMapOutputPath != null || options.nameReferenceReportPath != null) {
+                 // Annotate the nodes in the tree with information from the
+@@ -88,9 +88,6 @@
+             }
+             jsRoot.addChildToBack(n);
+         }
+-        if (hasErrors()) {
+-            return null;
+-        }
+         return externAndJsRoot;
+     } finally {
+         stopTracer(tracer, "parseInputs");

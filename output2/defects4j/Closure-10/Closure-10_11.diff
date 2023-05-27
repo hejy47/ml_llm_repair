@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/NodeUtil.java@mayBeString
++++ com/google/javascript/jscomp/NodeUtil.java@mayBeString
+@@ -1,7 +1,7 @@
+ static boolean mayBeString(Node n, boolean recurse) {
+-    if (recurse) {
++    if (!recurse) {
++        return mayBeStringHelper(n);
++    } else {
+         return allResultsMatch(n, MAY_BE_STRING_PREDICATE);
+-    } else {
+-        return mayBeStringHelper(n);
+     }
+ }

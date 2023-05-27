@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
+@@ -1,19 +1,27 @@
+ @Override
+ public boolean apply(Node n) {
+     // When the node is null it means, we reached the implicit return
+-    // where the function returns (possibly without an return statement)
++    // where the function returns (possibly without a return statement)
+     if (n == null) {
+         return false;
+     }
+-    // TODO(user): We only care about calls to functions that
+-    // passes one of the dependent variable to a non-side-effect free
+-    // function.
+-    if (n.isCall() && NodeUtil.functionCallHasSideEffects(n)) {
+-        return true;
++    // We only care about calls to functions that pass one of the dependent variables
++    if (n.isCall() && !NodeUtil.functionCallHasNoSideEffects(n)) {
++        for (int i = 1; i < n.getChildCount(); i++) {
++            if (dependencies.contains(n.getChildAt(i))) {
++                return true;
++            }
++        }
+     }
+-    if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {
+-        return true;
++    // We only care about constructors that pass one of the dependent variables
++    if (n.isNew() && !NodeUtil.constructorCallHasNoSideEffects(n)) {
++        for (int i = 0; i < n.getChildCount(); i++) {
++            if (dependencies.contains(n.getChildAt(i))) {
++                return true;
++            }
++        }
+     }
++    // Recurse on all non-control-flow children
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+         if (!ControlFlowGraph.isEnteringNewCfgNode(c) && apply(c)) {
+             return true;

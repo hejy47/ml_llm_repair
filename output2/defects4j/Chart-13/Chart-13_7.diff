@@ -1,0 +1,11 @@
+--- org/jfree/chart/block/BorderArrangement.java@arrangeFF
++++ org/jfree/chart/block/BorderArrangement.java@arrangeFF
+@@ -26,7 +26,7 @@
+         w[3] = size.width;
+     }
+     h[4] = h[2];
+-    w[4] = constraint.getWidth() - w[3] - w[2];
++    w[4] = w[0] - w[3] - w[2];   // fixed
+     RectangleConstraint c5 = new RectangleConstraint(w[4], h[4]);
+     if (this.centerBlock != null) {
+         this.centerBlock.arrange(g2, c5);

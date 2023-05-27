@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
+@@ -1,6 +1,6 @@
+ boolean expectCanAssignToPropertyOf(NodeTraversal t, Node n, JSType rightType, JSType leftType, Node owner, String propName) {
+     // The NoType check is a hack to make typedefs work OK.
+-    if (!leftType.isNoType() && !rightType.canAssignTo(leftType)) {
++    if (!leftType.isNoType() && !rightType.isSubtypeOf(leftType)) { // changed function call for subtype checking
+         if ((leftType.isConstructor() || leftType.isEnumType()) && (rightType.isConstructor() || rightType.isEnumType())) {
+             registerMismatch(rightType, leftType, null);
+         } else {
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
+@@ -1,5 +1,5 @@
+ boolean expectCanAssignTo(NodeTraversal t, Node n, JSType rightType, JSType leftType, String msg) {
+-    if (!rightType.canAssignTo(leftType)) {
++    if (!rightType.isSubtypeOf(leftType)) { // changed function call for subtype checking
+         if ((leftType.isConstructor() || leftType.isEnumType()) && (rightType.isConstructor() || rightType.isEnumType())) {
+             registerMismatch(rightType, leftType, null);
+         } else {

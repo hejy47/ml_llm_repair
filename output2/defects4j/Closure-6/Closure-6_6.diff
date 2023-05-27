@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignToPropertyOf
+@@ -1,12 +1,8 @@
+ boolean expectCanAssignToPropertyOf(NodeTraversal t, Node n, JSType rightType, JSType leftType, Node owner, String propName) {
+-    // The NoType check is a hack to make typedefs work OK.
+-    if (!leftType.isNoType() && !rightType.canAssignTo(leftType)) {
++    if (!leftType.isNoType() && !rightType.isSubtypeOf(leftType)) {
+         if ((leftType.isConstructor() || leftType.isEnumType()) && (rightType.isConstructor() || rightType.isEnumType())) {
+             registerMismatch(rightType, leftType, null);
+         } else {
+-            // Do not type-check interface methods, because we expect that
+-            // they will have dummy implementations that do not match the type
+-            // annotations.
+             JSType ownerType = getJSType(owner);
+             if (ownerType.isFunctionPrototypeType()) {
+                 FunctionType ownerFn = ownerType.toObjectType().getOwnerFunction();
+--- com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
++++ com/google/javascript/jscomp/TypeValidator.java@expectCanAssignTo
+@@ -1,5 +1,5 @@
+ boolean expectCanAssignTo(NodeTraversal t, Node n, JSType rightType, JSType leftType, String msg) {
+-    if (!rightType.canAssignTo(leftType)) {
++    if (!rightType.isSubtypeOf(leftType)) {
+         if ((leftType.isConstructor() || leftType.isEnumType()) && (rightType.isConstructor() || rightType.isEnumType())) {
+             registerMismatch(rightType, leftType, null);
+         } else {

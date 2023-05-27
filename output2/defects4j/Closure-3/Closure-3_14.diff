@@ -1,0 +1,144 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@enterScope
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@enterScope
+@@ -1,7 +1,7 @@
+ @Override
+ public void enterScope(NodeTraversal t) {
+     if (t.inGlobalScope()) {
+-        // Don't even brother. All global variables are likely escaped.
++        // Don't even bother. All global variables are likely escaped.
+         return;
+     }
+     if (LiveVariablesAnalysis.MAX_VARIABLES_TO_ANALYZE < t.getScope().getVarCount()) {
+@@ -22,6 +22,8 @@
+     // Compute the backward reaching use. The CFG can be reused.
+     reachingUses = new MaybeReachingVariableUse(cfg, t.getScope(), compiler);
+     reachingUses.analyze();
++    // We need to collect all the new variables we inline at this level of the tree
++    List<Var> inlinedNewDependenciesAtThisLevel = new LinkedList<>();
+     for (Candidate c : candidates) {
+         if (c.canInline()) {
+             c.inlineVariable();
+@@ -32,9 +34,12 @@
+             // analysis, so some of these candidates may no longer be valid.
+             // We keep track of when the variable dependency graph changed
+             // so that we can back off appropriately.
++            //
++            // Updating inlinedNewDependencies on every loop causes problems if a dependency is removed and were inlined.
+             if (!c.defMetadata.depends.isEmpty()) {
+-                inlinedNewDependencies.add(t.getScope().getVar(c.varName));
++                inlinedNewDependenciesAtThisLevel.add(t.getScope().getVar(c.varName));
+             }
+         }
+     }
++    inlinedNewDependencies.addAll(inlinedNewDependenciesAtThisLevel);
+ }
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@canInline
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@canInline
+@@ -19,7 +19,7 @@
+     }
+     // Check that the assignment isn't used as a R-Value.
+     // TODO(user): Certain cases we can still inline.
+-    if (def.isAssign() && !NodeUtil.isExprAssign(def.getParent())) {
++    if (def.isAssign() && !NodeUtil.isExpressionResultUsed(def)) {
+         return false;
+     }
+     // The right of the definition has side effect:
+@@ -67,17 +67,20 @@
+     // TODO(johnlenz): rework catch expression handling when we
+     // have lexical scope support so catch expressions don't
+     // need to be special cased.
+-    if (NodeUtil.has(def.getLastChild(), new Predicate<Node>() {
++    Node right = def.getLastChild();
++    if (NodeUtil.has(right, new Predicate<Node>() {
+ 
+         @Override
+         public boolean apply(Node input) {
+             switch(input.getType()) {
+                 case Token.GETELEM:
+                 case Token.GETPROP:
+-                case Token.ARRAYLIT:
+-                case Token.OBJECTLIT:
+-                case Token.REGEXP:
++                    return true;
+                 case Token.NEW:
++                    return input.getFirstChild().matchesQualifiedName("Object");
++                case Token.CALL:
++                    return input.getFirstChild().matchesQualifiedName("goog.defineClass") || input.getFirstChild().matchesQualifiedName("goog.reflect.objectProperty");
++                case Token.ASSIGN:
+                     return true;
+             }
+             return false;
+@@ -92,11 +95,14 @@
+     })) {
+         return false;
+     }
++    if (NodeUtil.hasCatchScope(def)) {
++      return false;
++    }
+     // We can skip the side effect check along the paths of two nodes if
+     // they are just next to each other.
+     if (NodeUtil.isStatementBlock(getDefCfgNode().getParent()) && getDefCfgNode().getNext() != useCfgNode) {
+         // Similar side effect check as above but this time the side effect is
+-        // else where along the path.
++        // elsewhere along the path.
+         // x = readProp(b); while(modifyProp(b)) {}; print(x);
+         CheckPathsBetweenNodes<Node, ControlFlowGraph.Branch> pathCheck = new CheckPathsBetweenNodes<Node, ControlFlowGraph.Branch>(cfg, cfg.getDirectedGraphNode(getDefCfgNode()), cfg.getDirectedGraphNode(useCfgNode), SIDE_EFFECT_PREDICATE, Predicates.<DiGraphEdge<Node, ControlFlowGraph.Branch>>alwaysTrue(), false);
+         if (pathCheck.somePathsSatisfyPredicate()) {
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
+@@ -1,13 +1,45 @@
+ @Override
+-public boolean apply(Node input) {
+-    switch(input.getType()) {
+-        case Token.GETELEM:
+-        case Token.GETPROP:
+-        case Token.ARRAYLIT:
+-        case Token.OBJECTLIT:
+-        case Token.REGEXP:
+-        case Token.NEW:
+-            return true;
++public void enterScope(NodeTraversal t) {
++    if (t.inGlobalScope()) {
++        // Don't even bother. All global variables are likely escaped.
++        return;
+     }
+-    return false;
++    if (LiveVariablesAnalysis.MAX_VARIABLES_TO_ANALYZE < t.getScope().getVarCount()) {
++        return;
++    }
++    // Compute the forward reaching definition.
++    ControlFlowAnalysis cfa = new ControlFlowAnalysis(compiler, false, true);
++    // Process the body of the function.
++    Preconditions.checkState(t.getScopeRoot().isFunction());
++    cfa.process(null, t.getScopeRoot().getLastChild());
++    cfg = cfa.getCfg();
++    reachingDef = new MustBeReachingVariableDef(cfg, t.getScope(), compiler);
++    reachingDef.analyze();
++    candidates = Lists.newLinkedList();
++    // Using the forward reaching definition search to find all the inline
++    // candidates
++    new NodeTraversal(compiler, new GatherCandiates()).traverse(t.getScopeRoot().getLastChild());
++    // Compute the backward reaching use. The CFG can be reused.
++    reachingUses = new MaybeReachingVariableUse(cfg, t.getScope(), compiler);
++    reachingUses.analyze();
++    // We need to collect all the new variables we inline at this level of the tree
++    List<Var> inlinedNewDependenciesAtThisLevel = new LinkedList<>();
++    for (Candidate c : candidates) {
++        if (c.canInline()) {
++            c.inlineVariable();
++            // If definition c has dependencies, then inlining it may have
++            // introduced new dependencies for our other inlining candidates.
++            //
++            // MustBeReachingVariableDef uses this dependency graph in its
++            // analysis, so some of these candidates may no longer be valid.
++            // We keep track of when the variable dependency graph changed
++            // so that we can back off appropriately.
++            //
++            // Updating inlinedNewDependencies on every loop causes problems if a dependency is removed and were inlined.
++            if (!c.defMetadata.depends.isEmpty()) {
++                inlinedNewDependenciesAtThisLevel.add(t.getScope().getVar(c.varName));
++            }
++        }
++    }
++    inlinedNewDependencies.addAll(inlinedNewDependenciesAtThisLevel);
+ }

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -5,7 +5,7 @@
+         return rValue.getJSType();
+     } else if (info != null) {
+         if (info.hasEnumParameterType()) {
+-            if (rValue != null && rValue.isObjectLit()) {
++            if (rValue != null && rValue.isObjectLitOrInitializer()) {  // Modify isObjectLit() to isObjectLitOrInitializer()
+                 return rValue.getJSType();
+             } else {
+                 return createEnumTypeFromNodes(rValue, lValue.getQualifiedName(), info, lValue);

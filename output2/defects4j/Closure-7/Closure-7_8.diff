@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java@caseObjectType
++++ com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java@caseObjectType
+@@ -3,8 +3,8 @@
+     if (value.equals("function")) {
+         JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);
+         return resultEqualsValue && ctorType.isSubtype(type) ? ctorType : null;
+-        // Objects are restricted to "Function", subtypes are left
+-        // Only filter out subtypes of "function"
++        // Only return the Constructor Type if it is a subtype of ObjectType "function"
+     }
+-    return matchesExpectation("object") ? type : null;
++    return matchesExpectation("object") && !value.equals("function") ? type : null;
++    // Only return non-Function ObjectTypes if they match the expected type
+ }

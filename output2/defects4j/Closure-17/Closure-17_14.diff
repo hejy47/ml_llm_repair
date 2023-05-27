@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -35,6 +35,8 @@
+                         }
+                     }
+                 }
++                // fix: return unknown type if constant is not fully defined
++                return JSType.UNKNOWN;
+             }
+         }
+     }

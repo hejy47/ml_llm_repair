@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -15,8 +15,8 @@
+         } else {
+             // Check if this is constant, and if it has a known type.
+             if (info.isConstant()) {
+-                JSType knownType = null;
+                 if (rValue != null) {
++                    JSType knownType = null;
+                     if (rValue.getJSType() != null && !rValue.getJSType().isUnknownType()) {
+                         // If rValue has a type-cast, we use the type in the type-cast.
+                         // If rValue's type was already computed during scope creation,

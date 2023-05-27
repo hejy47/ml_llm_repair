@@ -15,13 +15,5 @@ def run_cmd(cmd, cwd=None, logger=None):
     except UnicodeDecodeError:
         logger.warn("cmd UnicodeDecoderError")
         output = p.stdout.decode("unicode_escape")
-    error = p.stderr.decode("utf-8")
-    if len(error) > 0:
-        logger.debug("output error:\n{}".format(error))
-        output = error
-    
-    if len(output) > 0:
-        logger.info("output of this cmd:\n{}".format(output))
-    
-    logger.info("cmd execution time: {}".format(time.time() - start_time))
+
     return output

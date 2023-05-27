@@ -1,0 +1,11 @@
+--- org/jfree/chart/imagemap/StandardToolTipTagFragmentGenerator.java@generateToolTipFragment
++++ org/jfree/chart/imagemap/StandardToolTipTagFragmentGenerator.java@generateToolTipFragment
+@@ -1,3 +1,7 @@
+ public String generateToolTipFragment(String toolTipText) {
+-    return " title=\"" + toolTipText + "\" alt=\"\"";
++    if(toolTipText != null && !toolTipText.isEmpty()){
++        return " title=\"" + toolTipText + "\" alt=\"\"";
++    } else {
++        return "";
++    }
+ }

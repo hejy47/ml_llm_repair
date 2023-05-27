@@ -1,0 +1,9 @@
+--- org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@updateBounds
++++ org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@updateBounds
+@@ -1,4 +1,4 @@
+ private void updateBounds() {
+-    this.minimumRangeValue = Double.NaN;
+-    this.maximumRangeValue = Double.NaN;
++    this.minimumRangeValue = Double.POSITIVE_INFINITY;
++    this.maximumRangeValue = Double.NEGATIVE_INFINITY;
+ }

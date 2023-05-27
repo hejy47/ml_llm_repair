@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -5,7 +5,7 @@
+         return rValue.getJSType();
+     } else if (info != null) {
+         if (info.hasEnumParameterType()) {
+-            if (rValue != null && rValue.isObjectLit()) {
++            if (rValue != null) {
+                 return rValue.getJSType();
+             } else {
+                 return createEnumTypeFromNodes(rValue, lValue.getQualifiedName(), info, lValue);
+@@ -15,14 +15,8 @@
+         } else {
+             // Check if this is constant, and if it has a known type.
+             if (info.isConstant()) {
+-                JSType knownType = null;
+                 if (rValue != null) {
+-                    if (rValue.getJSType() != null && !rValue.getJSType().isUnknownType()) {
+-                        // If rValue has a type-cast, we use the type in the type-cast.
+-                        // If rValue's type was already computed during scope creation,
+-                        // then we can safely use that.
+-                        return rValue.getJSType();
+-                    } else if (rValue.isOr()) {
++                    if (rValue.isOr()) {
+                         // Check for a very specific JS idiom:
+                         // var x = x || TYPE;
+                         // This is used by Closure's base namespace for esoteric
+@@ -33,6 +27,9 @@
+                         if (namesMatch && secondClause.getJSType() != null && !secondClause.getJSType().isUnknownType()) {
+                             return secondClause.getJSType();
+                         }
++                    } else if (rValue.getJSType() != null && !rValue.getJSType().isUnknownType()) {
++                        // If rValue has a type-cast or its type was already computed during scope creation, we use the type in the type-cast.
++                        return rValue.getJSType();
+                     }
+                 }
+             }

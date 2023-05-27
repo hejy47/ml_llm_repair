@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -22,6 +22,9 @@
+                         // If rValue's type was already computed during scope creation,
+                         // then we can safely use that.
+                         return rValue.getJSType();
++                    } else if (NodeUtil.isNullOrUndefined(rValue)) { // Fixed
++                        // Fix for handling undefined and null values
++                        knownType = JSType.NULL_OR_UNDEF;
+                     } else if (rValue.isOr()) {
+                         // Check for a very specific JS idiom:
+                         // var x = x || TYPE;
+@@ -35,6 +38,9 @@
+                         }
+                     }
+                 }
++                if (knownType != null) {
++                    return knownType;
++                }
+             }
+         }
+     }

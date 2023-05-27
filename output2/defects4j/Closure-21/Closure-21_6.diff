@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -38,11 +38,14 @@
+                     break;
+             }
+         }
+-    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+-        if (!(parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext()))) {
+-            return;
+-        }
++    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK && parent.getType() != Token.FOR) {
++        return;
++    } else if (parent.getType() == Token.FOR && parent.getChildCount() != 4) {
++        return;
++    } else if (parent.getType() == Token.FOR && (n != parent.getFirstChild() && n != parent.getFirstChild().getNext().getNext())) {
++        return;
+     }
++
+     if ((isSimpleOp || !NodeUtil.mayHaveSideEffects(n, t.getCompiler()))) {
+         String msg = "This code lacks side-effects. Is there a bug?";
+         if (n.isString()) {

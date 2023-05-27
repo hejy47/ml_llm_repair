@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -1,13 +1,4 @@
+ private void removeUnreferencedFunctionArgs(Scope fnScope) {
+-    // Notice that removing unreferenced function args breaks
+-    // Function.prototype.length. In advanced mode, we don't really care
+-    // about this: we consider "length" the equivalent of reflecting on
+-    // the function's lexical source.
+-    //
+-    // Rather than create a new option for this, we assume that if the user
+-    // is removing globals, then it's OK to remove unused function args.
+-    //
+-    // See http://code.google.com/p/closure-compiler/issues/detail?id=253
+     Node function = fnScope.getRootNode();
+     Preconditions.checkState(function.isFunction());
+     if (NodeUtil.isGetOrSetKey(function.getParent())) {
+@@ -31,4 +22,18 @@
+     } else {
+         callSiteOptimizer.optimize(fnScope, referenced);
+     }
++    // Check the function's parameter list to make sure there are no unused function args.
++    NodeUtil.forEachChild(argList, new NodeUtil.MatchShallowStatement() {
++        @Override
++        public void visit(NodeTraversal t, Node n, Node parent) {
++            if (!n.isName()) {
++                return;
++            }
++            Var var = t.getScope().getVar(n.getString());
++            if (!referenced.contains(var)) {
++                n.getParent().removeChild(n);
++                compiler.reportCodeChange();
++            }
++        }
++    });
+ }

@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/TypeCheck.java@checkInterfaceConflictProperties
++++ com/google/javascript/jscomp/TypeCheck.java@checkInterfaceConflictProperties
+@@ -3,6 +3,10 @@
+     Set<String> currentPropertyNames;
+     // This can be the case if interfaceType is proxy to a non-existent
+     // object (which is a bad type annotation, but shouldn't crash).
++    // Fixed: Check if implicit prototype is null before calling getOwnPropertyNames()
++    if (implicitProto == null) {
++        return;
++    }
+     currentPropertyNames = implicitProto.getOwnPropertyNames();
+     for (String name : currentPropertyNames) {
+         ObjectType oType = properties.get(name);

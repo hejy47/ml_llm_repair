@@ -1,0 +1,99 @@
+--- org/jfree/data/general/DatasetUtilities.java@iterateDomainBounds
++++ org/jfree/data/general/DatasetUtilities.java@iterateDomainBounds
+@@ -7,31 +7,23 @@
+     int seriesCount = dataset.getSeriesCount();
+     double lvalue;
+     double uvalue;
+-    if (includeInterval && dataset instanceof IntervalXYDataset) {
+-        IntervalXYDataset intervalXYData = (IntervalXYDataset) dataset;
+-        for (int series = 0; series < seriesCount; series++) {
+-            int itemCount = dataset.getItemCount(series);
+-            for (int item = 0; item < itemCount; item++) {
++    // Fix the for loop to iterate over all items in all series
++    for (int series = 0; series < seriesCount; series++) {
++        int itemCount = dataset.getItemCount(series);
++        for (int item = 0; item < itemCount; item++) {
++            if (includeInterval && dataset instanceof IntervalXYDataset) {
++                IntervalXYDataset intervalXYData = (IntervalXYDataset) dataset;
+                 lvalue = intervalXYData.getStartXValue(series, item);
+                 uvalue = intervalXYData.getEndXValue(series, item);
+-                if (!Double.isNaN(lvalue)) {
+-                    minimum = Math.min(minimum, lvalue);
+-                }
+-                if (!Double.isNaN(uvalue)) {
+-                    maximum = Math.max(maximum, uvalue);
+-                }
+-            }
+-        }
+-    } else {
+-        for (int series = 0; series < seriesCount; series++) {
+-            int itemCount = dataset.getItemCount(series);
+-            for (int item = 0; item < itemCount; item++) {
++            } else {
+                 lvalue = dataset.getXValue(series, item);
+                 uvalue = lvalue;
+-                if (!Double.isNaN(lvalue)) {
+-                    minimum = Math.min(minimum, lvalue);
+-                    maximum = Math.max(maximum, uvalue);
+-                }
++            }
++            if (!Double.isNaN(lvalue)) {
++                minimum = Math.min(minimum, lvalue);
++            }
++            if (!Double.isNaN(uvalue)) {
++                maximum = Math.max(maximum, uvalue);
+             }
+         }
+     }
+--- org/jfree/data/general/DatasetUtilities.java@iterateRangeBounds
++++ org/jfree/data/general/DatasetUtilities.java@iterateRangeBounds
+@@ -3,12 +3,11 @@
+     double maximum = Double.NEGATIVE_INFINITY;
+     int seriesCount = dataset.getSeriesCount();
+     // handle three cases by dataset type
+-    if (includeInterval && dataset instanceof IntervalXYDataset) {
+-        // handle special case of IntervalXYDataset
+-        IntervalXYDataset ixyd = (IntervalXYDataset) dataset;
+-        for (int series = 0; series < seriesCount; series++) {
+-            int itemCount = dataset.getItemCount(series);
+-            for (int item = 0; item < itemCount; item++) {
++    for (int series = 0; series < seriesCount; series++) {
++        int itemCount = dataset.getItemCount(series);
++        for (int item = 0; item < itemCount; item++) {
++            if (includeInterval && dataset instanceof IntervalXYDataset) {
++                IntervalXYDataset ixyd = (IntervalXYDataset) dataset;
+                 double lvalue = ixyd.getStartYValue(series, item);
+                 double uvalue = ixyd.getEndYValue(series, item);
+                 if (!Double.isNaN(lvalue)) {
+@@ -17,14 +16,8 @@
+                 if (!Double.isNaN(uvalue)) {
+                     maximum = Math.max(maximum, uvalue);
+                 }
+-            }
+-        }
+-    } else if (includeInterval && dataset instanceof OHLCDataset) {
+-        // handle special case of OHLCDataset
+-        OHLCDataset ohlc = (OHLCDataset) dataset;
+-        for (int series = 0; series < seriesCount; series++) {
+-            int itemCount = dataset.getItemCount(series);
+-            for (int item = 0; item < itemCount; item++) {
++            } else if (includeInterval && dataset instanceof OHLCDataset) {
++                OHLCDataset ohlc = (OHLCDataset) dataset;
+                 double lvalue = ohlc.getLowValue(series, item);
+                 double uvalue = ohlc.getHighValue(series, item);
+                 if (!Double.isNaN(lvalue)) {
+@@ -33,13 +26,7 @@
+                 if (!Double.isNaN(uvalue)) {
+                     maximum = Math.max(maximum, uvalue);
+                 }
+-            }
+-        }
+-    } else {
+-        // standard case - plain XYDataset
+-        for (int series = 0; series < seriesCount; series++) {
+-            int itemCount = dataset.getItemCount(series);
+-            for (int item = 0; item < itemCount; item++) {
++            } else {
+                 double value = dataset.getYValue(series, item);
+                 if (!Double.isNaN(value)) {
+                     minimum = Math.min(minimum, value);

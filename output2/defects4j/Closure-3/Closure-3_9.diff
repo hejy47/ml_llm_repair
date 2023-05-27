@@ -1,0 +1,267 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@enterScope
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@enterScope
+@@ -1,7 +1,7 @@
+ @Override
+ public void enterScope(NodeTraversal t) {
+     if (t.inGlobalScope()) {
+-        // Don't even brother. All global variables are likely escaped.
++        // Don't even bother. All global variables are likely escaped.
+         return;
+     }
+     if (LiveVariablesAnalysis.MAX_VARIABLES_TO_ANALYZE < t.getScope().getVarCount()) {
+@@ -11,29 +11,32 @@
+     ControlFlowAnalysis cfa = new ControlFlowAnalysis(compiler, false, true);
+     // Process the body of the function.
+     Preconditions.checkState(t.getScopeRoot().isFunction());
+-    cfa.process(null, t.getScopeRoot().getLastChild());
+-    cfg = cfa.getCfg();
+-    reachingDef = new MustBeReachingVariableDef(cfg, t.getScope(), compiler);
+-    reachingDef.analyze();
+-    candidates = Lists.newLinkedList();
+-    // Using the forward reaching definition search to find all the inline
+-    // candidates
+-    new NodeTraversal(compiler, new GatherCandiates()).traverse(t.getScopeRoot().getLastChild());
+-    // Compute the backward reaching use. The CFG can be reused.
+-    reachingUses = new MaybeReachingVariableUse(cfg, t.getScope(), compiler);
+-    reachingUses.analyze();
+-    for (Candidate c : candidates) {
+-        if (c.canInline()) {
+-            c.inlineVariable();
+-            // If definition c has dependencies, then inlining it may have
+-            // introduced new dependencies for our other inlining candidates.
+-            //
+-            // MustBeReachingVariableDef uses this dependency graph in its
+-            // analysis, so some of these candidates may no longer be valid.
+-            // We keep track of when the variable dependency graph changed
+-            // so that we can back off appropriately.
+-            if (!c.defMetadata.depends.isEmpty()) {
+-                inlinedNewDependencies.add(t.getScope().getVar(c.varName));
++    Node functionBody = t.getScopeRoot().getLastChild();
++    if (functionBody.getFirstChild() != null) { // Ignore empty functions
++        cfa.process(null, functionBody);
++        cfg = cfa.getCfg();
++        reachingDef = new MustBeReachingVariableDef(cfg, t.getScope(), compiler);
++        reachingDef.analyze();
++        candidates = Lists.newLinkedList();
++        // Using the forward reaching definition search to find all the inline
++        // candidates
++        new NodeTraversal(compiler, new GatherCandidates()).traverse(functionBody);
++        // Compute the backward reaching use. The CFG can be reused.
++        reachingUses = new MaybeReachingVariableUse(cfg, t.getScope(), compiler);
++        reachingUses.analyze();
++        for (Candidate c : candidates) {
++            if (c.canInline()) {
++                c.inlineVariable();
++                // If definition c has dependencies, then inlining it may have
++                // introduced new dependencies for our other inlining candidates.
++                //
++                // MustBeReachingVariableDef uses this dependency graph in its
++                // analysis, so some of these candidates may no longer be valid.
++                // We keep track of when the variable dependency graph changed
++                // so that we can back off appropriately.
++                if (!c.defMetadata.depends.isEmpty()) {
++                    inlinedNewDependencies.add(t.getScope().getVar(c.varName));
++                }
+             }
+         }
+     }
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@canInline
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@canInline
+@@ -1,8 +1,9 @@
+ private boolean canInline() {
+     // Cannot inline a parameter.
+-    if (getDefCfgNode().isFunction()) {
++    if (getDefCfgNode().isFunction() || getDefCfgNode().isParamList()) {
+         return false;
+     }
++
+     // If one of our dependencies has been inlined, then our dependency
+     // graph is wrong. Re-computing it would take another CFG computation,
+     // so we just back off for now.
+@@ -11,74 +12,71 @@
+             return false;
+         }
+     }
++
+     getDefinition(getDefCfgNode(), null);
+-    getNumUseInUseCfgNode(useCfgNode, null);
+-    // Definition was not found.
+-    if (def == null) {
++    if (def == null) { // Definition was not found.
+         return false;
+     }
+-    // Check that the assignment isn't used as a R-Value.
+-    // TODO(user): Certain cases we can still inline.
+-    if (def.isAssign() && !NodeUtil.isExprAssign(def.getParent())) {
++
++    // Check that the assignment isn't used as a R-value.
++    if (def.isAssign() && !NodeUtil.isExpressionResultUsed(def.getParent())) {
+         return false;
+     }
+-    // The right of the definition has side effect:
+-    // Example, for x:
+-    // x = readProp(b), modifyProp(b); print(x);
++
++    // Ensure that right-hand side of the definition doesn't have side effects.
+     if (checkRightOf(def, getDefCfgNode(), SIDE_EFFECT_PREDICATE)) {
+         return false;
+     }
+-    // Similar check as the above but this time, all the sub-expressions
+-    // left of the use of the variable.
+-    // x = readProp(b); modifyProp(b), print(x);
++
++    // Ensure that left-hand side of the use doesn't have side effects.
+     if (checkLeftOf(use, useCfgNode, SIDE_EFFECT_PREDICATE)) {
+         return false;
+     }
+-    // TODO(user): Side-effect is OK sometimes. As long as there are no
+-    // side-effect function down all paths to the use. Once we have all the
+-    // side-effect analysis tool.
++
++    // Ensure that the right-hand side of the definition doesn't have any
++    // side effects anywhere in the program.
+     if (NodeUtil.mayHaveSideEffects(def.getLastChild(), compiler)) {
+         return false;
+     }
+-    // TODO(user): We could inline all the uses if the expression is short.
+-    // Finally we have to make sure that there are no more than one use
+-    // in the program and in the CFG node. Even when it is semantically
+-    // correctly inlining twice increases code size.
+-    if (numUseWithinUseCfgNode != 1) {
+-        return false;
+-    }
+-    // Make sure that the name is not within a loop
++
++    // Ensure that the name is not within a loop.
+     if (NodeUtil.isWithinLoop(use)) {
+         return false;
+     }
++
++    // Ensure that the variable is only used once.
+     Collection<Node> uses = reachingUses.getUses(varName, getDefCfgNode());
+     if (uses.size() != 1) {
+         return false;
+     }
+-    // We give up inlining stuff with R-Value that has:
+-    // 1) GETPROP, GETELEM,
+-    // 2) anything that creates a new object.
+-    // 3) a direct reference to a catch expression.
++
++    // Ensure that the definition and use nodes are not part of a finally block
++    // as we cannot determine when the inlined code would be executed in this case.
++    if (NodeUtil.isInFinallyBlock(getDefCfgNode()) || NodeUtil.isInFinallyBlock(useCfgNode)) {
++        return false;
++    }
++
++    // We give up inlining stuff with R-values that have:
++    // 1. GETPROP, GETELEM, or CALL nodes.
++    // 2. Regexp, object literal, or array literal nodes.
++    // 3. Direct reference to catch expressions.
+     // Example:
+     // var x = a.b.c; j.c = 1; print(x);
+     // Inlining print(a.b.c) is not safe consider j and be alias to a.b.
+-    // TODO(user): We could get more accuracy by looking more in-detail
+-    // what j is and what x is trying to into to.
+-    // TODO(johnlenz): rework catch expression handling when we
+-    // have lexical scope support so catch expressions don't
+-    // need to be special cased.
+     if (NodeUtil.has(def.getLastChild(), new Predicate<Node>() {
+ 
+         @Override
+         public boolean apply(Node input) {
+-            switch(input.getType()) {
++            switch (input.getType()) {
+                 case Token.GETELEM:
+                 case Token.GETPROP:
++                case Token.CALL:
++                    return true;
++                case Token.REGEXP:
++                case Token.OBJECTLIT:
+                 case Token.ARRAYLIT:
+-                case Token.OBJECTLIT:
+-                case Token.REGEXP:
+-                case Token.NEW:
+-                    return true;
++                    // 1 is required because the ContainsReferencesOnlyPredicate skips empty nodes.
++                    return NodeUtil.has(input.getLastChild(), Predicates.alwaysTrue(), Predicates.<Node>equalTo(input)) && input.getFirstChild().hasChildren();
+             }
+             return false;
+         }
+@@ -92,16 +90,11 @@
+     })) {
+         return false;
+     }
+-    // We can skip the side effect check along the paths of two nodes if
+-    // they are just next to each other.
+-    if (NodeUtil.isStatementBlock(getDefCfgNode().getParent()) && getDefCfgNode().getNext() != useCfgNode) {
+-        // Similar side effect check as above but this time the side effect is
+-        // else where along the path.
+-        // x = readProp(b); while(modifyProp(b)) {}; print(x);
+-        CheckPathsBetweenNodes<Node, ControlFlowGraph.Branch> pathCheck = new CheckPathsBetweenNodes<Node, ControlFlowGraph.Branch>(cfg, cfg.getDirectedGraphNode(getDefCfgNode()), cfg.getDirectedGraphNode(useCfgNode), SIDE_EFFECT_PREDICATE, Predicates.<DiGraphEdge<Node, ControlFlowGraph.Branch>>alwaysTrue(), false);
+-        if (pathCheck.somePathsSatisfyPredicate()) {
+-            return false;
+-        }
++
++    // Ensure that inlining twice does not increase code size.
++    if (numUseWithinUseCfgNode != 1) {
++        return false;
+     }
++
+     return true;
+ }
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
+@@ -1,13 +1,43 @@
+ @Override
+-public boolean apply(Node input) {
+-    switch(input.getType()) {
+-        case Token.GETELEM:
+-        case Token.GETPROP:
+-        case Token.ARRAYLIT:
+-        case Token.OBJECTLIT:
+-        case Token.REGEXP:
+-        case Token.NEW:
+-            return true;
++public void enterScope(NodeTraversal t) {
++    if (t.inGlobalScope()) {
++        // Don't even bother. All global variables are likely escaped.
++        return;
+     }
+-    return false;
++    if (LiveVariablesAnalysis.MAX_VARIABLES_TO_ANALYZE < t.getScope().getVarCount()) {
++        return;
++    }
++    // Compute the forward reaching definition.
++    ControlFlowAnalysis cfa = new ControlFlowAnalysis(compiler, false, true);
++    // Process the body of the function.
++    Preconditions.checkState(t.getScopeRoot().isFunction());
++    Node functionBody = t.getScopeRoot().getLastChild();
++    if (functionBody.getFirstChild() != null) { // Ignore empty functions
++        cfa.process(null, functionBody);
++        cfg = cfa.getCfg();
++        reachingDef = new MustBeReachingVariableDef(cfg, t.getScope(), compiler);
++        reachingDef.analyze();
++        candidates = Lists.newLinkedList();
++        // Using the forward reaching definition search to find all the inline
++        // candidates
++        new NodeTraversal(compiler, new GatherCandidates()).traverse(functionBody);
++        // Compute the backward reaching use. The CFG can be reused.
++        reachingUses = new MaybeReachingVariableUse(cfg, t.getScope(), compiler);
++        reachingUses.analyze();
++        for (Candidate c : candidates) {
++            if (c.canInline()) {
++                c.inlineVariable();
++                // If definition c has dependencies, then inlining it may have
++                // introduced new dependencies for our other inlining candidates.
++                //
++                // MustBeReachingVariableDef uses this dependency graph in its
++                // analysis, so some of these candidates may no longer be valid.
++                // We keep track of when the variable dependency graph changed
++                // so that we can back off appropriately.
++                if (!c.defMetadata.depends.isEmpty()) {
++                    inlinedNewDependencies.add(t.getScope().getVar(c.varName));
++                }
++            }
++        }
++    }
+ }

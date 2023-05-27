@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/PeepholeOptimizationsPass.java@traverse
++++ com/google/javascript/jscomp/PeepholeOptimizationsPass.java@traverse
+@@ -3,11 +3,17 @@
+     // the entire AST to catch newly created opportunities.
+     // So we track whether a "unit of code" has changed,
+     // and revisit immediately.
+-    if (!shouldVisit(node)) {
+-        return;
+-    }
+     int visits = 0;
+     do {
++        if (!shouldVisit(node)) {
++            Node next = node.getNext();
++            if (next != null) {
++                node = next;
++                continue;
++            } else {
++                break;
++            }
++        }
+         Node c = node.getFirstChild();
+         while (c != null) {
+             traverse(c);

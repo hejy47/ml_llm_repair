@@ -1,0 +1,11 @@
+--- org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
++++ org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
+@@ -2,7 +2,7 @@
+     if (categoryKeys == null) {
+         throw new IllegalArgumentException("Null 'categoryKeys' argument.");
+     }
+-    if (categoryKeys.length != this.startData[0].length) {
++    if (categoryKeys.length != this.startData.length) {
+         throw new IllegalArgumentException("The number of categories does not match the data.");
+     }
+     for (int i = 0; i < categoryKeys.length; i++) {

@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -1,5 +1,4 @@
+ private boolean isInlinableObject(List<Reference> refs) {
+-    boolean ret = false;
+     Set<String> validProperties = Sets.newHashSet();
+     for (Reference ref : refs) {
+         Node name = ref.getNode();
+@@ -61,25 +60,14 @@
+                 return false;
+             }
+             validProperties.add(child.getString());
+-            Node childVal = child.getFirstChild();
+-            // Check if childVal is the parent of any of the passed in
+-            // references, as that is how self-referential assignments
+-            // will happen.
+-            for (Reference t : refs) {
+-                Node refNode = t.getParent();
+-                while (!NodeUtil.isStatementBlock(refNode)) {
+-                    if (refNode == childVal) {
+-                        // There's a self-referential assignment
+-                        return false;
+-                    }
+-                    refNode = refNode.getParent();
+-                }
++            // Check if child has any references to itself.
++            if (hasReferencesToNode(refs, child)) {
++                return false;
+             }
+         }
+         // We have found an acceptable object literal assignment. As
+         // long as there are no other assignments that mess things up,
+         // we can inline.
+-        ret = true;
+     }
+-    return ret;
++    return true;
+ }

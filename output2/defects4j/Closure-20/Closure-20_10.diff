@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryFoldSimpleFunctionCall
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryFoldSimpleFunctionCall
+@@ -10,6 +10,12 @@
+         // http://code.google.com/p/closure-compiler/issues/detail?id=759
+         Node value = callTarget.getNext();
+         if (value != null) {
++            // Check if the value is mutable
++            if (value.isMutable()) {
++                // Clone the value to make it immutable
++                value = value.cloneTree();
++                value.setImmutable();
++            }
+             Node addition = IR.add(IR.string("").srcref(callTarget), value.detachFromParent());
+             n.getParent().replaceChild(n, addition);
+             reportCodeChange();

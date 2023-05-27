@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/CollapseVariableDeclarations.java@canBeRedeclared
++++ com/google/javascript/jscomp/CollapseVariableDeclarations.java@canBeRedeclared
+@@ -7,6 +7,6 @@
+     if (!lhs.isName()) {
+         return false;
+     }
+-    Var var = s.getVar(lhs.getString());
++    Var var = s.getOwnSlot(lhs.getString());
+     return var != null && var.getScope() == s && !blacklistedVars.contains(var);
+ }

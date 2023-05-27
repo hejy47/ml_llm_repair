@@ -1,0 +1,12 @@
+--- org/jfree/chart/util/ShapeList.java@equals
++++ org/jfree/chart/util/ShapeList.java@equals
+@@ -5,5 +5,9 @@
+     if (!(obj instanceof ShapeList)) {
+         return false;
+     }
++    ShapeList other = (ShapeList) obj;
++    if (other.size() != this.size()) {
++        return false;
++    }
+     return super.equals(obj);
+ }

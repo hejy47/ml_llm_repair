@@ -1,0 +1,16 @@
+Closure-20_1:False
+Closure-20_2:False
+Closure-20_3:False
+Closure-20_4:False
+Closure-20_5:False
+Closure-20_6:False
+Closure-20_7:False
+Closure-20_8:True
+Closure-20_9:False
+Closure-20_10:False
+Closure-20_11:False
+Closure-20_12:False
+Closure-20_13:False
+Closure-20_14:False
+Closure-20_15:False
+Closure-20_16:False

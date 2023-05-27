@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -62,6 +62,12 @@
+                 if (hasErrors()) {
+                     return null;
+                 }
++            } catch (IllegalArgumentException e) { // Add catch block to handle IllegalArgumentException
++                report(JSError.make(ILLEGAL_ARGUMENT_ERROR, e.getMessage()));
++                // If in IDE mode, we ignore the error and keep going.
++                if (hasErrors()) {
++                    return null;
++                }
+             }
+         }
+         hoistNoCompileFiles();

@@ -1,0 +1,15 @@
+--- org/jfree/chart/plot/MultiplePiePlot.java@MultiplePiePlot
++++ org/jfree/chart/plot/MultiplePiePlot.java@MultiplePiePlot
+@@ -11,5 +11,11 @@
+     this.pieChart.setTitle(seriesTitle);
+     this.aggregatedItemsKey = "Other";
+     this.aggregatedItemsPaint = Color.lightGray;
+-    this.sectionPaints = new HashMap();
++    this.sectionPaints = new HashMap<>();
++    // Add sectionPaints for each category in dataset
++    for (int i = 0; i < dataset.getRowCount(); i++) {
++        Comparable key = dataset.getRowKey(i);
++        Paint paint = new GradientPaint(0f, 0f, createRandomColor(), 0f, 0f, createRandomColor());
++        this.sectionPaints.put(key, paint);
++    }
+ }

@@ -1,0 +1,11 @@
+--- org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@add
++++ org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java@add
+@@ -4,7 +4,7 @@
+     int r = this.data.getRowIndex(rowKey);
+     int c = this.data.getColumnIndex(columnKey);
+     if ((this.maximumRangeValueRow == r && this.maximumRangeValueColumn == c) || (this.minimumRangeValueRow == r && this.minimumRangeValueColumn == c)) {
+-        updateBounds();
++        updateBounds(r, c);
+     }
+     double minval = Double.NaN;
+     if (item.getMinOutlier() != null) {

@@ -1,0 +1,13 @@
+--- org/jfree/chart/plot/PiePlot.java@getMaximumExplodePercent
++++ org/jfree/chart/plot/PiePlot.java@getMaximumExplodePercent
+@@ -1,8 +1,8 @@
+ public double getMaximumExplodePercent() {
+     double result = 0.0;
+-    Iterator iterator = this.dataset.getKeys().iterator();
++    Iterator<Comparable<?>> iterator = this.dataset.getKeys().iterator();
+     while (iterator.hasNext()) {
+-        Comparable key = (Comparable) iterator.next();
++        Comparable<?> key = iterator.next();
+         Number explode = (Number) this.explodePercentages.get(key);
+         if (explode != null) {
+             result = Math.max(result, explode.doubleValue());

@@ -1,0 +1,11 @@
+--- org/jfree/data/xy/XYSeries.java@addOrUpdate
++++ org/jfree/data/xy/XYSeries.java@addOrUpdate
+@@ -24,7 +24,7 @@
+             this.data.add(new XYDataItem(x, y));
+         }
+         // check if this addition will exceed the maximum item count...
+-        if (getItemCount() > this.maximumItemCount) {
++        while (getItemCount() > this.maximumItemCount) {
+             this.data.remove(0);
+         }
+     }

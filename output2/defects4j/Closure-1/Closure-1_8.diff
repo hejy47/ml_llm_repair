@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -29,6 +29,7 @@
+             }
+         }
+     } else {
+-        callSiteOptimizer.optimize(fnScope, referenced);
++        callSiteOptimizer.optimize(fnScope, new LinkedHashSet<>(referenced));
++        // create a new set to not modify referenced (passed as argument)
+     }
+ }

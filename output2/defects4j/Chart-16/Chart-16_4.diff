@@ -1,0 +1,62 @@
+--- org/jfree/data/category/DefaultIntervalCategoryDataset.java@DefaultIntervalCategoryDataset
++++ org/jfree/data/category/DefaultIntervalCategoryDataset.java@DefaultIntervalCategoryDataset
+@@ -6,35 +6,25 @@
+         ResourceBundle resources = ResourceBundle.getBundle(baseName);
+         int seriesCount = starts.length;
+         if (seriesCount != ends.length) {
+-            String errMsg = "DefaultIntervalCategoryDataset: the number " + "of series in the start value dataset does " + "not match the number of series in the end " + "value dataset.";
+-            throw new IllegalArgumentException(errMsg);
++            throw new IllegalArgumentException("The number of series in the start value dataset " + "does not match the number of series in the end value dataset.");
+         }
++        
+         if (seriesCount > 0) {
+             // set up the series names...
+-            if (seriesKeys != null) {
+-                if (seriesKeys.length != seriesCount) {
+-                    throw new IllegalArgumentException("The number of series keys does not " + "match the number of series in the data.");
+-                }
+-                this.seriesKeys = seriesKeys;
+-            } else {
+-                String prefix = resources.getString("series.default-prefix") + " ";
+-                this.seriesKeys = generateKeys(seriesCount, prefix);
++            if (seriesKeys != null && seriesKeys.length != seriesCount) {
++                throw new IllegalArgumentException("The number of series keys does not " + "match the number of series in the data.");
+             }
++            this.seriesKeys = Arrays.copyOf(seriesKeys, seriesKeys.length);
++            
+             // set up the category names...
+             int categoryCount = starts[0].length;
+             if (categoryCount != ends[0].length) {
+-                String errMsg = "DefaultIntervalCategoryDataset: the " + "number of categories in the start value " + "dataset does not match the number of " + "categories in the end value dataset.";
+-                throw new IllegalArgumentException(errMsg);
++                throw new IllegalArgumentException("The number of categories in the start value dataset " + "does not match the number of categories in the end value dataset.");
+             }
+-            if (categoryKeys != null) {
+-                if (categoryKeys.length != categoryCount) {
+-                    throw new IllegalArgumentException("The number of category keys does not match " + "the number of categories in the data.");
+-                }
+-                this.categoryKeys = categoryKeys;
+-            } else {
+-                String prefix = resources.getString("categories.default-prefix") + " ";
+-                this.categoryKeys = generateKeys(categoryCount, prefix);
++            if (categoryKeys != null && categoryKeys.length != categoryCount) {
++                throw new IllegalArgumentException("The number of category keys does not " + "match the number of categories in the data.");
+             }
++            this.categoryKeys = Arrays.copyOf(categoryKeys, categoryKeys.length);
+         } else {
+             this.seriesKeys = null;
+             this.categoryKeys = null;
+--- org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
++++ org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
+@@ -7,9 +7,9 @@
+     }
+     for (int i = 0; i < categoryKeys.length; i++) {
+         if (categoryKeys[i] == null) {
+-            throw new IllegalArgumentException("DefaultIntervalCategoryDataset.setCategoryKeys(): " + "null category not permitted.");
++            throw new IllegalArgumentException("Null category not permitted.");
+         }
+     }
+-    this.categoryKeys = categoryKeys;
++    this.categoryKeys = Arrays.copyOf(categoryKeys, categoryKeys.length);
+     fireDatasetChanged();
+ }

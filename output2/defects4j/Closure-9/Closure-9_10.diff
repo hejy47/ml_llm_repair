@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/ProcessCommonJSModules.java@normalizeSourceName
++++ com/google/javascript/jscomp/ProcessCommonJSModules.java@normalizeSourceName
+@@ -1,7 +1,7 @@
+ private String normalizeSourceName(String filename) {
+     // The DOS command shell will normalize "/" to "\", so we have to
+     // wrestle it back.
+-    if (filename.indexOf(filenamePrefix) == 0) {
++    if (filename.startsWith(filenamePrefix)) { // use startsWith instead of indexOf
+         filename = filename.substring(filenamePrefix.length());
+     }
+     return filename;
+--- com/google/javascript/jscomp/ProcessCommonJSModules.java@visitScript
++++ com/google/javascript/jscomp/ProcessCommonJSModules.java@visitScript
+@@ -7,7 +7,7 @@
+         ci.addProvide(moduleName);
+         JSModule m = new JSModule(moduleName);
+         m.addAndOverrideModule(ci);
+-        module = m;
++        compiler.loadModule(m); // Use compiler.loadModule instead of assigning to module variable
+     }
+     script.addChildToFront(IR.exprResult(IR.call(IR.getprop(IR.name("goog"), IR.string("provide")), IR.string(moduleName))).copyInformationFromForTree(script));
+     emitOptionalModuleExportsOverride(script, moduleName);

@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java@declareNameInScope
++++ com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java@declareNameInScope
+@@ -5,10 +5,15 @@
+             break;
+         case Token.GETPROP:
+             String qualifiedName = node.getQualifiedName();
+-            Preconditions.checkNotNull(qualifiedName);
+-            JSType origType = node.getJSType();
+-            origType = origType == null ? getNativeType(UNKNOWN_TYPE) : origType;
+-            scope.inferQualifiedSlot(node, qualifiedName, origType, type);
++            if(qualifiedName != null) { // Fix: Check for null before using variable
++                JSType origType = node.getJSType();
++                origType = origType == null ? getNativeType(UNKNOWN_TYPE) : origType;
++                scope.inferQualifiedSlot(node, qualifiedName, origType, type);
++            }
++            else {
++                // Fix: Throw more specific exception with helpful message
++                throw new IllegalArgumentException("Node GETPROP has null qualified name: \n" + node.toStringTree());
++            }
+             break;
+         // "this" references aren't currently modeled in the CFG.
+         default:

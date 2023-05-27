@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -68,6 +68,9 @@
+             for (Reference t : refs) {
+                 Node refNode = t.getParent();
+                 while (!NodeUtil.isStatementBlock(refNode)) {
++                    if (refNode.getParent() == null) {
++                        break;
++                    }
+                     if (refNode == childVal) {
+                         // There's a self-referential assignment
+                         return false;

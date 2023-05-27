@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/TypeCheck.java@checkInterfaceConflictProperties
++++ com/google/javascript/jscomp/TypeCheck.java@checkInterfaceConflictProperties
+@@ -9,9 +9,12 @@
+         if (oType != null) {
+             if (!interfaceType.getPropertyType(name).isEquivalentTo(oType.getPropertyType(name))) {
+                 compiler.report(t.makeError(n, INCOMPATIBLE_EXTENDED_PROPERTY_TYPE, functionName, name, oType.toString(), interfaceType.toString()));
++            } else {
++                currentProperties.put(name, interfaceType);
+             }
++            
+         }
+-        currentProperties.put(name, interfaceType);
++        
+     }
+     for (ObjectType iType : interfaceType.getCtorExtendedInterfaces()) {
+         checkInterfaceConflictProperties(t, n, functionName, properties, currentProperties, iType);

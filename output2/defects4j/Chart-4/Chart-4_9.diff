@@ -1,0 +1,45 @@
+--- org/jfree/chart/plot/XYPlot.java@getDataRange
++++ org/jfree/chart/plot/XYPlot.java@getDataRange
+@@ -12,8 +12,8 @@
+             // grab the plot's annotations
+             Iterator iterator = this.annotations.iterator();
+             while (iterator.hasNext()) {
+-                XYAnnotation annotation = (XYAnnotation) iterator.next();
+-                if (annotation instanceof XYAnnotationBoundsInfo) {
++                Object annotation = iterator.next();
++                if (annotation instanceof XYAnnotation && annotation instanceof XYAnnotationBoundsInfo) {
+                     includedAnnotations.add(annotation);
+                 }
+             }
+@@ -27,8 +27,8 @@
+         if (rangeIndex == 0) {
+             Iterator iterator = this.annotations.iterator();
+             while (iterator.hasNext()) {
+-                XYAnnotation annotation = (XYAnnotation) iterator.next();
+-                if (annotation instanceof XYAnnotationBoundsInfo) {
++                Object annotation = iterator.next();
++                if (annotation instanceof XYAnnotation && annotation instanceof XYAnnotationBoundsInfo) {
+                     includedAnnotations.add(annotation);
+                 }
+             }
+@@ -54,12 +54,14 @@
+                     result = Range.combine(result, DatasetUtilities.findRangeBounds(d));
+                 }
+             }
+-            Collection c = r.getAnnotations();
+-            Iterator i = c.iterator();
+-            while (i.hasNext()) {
+-                XYAnnotation a = (XYAnnotation) i.next();
+-                if (a instanceof XYAnnotationBoundsInfo) {
+-                    includedAnnotations.add(a);
++            if (r != null) {
++                Collection c = r.getAnnotations();
++                Iterator i = c.iterator();
++                while (i.hasNext()) {
++                    Object obj = i.next();
++                    if (obj instanceof XYAnnotation && obj instanceof XYAnnotationBoundsInfo) {
++                        includedAnnotations.add(obj);
++                    }
+                 }
+             }
+         }

@@ -1,0 +1,116 @@
+--- org/jfree/chart/plot/XYPlot.java@getDataRange
++++ org/jfree/chart/plot/XYPlot.java@getDataRange
+@@ -12,9 +12,12 @@
+             // grab the plot's annotations
+             Iterator iterator = this.annotations.iterator();
+             while (iterator.hasNext()) {
+-                XYAnnotation annotation = (XYAnnotation) iterator.next();
+-                if (annotation instanceof XYAnnotationBoundsInfo) {
+-                    includedAnnotations.add(annotation);
++                Object obj = iterator.next();
++                if (obj instanceof XYAnnotation) {
++                    XYAnnotation annotation = (XYAnnotation) obj;
++                    if (annotation instanceof XYAnnotationBoundsInfo) {
++                        includedAnnotations.add(annotation);
++                    }
+                 }
+             }
+         }
+@@ -27,51 +30,63 @@
+         if (rangeIndex == 0) {
+             Iterator iterator = this.annotations.iterator();
+             while (iterator.hasNext()) {
+-                XYAnnotation annotation = (XYAnnotation) iterator.next();
+-                if (annotation instanceof XYAnnotationBoundsInfo) {
+-                    includedAnnotations.add(annotation);
++                Object obj = iterator.next();
++                if (obj instanceof XYAnnotation) {
++                    XYAnnotation annotation = (XYAnnotation) obj;
++                    if (annotation instanceof XYAnnotationBoundsInfo) {
++                        includedAnnotations.add(annotation);
++                    }
+                 }
+             }
+         }
+     }
+     // iterate through the datasets that map to the axis and get the union
+     // of the ranges.
+-    Iterator iterator = mappedDatasets.iterator();
+-    while (iterator.hasNext()) {
+-        XYDataset d = (XYDataset) iterator.next();
+-        if (d != null) {
+-            XYItemRenderer r = getRendererForDataset(d);
+-            if (isDomainAxis) {
+-                if (r != null) {
+-                    result = Range.combine(result, r.findDomainBounds(d));
++    Iterator datasetIterator = mappedDatasets.iterator();
++    while (datasetIterator.hasNext()) {
++        Object obj = datasetIterator.next();
++        if (obj instanceof XYDataset) {
++            XYDataset dataset = (XYDataset) obj;
++            if (dataset != null) {
++                XYItemRenderer renderer = getRendererForDataset(dataset);
++                if (isDomainAxis) {
++                    if (renderer != null) {
++                        result = Range.combine(result, renderer.findDomainBounds(dataset));
++                    } else {
++                        result = Range.combine(result, DatasetUtilities.findDomainBounds(dataset));
++                    }
+                 } else {
+-                    result = Range.combine(result, DatasetUtilities.findDomainBounds(d));
+-                }
+-            } else {
+-                if (r != null) {
+-                    result = Range.combine(result, r.findRangeBounds(d));
+-                } else {
+-                    result = Range.combine(result, DatasetUtilities.findRangeBounds(d));
+-                }
+-            }
+-            Collection c = r.getAnnotations();
+-            Iterator i = c.iterator();
+-            while (i.hasNext()) {
+-                XYAnnotation a = (XYAnnotation) i.next();
+-                if (a instanceof XYAnnotationBoundsInfo) {
+-                    includedAnnotations.add(a);
++                    if (renderer != null) {
++                        result = Range.combine(result, renderer.findRangeBounds(dataset));
++                    } else {
++                        result = Range.combine(result, DatasetUtilities.findRangeBounds(dataset));
++                    }
++                    Collection annotationsCollection = renderer.getAnnotations();
++                    Iterator annotationIterator = annotationsCollection.iterator();
++                    while (annotationIterator.hasNext()) {
++                        Object annotationObj = annotationIterator.next();
++                        if (annotationObj instanceof XYAnnotation) {
++                            XYAnnotation annotation = (XYAnnotation) annotationObj;
++                            if (annotation instanceof XYAnnotationBoundsInfo) {
++                                includedAnnotations.add(annotation);
++                            }
++                        }
++                    }
+                 }
+             }
+         }
+     }
+-    Iterator it = includedAnnotations.iterator();
+-    while (it.hasNext()) {
+-        XYAnnotationBoundsInfo xyabi = (XYAnnotationBoundsInfo) it.next();
+-        if (xyabi.getIncludeInDataBounds()) {
+-            if (isDomainAxis) {
+-                result = Range.combine(result, xyabi.getXRange());
+-            } else {
+-                result = Range.combine(result, xyabi.getYRange());
++    Iterator annotationIterator = includedAnnotations.iterator();
++    while (annotationIterator.hasNext()) {
++        Object annotationObj = annotationIterator.next();
++        if (annotationObj instanceof XYAnnotationBoundsInfo) {
++            XYAnnotationBoundsInfo xyabi = (XYAnnotationBoundsInfo) annotationObj;
++            if (xyabi.getIncludeInDataBounds()) {
++                if (isDomainAxis) {
++                    result = Range.combine(result, xyabi.getXRange());
++                } else {
++                    result = Range.combine(result, xyabi.getYRange());
++                }
+             }
+         }
+     }

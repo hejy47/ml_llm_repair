@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@removeUnreferencedFunctionArgs
+@@ -16,6 +16,12 @@
+     }
+     Node argList = getFunctionArgList(function);
+     boolean modifyCallers = modifyCallSites && callSiteOptimizer.canModifyCallers(function);
++    
++    // initialize referenced variables set
++    Set<Var> referenced = Sets.newHashSet();
++    AbstractCompiler compiler = callSiteOptimizer.getCompiler();
++    NodeTraversal.traverse(compiler, function, new GatherReferences(referenced));
++    
+     if (!modifyCallers) {
+         // Strip unreferenced args off the end of the function declaration.
+         Node lastArg;

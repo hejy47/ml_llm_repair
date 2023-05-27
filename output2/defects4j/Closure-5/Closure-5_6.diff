@@ -1,0 +1,43 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -60,8 +60,10 @@
+                 // ES5 get/set not supported.
+                 return false;
+             }
+-            validProperties.add(child.getString());
++            String childPropName = child.getString();
++            validProperties.add(childPropName);
+             Node childVal = child.getFirstChild();
++            boolean refInChild = false;
+             // Check if childVal is the parent of any of the passed in
+             // references, as that is how self-referential assignments
+             // will happen.
+@@ -70,16 +72,26 @@
+                 while (!NodeUtil.isStatementBlock(refNode)) {
+                     if (refNode == childVal) {
+                         // There's a self-referential assignment
+-                        return false;
++                        refInChild = true; // set refInChild to true
++                        break;
+                     }
+                     refNode = refNode.getParent();
+                 }
++                if(refInChild) { // break out of the loop if refInChild is true
++                    break;
++                }
++            }
++            if(refInChild) { // check if refInChild is true, and set ret to false if it is
++                ret = false;
++                break; // break out of the for loop checking child properties
+             }
+         }
+         // We have found an acceptable object literal assignment. As
+         // long as there are no other assignments that mess things up,
+         // we can inline.
+-        ret = true;
++        if(!ret) { // check if ret is already false before setting it to true
++            ret = true;
++        }
+     }
+     return ret;
+ }

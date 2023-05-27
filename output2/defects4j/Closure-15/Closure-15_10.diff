@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@apply
+@@ -18,6 +18,10 @@
+         if (!ControlFlowGraph.isEnteringNewCfgNode(c) && apply(c)) {
+             return true;
+         }
++        // If the child node has side effects, then the parent node has side effects too
++        if (NodeUtil.isStatementBlock(c) && NodeUtil.mayHaveSideEffects(c, compiler)) {
++            return true;
++        }
+     }
+     return false;
+ }

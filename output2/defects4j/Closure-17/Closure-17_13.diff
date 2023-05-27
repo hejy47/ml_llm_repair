@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
++++ com/google/javascript/jscomp/TypedScopeCreator.java@getDeclaredType
+@@ -21,7 +21,7 @@
+                         // If rValue has a type-cast, we use the type in the type-cast.
+                         // If rValue's type was already computed during scope creation,
+                         // then we can safely use that.
+-                        return rValue.getJSType();
++                        knownType = rValue.getJSType();
+                     } else if (rValue.isOr()) {
+                         // Check for a very specific JS idiom:
+                         // var x = x || TYPE;
+@@ -31,9 +31,12 @@
+                         Node secondClause = firstClause.getNext();
+                         boolean namesMatch = firstClause.isName() && lValue.isName() && firstClause.getString().equals(lValue.getString());
+                         if (namesMatch && secondClause.getJSType() != null && !secondClause.getJSType().isUnknownType()) {
+-                            return secondClause.getJSType();
++                            knownType = secondClause.getJSType();
+                         }
+                     }
++                }
++                if (knownType != null) {
++                    return knownType;
+                 }
+             }
+         }

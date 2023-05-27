@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypeCheck.java@checkInterfaceConflictProperties
++++ com/google/javascript/jscomp/TypeCheck.java@checkInterfaceConflictProperties
+@@ -1,8 +1,10 @@
+ private void checkInterfaceConflictProperties(NodeTraversal t, Node n, String functionName, HashMap<String, ObjectType> properties, HashMap<String, ObjectType> currentProperties, ObjectType interfaceType) {
+     ObjectType implicitProto = interfaceType.getImplicitPrototype();
+     Set<String> currentPropertyNames;
+-    // This can be the case if interfaceType is proxy to a non-existent
+-    // object (which is a bad type annotation, but shouldn't crash).
++    if (implicitProto == null) {
++        // Handle the case where interfaceType is a proxy to a non-existent object.
++        return;
++    }
+     currentPropertyNames = implicitProto.getOwnPropertyNames();
+     for (String name : currentPropertyNames) {
+         ObjectType oType = properties.get(name);

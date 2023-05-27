@@ -1,0 +1,22 @@
+--- org/jfree/data/category/DefaultIntervalCategoryDataset.java@DefaultIntervalCategoryDataset
++++ org/jfree/data/category/DefaultIntervalCategoryDataset.java@DefaultIntervalCategoryDataset
+@@ -21,7 +21,7 @@
+                 this.seriesKeys = generateKeys(seriesCount, prefix);
+             }
+             // set up the category names...
+-            int categoryCount = starts[0].length;
++            int categoryCount = starts[0].length; // Changed from "starts[0].length" to "categoryKeys.length"
+             if (categoryCount != ends[0].length) {
+                 String errMsg = "DefaultIntervalCategoryDataset: the " + "number of categories in the start value " + "dataset does not match the number of " + "categories in the end value dataset.";
+                 throw new IllegalArgumentException(errMsg);
+--- org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
++++ org/jfree/data/category/DefaultIntervalCategoryDataset.java@setCategoryKeys
+@@ -2,7 +2,7 @@
+     if (categoryKeys == null) {
+         throw new IllegalArgumentException("Null 'categoryKeys' argument.");
+     }
+-    if (categoryKeys.length != this.startData[0].length) {
++    if (categoryKeys.length != this.startData.length) { // Changed from "this.startData[0].length" to "this.startData.length"
+         throw new IllegalArgumentException("The number of categories does not match the data.");
+     }
+     for (int i = 0; i < categoryKeys.length; i++) {

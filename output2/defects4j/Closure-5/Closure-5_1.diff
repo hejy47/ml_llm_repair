@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -11,7 +11,7 @@
+         if (parent.isGetProp()) {
+             Preconditions.checkState(parent.getFirstChild() == name);
+             // A call target may be using the object as a 'this' value.
+-            if (gramps.isCall() && gramps.getFirstChild() == parent) {
++            if (gramps != null && gramps.isCall() && gramps.getFirstChild() == parent) {
+                 return false;
+             }
+             // Deleting a property has different semantics from deleting
+@@ -67,7 +67,7 @@
+             // will happen.
+             for (Reference t : refs) {
+                 Node refNode = t.getParent();
+-                while (!NodeUtil.isStatementBlock(refNode)) {
++                while (refNode != null && !NodeUtil.isStatementBlock(refNode)) {
+                     if (refNode == childVal) {
+                         // There's a self-referential assignment
+                         return false;

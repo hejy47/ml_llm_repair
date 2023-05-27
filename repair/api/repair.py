@@ -5,7 +5,7 @@ from utils import diff_util, file_util
 from dataset import DatasetFactory
 from api import api_request
 
-openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
+# openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
 
 def repair_loop(dataset, prompt, project, bug_id, bug, t_chances, stop=None, skip_val=True):
     start = time.time()
@@ -104,22 +104,30 @@ def apply_patch_and_validate(dataset):
     bug_info = dataset.get_bug_info()
     for project, bug_ids in bug_info.items():
         for bug_id in bug_ids:
+            if project.lower() == "chart" or (project.lower() == "closure" and bug_id <= 20):
+                continue
+            print("validating {} {}".format(project, bug_id))
             bug = dataset.get_bug(project, bug_id)
+            if bug == {}:
+                continue
             dataset.set_current_bug(project, bug_id)
             repairs = file_util.read_json_file(os.path.join(config.OUTPUT_DIR, dataset.get_name(), "{}-{}.json".format(project, bug_id)))
-            output_path = os.path.join(config.OUTPUT_DIR, dataset.get_name(), "{}-{}".format(project, bug_id))
+            output_path = os.path.join(config.OUTPUT2_DIR, dataset.get_name(), "{}-{}".format(project, bug_id))
 
             repair_result = []
+            valid_result = ""
             for i, repair in enumerate(repairs):
                 output = repair["output"]
                 valid = dataset.validate(bug, output, skip_val=False)
+                valid_result += "{}-{}_{}:{}\n".format(project, bug_id, i+1, str(valid))
                 diff = diff_util.get_unified_diff(bug, output, suffix_name)
                 file_util.write_str_to_file(output, os.path.join(output_path, "{}-{}_{}".format(project, bug_id, i+1)+suffix_name))
-                file_util.write_str_to_file(output, os.path.join(output_path, "{}-{}_{}.diff".format(project, bug_id, i+1)))
+                file_util.write_str_to_file(diff, os.path.join(output_path, "{}-{}_{}.diff".format(project, bug_id, i+1)))
 
                 repair_result.append({'output': output,
                                     'diff': diff,
                                     'finish_reason': repair["finish_reason"],
                                     'valid': valid,
                                     'num': repair["num"]})
+            file_util.write_str_to_file(valid_result, os.path.join(output_path, "{}-{}_validation.txt".format(project, bug_id)))
             file_util.write_json_file(repair_result, os.path.join(output_path, "{}-{}.json".format(project, bug_id)))

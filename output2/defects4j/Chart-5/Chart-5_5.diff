@@ -1,0 +1,21 @@
+--- org/jfree/data/xy/XYSeries.java@addOrUpdate
++++ org/jfree/data/xy/XYSeries.java@addOrUpdate
+@@ -19,7 +19,17 @@
+         // new item...otherwise it will be just -1 and we should just
+         // append the value to the list...
+         if (this.autoSort) {
+-            this.data.add(-index - 1, new XYDataItem(x, y));
++            int insertionIndex = -index - 1; // fixed line
++            if (insertionIndex < this.data.size()) {
++                XYDataItem next = this.data.get(insertionIndex);
++                if (next.getX().equals(x)) {
++                    this.data.set(insertionIndex, new XYDataItem(x, y));
++                } else {
++                    this.data.add(insertionIndex, new XYDataItem(x, y));
++                }
++            } else {
++                this.data.add(new XYDataItem(x, y));
++            }
+         } else {
+             this.data.add(new XYDataItem(x, y));
+         }

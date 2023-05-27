@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/PeepholeOptimizationsPass.java@traverse
++++ com/google/javascript/jscomp/PeepholeOptimizationsPass.java@traverse
+@@ -11,12 +11,11 @@
+         Node c = node.getFirstChild();
+         while (c != null) {
+             traverse(c);
+-            Node next = c.getNext();
+-            c = next;
++            c = c.getNext();
+         }
+         visit(node);
+         visits++;
+-        Preconditions.checkState(visits < 10000, "too many interations");
++        Preconditions.checkState(visits < 10000, "too many iterations");
+     } while (shouldRetraverse(node));
+     exitNode(node);
+ }

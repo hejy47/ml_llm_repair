@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@AliasedTypeNode
++++ com/google/javascript/jscomp/ScopedAliases.java@AliasedTypeNode
+@@ -1,4 +1,4 @@
+ AliasedTypeNode(Node typeReference, String aliasName) {
+-    this.typeReference = typeReference;
++    this.typeReference = typeReference.cloneTree(); // creates a new instance of the tree, avoiding aliasing issues
+     this.aliasName = aliasName;
+ }
+--- com/google/javascript/jscomp/ScopedAliases.java@applyAlias
++++ com/google/javascript/jscomp/ScopedAliases.java@applyAlias
+@@ -1,4 +1,4 @@
+ @Override
+ public void applyAlias() {
+-    typeReference.setString(aliasName);
++    typeReference.setString(aliasName); //This function is already correct.
+ }
+--- com/google/javascript/jscomp/ScopedAliases.java@fixTypeNode
++++ com/google/javascript/jscomp/ScopedAliases.java@fixTypeNode
+@@ -9,7 +9,9 @@
+         Var aliasVar = aliases.get(baseName);
+         if (aliasVar != null) {
+             Node aliasedNode = aliasVar.getInitialValue();
+-            aliasUsages.add(new AliasedTypeNode(typeNode, aliasedNode.getQualifiedName() + name.substring(endIndex)));
++            Node newTypeNode = aliasedNode.cloneTree(); // creates a new instance of the tree, avoiding aliasing issues
++            newTypeNode.appendString(name.substring(endIndex));
++            aliasUsages.add(new AliasedTypeNode(newTypeNode, ""));
+         }
+     }
+     for (Node child = typeNode.getFirstChild(); child != null; child = child.getNext()) {

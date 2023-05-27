@@ -1,0 +1,15 @@
+--- org/jfree/data/time/Week.java@Week
++++ org/jfree/data/time/Week.java@Week
+@@ -1,4 +1,10 @@
+ public Week(Date time, TimeZone zone) {
+-    // defer argument checking...
+-    this(time, RegularTimePeriod.DEFAULT_TIME_ZONE, Locale.getDefault());
++    // add argument checking
++    if (time == null) {
++        throw new IllegalArgumentException("Null 'time' argument.");
++    }
++
++    this.zone = zone;
++    this.firstMillisecond = getFirstMillisecond();
++    this.lastMillisecond = getLastMillisecond();
+ }

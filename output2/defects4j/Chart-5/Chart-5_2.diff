@@ -1,0 +1,14 @@
+--- org/jfree/data/xy/XYSeries.java@addOrUpdate
++++ org/jfree/data/xy/XYSeries.java@addOrUpdate
+@@ -19,7 +19,10 @@
+         // new item...otherwise it will be just -1 and we should just
+         // append the value to the list...
+         if (this.autoSort) {
+-            this.data.add(-index - 1, new XYDataItem(x, y));
++            if (index < 0) {
++                index = -(index + 1);
++            }
++            this.data.add(index, new XYDataItem(x, y));
+         } else {
+             this.data.add(new XYDataItem(x, y));
+         }

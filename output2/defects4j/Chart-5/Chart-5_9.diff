@@ -1,0 +1,10 @@
+--- org/jfree/data/xy/XYSeries.java@addOrUpdate
++++ org/jfree/data/xy/XYSeries.java@addOrUpdate
+@@ -13,6 +13,7 @@
+             throw new SeriesException("Couldn't clone XYDataItem!");
+         }
+         existing.setY(y);
++        this.data.set(index, existing); // Fix: replace the item in the list with the updated values
+     } else {
+         // if the series is sorted, the negative index is a result from
+         // Collections.binarySearch() and tells us where to insert the

@@ -1,0 +1,10 @@
+Chart-20_1:False
+Chart-20_2:False
+Chart-20_3:False
+Chart-20_4:True
+Chart-20_5:False
+Chart-20_6:False
+Chart-20_7:False
+Chart-20_8:False
+Chart-20_9:False
+Chart-20_10:False

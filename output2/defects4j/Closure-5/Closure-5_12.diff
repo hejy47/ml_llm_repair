@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -1,5 +1,4 @@
+ private boolean isInlinableObject(List<Reference> refs) {
+-    boolean ret = false;
+     Set<String> validProperties = Sets.newHashSet();
+     for (Reference ref : refs) {
+         Node name = ref.getNode();
+@@ -76,10 +75,9 @@
+                 }
+             }
+         }
+-        // We have found an acceptable object literal assignment. As
+-        // long as there are no other assignments that mess things up,
+-        // we can inline.
+-        ret = true;
+     }
+-    return ret;
++    // We have found an acceptable object literal assignment. As
++    // long as there are no other assignments that mess things up,
++    // we can inline.
++    return true;
+ }
