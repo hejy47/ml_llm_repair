@@ -5,7 +5,7 @@ from utils import diff_util, file_util
 from dataset import DatasetFactory
 from api import api_request
 
-# openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
+openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
 
 def repair_loop(dataset, prompt, project, bug_id, bug, t_chances, stop=None, skip_val=True):
     start = time.time()
@@ -63,7 +63,7 @@ def repair_loop_by_chat(dataset, prompt, project, bug_id, bug, t_chances, stop=N
         print("Try: {}".format(total_times))
         ret = api_request.request_chat_engine(config)
         if ret is None:
-            return False, False, []
+            return []
         output = ret["choices"][0]["message"]["content"]
         diff = diff_util.get_unified_diff(bug, output)
         finish_reason = ret["choices"][0]['finish_reason']
