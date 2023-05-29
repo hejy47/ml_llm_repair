@@ -5,7 +5,7 @@ from utils import diff_util, file_util
 from dataset import DatasetFactory
 from api import api_request
 
-# openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
+openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
 
 def repair_loop(dataset, prompt, project, bug_id, bug, t_chances, stop=None, skip_val=True):
     start = time.time()
