@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -45,6 +45,16 @@
+                 // are not flagged even if they are dropped from the process.
+                 for (String provide : input.getProvides()) {
+                     getTypeRegistry().forwardDeclareType(provide);
++                }
++                // detect if input is missing type information.
++                if (getLanguageMode() != LanguageMode.ECMASCRIPT3 && !options.skipAllPasses
++                        && !options.checkSymbols) {
++                    Es6SyntacticScopeCreator scopeCreator =
++                            new Es6SyntacticScopeCreator(getAstAnalyzer(), getModuleMap());
++                    SyntacticScope inputScope = scopeCreator.createScope(input.getAstRoot(this), null);
++                    if (inputScope.hasUndeclaredFormalsOrVars()) {
++                        report(JSError.make(MISSING_TYPE_DECL_WARNING, input.getName()));
++                    }
+                 }
+             }
+             try {

@@ -1,0 +1,87 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -28,8 +28,9 @@
+     // So if F does not have an explicitly declared super type,
+     // allow F.prototype to be redefined arbitrarily.
+     if ("prototype".equals(propName)) {
+-        Var qVar = scope.getVar(qName);
++        Var qVar = t.getScope().getVar(qName);
+         if (qVar != null) {
++            StaticScope<?, ?> scope = t.getScope();
+             // If the programmer has declared that F inherits from Super,
+             // and they assign F.prototype to an object literal,
+             // then they are responsible for making sure that the object literal's
+@@ -37,6 +38,7 @@
+             // the @extends tag.
+             ObjectType qVarType = ObjectType.cast(qVar.getType());
+             if (qVarType != null && rhsValue != null && rhsValue.isObjectLit()) {
++                JSTypeRegistry typeRegistry = t.getTypedScope().getRegistry();
+                 typeRegistry.resetImplicitPrototype(rhsValue.getJSType(), qVarType.getImplicitPrototype());
+             } else if (!qVar.isTypeInferred()) {
+                 // If the programmer has declared that F inherits from Super,
+@@ -49,6 +51,14 @@
+             if (qVar.getScope() == scope) {
+                 scope.undeclare(qVar);
+             }
++            // Fixed to update the scope variable correctly
++            scope.declare(
++                    qVar.getName(),
++                    n,
++                    qVarType != null ? qVarType : getNativeType(OBJECT_TYPE),
++                    qVar.inputVar(),
++                    null,
++                    true);
+         }
+     }
+     if (valueType == null) {
+@@ -63,12 +73,14 @@
+     // The problem is that there are two (equally valid) coding styles:
+     //
+     // (function() {
+-    //       //   goog.bar = function() {};
++    //   /* The authoritative definition of goog.bar. */
++    //   goog.bar = function() {};
+     // })();
+     //
+     // function f() {
+     //   goog.bar();
+-    //       //   goog.bar = function() {};
++    //   /* Reset goog.bar to a no-op. */
++    //   goog.bar = function() {};
+     // }
+     //
+     // In a dynamic language with first-class functions, it's very difficult
+@@ -86,10 +98,11 @@
+     }
+     if (inferred) {
+         // Determining declaration for #2
+-        inferred = !(rhsValue != null && rhsValue.isFunction() && (info != null || !scope.isDeclared(qName, false)));
++        inferred = !(rhsValue != null && rhsValue.isFunction() && (info != null || !t.getScope().isDeclared(qName, false)));
+     }
+     if (!inferred) {
+-        ObjectType ownerType = getObjectSlot(ownerName);
++        JSTypeRegistry typeRegistry = t.getTypedScope().getRegistry();
++        ObjectType ownerType = typeRegistry.getObjectSlot(ownerName);
+         if (ownerType != null) {
+             // Only declare this as an official property if it has not been
+             // declared yet.
+@@ -101,16 +114,16 @@
+         }
+         // If the property is already declared, the error will be
+         // caught when we try to declare it in the current scope.
+-        defineSlot(n, parent, valueType, inferred);
++        t.getTypedScope().declare(qName, n, valueType, false);
+     } else if (rhsValue != null && rhsValue.isTrue()) {
+         // We declare these for delegate proxy method properties.
+-        FunctionType ownerType = JSType.toMaybeFunctionType(getObjectSlot(ownerName));
++        FunctionType ownerType = JSType.toMaybeFunctionType(typeRegistry.getObjectSlot(ownerName));
+         if (ownerType != null) {
+             JSType ownerTypeOfThis = ownerType.getTypeOfThis();
+             String delegateName = codingConvention.getDelegateSuperclassName();
+             JSType delegateType = delegateName == null ? null : typeRegistry.getType(delegateName);
+             if (delegateType != null && ownerTypeOfThis.isSubtype(delegateType)) {
+-                defineSlot(n, parent, getNativeType(BOOLEAN_TYPE), true);
++                t.getTypedScope().declare(qName, n, getNativeType(BOOLEAN_TYPE), true);
+             }
+         }
+     }

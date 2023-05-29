@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -12,6 +12,7 @@
+         if (BUILTIN_FUNCTIONS_WITHOUT_SIDEEFFECTS.contains(name)) {
+             return false;
+         }
++        return true; // added missing return statement
+     } else if (nameNode.getType() == Token.GETPROP) {
+         if (callNode.hasOneChild() && OBJECT_METHODS_WITHOUT_SIDEEFFECTS.contains(nameNode.getLastChild().getString())) {
+             return false;
+@@ -29,6 +30,7 @@
+                     return false;
+             }
+         }
++        return true; // added missing return statement
+     }
+-    return true;
++    return true; // added missing return statement
+ }

@@ -1,0 +1,73 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -33,7 +33,16 @@
+         case Token.OBJECTLIT:
+             // ignoring side-effects
+             return TernaryValue.TRUE;
+-        default:
+-            return getPureBooleanValue(n);
++        case Token.NAME:
++            String name = n.getString();
++            if ("undefined".equals(name) || "NaN".equals(name)) {
++                // We assume here that programs don't change the value of the keyword
++                // undefined to something other than the value undefined.
++                return TernaryValue.FALSE;
++            } else if ("Infinity".equals(name)) {
++                return TernaryValue.TRUE;
++            }
++            break;
+     }
++    return getPureBooleanValue(n);
+ }
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -1,7 +1,7 @@
+ static TernaryValue getPureBooleanValue(Node n) {
+     switch(n.getType()) {
+         case Token.STRING:
+-            return TernaryValue.forBoolean(n.getString().length() > 0);
++            return TernaryValue.forBoolean(n.getLength() > 0);
+         case Token.NUMBER:
+             return TernaryValue.forBoolean(n.getDouble() != 0);
+         case Token.NOT:
+@@ -11,25 +11,24 @@
+             return TernaryValue.FALSE;
+         case Token.VOID:
+             return TernaryValue.FALSE;
+-        case Token.NAME:
+-            String name = n.getString();
+-            if ("undefined".equals(name) || "NaN".equals(name)) {
+-                // We assume here that programs don't change the value of the keyword
+-                // undefined to something other than the value undefined.
+-                return TernaryValue.FALSE;
+-            } else if ("Infinity".equals(name)) {
+-                return TernaryValue.TRUE;
+-            }
+-            break;
+         case Token.TRUE:
+         case Token.REGEXP:
+             return TernaryValue.TRUE;
+-        case Token.ARRAYLIT:
+-        case Token.OBJECTLIT:
+-            if (!mayHaveSideEffects(n)) {
+-                return TernaryValue.TRUE;
+-            }
+-            break;
++    }
++    if (n.isName()) {
++        String name = n.getString();
++        if ("undefined".equals(name) || "NaN".equals(name)) {
++            // We assume here that programs don't change the value of the keyword
++            // undefined to something other than the value undefined.
++            return TernaryValue.FALSE;
++        } else if ("Infinity".equals(name)) {
++            return TernaryValue.TRUE;
++        }
++    }
++    if (n.isArrayLit() || n.isObjectLit()) {
++        if (!mayHaveSideEffects(n)) {
++            return TernaryValue.TRUE;
++        }
+     }
+     return TernaryValue.UNKNOWN;
+ }

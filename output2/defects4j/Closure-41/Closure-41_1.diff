@@ -1,0 +1,40 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -33,6 +33,11 @@
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
++        while (oldParams.hasNext()) {
++            Node oldParam = oldParams.next();
++            Node newParam = paramBuilder.newParameterFromNode(oldParam);
++            oldParamsListHitOptArgs = oldParamsListHitOptArgs || oldParam.isVarArgs() || oldParam.isOptionalArg();
++        }
+         parametersNode = paramBuilder.build();
+     }
+     return this;
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -29,6 +29,7 @@
+             parameterType = oldParameterType.getJSType();
+             isOptionalParam = oldParameterType.isOptionalArg();
+             isVarArgs = oldParameterType.isVarArgs();
++            oldParameterType = oldParameterType.getNext();
+         } else {
+             parameterType = typeRegistry.getNativeType(UNKNOWN_TYPE);
+         }
+@@ -39,11 +40,12 @@
+             foundTemplateType = true;
+         }
+         warnedAboutArgList |= addParameter(builder, parameterType, warnedAboutArgList, isOptionalParam, isVarArgs);
+-        if (oldParameterType != null) {
+-            oldParameterType = oldParameterType.getNext();
+-        }
+     }
+     // Copy over any old parameters that aren't in the param list.
++    while (oldParameterType != null) {
++        Node newParam = builder.newParameterFromNode(oldParameterType);
++        oldParameterType = oldParameterType.getNext();
++    }
+     if (templateTypeName != null && !foundTemplateType) {
+         reportError(TEMPLATE_TYPE_EXPECTED, fnName);
+     }

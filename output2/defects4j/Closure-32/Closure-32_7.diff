@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
++++ com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
+@@ -24,6 +24,7 @@
+             case STAR:
+                 if (ignoreStar) {
+                     // Mark the position after the star as the new start of the line.
++                    startCharno++;
+                 } else {
+                     // The star is part of the comment.
+                     if (builder.length() > 0) {
+@@ -32,12 +33,13 @@
+                     builder.append('*');
+                 }
+                 token = next();
++                ignoreStar = true;
+                 continue;
+             case EOL:
+                 if (option != WhitespaceOption.SINGLE_LINE) {
+                     builder.append("\n");
+                 }
+-                ignoreStar = true;
++                ignoreStar = false;
+                 token = next();
+                 continue;
+             default:
+@@ -52,7 +54,7 @@
+                         multilineText = multilineText.trim();
+                     }
+                     int endLineno = stream.getLineno();
+-                    int endCharno = stream.getCharno();
++                    int endCharno = stream.getCharno() - 1;  // Should subtract 1 to get the correct end char index. 
+                     if (multilineText.length() > 0) {
+                         jsdocBuilder.markText(multilineText, startLineno, startCharno, endLineno, endCharno);
+                     }

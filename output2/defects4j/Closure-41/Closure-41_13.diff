@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -29,7 +29,7 @@
+                     newParam.setOptionalArg(true);
+                 }
+             } else {
+-                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
++                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, currentParam.isVarArgsParameter());
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -51,5 +51,17 @@
+         reportWarning(INEXISTANT_PARAM, inexistentName, fnName);
+     }
+     parametersNode = builder.build();
++    // Set optional/rest parameters on old nodes
++    if (oldParameterType != null) {
++        for (Node currentParam = argsParent.getFirstChild(); currentParam != null; currentParam = currentParam.getNext()) {
++            if (oldParameterType.isOptionalArg()) {
++                currentParam.putBooleanProp(Node.OPT_ES6_TYPED, true);
++            }
++            if (oldParameterType.isVarArgs() && !currentParam.isVarArgs()) {
++                currentParam.setVarArgs(true);
++            }
++            oldParameterType = oldParameterType.getNext();
++        }
++    }
+     return this;
+ }

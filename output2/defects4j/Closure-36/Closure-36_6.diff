@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -4,13 +4,13 @@
+     }
+     // If the value is read more than once, skip it.
+     // VAR declarations and EXPR_RESULT don't need the value, but other
+-    // ASSIGN expressions parents do.
+-    if (declaration != initialization && !initialization.getGrandparent().isExprResult()) {
++    // ASSIGN expressions parents should.
++    if (declaration != initialization && !initialization.getGrandparent().isExprResult() && !hasReadOtherThanReference(initialization, reference)) {
+         return false;
+     }
+     // Be very conservative and do no cross control structures or
+     // scope boundaries
+-    if (declaration.getBasicBlock() != initialization.getBasicBlock() || declaration.getBasicBlock() != reference.getBasicBlock()) {
++    if (!sameBasicBlock(declaration, initialization, reference)) {
+         return false;
+     }
+     // Do not inline into a call node. This would change

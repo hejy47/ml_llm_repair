@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/LightweightMessageFormatter.java@format
++++ com/google/javascript/jscomp/LightweightMessageFormatter.java@format
+@@ -24,15 +24,18 @@
+         // charno == sourceExpert.length() means something is missing
+         // at the end of the line
+         if (excerpt.equals(LINE) && 0 <= charno && charno < sourceExcerpt.length()) {
+-            for (int i = 0; i < charno; i++) {
++            for (int i = 0; i < sourceExcerpt.length(); i++) { // fixed indexing bug
+                 char c = sourceExcerpt.charAt(i);
+                 if (Character.isWhitespace(c)) {
+                     b.append(c);
+                 } else {
+-                    b.append(' ');
++                    if(i==charno){ // added logic to add arrow/pointer at the error character index
++                        b.append("^\n");
++                    }else{
++                        b.append(' ');
++                    }
+                 }
+             }
+-            b.append("^\n");
+         }
+     }
+     return b.toString();

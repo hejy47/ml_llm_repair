@@ -1,0 +1,40 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -33,7 +33,14 @@
+         case Token.OBJECTLIT:
+             // ignoring side-effects
+             return TernaryValue.TRUE;
+-        default:
+-            return getPureBooleanValue(n);
++        case Token.NAME:
++            String name = n.getString();
++            if ("false".equals(name)) {
++                return TernaryValue.FALSE;
++            } else if ("true".equals(name)) {
++                return TernaryValue.TRUE;
++            }
++            break;
+     }
++    return getPureBooleanValue(n);
+ }
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -7,6 +7,7 @@
+         case Token.NOT:
+             return getPureBooleanValue(n.getLastChild()).not();
+         case Token.NULL:
++            return TernaryValue.FALSE;
+         case Token.FALSE:
+             return TernaryValue.FALSE;
+         case Token.VOID:
+@@ -18,6 +19,10 @@
+                 // undefined to something other than the value undefined.
+                 return TernaryValue.FALSE;
+             } else if ("Infinity".equals(name)) {
++                return TernaryValue.TRUE;
++            } else if ("false".equals(name)) {
++                return TernaryValue.FALSE;
++            } else if ("true".equals(name)) {
+                 return TernaryValue.TRUE;
+             }
+             break;

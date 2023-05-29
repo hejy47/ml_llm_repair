@@ -1,0 +1,19 @@
+--- com/google/javascript/rhino/jstype/PrototypeObjectType.java@toStringHelper
++++ com/google/javascript/rhino/jstype/PrototypeObjectType.java@toStringHelper
+@@ -4,6 +4,7 @@
+         return getReferenceName();
+     } else if (prettyPrint) {
+         // Don't pretty print recursively.
++        boolean originalPrettyPrint = prettyPrint;
+         prettyPrint = false;
+         // Use a tree set so that the properties are sorted.
+         Set<String> propertyNames = Sets.newTreeSet();
+@@ -27,7 +28,7 @@
+             }
+         }
+         sb.append("}");
+-        prettyPrint = true;
++        prettyPrint = originalPrettyPrint;
+         return sb.toString();
+     } else {
+         return "{...}";

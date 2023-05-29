@@ -1,0 +1,95 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -16,7 +16,7 @@
+     }
+     // "," is the default, it doesn't need to be explicit
+     String joinString = (right == null) ? "," : NodeUtil.getStringValue(right);
+-    List<Node> arrayFoldedChildren = Lists.newLinkedList();
++    List<Node> arrayFoldedChildren = Lists.newArrayList();
+     StringBuilder sb = null;
+     int foldedSize = 0;
+     Node prev = null;
+@@ -33,12 +33,16 @@
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);
+-                // + 2 for the quotes.
++                // +2 for the quotes.
+                 foldedSize += sb.length() + 2;
+                 arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+                 sb = null;
+             }
+-            foldedSize += InlineCostEstimator.getCost(elem);
++            if (elem.getType() == Token.STRING) {
++                foldedSize += elem.getString().length();
++            } else {
++                foldedSize += InlineCostEstimator.getCost(elem);
++            }
+             arrayFoldedChildren.add(elem);
+         }
+         prev = elem;
+@@ -46,7 +50,7 @@
+     }
+     if (sb != null) {
+         Preconditions.checkNotNull(prev);
+-        // + 2 for the quotes.
++        // +2 for the quotes.
+         foldedSize += sb.length() + 2;
+         arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+     }
+@@ -55,25 +59,19 @@
+     int originalSize = InlineCostEstimator.getCost(n);
+     switch(arrayFoldedChildren.size()) {
+         case 0:
+-            Node emptyStringNode = Node.newString("");
+-            n.getParent().replaceChild(n, emptyStringNode);
++            Node emptyStringNode = IR.string("");
++            n.replaceWith(emptyStringNode);
+             reportCodeChange();
+             return emptyStringNode;
+         case 1:
+             Node foldedStringNode = arrayFoldedChildren.remove(0);
+             if (foldedSize > originalSize) {
+                 return n;
++            } else {
++                n.replaceWith(foldedStringNode);
++                reportCodeChange();
++                return foldedStringNode;
+             }
+-            arrayNode.detachChildren();
+-            if (foldedStringNode.getType() != Token.STRING) {
+-                // If the Node is not a string literal, ensure that
+-                // it is coerced to a string.
+-                Node replacement = new Node(Token.ADD, Node.newString("").copyInformationFrom(n), foldedStringNode);
+-                foldedStringNode = replacement;
+-            }
+-            n.getParent().replaceChild(n, foldedStringNode);
+-            reportCodeChange();
+-            return foldedStringNode;
+         default:
+             // No folding could actually be performed.
+             if (arrayFoldedChildren.size() == arrayNode.getChildCount()) {
+@@ -84,13 +82,15 @@
+             foldedSize += (right != null) ? InlineCostEstimator.getCost(right) : 0;
+             if (foldedSize > originalSize) {
+                 return n;
+-            }
+-            arrayNode.detachChildren();
+-            for (Node node : arrayFoldedChildren) {
+-                arrayNode.addChildToBack(node);
+-            }
+-            reportCodeChange();
+-            break;
++            } else {
++                Node joinWrap = IR.call(
++                    IR.getprop(IR.arraylit(), "join"),
++                    NodeUtil.newStringNode(joinString),
++                    arrayNode.removeChildren()
++                );
++                n.replaceWith(joinWrap);
++                reportCodeChange();
++                return joinWrap;
++            }               
+     }
+-    return n;
+ }

@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -29,12 +29,11 @@
+                     continue;
+                 if (ancestorType != Token.EXPR_RESULT && ancestorType != Token.BLOCK)
+                     return;
+-                else
+-                    break;
+             }
+         }
+     } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+         if (parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext())) {
++            return;
+         } else {
+             return;
+         }

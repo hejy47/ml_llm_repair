@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@add
++++ com/google/javascript/jscomp/CodeConsumer.java@add
+@@ -1,6 +1,6 @@
+ void add(String newcode) {
+     maybeEndStatement();
+-    if (newcode.length() == 0) {
++    if (newcode == null || newcode.isEmpty()) {
+         return;
+     }
+     char c = newcode.charAt(0);

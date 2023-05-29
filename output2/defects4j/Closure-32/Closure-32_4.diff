@@ -1,0 +1,47 @@
+--- com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
++++ com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
+@@ -26,20 +26,13 @@
+                     // Mark the position after the star as the new start of the line.
+                 } else {
+                     // The star is part of the comment.
+-                    if (builder.length() > 0) {
++                    if (builder.length() > 0 && builder.charAt(builder.length()-1) != ' ') {
+                         builder.append(' ');
+                     }
+                     builder.append('*');
+                 }
+                 token = next();
+-                continue;
+-            case EOL:
+-                if (option != WhitespaceOption.SINGLE_LINE) {
+-                    builder.append("\n");
+-                }
+-                ignoreStar = true;
+-                token = next();
+-                continue;
++                // ignore falls through to default behavior
+             default:
+                 ignoreStar = false;
+                 state = State.SEARCHING_ANNOTATION;
+@@ -58,7 +51,7 @@
+                     }
+                     return new ExtractionInfo(multilineText, token);
+                 }
+-                if (builder.length() > 0) {
++                if (builder.length() > 0 && builder.charAt(builder.length()-1) != ' ') {
+                     builder.append(' ');
+                 }
+                 builder.append(toString(token));
+@@ -68,6 +61,12 @@
+                 }
+                 builder.append(line);
+                 token = next();
++            case EOL:
++                if (option != WhitespaceOption.SINGLE_LINE) {
++                    builder.append("\n");
++                }
++                ignoreStar = true;
++                token = next();
+         }
+     } while (true);
+ }

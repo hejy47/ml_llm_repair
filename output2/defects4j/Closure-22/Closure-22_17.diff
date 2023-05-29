@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -15,7 +15,7 @@
+     // fix up the tree in more clever ways when these are removed.
+     if (parent.getType() == Token.COMMA) {
+         Node gramps = parent.getParent();
+-        if (gramps.isCall() && parent == gramps.getFirstChild()) {
++        if (gramps != null && gramps.isCall() && parent == gramps.getFirstChild()) {
+             if (n == parent.getFirstChild() && parent.getChildCount() == 2 && n.getNext().isName() && "eval".equals(n.getNext().getString())) {
+                 return;
+             }
+@@ -35,6 +35,7 @@
+         }
+     } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+         if (parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext())) {
++            return; // fixes the function by returning in this case
+         } else {
+             return;
+         }

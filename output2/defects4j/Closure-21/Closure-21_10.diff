@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -39,11 +39,11 @@
+             }
+         }
+     } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+-        if (!(parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext()))) {
++        if (!(parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext()))) {
+             return;
+         }
+     }
+-    if ((isSimpleOp || !NodeUtil.mayHaveSideEffects(n, t.getCompiler()))) {
++    if ((isSimpleOp || !NodeUtil.mayHaveSideEffects(n, t.getCompiler())) && NodeUtil.isStatement(n)) {
+         String msg = "This code lacks side-effects. Is there a bug?";
+         if (n.isString()) {
+             msg = "Is there a missing '+' on the previous line?";
+@@ -51,10 +51,6 @@
+             msg = "The result of the '" + Token.name(n.getType()).toLowerCase() + "' operator is not being used.";
+         }
+         t.getCompiler().report(t.makeError(n, level, USELESS_CODE_ERROR, msg));
+-        // TODO(johnlenz): determine if it is necessary to
+-        // try to protect side-effect free statements as well.
+-        if (!NodeUtil.isStatement(n)) {
+-            problemNodes.add(n);
+-        }
++        problemNodes.add(n);
+     }
+ }

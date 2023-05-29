@@ -1,0 +1,41 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -11,13 +11,25 @@
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.and(rhs);
++                if (lhs.equals(TernaryValue.FALSE)) {
++                    return TernaryValue.FALSE; // short-circuit evaluation
++                } else if (lhs.equals(TernaryValue.TRUE)) {
++                    return rhs; // rhs value determines overall value
++                } else {
++                    return lhs.and(rhs);
++                }
+             }
+         case Token.OR:
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.or(rhs);
++                if (lhs.equals(TernaryValue.TRUE)) {
++                    return TernaryValue.TRUE; // short-circuit evaluation
++                } else if (lhs.equals(TernaryValue.FALSE)) {
++                    return rhs; // rhs value determines overall value
++                } else {
++                    return lhs.or(rhs);
++                }
+             }
+         case Token.HOOK:
+             {
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -30,6 +30,8 @@
+                 return TernaryValue.TRUE;
+             }
+             break;
++        default:
++            return TernaryValue.UNKNOWN; // add default case to handle unknown cases
+     }
+     return TernaryValue.UNKNOWN;
+ }

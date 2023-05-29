@@ -1,0 +1,90 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -28,7 +28,7 @@
+     // So if F does not have an explicitly declared super type,
+     // allow F.prototype to be redefined arbitrarily.
+     if ("prototype".equals(propName)) {
+-        Var qVar = scope.getVar(qName);
++        Var qVar = t.getScope().getVar(qName);
+         if (qVar != null) {
+             // If the programmer has declared that F inherits from Super,
+             // and they assign F.prototype to an object literal,
+@@ -43,8 +43,8 @@
+                 // what props are going to be on that prototype.
+                 return;
+             }
+-            if (qVar.getScope() == scope) {
+-                scope.undeclare(qVar);
++            if (qVar.getScope() == t.getScope()) {
++                t.getScope().undeclare(qVar);
+             }
+         }
+     }
+@@ -61,10 +61,10 @@
+     }
+     if (inferred) {
+         // Determining declaration for #2
+-        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !scope.isDeclared(qName, false)));
++        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !t.getScope().isDeclared(qName, false)));
+     }
+     if (!inferred) {
+-        ObjectType ownerType = getObjectSlot(ownerName);
++        ObjectType ownerType = t.getScope().getObjectSlot(ownerName);
+         if (ownerType != null) {
+             // Only declare this as an official property if it has not been
+             // declared yet.
+@@ -76,16 +76,16 @@
+         }
+         // If the property is already declared, the error will be
+         // caught when we try to declare it in the current scope.
+-        defineSlot(n, parent, valueType, inferred);
++        t.getScope().defineSlot(n, parent, valueType, inferred);
+     } else if (rhsValue != null && rhsValue.getType() == Token.TRUE) {
+         // We declare these for delegate proxy method properties.
+-        FunctionType ownerType = JSType.toMaybeFunctionType(getObjectSlot(ownerName));
++        FunctionType ownerType = JSType.toMaybeFunctionType(t.getScope().getObjectSlot(ownerName));
+         if (ownerType != null) {
+             JSType ownerTypeOfThis = ownerType.getTypeOfThis();
+             String delegateName = codingConvention.getDelegateSuperclassName();
+             JSType delegateType = delegateName == null ? null : typeRegistry.getType(delegateName);
+             if (delegateType != null && ownerTypeOfThis.isSubtype(delegateType)) {
+-                defineSlot(n, parent, getNativeType(BOOLEAN_TYPE), true);
++                t.getScope().defineSlot(n, parent, getNativeType(BOOLEAN_TYPE), true);
+             }
+         }
+     }
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -1,21 +1,4 @@
+ public void setPrototypeBasedOn(ObjectType baseType) {
+-    // This is a bit weird. We need to successfully handle these
+-    // two cases:
+-    // Foo.prototype = new Bar();
+-    // and
+-    // Foo.prototype = {baz: 3};
+-    // In the first case, we do not want new properties to get
+-    // added to Bar. In the second case, we do want new properties
+-    // to get added to the type of the anonymous object.
+-    //
+-    // We handle this by breaking it into two cases:
+-    //
+-    // In the first case, we create a new PrototypeObjectType and set
+-    // its implicit prototype to the type being assigned. This ensures
+-    // that Bar will not get any properties of Foo.prototype, but properties
+-    // later assigned to Bar will get inherited properly.
+-    //
+-    // In the second case, we just use the anonymous object as the prototype.
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+         baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
+     }
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -3,7 +3,7 @@
+         return false;
+     }
+     // getInstanceType fails if the function is not a constructor
+-    if (isConstructor() && prototype == getInstanceType()) {
++    if (isConstructor() && prototype != getInstanceType()) {
+         return false;
+     }
+     boolean replacedPrototype = prototype != null;

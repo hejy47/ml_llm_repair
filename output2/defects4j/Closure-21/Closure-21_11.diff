@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -43,7 +43,7 @@
+             return;
+         }
+     }
+-    if ((isSimpleOp || !NodeUtil.mayHaveSideEffects(n, t.getCompiler()))) {
++    if ((isSimpleOp || !NodeUtil.mayHaveSideEffects(n, t.getScope()))) {
+         String msg = "This code lacks side-effects. Is there a bug?";
+         if (n.isString()) {
+             msg = "Is there a missing '+' on the previous line?";

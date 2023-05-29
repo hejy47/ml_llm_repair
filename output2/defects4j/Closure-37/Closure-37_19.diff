@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -3,15 +3,15 @@
+     Preconditions.checkState(n.isFunction());
+     final Node fnName = n.getFirstChild();
+     boolean isFunctionExpression = (parent != null) && NodeUtil.isFunctionExpression(n);
+-    if (!isFunctionExpression) {
+-        // Functions declarations are in the scope containing the declaration.
++    if (isFunctionExpression && fnName.isName()) {
++        // Function expression names are only accessible within the function
++        // scope.
+         traverseBranch(fnName, n);
+     }
+     curNode = n;
+     pushScope(n);
+-    if (isFunctionExpression) {
+-        // Function expression names are only accessible within the function
+-        // scope.
++    if (fnName.isQualifiedName()) {
++        // Functions declarations are in the scope containing the declaration.
+         traverseBranch(fnName, n);
+     }
+     final Node args = fnName.getNext();
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -7,7 +7,7 @@
+         if (functionType != FunctionNode.FUNCTION_EXPRESSION) {
+             errorReporter.error("unnamed function statement", sourceName, functionNode.getLineno(), "", 0);
+             // Return the bare minimum to put the AST in a valid state.
+-            return newNode(Token.EXPR_RESULT, Node.newNumber(0));
++            return newNode(Token.EMPTY, functionNode.getLineno());
+         }
+         name = new Name();
+         name.setIdentifier("");

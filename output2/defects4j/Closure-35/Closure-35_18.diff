@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferPropertyTypesToMatchConstraint
++++ com/google/javascript/jscomp/TypeInference.java@inferPropertyTypesToMatchConstraint
+@@ -11,7 +11,15 @@
+                 if (!objType.isPropertyTypeDeclared(prop)) {
+                     JSType typeToInfer = propType;
+                     if (!objType.hasProperty(prop)) {
+-                        typeToInfer = getNativeType(VOID_TYPE).getLeastSupertype(propType);
++                        // Check if the property type of the constraint is a callable type
++                        if (propType.isFunctionType()) {
++                            // Infer a function type for the object property
++                            typeToInfer = objType.getRegistry().getNativeType(
++                                JSTypeNative.FUNCTION_INSTANCE_TYPE).getLeastSupertype(propType);
++                        } else {
++                            // Otherwise, infer a regular property type
++                            typeToInfer = getNativeType(VOID_TYPE).getLeastSupertype(propType);
++                        }
+                     }
+                     objType.defineInferredProperty(prop, typeToInfer, null);
+                 }

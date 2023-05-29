@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/Compiler.java@initOptions
++++ com/google/javascript/jscomp/Compiler.java@initOptions
+@@ -14,10 +14,9 @@
+         options.checkTypes = true;
+     } else if (options.disables(DiagnosticGroups.CHECK_TYPES)) {
+         options.checkTypes = false;
+-    } else if (!options.checkTypes) {
+-        // If DiagnosticGroups did not override the plain checkTypes
+-        // option, and checkTypes is enabled, then turn off the
+-        // parser type warnings.
++    }
++    if (!options.checkTypes) {
++        // If checkTypes is disabled, turn off parser type warnings.
+         options.setWarningLevel(DiagnosticGroup.forType(RhinoErrorReporter.TYPE_PARSE_ERROR), CheckLevel.OFF);
+     }
+     if (options.checkGlobalThisLevel.isOn()) {

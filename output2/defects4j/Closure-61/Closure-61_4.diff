@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -16,7 +16,7 @@
+         if (callNode.hasOneChild() && OBJECT_METHODS_WITHOUT_SIDEEFFECTS.contains(nameNode.getLastChild().getString())) {
+             return false;
+         }
+-        if (callNode.isOnlyModifiesThisCall() && evaluatesToLocalValue(nameNode.getFirstChild())) {
++        if (callNode.isOnlyModifiesArgumentsCall() && evaluatesToLocalValue(nameNode.getFirstChild())) {
+             return false;
+         }
+         // Functions in the "Math" namespace have no side effects.

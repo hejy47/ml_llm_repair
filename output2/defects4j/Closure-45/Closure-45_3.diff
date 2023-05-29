@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
+@@ -1,8 +1,8 @@
+ Assign(Node assignNode, Node nameNode, boolean isPropertyAssign) {
+-    Preconditions.checkState(NodeUtil.isAssignmentOp(assignNode));
++    Preconditions.checkState(assignNode.isAssign() || assignNode.isExprResult() && assignNode.getFirstChild().isAssign());
+     this.assignNode = assignNode;
+     this.nameNode = nameNode;
+     this.isPropertyAssign = isPropertyAssign;
+-    this.maybeAliased = !assignNode.getParent().isExprResult();
++    this.maybeAliased = assignNode.isExprResult() || NodeUtil.mayHaveSideEffects(assignNode.getLastChild());
+     this.mayHaveSecondarySideEffects = maybeAliased || NodeUtil.mayHaveSideEffects(assignNode.getFirstChild()) || NodeUtil.mayHaveSideEffects(assignNode.getLastChild());
+ }
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
+@@ -10,6 +10,7 @@
+             if (referenced.contains(var)) {
+                 maybeUnreferenced.remove(current);
+                 current--;
++                changes = true; // added to indicate that changes were made
+             } else {
+                 boolean assignedToUnknownValue = false;
+                 boolean hasPropertyAssign = false;
+@@ -32,6 +33,7 @@
+                     changes = markReferencedVar(var) || changes;
+                     maybeUnreferenced.remove(current);
+                     current--;
++                    changes = true; // added to indicate that changes were made
+                 }
+             }
+         }

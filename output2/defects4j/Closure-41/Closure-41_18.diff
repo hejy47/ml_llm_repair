@@ -1,0 +1,59 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -17,6 +17,7 @@
+         Iterator<Node> oldParams = oldType.getParameters().iterator();
+         boolean warnedAboutArgList = false;
+         boolean oldParamsListHitOptArgs = false;
++        boolean currentParamIsOptional = false;
+         for (Node currentParam = paramsParent.getFirstChild(); currentParam != null; currentParam = currentParam.getNext()) {
+             if (oldParams.hasNext()) {
+                 Node oldParam = oldParams.next();
+@@ -26,10 +27,14 @@
+                 // arguments.
+                 if (currentParam.getNext() != null && newParam.isVarArgs()) {
+                     newParam.setVarArgs(false);
+-                    newParam.setOptionalArg(true);
++                    currentParamIsOptional = true;
+                 }
+             } else {
+-                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
++                currentParamIsOptional = codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs;
++                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, currentParamIsOptional, codingConvention.isVarArgsParameter(currentParam));
++            }
++            if (!currentParamIsOptional) {
++                oldParamsListHitOptArgs = true;
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -16,6 +16,7 @@
+     Set<String> allJsDocParams = (info == null) ? Sets.<String>newHashSet() : Sets.newHashSet(info.getParameterNames());
+     boolean foundTemplateType = false;
+     boolean isVarArgs = false;
++    boolean oldParamsListHitOptArgs = false;
+     for (Node arg : argsParent.children()) {
+         String argumentName = arg.getString();
+         allJsDocParams.remove(argumentName);
+@@ -29,6 +30,7 @@
+             parameterType = oldParameterType.getJSType();
+             isOptionalParam = oldParameterType.isOptionalArg();
+             isVarArgs = oldParameterType.isVarArgs();
++            oldParamsListHitOptArgs = oldParamsListHitOptArgs || isVarArgs || isOptionalParam;
+         } else {
+             parameterType = typeRegistry.getNativeType(UNKNOWN_TYPE);
+         }
+@@ -38,9 +40,12 @@
+             }
+             foundTemplateType = true;
+         }
+-        warnedAboutArgList |= addParameter(builder, parameterType, warnedAboutArgList, isOptionalParam, isVarArgs);
++        warnedAboutArgList |= addParameter(builder, parameterType, warnedAboutArgList, isOptionalParam || oldParamsListHitOptArgs, isVarArgs);
+         if (oldParameterType != null) {
+             oldParameterType = oldParameterType.getNext();
++        }
++        if (!isOptionalParam && !isVarArgs) {
++            oldParamsListHitOptArgs = true;
+         }
+     }
+     // Copy over any old parameters that aren't in the param list.

@@ -1,0 +1,22 @@
+--- com/google/javascript/rhino/IR.java@tryFinally
++++ com/google/javascript/rhino/IR.java@tryFinally
+@@ -1,6 +1,6 @@
+ public static Node tryFinally(Node tryBody, Node finallyBody) {
+-    Preconditions.checkState(tryBody.isLabelName());
+-    Preconditions.checkState(finallyBody.isLabelName());
+-    Node catchBody = block().copyInformationFrom(tryBody);
++    Preconditions.checkState(tryBody.isBlock());
++    Preconditions.checkState(finallyBody.isBlock());
++    Node catchBody = IR.block().copyInformationFrom(tryBody);
+     return new Node(Token.TRY, tryBody, catchBody, finallyBody);
+ }
+--- com/google/javascript/rhino/IR.java@tryCatch
++++ com/google/javascript/rhino/IR.java@tryCatch
+@@ -1,6 +1,6 @@
+ public static Node tryCatch(Node tryBody, Node catchNode) {
+     Preconditions.checkState(tryBody.isBlock());
+     Preconditions.checkState(catchNode.isCatch());
+-    Node catchBody = block(catchNode).copyInformationFrom(catchNode);
++    Node catchBody = catchNode.getLastChild();
+     return new Node(Token.TRY, tryBody, catchBody);
+ }

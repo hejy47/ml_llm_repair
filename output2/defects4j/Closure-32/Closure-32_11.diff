@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
++++ com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
+@@ -24,6 +24,7 @@
+             case STAR:
+                 if (ignoreStar) {
+                     // Mark the position after the star as the new start of the line.
++                    startCharno = stream.getCharno() + 1;
+                 } else {
+                     // The star is part of the comment.
+                     if (builder.length() > 0) {
+@@ -52,7 +53,7 @@
+                         multilineText = multilineText.trim();
+                     }
+                     int endLineno = stream.getLineno();
+-                    int endCharno = stream.getCharno();
++                    int endCharno = stream.getCharno() + 1;
+                     if (multilineText.length() > 0) {
+                         jsdocBuilder.markText(multilineText, startLineno, startCharno, endLineno, endCharno);
+                     }

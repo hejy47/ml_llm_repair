@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -10,7 +10,7 @@
+     }
+     // Be very conservative and do no cross control structures or
+     // scope boundaries
+-    if (declaration.getBasicBlock() != initialization.getBasicBlock() || declaration.getBasicBlock() != reference.getBasicBlock()) {
++    if (declaration.getBlock() != initialization.getBlock() || declaration.getBlock() != reference.getBlock()) {
+         return false;
+     }
+     // Do not inline into a call node. This would change
+@@ -24,12 +24,12 @@
+     // is ok.
+     Node value = initialization.getAssignedValue();
+     Preconditions.checkState(value != null);
+-    if (value.isGetProp() && reference.getParent().isCall() && reference.getParent().getFirstChild() == reference.getNode()) {
++    if (value.isGetProp() && reference.getParent().isCall() && reference.getParent().getFirstChild() == reference) {
+         return false;
+     }
+     if (value.isFunction()) {
+         Node callNode = reference.getParent();
+-        if (reference.getParent().isCall()) {
++        if (callNode != null && callNode.isCall()) {
+             CodingConvention convention = compiler.getCodingConvention();
+             // Bug 2388531: Don't inline subclass definitions into class defining
+             // calls as this confused class removing logic.

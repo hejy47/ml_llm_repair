@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
+@@ -30,13 +30,15 @@
+     for (i = 0; i < nodes.size() - 2; i++) {
+         cur.addChildToFront(nodes.get(i));
+         Node t = new Node(Token.COMMA);
++        t.setLinenoReplace(replace.getLineno());
++        t.setCharnoReplace(replace.getCharno());
+         cur.addChildToFront(t);
+         cur = t;
+     }
+     cur.addChildToFront(nodes.get(i));
+     cur.addChildToFront(nodes.get(i + 1));
+     Node replace = ref.getParent();
+-    replacement.copyInformationFromForTree(replace);
++    replacement.srcrefTree(replace);
+     if (replace.getType() == Token.VAR) {
+         replace.getParent().replaceChild(replace, NodeUtil.newExpr(replacement));
+     } else {

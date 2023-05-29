@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -33,7 +33,9 @@
+         case Token.OBJECTLIT:
+             // ignoring side-effects
+             return TernaryValue.TRUE;
++        case Token.PRIMARY:
++            return getPureBooleanValue(n);
+         default:
+-            return getPureBooleanValue(n);
++            return TernaryValue.UNKNOWN;
+     }
+ }

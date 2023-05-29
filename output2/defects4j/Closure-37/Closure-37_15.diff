@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -5,10 +5,12 @@
+     boolean isFunctionExpression = (parent != null) && NodeUtil.isFunctionExpression(n);
+     if (!isFunctionExpression) {
+         // Functions declarations are in the scope containing the declaration.
++        pushScope(n);
+         traverseBranch(fnName, n);
++    } else {
++        pushScope(n);
+     }
+     curNode = n;
+-    pushScope(n);
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -7,6 +7,7 @@
+         if (functionType != FunctionNode.FUNCTION_EXPRESSION) {
+             errorReporter.error("unnamed function statement", sourceName, functionNode.getLineno(), "", 0);
+             // Return the bare minimum to put the AST in a valid state.
++            // Update: changed null argument to zero as it needs to be initialized
+             return newNode(Token.EXPR_RESULT, Node.newNumber(0));
+         }
+         name = new Name();

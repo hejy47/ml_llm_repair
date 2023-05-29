@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@add
++++ com/google/javascript/jscomp/CodeConsumer.java@add
+@@ -8,11 +8,12 @@
+         // need space to separate. This is not pretty printing.
+         // For example: "return foo;"
+         append(" ");
++    }
++    if (c == '/' && getLastChar() == '/') {
+         // Do not allow a forward slash to appear after a DIV.
+-        // For example,
+-        // REGEXP DIV REGEXP
+-        // is valid and should print like
+-        // / // / /
++        // For example, REGEXP DIV REGEXP
++        // is valid and should print like / // / /
++        append(" ");
+     }
+     append(newcode);
+ }

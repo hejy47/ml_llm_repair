@@ -1,0 +1,51 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -7,8 +7,8 @@
+         // Functions declarations are in the scope containing the declaration.
+         traverseBranch(fnName, n);
+     }
+-    curNode = n;
+     pushScope(n);
++    curNode = n; // Moved this line to after pushScope(n) to avoid scope issues
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -19,11 +19,9 @@
+         // Old Rhino tagged the empty name node with the line number of the
+         // declaration.
+         newName.setLineno(functionNode.getLineno());
+-        // TODO(bowdidge) Mark line number of paren correctly.
+-        // Same problem as below - the left paren might not be on the
+-        // same line as the function keyword.
+-        int lpColumn = functionNode.getAbsolutePosition() + functionNode.getLp();
+-        newName.setCharno(position2charno(lpColumn));
++        // Mark line number of left paren correctly.
++        int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
++        newName.setCharno(position2charno(lparenCharno));
+         maybeSetLengthFrom(newName, name);
+     }
+     node.addChildToBack(newName);
+@@ -31,17 +29,10 @@
+     // The left paren's complicated because it's not represented by an
+     // AstNode, so there's nothing that has the actual line number that it
+     // appeared on.  We know the paren has to appear on the same line as the
+-    // function name (or else a semicolon will be inserted.)  If there's no
+-    // function name, assume the paren was on the same line as the function.
+-    // TODO(bowdidge): Mark line number of paren correctly.
+-    Name fnName = functionNode.getFunctionName();
+-    if (fnName != null) {
+-        lp.setLineno(fnName.getLineno());
+-    } else {
+-        lp.setLineno(functionNode.getLineno());
+-    }
+-    int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+-    lp.setCharno(position2charno(lparenCharno));
++    // function name (or else a semicolon will be inserted.) Mark the line
++    // number of the left paren correctly.
++    lp.setLineno(functionNode.getLpNode().getLineno());
++    lp.setCharno(functionNode.getLp()+functionNode.getLpNode().getCharno());
+     for (AstNode param : functionNode.getParams()) {
+         lp.addChildToBack(transform(param));
+     }

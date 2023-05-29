@@ -1,0 +1,75 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -1,25 +1,30 @@
+ private void traverseFunction(Node n, Node parent) {
++    Preconditions.checkState(n.hasChildren());
+     Preconditions.checkState(n.getChildCount() == 3);
+     Preconditions.checkState(n.isFunction());
+     final Node fnName = n.getFirstChild();
+     boolean isFunctionExpression = (parent != null) && NodeUtil.isFunctionExpression(n);
+     if (!isFunctionExpression) {
+         // Functions declarations are in the scope containing the declaration.
+-        traverseBranch(fnName, n);
++        traverseBranch(fnName);
+     }
+     curNode = n;
+     pushScope(n);
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+-        traverseBranch(fnName, n);
++        traverseBranch(fnName);
+     }
+     final Node args = fnName.getNext();
+     final Node body = args.getNext();
+     // Args
+-    traverseBranch(args, n);
++    if (args.hasChildren()) {
++        traverseBranch(args);
++    }
+     // Body
+     Preconditions.checkState(body.getNext() == null && body.isBlock());
+-    traverseBranch(body, n);
++    if (body.hasChildren()){
++        traverseBranch(body);
++    }
+     popScope();
+ }
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -2,12 +2,12 @@
+ Node processFunctionNode(FunctionNode functionNode) {
+     Name name = functionNode.getFunctionName();
+     Boolean isUnnamedFunction = false;
+-    if (name == null) {
++    if (name == null || isBlankName(name)) {
+         int functionType = functionNode.getFunctionType();
+         if (functionType != FunctionNode.FUNCTION_EXPRESSION) {
+             errorReporter.error("unnamed function statement", sourceName, functionNode.getLineno(), "", 0);
+             // Return the bare minimum to put the AST in a valid state.
+-            return newNode(Token.EXPR_RESULT, Node.newNumber(0));
++            return newNode(Token.EMPTY, functionNode.getLineno());
+         }
+         name = new Name();
+         name.setIdentifier("");
+@@ -35,10 +35,12 @@
+     // function name, assume the paren was on the same line as the function.
+     // TODO(bowdidge): Mark line number of paren correctly.
+     Name fnName = functionNode.getFunctionName();
++    int parentLineno = functionNode.getLineno();
+     if (fnName != null) {
+         lp.setLineno(fnName.getLineno());
++        parentLineno = fnName.getLineno();
+     } else {
+-        lp.setLineno(functionNode.getLineno());
++        lp.setLineno(parentLineno);
+     }
+     int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+     lp.setCharno(position2charno(lparenCharno));
+@@ -52,5 +54,6 @@
+     // Parser#parseFunctionBodyExpr.
+     parseDirectives(bodyNode);
+     node.addChildToBack(bodyNode);
++    node.setLineno(parentLineno);
+     return node;
+ }

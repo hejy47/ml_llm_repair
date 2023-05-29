@@ -1,0 +1,42 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -45,7 +45,15 @@
+             }
+             if (qVar.getScope() == scope) {
+                 scope.undeclare(qVar);
++                qVar = null;
+             }
++        }
++        if (qVar == null) {
++            // If the variable is assigned a value later in the program,
++            // the current node will be rechecked and declared properly.
++            // Declare the variable as untyped, so that if it is assigned
++            // using an object literal, its type will be narrowed.
++            qVar = scope.declare(name, null, null, null);
+         }
+     }
+     if (valueType == null) {
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -17,7 +17,8 @@
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+-        baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
++        prototype = new PrototypeObjectType(registry, getReferenceName() + ".prototype", getId(), null, baseType);
++    } else {
++        prototype = (PrototypeObjectType) baseType;
+     }
+-    setPrototype((PrototypeObjectType) baseType);
+ }
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -6,7 +6,7 @@
+     if (isConstructor() && prototype == getInstanceType()) {
+         return false;
+     }
+-    boolean replacedPrototype = prototype != null;
++    boolean replacedPrototype = this.prototype != null;
+     this.prototype = prototype;
+     this.prototypeSlot = new SimpleSlot("prototype", prototype, true);
+     this.prototype.setOwnerFunction(this);

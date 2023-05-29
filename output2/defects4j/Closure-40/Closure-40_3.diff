@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -4,8 +4,9 @@
+     if (t.inGlobalScope()) {
+         if (NodeUtil.isVarDeclaration(n)) {
+             NameInformation ns = createNameInformation(t, n, parent);
+-            Preconditions.checkNotNull(ns);
+-            recordSet(ns.name, n);
++            if (ns != null) { // Fixed null check
++                recordSet(ns.name, n);
++            }
+         } else if (NodeUtil.isFunctionDeclaration(n)) {
+             Node nameNode = n.getFirstChild();
+             NameInformation ns = createNameInformation(t, nameNode, n);

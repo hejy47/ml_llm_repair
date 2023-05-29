@@ -1,0 +1,57 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -9,20 +9,38 @@
+             return value.not();
+         case Token.AND:
+             {
++                // Check if either operand is UNKNOWN before getting their values
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
++                if (lhs == TernaryValue.UNKNOWN) {
++                    return TernaryValue.UNKNOWN;
++                }
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
++                if (rhs == TernaryValue.UNKNOWN) {
++                    return TernaryValue.UNKNOWN;
++                }
+                 return lhs.and(rhs);
+             }
+         case Token.OR:
+             {
++                // Check if either operand is UNKNOWN before getting their values
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
++                if (lhs == TernaryValue.UNKNOWN) {
++                    return TernaryValue.UNKNOWN;
++                }
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
++                if (rhs == TernaryValue.UNKNOWN) {
++                    return TernaryValue.UNKNOWN;
++                }
+                 return lhs.or(rhs);
+             }
+         case Token.HOOK:
+             {
+                 TernaryValue trueValue = getImpureBooleanValue(n.getFirstChild().getNext());
+                 TernaryValue falseValue = getImpureBooleanValue(n.getLastChild());
++                // Check if either operand is UNKNOWN before comparing them
++                if (trueValue == TernaryValue.UNKNOWN || falseValue == TernaryValue.UNKNOWN) {
++                    return TernaryValue.UNKNOWN;
++                }
+                 if (trueValue.equals(falseValue)) {
+                     return trueValue;
+                 } else {
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -5,7 +5,12 @@
+         case Token.NUMBER:
+             return TernaryValue.forBoolean(n.getDouble() != 0);
+         case Token.NOT:
+-            return getPureBooleanValue(n.getLastChild()).not();
++            // Check if the operand is UNKNOWN before getting its value
++            TernaryValue operand = getPureBooleanValue(n.getLastChild());
++            if (operand == TernaryValue.UNKNOWN) {
++                return TernaryValue.UNKNOWN;
++            }
++            return operand.not();
+         case Token.NULL:
+         case Token.FALSE:
+             return TernaryValue.FALSE;

@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -21,7 +21,7 @@
+             }
+         case Token.HOOK:
+             {
+-                TernaryValue trueValue = getImpureBooleanValue(n.getFirstChild().getNext());
++                TernaryValue trueValue = getImpureBooleanValue(n.getSecondChild());
+                 TernaryValue falseValue = getImpureBooleanValue(n.getLastChild());
+                 if (trueValue.equals(falseValue)) {
+                     return trueValue;
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -1,7 +1,7 @@
+ static TernaryValue getPureBooleanValue(Node n) {
+     switch(n.getType()) {
+         case Token.STRING:
+-            return TernaryValue.forBoolean(n.getString().length() > 0);
++            return TernaryValue.forBoolean(!n.getString().isEmpty());
+         case Token.NUMBER:
+             return TernaryValue.forBoolean(n.getDouble() != 0);
+         case Token.NOT:

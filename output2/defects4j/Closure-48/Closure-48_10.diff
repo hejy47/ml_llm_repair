@@ -1,0 +1,81 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -17,7 +17,7 @@
+     // FUNCTION literals are special because TypedScopeCreator is very smart
+     // about getting as much type information as possible for them.
+     // Determining type for #1 + #2 + #3 + #4
+-    JSType valueType = getDeclaredType(t.getSourceName(), info, n, rhsValue);
++    JSType valueType = getDeclaredType(t.getScope(),info, n, rhsValue);
+     if (valueType == null && rhsValue != null) {
+         // Determining type for #5
+         valueType = rhsValue.getJSType();
+@@ -28,7 +28,7 @@
+     // So if F does not have an explicitly declared super type,
+     // allow F.prototype to be redefined arbitrarily.
+     if ("prototype".equals(propName)) {
+-        Var qVar = scope.getVar(qName);
++        Var qVar = t.getScope().getVar(ownerName);
+         if (qVar != null) {
+             // If the programmer has declared that F inherits from Super,
+             // and they assign F.prototype to an object literal,
+@@ -46,8 +46,8 @@
+                 // what props are going to be on that prototype.
+                 return;
+             }
+-            if (qVar.getScope() == scope) {
+-                scope.undeclare(qVar);
++            if (qVar.getScope() == t.getScope()) {
++                t.getScope().undeclare(qVar);
+             }
+         }
+     }
+@@ -63,12 +63,14 @@
+     // The problem is that there are two (equally valid) coding styles:
+     //
+     // (function() {
+-    //       //   goog.bar = function() {};
++    //   /* The authoritative definition of goog.bar. */
++    //   goog.bar = function() {};
+     // })();
+     //
+     // function f() {
+     //   goog.bar();
+-    //       //   goog.bar = function() {};
++    //   /* Reset goog.bar to a no-op. */
++    //   goog.bar = function() {};
+     // }
+     //
+     // In a dynamic language with first-class functions, it's very difficult
+@@ -86,10 +88,10 @@
+     }
+     if (inferred) {
+         // Determining declaration for #2
+-        inferred = !(rhsValue != null && rhsValue.isFunction() && (info != null || !scope.isDeclared(qName, false)));
++        inferred = !(rhsValue != null && rhsValue.isFunction() && (info != null || !t.getScope().isDeclared(qName, false)));
+     }
+     if (!inferred) {
+-        ObjectType ownerType = getObjectSlot(ownerName);
++        ObjectType ownerType = getObjectSlot(t.getScope(),ownerName);
+         if (ownerType != null) {
+             // Only declare this as an official property if it has not been
+             // declared yet.
+@@ -101,16 +103,16 @@
+         }
+         // If the property is already declared, the error will be
+         // caught when we try to declare it in the current scope.
+-        defineSlot(n, parent, valueType, inferred);
++        defineSlot(t.getScope(),n, parent, valueType, inferred);
+     } else if (rhsValue != null && rhsValue.isTrue()) {
+         // We declare these for delegate proxy method properties.
+-        FunctionType ownerType = JSType.toMaybeFunctionType(getObjectSlot(ownerName));
++        FunctionType ownerType = JSType.toMaybeFunctionType(getObjectSlot(t.getScope(),ownerName));
+         if (ownerType != null) {
+             JSType ownerTypeOfThis = ownerType.getTypeOfThis();
+             String delegateName = codingConvention.getDelegateSuperclassName();
+             JSType delegateType = delegateName == null ? null : typeRegistry.getType(delegateName);
+             if (delegateType != null && ownerTypeOfThis.isSubtype(delegateType)) {
+-                defineSlot(n, parent, getNativeType(BOOLEAN_TYPE), true);
++                defineSlot(t.getScope(),n, parent, getNativeType(BOOLEAN_TYPE), true);
+             }
+         }
+     }

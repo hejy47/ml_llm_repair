@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/ProcessCommonJSModules.java@emitOptionalModuleExportsOverride
++++ com/google/javascript/jscomp/ProcessCommonJSModules.java@emitOptionalModuleExportsOverride
+@@ -1,4 +1,6 @@
+ private void emitOptionalModuleExportsOverride(Node script, String moduleName) {
+     Node moduleExportsProp = IR.getprop(IR.name(moduleName), IR.string("module$exports"));
+-    script.addChildToBack(IR.ifNode(moduleExportsProp, IR.block(IR.exprResult(IR.assign(IR.name(moduleName), moduleExportsProp.cloneTree())))).copyInformationFromForTree(script));
++    Node ifNode = IR.ifNode(moduleExportsProp, IR.block(IR.exprResult(IR.assign(IR.name(moduleName), moduleExportsProp.cloneTree()))));
++    ifNode.useSourceInfoIfMissingFromForTree(script);
++    script.addChildToBack(ifNode);
+ }
+--- com/google/javascript/jscomp/ProcessCommonJSModules.java@visitModuleExports
++++ com/google/javascript/jscomp/ProcessCommonJSModules.java@visitModuleExports
+@@ -1,9 +1,9 @@
+ private void visitModuleExports(Node prop) {
+     String moduleName = guessCJSModuleName(prop.getSourceFileName());
+-    Node module = prop.getChildAtIndex(0);
++    Node module = prop.getFirstChild();
+     module.putProp(Node.ORIGINALNAME_PROP, "module");
+     module.setString(moduleName);
+-    Node exports = prop.getChildAtIndex(1);
++    Node exports = prop.getLastChild();
+     exports.putProp(Node.ORIGINALNAME_PROP, "exports");
+     exports.setString("module$exports");
+ }

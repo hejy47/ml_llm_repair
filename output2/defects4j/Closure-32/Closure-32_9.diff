@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
++++ com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
+@@ -24,6 +24,7 @@
+             case STAR:
+                 if (ignoreStar) {
+                     // Mark the position after the star as the new start of the line.
++                    startCharno = stream.getCharno() + 1;
+                 } else {
+                     // The star is part of the comment.
+                     if (builder.length() > 0) {
+@@ -36,6 +37,7 @@
+             case EOL:
+                 if (option != WhitespaceOption.SINGLE_LINE) {
+                     builder.append("\n");
++                    startCharno = stream.getCharno() + 1;
+                 }
+                 ignoreStar = true;
+                 token = next();

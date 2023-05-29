@@ -1,0 +1,68 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -28,7 +28,7 @@
+     // So if F does not have an explicitly declared super type,
+     // allow F.prototype to be redefined arbitrarily.
+     if ("prototype".equals(propName)) {
+-        Var qVar = scope.getVar(qName);
++        Var qVar = t.getScope().getVar(qName);
+         if (qVar != null) {
+             // If the programmer has declared that F inherits from Super,
+             // and they assign F.prototype to an object literal,
+@@ -43,8 +43,8 @@
+                 // what props are going to be on that prototype.
+                 return;
+             }
+-            if (qVar.getScope() == scope) {
+-                scope.undeclare(qVar);
++            if (qVar.getScope() == t.getScope()) {
++                t.getScope().undeclare(qVar);
+             }
+         }
+     }
+@@ -61,10 +61,10 @@
+     }
+     if (inferred) {
+         // Determining declaration for #2
+-        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !scope.isDeclared(qName, false)));
++        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !t.getScope().isDeclared(qName, false)));
+     }
+     if (!inferred) {
+-        ObjectType ownerType = getObjectSlot(ownerName);
++        ObjectType ownerType = t.getTypedScope().getObjectSlot(ownerName);
+         if (ownerType != null) {
+             // Only declare this as an official property if it has not been
+             // declared yet.
+@@ -79,7 +79,7 @@
+         defineSlot(n, parent, valueType, inferred);
+     } else if (rhsValue != null && rhsValue.getType() == Token.TRUE) {
+         // We declare these for delegate proxy method properties.
+-        FunctionType ownerType = JSType.toMaybeFunctionType(getObjectSlot(ownerName));
++        FunctionType ownerType = JSType.toMaybeFunctionType(t.getTypedScope().getObjectSlot(ownerName));
+         if (ownerType != null) {
+             JSType ownerTypeOfThis = ownerType.getTypeOfThis();
+             String delegateName = codingConvention.getDelegateSuperclassName();
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -16,7 +16,7 @@
+     // later assigned to Bar will get inherited properly.
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+-    if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
++    if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeObject() || !(baseType instanceof PrototypeObjectType)) {
+         baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
+     }
+     setPrototype((PrototypeObjectType) baseType);
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -19,8 +19,8 @@
+         }
+         if (isInterface()) {
+             for (ObjectType interfaceType : getExtendedInterfaces()) {
+-                if (interfaceType.getConstructor() != null) {
+-                    interfaceType.getConstructor().addSubType(this);
++                if (interfaceType.getConstructorFunction() != null) {
++                    interfaceType.getConstructorFunction().addSubType(this);
+                 }
+             }
+         }

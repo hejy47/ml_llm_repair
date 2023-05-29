@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,7 +12,8 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+-        traverseBranch(fnName, n);
++        rewriteChildren(n);
++        traverseBranch(fnName.getFirstChild(), n);
+     }
+     final Node args = fnName.getNext();
+     final Node body = args.getNext();
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -51,6 +51,7 @@
+     // doesn't support, repair it here. see Rhino's
+     // Parser#parseFunctionBodyExpr.
+     parseDirectives(bodyNode);
++    rewriteChildren(bodyNode);
+     node.addChildToBack(bodyNode);
+     return node;
+ }

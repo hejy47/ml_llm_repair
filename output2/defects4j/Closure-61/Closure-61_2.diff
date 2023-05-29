@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -13,7 +13,7 @@
+             return false;
+         }
+     } else if (nameNode.getType() == Token.GETPROP) {
+-        if (callNode.hasOneChild() && OBJECT_METHODS_WITHOUT_SIDEEFFECTS.contains(nameNode.getLastChild().getString())) {
++        if (nameNode.getLastChild() != null && OBJECT_METHODS_WITHOUT_SIDEEFFECTS.contains(nameNode.getLastChild().getString())) {
+             return false;
+         }
+         if (callNode.isOnlyModifiesThisCall() && evaluatesToLocalValue(nameNode.getFirstChild())) {
+@@ -21,9 +21,9 @@
+         }
+         // Functions in the "Math" namespace have no side effects.
+         if (compiler != null && !compiler.hasRegExpGlobalReferences()) {
+-            if (nameNode.getFirstChild().getType() == Token.REGEXP && REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
++            if (nameNode.getFirstChild() != null && nameNode.getFirstChild().getType() == Token.REGEXP && REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
+                 return false;
+-            } else if (nameNode.getFirstChild().getType() == Token.STRING && STRING_REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
++            } else if (nameNode.getFirstChild() != null && nameNode.getFirstChild().getType() == Token.STRING && STRING_REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
+                 Node param = nameNode.getNext();
+                 if (param != null && (param.getType() == Token.STRING || param.getType() == Token.REGEXP))
+                     return false;

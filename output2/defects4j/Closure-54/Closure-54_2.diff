@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -35,7 +35,7 @@
+             // then they are responsible for making sure that the object literal's
+             // implicit prototype is set up appropriately. We just obey
+             // the @extends tag.
+-            if (!qVar.isTypeInferred()) {
++            if (!qVar.isTypeInferred() || !qName.startsWith("this.")) {
+                 // If the programmer has declared that F inherits from Super,
+                 // and they assign F.prototype to some arbitrary expression,
+                 // there's not much we can do. We just ignore the expression,
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -16,7 +16,7 @@
+     // later assigned to Bar will get inherited properly.
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+-    if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
++    if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType) || getReferenceName() == null) {
+         baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
+     }
+     setPrototype((PrototypeObjectType) baseType);

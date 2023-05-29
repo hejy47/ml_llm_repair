@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -13,12 +13,8 @@
+     }
+     double index = right.getDouble();
+     int intIndex = (int) index;
+-    if (intIndex != index) {
++    if (intIndex != index || index < 0) { // consider negative integer index as invalid
+         error(INVALID_GETELEM_INDEX_ERROR, right);
+-        return n;
+-    }
+-    if (intIndex < 0) {
+-        error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }
+     Node current = left.getFirstChild();
+@@ -27,11 +23,11 @@
+         elem = current;
+         current = current.getNext();
+     }
+-    if (elem == null) {
++    if (current == null) { // check if the index is out of bounds
+         error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }
+-    if (elem.isEmpty()) {
++    if (elem == null) {
+         elem = NodeUtil.newUndefinedNode(elem);
+     } else {
+         left.removeChild(elem);

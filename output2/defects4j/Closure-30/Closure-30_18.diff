@@ -1,0 +1,40 @@
+--- com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@process
++++ com/google/javascript/jscomp/FlowSensitiveInlineVariables.java@process
+@@ -1,4 +1,4 @@
+ @Override
+ public void process(Node externs, Node root) {
+-    (new NodeTraversal(compiler, this)).traverse(root);
++    NodeTraversal.traverse(compiler, root, new MyTraversalCallback());
+ }
+--- com/google/javascript/jscomp/MustBeReachingVariableDef.java@computeDependence
++++ com/google/javascript/jscomp/MustBeReachingVariableDef.java@computeDependence
+@@ -1,5 +1,5 @@
+ private void computeDependence(final Definition def, Node rValue) {
+-    NodeTraversal.traverse(compiler, rValue, new AbstractCfgNodeTraversalCallback() {
++    NodeTraversal.traverse(compiler, rValue, new AbstractShallowCallback() { // Change to shallow traversal
+ 
+         @Override
+         public void visit(NodeTraversal t, Node n, Node parent) {
+--- com/google/javascript/jscomp/MustBeReachingVariableDef.java@visit
++++ com/google/javascript/jscomp/MustBeReachingVariableDef.java@visit
+@@ -1,7 +1,4 @@
+ @Override
+-public void visit(NodeTraversal t, Node n, Node parent) {
+-    if (n.isName() && jsScope.isDeclared(n.getString(), true)) {
+-        Var dep = jsScope.getVar(n.getString());
+-        def.depends.add(dep);
+-    }
++public void process(Node externs, Node root) {
++    NodeTraversal.traverse(compiler, root, new MyTraversalCallback());
+ }
+--- com/google/javascript/jscomp/MustBeReachingVariableDef.java@dependsOnOuterScopeVars
++++ com/google/javascript/jscomp/MustBeReachingVariableDef.java@dependsOnOuterScopeVars
+@@ -4,7 +4,7 @@
+     FlowState<MustDef> state = n.getAnnotation();
+     Definition def = state.getIn().reachingDef.get(jsScope.getVar(name));
+     for (Var s : def.depends) {
+-        if (s.scope != jsScope) {
++        if (s.getScope() != jsScope) { // Use getScope() method instead of scope property
+             return true;
+         }
+     }

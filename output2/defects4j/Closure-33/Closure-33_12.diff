@@ -1,0 +1,21 @@
+--- com/google/javascript/rhino/jstype/PrototypeObjectType.java@matchConstraint
++++ com/google/javascript/rhino/jstype/PrototypeObjectType.java@matchConstraint
+@@ -8,15 +8,15 @@
+     // f({});
+     //
+     // We want to modify the object literal to match the constraint, by
+-    // taking any each property on the record and trying to match
++    // taking each property on the record and trying to match
+     // properties on this object.
+     if (constraintObj.isRecordType()) {
+         for (String prop : constraintObj.getOwnPropertyNames()) {
+-            JSType propType = constraintObj.getPropertyType(prop);
++            JSType propType = constraintObj.getOwnPropertyType(prop);
+             if (!isPropertyTypeDeclared(prop)) {
+                 JSType typeToInfer = propType;
+                 if (!hasProperty(prop)) {
+-                    typeToInfer = getNativeType(JSTypeNative.VOID_TYPE).getLeastSupertype(propType);
++                    typeToInfer = JSType.join(getNativeType(JSTypeNative.VOID_TYPE), propType);
+                 }
+                 defineInferredProperty(prop, typeToInfer, null);
+             }

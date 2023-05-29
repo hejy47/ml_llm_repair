@@ -1,0 +1,40 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -6,19 +6,15 @@
+     if (isAssignmentTarget(n)) {
+         return n;
+     }
+-    if (!right.isNumber()) {
++    if (!NodeUtil.isImmutableValue(right)) { // Check if right is an immutable value
+         // Sometimes people like to use complex expressions to index into
+         // arrays, or strings to index into array methods.
+         return n;
+     }
+     double index = right.getDouble();
+     int intIndex = (int) index;
+-    if (intIndex != index) {
++    if (intIndex != index || intIndex < 0) { // check if index is a non-negative integer
+         error(INVALID_GETELEM_INDEX_ERROR, right);
+-        return n;
+-    }
+-    if (intIndex < 0) {
+-        error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }
+     Node current = left.getFirstChild();
+@@ -27,12 +23,12 @@
+         elem = current;
+         current = current.getNext();
+     }
+-    if (elem == null) {
++    if (current == null) { // check if index is out of bounds
+         error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }
+-    if (elem.isEmpty()) {
+-        elem = NodeUtil.newUndefinedNode(elem);
++    if (elem == null) {
++        elem = NodeUtil.newUndefinedNode(left); // replace with undefined node
+     } else {
+         left.removeChild(elem);
+     }

@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -13,11 +13,11 @@
+     }
+     double index = right.getDouble();
+     int intIndex = (int) index;
+-    if (intIndex != index) {
++    if (intIndex != index || Double.isNaN(index) || Double.isInfinite(index)) {
+         error(INVALID_GETELEM_INDEX_ERROR, right);
+         return n;
+     }
+-    if (intIndex < 0) {
++    if (intIndex < 0 || intIndex >= left.getChildCount()) {
+         error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }

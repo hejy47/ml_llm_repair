@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -3,7 +3,7 @@
+     // If GETPROP/GETELEM is used as assignment target the array literal is
+     // acting as a temporary we can't fold it here:
+     //    "[][0] += 1"
+-    if (isAssignmentTarget(n)) {
++    if (NodeUtil.isAssignmentTarget(n)) {
+         return n;
+     }
+     if (!right.isNumber()) {
+@@ -13,7 +13,7 @@
+     }
+     double index = right.getDouble();
+     int intIndex = (int) index;
+-    if (intIndex != index) {
++    if (intIndex != index || Double.isInfinite(index) || Double.isNaN(index)) {
+         error(INVALID_GETELEM_INDEX_ERROR, right);
+         return n;
+     }
+@@ -32,12 +32,12 @@
+         return n;
+     }
+     if (elem.isEmpty()) {
+-        elem = NodeUtil.newUndefinedNode(elem);
++        elem = NodeUtil.newUndefinedNode(n);
+     } else {
+         left.removeChild(elem);
+     }
+     // Replace the entire GETELEM with the value
+-    n.getParent().replaceChild(n, elem);
++    parent.replaceChild(n, elem.detachFromParent());
+     reportCodeChange();
+     return elem;
+ }

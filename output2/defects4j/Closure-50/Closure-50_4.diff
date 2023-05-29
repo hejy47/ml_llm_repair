@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -26,10 +26,13 @@
+         if (NodeUtil.isImmutableValue(elem) || elem.getType() == Token.EMPTY) {
+             if (sb == null) {
+                 sb = new StringBuilder();
+-            } else {
+-                sb.append(joinString);
+             }
+-            sb.append(NodeUtil.getArrayElementStringValue(elem));
++            if (NodeUtil.getArrayElementStringValue(elem) != null) {
++                if (sb.length() > 0) {
++                    sb.append(joinString);
++                }
++                sb.append(NodeUtil.getArrayElementStringValue(elem));
++            }
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);

@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -38,8 +38,16 @@
+                     break;
+             }
+         }
+-    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+-        if (!(parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext()))) {
++    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK && parent.getType() != Token.SWITCH && parent.getType() != Token.TRY) {
++        // Fix for issue #831 on github.
++        // Don't warn about a missing 'use strict' in the module header.
++        if (parent.getType() == Token.SCRIPT && n == parent.getFirstChild()) {
++            for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
++                if (c.isString() && c.getString().equals("use strict")) {
++                    return;
++                }
++            }
++        } else if (!(parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext()))) {
+             return;
+         }
+     }

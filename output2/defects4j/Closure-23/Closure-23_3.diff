@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -13,24 +13,15 @@
+     }
+     double index = right.getDouble();
+     int intIndex = (int) index;
+-    if (intIndex != index) {
++    if (intIndex != index || Double.isNaN(index) || Double.isInfinite(index)) { // added check for NaN and Infinite
+         error(INVALID_GETELEM_INDEX_ERROR, right);
+         return n;
+     }
+-    if (intIndex < 0) {
++    if (intIndex < 0 || intIndex >= left.getChildCount()) { // added check for out-of-bounds index
+         error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }
+-    Node current = left.getFirstChild();
+-    Node elem = null;
+-    for (int i = 0; current != null && i < intIndex; i++) {
+-        elem = current;
+-        current = current.getNext();
+-    }
+-    if (elem == null) {
+-        error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+-        return n;
+-    }
++    Node elem = left.getChildAtIndex(intIndex); // simplified get-index logic
+     if (elem.isEmpty()) {
+         elem = NodeUtil.newUndefinedNode(elem);
+     } else {

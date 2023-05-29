@@ -1,0 +1,13 @@
+--- com/google/javascript/rhino/jstype/PrototypeObjectType.java@matchConstraint
++++ com/google/javascript/rhino/jstype/PrototypeObjectType.java@matchConstraint
+@@ -10,7 +10,9 @@
+     // We want to modify the object literal to match the constraint, by
+     // taking any each property on the record and trying to match
+     // properties on this object.
+-    if (constraintObj.isRecordType()) {
++    
++    // Check if constraintObj is a record type and not a named type or generic type.
++    if (constraintObj != null && constraintObj.getDisplayName().equals("{Object}")) {
+         for (String prop : constraintObj.getOwnPropertyNames()) {
+             JSType propType = constraintObj.getPropertyType(prop);
+             if (!isPropertyTypeDeclared(prop)) {

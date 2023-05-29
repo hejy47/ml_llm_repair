@@ -1,0 +1,43 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
+@@ -1,5 +1,5 @@
+ Assign(Node assignNode, Node nameNode, boolean isPropertyAssign) {
+-    Preconditions.checkState(NodeUtil.isAssignmentOp(assignNode));
++    Preconditions.checkState(assignNode.isAssign() || assignNode.isName());
+     this.assignNode = assignNode;
+     this.nameNode = nameNode;
+     this.isPropertyAssign = isPropertyAssign;
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
+@@ -1,15 +1,14 @@
+ private void interpretAssigns() {
+     boolean changes = false;
++    Iterator<Var> iterator;
+     do {
+         changes = false;
+-        // We can't use traditional iterators and iterables for this list,
+-        // because our lazily-evaluated continuations will modify it while
+-        // we traverse it.
+-        for (int current = 0; current < maybeUnreferenced.size(); current++) {
+-            Var var = maybeUnreferenced.get(current);
++        // Use an iterator instead of a for loop to safely remove elements from the list
++        iterator = maybeUnreferenced.iterator();
++        while (iterator.hasNext()) {
++            Var var = iterator.next();
+             if (referenced.contains(var)) {
+-                maybeUnreferenced.remove(current);
+-                current--;
++                iterator.remove();
+             } else {
+                 boolean assignedToUnknownValue = false;
+                 boolean hasPropertyAssign = false;
+@@ -30,8 +29,7 @@
+                 }
+                 if (assignedToUnknownValue && hasPropertyAssign) {
+                     changes = markReferencedVar(var) || changes;
+-                    maybeUnreferenced.remove(current);
+-                    current--;
++                    iterator.remove();
+                 }
+             }
+         }

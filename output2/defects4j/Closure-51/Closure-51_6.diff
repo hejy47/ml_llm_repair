@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -10,7 +10,7 @@
+         long mantissa = value;
+         int exp = 0;
+         if (Math.abs(x) >= 100) {
+-            while (mantissa / 10 * Math.pow(10, exp + 1) == value) {
++            while (mantissa % 10 == 0 && Math.abs(x) >= 100) {
+                 mantissa /= 10;
+                 exp++;
+             }

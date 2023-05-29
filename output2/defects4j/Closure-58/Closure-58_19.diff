@@ -1,0 +1,63 @@
+--- com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
++++ com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
+@@ -7,11 +7,12 @@
+         case Token.WHILE:
+         case Token.DO:
+         case Token.IF:
+-            computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++            computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, true);
++            computeGenKill(n.getFirstChild(), gen, kill, conditional);
+             return;
+         case Token.FOR:
+             if (!NodeUtil.isForIn(n)) {
+-                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, true);
+             } else {
+                 // for(x in y) {...}
+                 Node lhs = n.getFirstChild();
+@@ -22,13 +23,15 @@
+                 }
+                 addToSetIfLocal(lhs, kill);
+                 addToSetIfLocal(lhs, gen);
+-                computeGenKill(rhs, gen, kill, conditional);
++                computeGenKill(rhs, gen, kill, true);
+             }
++            computeGenKill(n.getLastChild(), gen, kill, false);
+             return;
+         case Token.VAR:
+             for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+                 if (c.hasChildren()) {
+-                    computeGenKill(c.getFirstChild(), gen, kill, conditional);
++                    computeGenKill(c.getFirstChild(), gen, kill, true);
++                    // Variables declared conditionally are not added to the kill set.
+                     if (!conditional) {
+                         addToSetIfLocal(c, kill);
+                     }
+@@ -37,12 +40,12 @@
+             return;
+         case Token.AND:
+         case Token.OR:
+-            computeGenKill(n.getFirstChild(), gen, kill, conditional);
++            computeGenKill(n.getFirstChild(), gen, kill, true);
+             // May short circuit.
+             computeGenKill(n.getLastChild(), gen, kill, true);
+             return;
+         case Token.HOOK:
+-            computeGenKill(n.getFirstChild(), gen, kill, conditional);
++            computeGenKill(n.getFirstChild(), gen, kill, true);
+             // Assume both sides are conditional.
+             computeGenKill(n.getFirstChild().getNext(), gen, kill, true);
+             computeGenKill(n.getLastChild(), gen, kill, true);
+@@ -64,10 +67,10 @@
+                     // assignments such as a += 1 reads a.
+                     addToSetIfLocal(lhs, gen);
+                 }
+-                computeGenKill(lhs.getNext(), gen, kill, conditional);
++                computeGenKill(lhs.getNext(), gen, kill, true);
+             } else {
+                 for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+-                    computeGenKill(c, gen, kill, conditional);
++                    computeGenKill(c, gen, kill, true);
+                 }
+             }
+             return;

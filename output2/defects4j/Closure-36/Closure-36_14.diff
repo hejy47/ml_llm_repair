@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -29,7 +29,7 @@
+     }
+     if (value.isFunction()) {
+         Node callNode = reference.getParent();
+-        if (reference.getParent().isCall()) {
++        if (callNode.isCall()) {
+             CodingConvention convention = compiler.getCodingConvention();
+             // Bug 2388531: Don't inline subclass definitions into class defining
+             // calls as this confused class removing logic.

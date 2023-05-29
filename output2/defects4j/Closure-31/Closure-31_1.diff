@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -98,7 +98,7 @@
+                 continue;
+             }
+             if (devMode) {
+-                runSanityCheck();
++                runSanityCheck(n); // This function was missing the parameter. Hence added the same.
+                 if (hasErrors()) {
+                     return null;
+                 }

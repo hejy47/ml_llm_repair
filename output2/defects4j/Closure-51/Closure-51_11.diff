@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -5,7 +5,7 @@
+     if (x < 0 && prev == '-') {
+         add(" ");
+     }
+-    if ((long) x == x) {
++    if (Math.round(x) == x) { // use Math.round to check if x is a whole number
+         long value = (long) x;
+         long mantissa = value;
+         int exp = 0;

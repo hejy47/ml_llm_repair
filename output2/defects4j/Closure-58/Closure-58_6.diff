@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
++++ com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
+@@ -7,11 +7,15 @@
+         case Token.WHILE:
+         case Token.DO:
+         case Token.IF:
+-            computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++            if (NodeUtil.getConditionExpression(n) != null) { // add null check 
++                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++            }
+             return;
+         case Token.FOR:
+             if (!NodeUtil.isForIn(n)) {
+-                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++                if (NodeUtil.getConditionExpression(n) != null) { // add null check 
++                    computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++                }
+             } else {
+                 // for(x in y) {...}
+                 Node lhs = n.getFirstChild();
+@@ -30,7 +34,7 @@
+                 if (c.hasChildren()) {
+                     computeGenKill(c.getFirstChild(), gen, kill, conditional);
+                     if (!conditional) {
+-                        addToSetIfLocal(c, kill);
++                        addToSetIfLocal(c.getFirstChild(), kill); // fix wrong parameter passed
+                     }
+                 }
+             }

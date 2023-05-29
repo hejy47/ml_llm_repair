@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -23,13 +23,13 @@
+     Node elem = arrayNode.getFirstChild();
+     // Merges adjacent String nodes.
+     while (elem != null) {
+-        if (NodeUtil.isImmutableValue(elem) || elem.getType() == Token.EMPTY) {
++        if (NodeUtil.isStringLiteral(elem) || elem.getType() == Token.EMPTY) {
+             if (sb == null) {
+                 sb = new StringBuilder();
+             } else {
+                 sb.append(joinString);
+             }
+-            sb.append(NodeUtil.getArrayElementStringValue(elem));
++            sb.append(elem.getString());
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);
+@@ -37,6 +37,9 @@
+                 foldedSize += sb.length() + 2;
+                 arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+                 sb = null;
++            }
++            if (!NodeUtil.isImmutableValue(elem)) {
++                return n;
+             }
+             foldedSize += InlineCostEstimator.getCost(elem);
+             arrayFoldedChildren.add(elem);

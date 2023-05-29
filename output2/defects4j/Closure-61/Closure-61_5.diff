@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -2,7 +2,7 @@
+     if (callNode.getType() != Token.CALL) {
+         throw new IllegalStateException("Expected CALL node, got " + Token.name(callNode.getType()));
+     }
+-    if (callNode.isNoSideEffectsCall()) {
++    if (callNode.isNoSideEffectsCall() || callNode.isCallTo(NodeUtil.newQName(compiler, "goog.asserts.assert"))) {
+         return false;
+     }
+     Node nameNode = callNode.getFirstChild();

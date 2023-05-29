@@ -1,0 +1,39 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -29,10 +29,15 @@
+                     newParam.setOptionalArg(true);
+                 }
+             } else {
+-                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
++                boolean isOptArg = codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs;
++                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), isOptArg, codingConvention.isVarArgsParameter(currentParam));
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
++        while (oldParams.hasNext()) {
++            Node oldParam = oldParams.next();
++            paramBuilder.newParameterFromNode(oldParam);
++        }
+         parametersNode = paramBuilder.build();
+     }
+     return this;
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -38,12 +38,16 @@
+             }
+             foundTemplateType = true;
+         }
+-        warnedAboutArgList |= addParameter(builder, parameterType, warnedAboutArgList, isOptionalParam, isVarArgs);
++        warnedAboutArgList |= addParameter(builder, parameterType, isOptionalParam, isVarArgs);
+         if (oldParameterType != null) {
+             oldParameterType = oldParameterType.getNext();
+         }
+     }
+     // Copy over any old parameters that aren't in the param list.
++    while (oldParameterType != null) {
++        builder.newParameterFromNode(oldParameterType).setOptionalArg(oldParameterType.isOptionalArg()).setVarArgs(oldParameterType.isVarArgs());
++        oldParameterType = oldParameterType.getNext();
++    }
+     if (templateTypeName != null && !foundTemplateType) {
+         reportError(TEMPLATE_TYPE_EXPECTED, fnName);
+     }

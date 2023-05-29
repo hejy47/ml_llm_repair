@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/AnalyzePrototypeProperties.java@isPrototypePropertyAssign
++++ com/google/javascript/jscomp/AnalyzePrototypeProperties.java@isPrototypePropertyAssign
+@@ -5,7 +5,7 @@
+         boolean isChainedProperty = n.getFirstChild().getType() == Token.GETPROP;
+         if (isChainedProperty) {
+             Node child = n.getFirstChild().getFirstChild().getNext();
+-            if (child.getType() == Token.STRING && child.getString().equals("prototype")) {
++            if (child != null && child.getType() == Token.STRING && child.getString().equals("prototype")) { // Added null check for child node
+                 return true;
+             }
+         }

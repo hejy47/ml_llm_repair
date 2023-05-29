@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processForInLoop
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processForInLoop
+@@ -1,5 +1,10 @@
+ @Override
+ Node processForInLoop(ForInLoop loopNode) {
+-    // Return the bare minimum to put the AST in a valid state.
+-    return newNode(Token.FOR, transform(loopNode.getIterator()), transform(loopNode.getIteratedObject()), transformBlock(loopNode.getBody()));
++    // Wrap the transformed body in a block node if it is not already a block.
++    Node processedBody = transform(loopNode.getBody());
++    if (processedBody.isBlock()) {
++        return newNode(Token.FOR, transform(loopNode.getIterator()), transform(loopNode.getIteratedObject()), processedBody);
++    } else {
++        return newNode(Token.FOR, transform(loopNode.getIterator()), transform(loopNode.getIteratedObject()), new Block(processedBody));
++    }
+ }

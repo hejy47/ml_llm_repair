@@ -1,0 +1,47 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -28,7 +28,7 @@
+     // So if F does not have an explicitly declared super type,
+     // allow F.prototype to be redefined arbitrarily.
+     if ("prototype".equals(propName)) {
+-        Var qVar = scope.getVar(qName);
++        Var qVar = t.getScope().getVar(qName);
+         if (qVar != null) {
+             // If the programmer has declared that F inherits from Super,
+             // and they assign F.prototype to an object literal,
+@@ -43,8 +43,8 @@
+                 // what props are going to be on that prototype.
+                 return;
+             }
+-            if (qVar.getScope() == scope) {
+-                scope.undeclare(qVar);
++            if (qVar.getScope() == t.getScope()) {
++                t.getScope().undeclare(qVar);
+             }
+         }
+     }
+@@ -61,7 +61,7 @@
+     }
+     if (inferred) {
+         // Determining declaration for #2
+-        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !scope.isDeclared(qName, false)));
++        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !t.getScope().isDeclared(qName, false)));
+     }
+     if (!inferred) {
+         ObjectType ownerType = getObjectSlot(ownerName);
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -19,5 +19,12 @@
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+         baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
+     }
+-    setPrototype((PrototypeObjectType) baseType);
++    if (baseType instanceof AnonymousObjectType) {
++        // If baseType is an anonymous object, then we set it as the prototype directly.
++        setPrototype((AnonymousObjectType) baseType);
++    } else {
++        PrototypeObjectType newPrototype = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", null);
++        newPrototype.setImplicitPrototype(baseType);
++        setPrototype(newPrototype);
++    }
+ }

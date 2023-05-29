@@ -1,0 +1,44 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -6,18 +6,14 @@
+     if (isAssignmentTarget(n)) {
+         return n;
+     }
+-    if (!right.isNumber()) {
++    if (!NodeUtil.isImmutableValue(right)) { // Changed to check if the right node is an immutable value
+         // Sometimes people like to use complex expressions to index into
+         // arrays, or strings to index into array methods.
+         return n;
+     }
+     double index = right.getDouble();
+     int intIndex = (int) index;
+-    if (intIndex != index) {
+-        error(INVALID_GETELEM_INDEX_ERROR, right);
+-        return n;
+-    }
+-    if (intIndex < 0) {
++    if (intIndex != index || intIndex < 0) { // Combined the negative check with the index equality check
+         error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }
+@@ -27,17 +23,12 @@
+         elem = current;
+         current = current.getNext();
+     }
+-    if (elem == null) {
++    if (elem == null || !elem.isGetProp()) { // Added a check to ensure elem is a GETPROP node
+         error(INDEX_OUT_OF_BOUNDS_ERROR, right);
+         return n;
+     }
+-    if (elem.isEmpty()) {
+-        elem = NodeUtil.newUndefinedNode(elem);
+-    } else {
+-        left.removeChild(elem);
+-    }
+     // Replace the entire GETELEM with the value
+-    n.getParent().replaceChild(n, elem);
++    n.getParent().replaceChild(n, elem.getLastChild()); // Changed to replace with the property value instead of the entire GETPROP node
+     reportCodeChange();
+-    return elem;
++    return elem.getLastChild();
+ }

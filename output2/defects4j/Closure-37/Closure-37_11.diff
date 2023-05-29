@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,7 +12,9 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+-        traverseBranch(fnName, n);
++        pushScope(fnName); // fix
++        traverseBranch(fnName.getNext(), n); // fix
++        popScope(); // fix
+     }
+     final Node args = fnName.getNext();
+     final Node body = args.getNext();
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -25,6 +25,8 @@
+         int lpColumn = functionNode.getAbsolutePosition() + functionNode.getLp();
+         newName.setCharno(position2charno(lpColumn));
+         maybeSetLengthFrom(newName, name);
++        // add name to current scope fix
++        addToScope(name, newName, Scope.NamedSymbolKind.FUNCTION_DECLARATION); // fix
+     }
+     node.addChildToBack(newName);
+     Node lp = newNode(Token.PARAM_LIST);

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -10,7 +10,7 @@
+     }
+     // Be very conservative and do no cross control structures or
+     // scope boundaries
+-    if (declaration.getBasicBlock() != initialization.getBasicBlock() || declaration.getBasicBlock() != reference.getBasicBlock()) {
++    if (!Objects.equals(declaration.getBasicBlock(), initialization.getBasicBlock()) || !Objects.equals(declaration.getBasicBlock(), reference.getBasicBlock())) {
+         return false;
+     }
+     // Do not inline into a call node. This would change

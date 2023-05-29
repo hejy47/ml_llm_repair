@@ -1,0 +1,56 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -11,13 +11,25 @@
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.and(rhs);
++                if (lhs == TernaryValue.FALSE) {
++                    return TernaryValue.FALSE;
++                } else if (lhs == TernaryValue.TRUE && rhs == TernaryValue.TRUE) {
++                    return TernaryValue.TRUE;
++                } else {
++                    return TernaryValue.UNKNOWN;
++                }
+             }
+         case Token.OR:
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.or(rhs);
++                if (lhs == TernaryValue.TRUE) {
++                    return TernaryValue.TRUE;
++                } else if (lhs == TernaryValue.FALSE && rhs == TernaryValue.FALSE) {
++                    return TernaryValue.FALSE;
++                } else {
++                    return TernaryValue.UNKNOWN;
++                }
+             }
+         case Token.HOOK:
+             {
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -19,8 +19,9 @@
+                 return TernaryValue.FALSE;
+             } else if ("Infinity".equals(name)) {
+                 return TernaryValue.TRUE;
++            } else {
++                return TernaryValue.UNKNOWN;
+             }
+-            break;
+         case Token.TRUE:
+         case Token.REGEXP:
+             return TernaryValue.TRUE;
+@@ -28,8 +29,10 @@
+         case Token.OBJECTLIT:
+             if (!mayHaveSideEffects(n)) {
+                 return TernaryValue.TRUE;
++            } else {
++                return TernaryValue.UNKNOWN;
+             }
+-            break;
++        default:
++            return TernaryValue.UNKNOWN;
+     }
+-    return TernaryValue.UNKNOWN;
+ }

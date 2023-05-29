@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -5,20 +5,23 @@
+     if (x < 0 && prev == '-') {
+         add(" ");
+     }
+-    if ((long) x == x) {
++    // Use Double.compare to compare double values for equality
++    if (Double.compare((long)x, x) == 0) {
+         long value = (long) x;
+         long mantissa = value;
+         int exp = 0;
+         if (Math.abs(x) >= 100) {
++            // Use Math.pow instead of ** for exponentiation
+             while (mantissa / 10 * Math.pow(10, exp + 1) == value) {
+                 mantissa /= 10;
+                 exp++;
+             }
+         }
++        // Use String.format to format the mantissa and exponent
+         if (exp > 2) {
+-            add(Long.toString(mantissa) + "E" + Integer.toString(exp));
++            add(String.format("%dE%d", mantissa, exp));
+         } else {
+-            add(Long.toString(value));
++            add(String.format("%d", value));
+         }
+     } else {
+         add(String.valueOf(x));

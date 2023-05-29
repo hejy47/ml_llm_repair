@@ -1,0 +1,11 @@
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -17,7 +17,7 @@
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+-        baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
++        baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType,  null);
+     }
+     setPrototype((PrototypeObjectType) baseType);
+ }

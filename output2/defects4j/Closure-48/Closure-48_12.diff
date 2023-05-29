@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -3,7 +3,8 @@
+     String ownerName = ownerNode.getQualifiedName();
+     String qName = n.getQualifiedName();
+     String propName = n.getLastChild().getString();
+-    Preconditions.checkArgument(qName != null && ownerName != null);
++    Preconditions.checkNotNull(qName);
++    Preconditions.checkNotNull(ownerName);
+     // Precedence of type information on GETPROPs:
+     // 1) @type annnotation / @enum annotation
+     // 2) ASSIGN to FUNCTION literal
+@@ -63,12 +64,14 @@
+     // The problem is that there are two (equally valid) coding styles:
+     //
+     // (function() {
+-    //       //   goog.bar = function() {};
++    //   /* The authoritative definition of goog.bar. */
++    //   goog.bar = function() {};
+     // })();
+     //
+     // function f() {
+     //   goog.bar();
+-    //       //   goog.bar = function() {};
++    //   /* Reset goog.bar to a no-op. */
++    //   goog.bar = function() {};
+     // }
+     //
+     // In a dynamic language with first-class functions, it's very difficult

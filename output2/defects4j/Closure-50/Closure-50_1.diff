@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -26,15 +26,16 @@
+         if (NodeUtil.isImmutableValue(elem) || elem.getType() == Token.EMPTY) {
+             if (sb == null) {
+                 sb = new StringBuilder();
+-            } else {
++            }
++            sb.append(NodeUtil.getArrayElementStringValue(elem));
++            if (elem.getType() != Token.EMPTY) {
+                 sb.append(joinString);
+             }
+-            sb.append(NodeUtil.getArrayElementStringValue(elem));
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);
+-                // + 2 for the quotes.
+-                foldedSize += sb.length() + 2;
++                // +1 for the last separator.
++                foldedSize += sb.length() + 1;
+                 arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+                 sb = null;
+             }
+@@ -46,10 +47,12 @@
+     }
+     if (sb != null) {
+         Preconditions.checkNotNull(prev);
+-        // + 2 for the quotes.
+-        foldedSize += sb.length() + 2;
++        // An extra +1 for the last separator.
++        foldedSize += sb.length() + 1;
+         arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+     }
++    // Subtract one from the total size because the last separator is not needed.
++    foldedSize--;
+     // one for each comma.
+     foldedSize += arrayFoldedChildren.size() - 1;
+     int originalSize = InlineCostEstimator.getCost(n);

@@ -1,0 +1,51 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -28,12 +28,23 @@
+                     newParam.setVarArgs(false);
+                     newParam.setOptionalArg(true);
+                 }
++                parametersNode.addChildToBack(newParam);
+             } else {
+                 warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
++                Node newParam = paramBuilder.buildSingleParameterNode();
++                if (newParam != null) {
++                    parametersNode.addChildToBack(newParam);
++                }
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
+-        parametersNode = paramBuilder.build();
++        for (int numParamsToAdd = oldType.getParametersCount() - parametersNode.getChildCount(); numParamsToAdd > 0; numParamsToAdd--) {
++            paramBuilder.buildSingleParameterNode(true);
++            Node newParam = paramBuilder.buildSingleParameterNode();
++            if (newParam != null) {
++                parametersNode.addChildToBack(newParam);
++            }
++        }
+     }
+     return this;
+ }
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -39,9 +39,7 @@
+             foundTemplateType = true;
+         }
+         warnedAboutArgList |= addParameter(builder, parameterType, warnedAboutArgList, isOptionalParam, isVarArgs);
+-        if (oldParameterType != null) {
+-            oldParameterType = oldParameterType.getNext();
+-        }
++        oldParameterType = oldParameterType != null ? oldParameterType.getNext() : null;
+     }
+     // Copy over any old parameters that aren't in the param list.
+     if (templateTypeName != null && !foundTemplateType) {
+@@ -50,6 +48,10 @@
+     for (String inexistentName : allJsDocParams) {
+         reportWarning(INEXISTANT_PARAM, inexistentName, fnName);
+     }
++    while (oldParameterType != null) {
++        builder.copyParameter(oldParameterType, true);
++        oldParameterType = oldParameterType.getNext();
++    }
+     parametersNode = builder.build();
+     return this;
+ }

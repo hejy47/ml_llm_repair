@@ -63,7 +63,7 @@ def repair_loop_by_chat(dataset, prompt, project, bug_id, bug, t_chances, stop=N
         print("Try: {}".format(total_times))
         ret = api_request.request_chat_engine(config)
         if ret is None:
-            return False, False, []
+            return []
         output = ret["choices"][0]["message"]["content"]
         diff = diff_util.get_unified_diff(bug, output)
         finish_reason = ret["choices"][0]['finish_reason']
@@ -104,7 +104,7 @@ def apply_patch_and_validate(dataset):
     bug_info = dataset.get_bug_info()
     for project, bug_ids in bug_info.items():
         for bug_id in bug_ids:
-            if project.lower() == "chart" or (project.lower() == "closure" and bug_id <= 20):
+            if project.lower() == "chart" or (project.lower() == "closure" and bug_id <= 44):
                 continue
             print("validating {} {}".format(project, bug_id))
             bug = dataset.get_bug(project, bug_id)

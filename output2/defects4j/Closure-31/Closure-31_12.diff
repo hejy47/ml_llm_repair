@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -98,7 +98,7 @@
+                 continue;
+             }
+             if (devMode) {
+-                runSanityCheck();
++                runSanityCheck(input);
+                 if (hasErrors()) {
+                     return null;
+                 }

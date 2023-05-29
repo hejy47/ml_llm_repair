@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -8,9 +8,9 @@
+     if (declaration != initialization && !initialization.getGrandparent().isExprResult()) {
+         return false;
+     }
+-    // Be very conservative and do no cross control structures or
++    // Be very conservative and do not cross control structures or
+     // scope boundaries
+-    if (declaration.getBasicBlock() != initialization.getBasicBlock() || declaration.getBasicBlock() != reference.getBasicBlock()) {
++    if (declaration.getBasicBlock() != initialization.getBasicBlock() || declaration.getScope() != initialization.getScope() || declaration.getScope() != reference.getScope()) {
+         return false;
+     }
+     // Do not inline into a call node. This would change

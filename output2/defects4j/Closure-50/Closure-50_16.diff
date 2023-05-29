@@ -1,0 +1,77 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -4,10 +4,8 @@
+         return n;
+     }
+     Node right = callTarget.getNext();
+-    if (right != null) {
+-        if (!NodeUtil.isImmutableValue(right)) {
+-            return n;
+-        }
++    if (right != null && !NodeUtil.isImmutableValue(right)) {
++        return n;
+     }
+     Node arrayNode = callTarget.getFirstChild();
+     Node functionName = arrayNode.getNext();
+@@ -26,15 +24,11 @@
+         if (NodeUtil.isImmutableValue(elem) || elem.getType() == Token.EMPTY) {
+             if (sb == null) {
+                 sb = new StringBuilder();
+-            } else {
+-                sb.append(joinString);
+             }
+             sb.append(NodeUtil.getArrayElementStringValue(elem));
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);
+-                // + 2 for the quotes.
+-                foldedSize += sb.length() + 2;
+                 arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+                 sb = null;
+             }
+@@ -46,14 +40,11 @@
+     }
+     if (sb != null) {
+         Preconditions.checkNotNull(prev);
+-        // + 2 for the quotes.
+-        foldedSize += sb.length() + 2;
+         arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+     }
+-    // one for each comma.
+     foldedSize += arrayFoldedChildren.size() - 1;
+     int originalSize = InlineCostEstimator.getCost(n);
+-    switch(arrayFoldedChildren.size()) {
++    switch (arrayFoldedChildren.size()) {
+         case 0:
+             Node emptyStringNode = Node.newString("");
+             n.getParent().replaceChild(n, emptyStringNode);
+@@ -66,8 +57,6 @@
+             }
+             arrayNode.detachChildren();
+             if (foldedStringNode.getType() != Token.STRING) {
+-                // If the Node is not a string literal, ensure that
+-                // it is coerced to a string.
+                 Node replacement = new Node(Token.ADD, Node.newString("").copyInformationFrom(n), foldedStringNode);
+                 foldedStringNode = replacement;
+             }
+@@ -75,13 +64,18 @@
+             reportCodeChange();
+             return foldedStringNode;
+         default:
+-            // No folding could actually be performed.
+             if (arrayFoldedChildren.size() == arrayNode.getChildCount()) {
+                 return n;
+             }
+             int kJoinOverhead = "[].join()".length();
+             foldedSize += kJoinOverhead;
+-            foldedSize += (right != null) ? InlineCostEstimator.getCost(right) : 0;
++            if (right != null) {
++                int cost = InlineCostEstimator.getCost(right);
++                if (cost < 0) {
++                    return n;
++                }
++                foldedSize += cost;
++            }
+             if (foldedSize > originalSize) {
+                 return n;
+             }

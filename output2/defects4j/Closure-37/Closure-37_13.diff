@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,6 +12,8 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
++        // FIXED - Need to push new scope for function expression too
++        pushScope(fnName);
+         traverseBranch(fnName, n);
+     }
+     final Node args = fnName.getNext();
+@@ -21,5 +23,9 @@
+     // Body
+     Preconditions.checkState(body.getNext() == null && body.isBlock());
+     traverseBranch(body, n);
++    if (isFunctionExpression) {
++        // FIXED - Need to pop the newly pushed scope for function expression
++        popScope();
++    }
+     popScope();
+ }
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -52,5 +52,12 @@
+     // Parser#parseFunctionBodyExpr.
+     parseDirectives(bodyNode);
+     node.addChildToBack(bodyNode);
+-    return node;
++    if (isUnnamedFunction) {
++        // FIXED - When a function is unnamed, we need to wrap it inside an expression statement.
++        Node exprResult = new Node(Token.EXPR_RESULT);
++        exprResult.addChildToBack(node);
++        return exprResult;
++    } else {
++        return node;
++    }
+ }

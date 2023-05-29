@@ -1,0 +1,43 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -4,10 +4,8 @@
+         return n;
+     }
+     Node right = callTarget.getNext();
+-    if (right != null) {
+-        if (!NodeUtil.isImmutableValue(right)) {
+-            return n;
+-        }
++    if (right != null && !NodeUtil.isImmutableValue(right)) {
++        return n;
+     }
+     Node arrayNode = callTarget.getFirstChild();
+     Node functionName = arrayNode.getNext();
+@@ -26,7 +24,11 @@
+         if (NodeUtil.isImmutableValue(elem) || elem.getType() == Token.EMPTY) {
+             if (sb == null) {
+                 sb = new StringBuilder();
+-            } else {
++            }
++            if (!NodeUtil.isArrayElement(getReferenceName(elem))) {
++                return n;
++            }
++            if (sb.length() > 0) {
+                 sb.append(joinString);
+             }
+             sb.append(NodeUtil.getArrayElementStringValue(elem));
+@@ -38,8 +40,12 @@
+                 arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+                 sb = null;
+             }
+-            foldedSize += InlineCostEstimator.getCost(elem);
+-            arrayFoldedChildren.add(elem);
++            if (NodeUtil.isArrayElement(getReferenceName(elem))) {
++                foldedSize += InlineCostEstimator.getCost(elem);
++                arrayFoldedChildren.add(elem);
++            } else {
++                return n;
++            }
+         }
+         prev = elem;
+         elem = elem.getNext();

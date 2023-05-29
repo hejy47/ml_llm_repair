@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeInference.java@traverseNew
++++ com/google/javascript/jscomp/TypeInference.java@traverseNew
+@@ -19,6 +19,8 @@
+                 type = ct.getInstanceType();
+             }
+         }
++    } else {
++        type = getNativeType(UNKNOWN_TYPE);
+     }
+     n.setJSType(type);
+     for (Node arg = constructor.getNext(); arg != null; arg = arg.getNext()) {

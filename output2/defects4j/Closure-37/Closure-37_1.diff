@@ -1,0 +1,43 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -5,10 +5,13 @@
+     boolean isFunctionExpression = (parent != null) && NodeUtil.isFunctionExpression(n);
+     if (!isFunctionExpression) {
+         // Functions declarations are in the scope containing the declaration.
++        pushScope(n);  // push scope first
+         traverseBranch(fnName, n);
++        popScope();   // then pop scope
++    } else {
++        pushScope(n); // push scope for expression functions too
+     }
+     curNode = n;
+-    pushScope(n);
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+@@ -21,5 +24,7 @@
+     // Body
+     Preconditions.checkState(body.getNext() == null && body.isBlock());
+     traverseBranch(body, n);
+-    popScope();
++    if (isFunctionExpression) {
++        popScope(); // pop scope at the end for expression functions
++    }
+ }
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -42,6 +42,7 @@
+     }
+     int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+     lp.setCharno(position2charno(lparenCharno));
++    pushScope(lp);  // push scope for function parameters
+     for (AstNode param : functionNode.getParams()) {
+         lp.addChildToBack(transform(param));
+     }
+@@ -52,5 +53,6 @@
+     // Parser#parseFunctionBodyExpr.
+     parseDirectives(bodyNode);
+     node.addChildToBack(bodyNode);
++    popScope();   // pop scope for function parameters
+     return node;
+ }

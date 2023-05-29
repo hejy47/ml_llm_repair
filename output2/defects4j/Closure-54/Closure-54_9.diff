@@ -1,0 +1,45 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -22,6 +22,22 @@
+         // Determining type for #5
+         valueType = rhsValue.getJSType();
+     }
++
++    if(valueType == null){
++        Node varNode = NodeUtil.getEnclosingNode(n, NodeUtil.MATCH_FUNCTION_STATEMENT);
++        if(varNode != null){
++            FunctionType functionType = varNode.getJSType().toMaybeFunctionType();
++            if(functionType != null){
++                Node parameters = varNode.getFirstChild().getNext();
++                for(Node param : parameters.children()){
++                    String paramStr = param.getString();
++                    functionType.getParameterType(paramStr).clearDeclaredType();
++                }
++            }
++        }
++        return;
++    }
++
+     // Function prototypes are special.
+     // It's a common JS idiom to do:
+     // F.prototype = { ... };
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -17,7 +17,15 @@
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+-        baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
++        if(getReferenceName() != null){
++            ObjectType currentPrototype = getPrototype();
++            PrototypeObjectType newPrototype = new PrototypeObjectType(registry, getReferenceName() + ".prototype", currentPrototype);
++            newPrototype.setConstructor(this);
++            setPrototype(newPrototype);
++        } else {
++            setPrototype((PrototypeObjectType) baseType);
++        }
++    } else {
++        setPrototype((PrototypeObjectType) baseType);
+     }
+-    setPrototype((PrototypeObjectType) baseType);
+ }

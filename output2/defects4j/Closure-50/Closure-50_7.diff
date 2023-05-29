@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -29,7 +29,7 @@
+             } else {
+                 sb.append(joinString);
+             }
+-            sb.append(NodeUtil.getArrayElementStringValue(elem));
++            sb.append(NodeUtil.getStringValue(elem)); // Changed getArrayElementStringValue() to getStringValue()
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);

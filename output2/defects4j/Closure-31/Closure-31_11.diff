@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -78,11 +78,15 @@
+                     // the externs pile anyways.
+                     externsRoot.addChildToBack(n);
+                     input.setIsExtern(true);
+-                    input.getModule().remove(input);
++                    if (input.getModule() != null) {
++                        input.getModule().remove(input);
++                    }
+                     externs.add(input);
+                     staleInputs = true;
+                 } else if (info.isNoCompile()) {
+-                    input.getModule().remove(input);
++                    if (input.getModule() != null) {
++                        input.getModule().remove(input);
++                    }
+                     staleInputs = true;
+                 }
+             }

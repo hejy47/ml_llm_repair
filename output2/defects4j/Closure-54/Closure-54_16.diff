@@ -1,0 +1,50 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -3,7 +3,8 @@
+     String ownerName = ownerNode.getQualifiedName();
+     String qName = n.getQualifiedName();
+     String propName = n.getLastChild().getString();
+-    Preconditions.checkArgument(qName != null && ownerName != null);
++    Preconditions.checkNotNull(qName);
++    Preconditions.checkNotNull(ownerName);
+     // Precedence of type information on GETPROPs:
+     // 1) @type annnotation / @enum annotation
+     // 2) ASSIGN to FUNCTION literal
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -17,7 +17,7 @@
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+-        baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
++        baseType = new PrototypeObjectType(typeRegistry, this.getReferenceName() + ".prototype", baseType);
+     }
+     setPrototype((PrototypeObjectType) baseType);
+ }
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -15,10 +15,23 @@
+     if (isConstructor() || isInterface()) {
+         FunctionType superClass = getSuperClassConstructor();
+         if (superClass != null) {
++            superClass.removeSubType(this);
++        }
++        if (isInterface()) {
++            for (ObjectType interfaceType : getExtendedInterfaces()) {
++                if (interfaceType.getConstructor() != null) {
++                    interfaceType.getConstructor().removeSubType(this);
++                }
++            }
++        }
++    }
++    if (isConstructor() || isInterface()) {
++        FunctionType superClass = prototype.getSuperClassConstructor();
++        if (superClass != null) {
+             superClass.addSubType(this);
+         }
+         if (isInterface()) {
+-            for (ObjectType interfaceType : getExtendedInterfaces()) {
++            for (ObjectType interfaceType : prototype.getExtendedInterfaces()) {
+                 if (interfaceType.getConstructor() != null) {
+                     interfaceType.getConstructor().addSubType(this);
+                 }

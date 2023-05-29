@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -8,6 +8,10 @@
+             if (n.hasChildren() && n.getFirstChild().isQualifiedName()) {
+                 String name = n.getString();
+                 Var aliasVar = scope.getVar(name);
++                if (aliasVar == null) {
++                    // Ignore undefined vars
++                    continue;
++                }
+                 aliases.put(name, aliasVar);
+                 String qualifiedName = aliasVar.getInitialValue().getQualifiedName();
+                 transformation.addAlias(name, qualifiedName);

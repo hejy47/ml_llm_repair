@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -38,8 +38,11 @@
+                 arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+                 sb = null;
+             }
+-            foldedSize += InlineCostEstimator.getCost(elem);
+-            arrayFoldedChildren.add(elem);
++            int cost = InlineCostEstimator.getCost(elem);
++            foldedSize += cost;
++            if (cost > 0) {
++                arrayFoldedChildren.add(elem);
++            }
+         }
+         prev = elem;
+         elem = elem.getNext();
+@@ -64,14 +67,9 @@
+             if (foldedSize > originalSize) {
+                 return n;
+             }
+-            arrayNode.detachChildren();
+-            if (foldedStringNode.getType() != Token.STRING) {
+-                // If the Node is not a string literal, ensure that
+-                // it is coerced to a string.
+-                Node replacement = new Node(Token.ADD, Node.newString("").copyInformationFrom(n), foldedStringNode);
+-                foldedStringNode = replacement;
+-            }
+-            n.getParent().replaceChild(n, foldedStringNode);
++            foldedStringNode.setImmutable();
++            nodeLib.removeChild(n.getParent(), n);
++            nodeLib.replaceWith(n, foldedStringNode);
+             reportCodeChange();
+             return foldedStringNode;
+         default:

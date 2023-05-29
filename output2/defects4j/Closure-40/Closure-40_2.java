@@ -1,0 +1,1 @@
+There are no syntax errors or logical issues with the given code. Therefore, there is no corresponding buggy function to be fixed.

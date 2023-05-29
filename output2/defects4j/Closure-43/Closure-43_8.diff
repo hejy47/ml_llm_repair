@@ -1,0 +1,83 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@visit
++++ com/google/javascript/jscomp/TypedScopeCreator.java@visit
+@@ -2,12 +2,12 @@
+ public void visit(NodeTraversal t, Node n, Node parent) {
+     inputId = t.getInputId();
+     attachLiteralTypes(t, n);
+-    switch(n.getType()) {
+-        case Token.CALL:
++    switch(n.getToken()) { // Use getToken() instead of getType()
++        case CALL: // Use Token.CALL instead of Token.CALL
+             checkForClassDefiningCalls(t, n, parent);
+             checkForCallingConventionDefiningCalls(n, delegateCallingConventions);
+             break;
+-        case Token.FUNCTION:
++        case FUNCTION: // Use Token.FUNCTION instead of Token.FUNCTION
+             if (t.getInput() == null || !t.getInput().isExtern()) {
+                 nonExternFunctions.add(n);
+             }
+@@ -16,20 +16,20 @@
+                 defineFunctionLiteral(n, parent);
+             }
+             break;
+-        case Token.ASSIGN:
++        case ASSIGN: // Use Token.ASSIGN instead of Token.ASSIGN
+             // Handle initialization of properties.
+             Node firstChild = n.getFirstChild();
+             if (firstChild.isGetProp() && firstChild.isQualifiedName()) {
+                 maybeDeclareQualifiedName(t, n.getJSDocInfo(), firstChild, n, firstChild.getNext());
+             }
+             break;
+-        case Token.CATCH:
++        case CATCH: // Use Token.CATCH instead of Token.CATCH
+             defineCatch(n, parent);
+             break;
+-        case Token.VAR:
++        case VAR: // Use Token.VAR instead of Token.VAR
+             defineVar(n, parent);
+             break;
+-        case Token.GETPROP:
++        case GETPROP: // Use Token.GETPROP instead of Token.GETPROP
+             // Handle stubbed properties.
+             if (parent.isExprResult() && n.isQualifiedName()) {
+                 maybeDeclareQualifiedName(t, n.getJSDocInfo(), n, parent, null);
+--- com/google/javascript/jscomp/TypedScopeCreator.java@attachLiteralTypes
++++ com/google/javascript/jscomp/TypedScopeCreator.java@attachLiteralTypes
+@@ -1,28 +1,28 @@
+ private void attachLiteralTypes(NodeTraversal t, Node n) {
+-    switch(n.getType()) {
+-        case Token.NULL:
++    switch(n.getToken()) { // Use getToken() instead of getType()
++        case NULL: // Use Token.NULL instead of Token.NULL
+             n.setJSType(getNativeType(NULL_TYPE));
+             break;
+-        case Token.VOID:
++        case VOID: // Use Token.VOID instead of Token.VOID
+             n.setJSType(getNativeType(VOID_TYPE));
+             break;
+-        case Token.STRING:
++        case STRING: // Use Token.STRING instead of Token.STRING
+             // Defer keys to the Token.OBJECTLIT case
+             if (!NodeUtil.isObjectLitKey(n, n.getParent())) {
+                 n.setJSType(getNativeType(STRING_TYPE));
+             }
+             break;
+-        case Token.NUMBER:
++        case NUMBER: // Use Token.NUMBER instead of Token.NUMBER
+             n.setJSType(getNativeType(NUMBER_TYPE));
+             break;
+-        case Token.TRUE:
+-        case Token.FALSE:
++        case TRUE: // Use Token.TRUE instead of Token.TRUE
++        case FALSE: // Use Token.FALSE instead of Token.FALSE
+             n.setJSType(getNativeType(BOOLEAN_TYPE));
+             break;
+-        case Token.REGEXP:
++        case REGEXP: // Use Token.REGEXP instead of Token.REGEX
+             n.setJSType(getNativeType(REGEXP_TYPE));
+             break;
+-        case Token.OBJECTLIT:
++        case OBJECTLIT: // Use Token.OBJECTLIT instead of Token.OBJECTLIT
+             defineObjectLiteral(n);
+             break;
+     }

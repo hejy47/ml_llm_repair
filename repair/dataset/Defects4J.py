@@ -103,7 +103,7 @@ class Defects4J(Dataset.Dataset):
                     file_str = file_str.replace(buggy_str, fixed_function_content)
                 file_util.write_str_to_file(file_str, diff_file_path)
             
-            cmd = "defects4j test"
+            cmd = "timeout {} defects4j test".format(config.MAX_TEST_TIME)
             result = cmd_util.run_cmd(cmd, cwd=self.get_proj_dir())
 
             for backup_file in os.listdir(config.TMP_DIR):

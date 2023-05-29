@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
+@@ -1,7 +1,7 @@
+ Assign(Node assignNode, Node nameNode, boolean isPropertyAssign) {
+     Preconditions.checkState(NodeUtil.isAssignmentOp(assignNode));
+     this.assignNode = assignNode;
+-    this.nameNode = nameNode;
++    this.nameNode = nameNode.cloneTree();
+     this.isPropertyAssign = isPropertyAssign;
+     this.maybeAliased = !assignNode.getParent().isExprResult();
+     this.mayHaveSecondarySideEffects = maybeAliased || NodeUtil.mayHaveSideEffects(assignNode.getFirstChild()) || NodeUtil.mayHaveSideEffects(assignNode.getLastChild());
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
+@@ -21,7 +21,7 @@
+                     // or a for...in variable.
+                     assignedToUnknownValue = true;
+                 }
+-                for (Assign assign : assignsByVar.get(var)) {
++                for (Assign assign : new ArrayList<>(assignsByVar.get(var))) {
+                     if (assign.isPropertyAssign) {
+                         hasPropertyAssign = true;
+                     } else if (!NodeUtil.isLiteralValue(assign.assignNode.getLastChild(), true)) {

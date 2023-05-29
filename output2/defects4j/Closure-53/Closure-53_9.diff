@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
+@@ -14,7 +14,7 @@
+     }
+     // TODO(user): Better source information.
+     for (String var : all) {
+-        nodes.add(new Node(Token.ASSIGN, Node.newString(Token.NAME, varmap.get(var)), NodeUtil.newUndefinedNode(null)));
++        nodes.add(new Node(Token.ASSIGN, Node.newString(Token.NAME, varmap.get(var)), NodeUtil.newUndefinedNode()));
+     }
+     Node replacement;
+     // All assignments evaluate to true, so make sure that the
+@@ -28,15 +28,15 @@
+     Node cur = replacement;
+     int i;
+     for (i = 0; i < nodes.size() - 2; i++) {
+-        cur.addChildToFront(nodes.get(i));
++        cur.addChildToBack(nodes.get(i));
+         Node t = new Node(Token.COMMA);
+-        cur.addChildToFront(t);
++        t.addChildToBack(cur);
+         cur = t;
+     }
+-    cur.addChildToFront(nodes.get(i));
+-    cur.addChildToFront(nodes.get(i + 1));
++    cur.addChildToBack(nodes.get(i));
++    cur.addChildToBack(nodes.get(i + 1));
+     Node replace = ref.getParent();
+-    replacement.copyInformationFromForTree(replace);
++    replacement.copyInformationFrom(replace);
+     if (replace.getType() == Token.VAR) {
+         replace.getParent().replaceChild(replace, NodeUtil.newExpr(replacement));
+     } else {

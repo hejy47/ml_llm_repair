@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -5,12 +5,20 @@
+     // If the value is read more than once, skip it.
+     // VAR declarations and EXPR_RESULT don't need the value, but other
+     // ASSIGN expressions parents do.
+-    if (declaration != initialization && !initialization.getGrandparent().isExprResult()) {
++    if (!initialization.isRemovable()) {
+         return false;
+     }
+     // Be very conservative and do no cross control structures or
+     // scope boundaries
+-    if (declaration.getBasicBlock() != initialization.getBasicBlock() || declaration.getBasicBlock() != reference.getBasicBlock()) {
++    Scope declarationScope = NodeUtil.getEnclosingScope(declaration.getNode());
++    Scope initializationScope = NodeUtil.getEnclosingScope(initialization.getNode());
++    Scope referenceScope = NodeUtil.getEnclosingScope(reference.getNode());
++    boolean inSameScope = (declarationScope == initializationScope) && (declarationScope == referenceScope);
++    int declarationBlockDepth = NodeUtil.getEnclosingStructuredBodyDepth(declaration.getNode());
++    int initializationBlockDepth = NodeUtil.getEnclosingStructuredBodyDepth(initialization.getNode());
++    int referenceBlockDepth = NodeUtil.getEnclosingStructuredBodyDepth(reference.getNode());
++    boolean inSameBlock = (declarationBlockDepth == initializationBlockDepth) && (declarationBlockDepth == referenceBlockDepth);
++    if (!inSameScope || !inSameBlock) {
+         return false;
+     }
+     // Do not inline into a call node. This would change

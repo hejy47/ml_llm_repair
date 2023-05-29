@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -21,7 +21,7 @@
+         }
+         // Functions in the "Math" namespace have no side effects.
+         if (compiler != null && !compiler.hasRegExpGlobalReferences()) {
+-            if (nameNode.getFirstChild().getType() == Token.REGEXP && REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
++            if (nameNode.getFirstChild().getType() == Token.GETPROP && nameNode.getFirstChild().getLastChild().getString().equals("Math") && REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
+                 return false;
+             } else if (nameNode.getFirstChild().getType() == Token.STRING && STRING_REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
+                 Node param = nameNode.getNext();

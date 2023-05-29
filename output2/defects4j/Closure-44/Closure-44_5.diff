@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@add
++++ com/google/javascript/jscomp/CodeConsumer.java@add
+@@ -13,6 +13,10 @@
+         // REGEXP DIV REGEXP
+         // is valid and should print like
+         // / // / /
++        String lastCode = getLastCode();
++        if(lastCode != null && lastCode.equals("DIV")){
++            append(" ");
++        }
+     }
+     append(newcode);
+ }

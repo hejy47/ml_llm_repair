@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -11,13 +11,13 @@
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.and(rhs);
++                return TernaryValue.and(lhs, rhs);
+             }
+         case Token.OR:
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.or(rhs);
++                return TernaryValue.or(lhs, rhs);
+             }
+         case Token.HOOK:
+             {

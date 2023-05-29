@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -16,8 +16,16 @@
+     //
+     // FUNCTION literals are special because TypedScopeCreator is very smart
+     // about getting as much type information as possible for them.
+-    // Determining type for #1 + #2 + #3 + #4
+-    JSType valueType = getDeclaredType(t.getSourceName(), info, n, rhsValue);
++    
++    JSType valueType = null;
++    if(rhsValue != null){
++        valueType = rhsValue.getJSType();
++    }
++    
++    
++    if (valueType == null && n.isFunction() && (info == null || !info.hasType()) && !scope.isDeclared(qName, false)) {
++        valueType = functionTypeBuilder.inferFromFunctionArgumentTypes(n);
++    }
+     if (valueType == null && rhsValue != null) {
+         // Determining type for #5
+         valueType = rhsValue.getJSType();
+@@ -63,12 +71,14 @@
+     // The problem is that there are two (equally valid) coding styles:
+     //
+     // (function() {
+-    //       //   goog.bar = function() {};
++    //   /* The authoritative definition of goog.bar. */
++    //   goog.bar = function() {};
+     // })();
+     //
+     // function f() {
+     //   goog.bar();
+-    //       //   goog.bar = function() {};
++    //   /* Reset goog.bar to a no-op. */
++    //   goog.bar = function() {};
+     // }
+     //
+     // In a dynamic language with first-class functions, it's very difficult

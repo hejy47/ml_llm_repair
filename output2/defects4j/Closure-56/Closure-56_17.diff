@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/SourceFile.java@getLine
++++ com/google/javascript/jscomp/SourceFile.java@getLine
+@@ -19,6 +19,11 @@
+     for (int n = startLine; n < lineNumber; n++) {
+         int nextpos = js.indexOf('\n', pos);
+         if (nextpos == -1) {
++            if (n == lineNumber - 1 && pos < js.length()) {
++                // If lineNumber is the last line and pos is not at the end of file,
++                // return the remaining content.
++                return js.substring(pos);
++            }
+             return null;
+         }
+         pos = nextpos + 1;

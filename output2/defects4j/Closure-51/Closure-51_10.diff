@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -7,16 +7,16 @@
+     }
+     if ((long) x == x) {
+         long value = (long) x;
+-        long mantissa = value;
++        long mantissa = Math.abs(value);
+         int exp = 0;
+         if (Math.abs(x) >= 100) {
+-            while (mantissa / 10 * Math.pow(10, exp + 1) == value) {
++            while (mantissa / 10 * Math.pow(10, exp + 1) == Math.abs(value)) {
+                 mantissa /= 10;
+                 exp++;
+             }
+         }
+         if (exp > 2) {
+-            add(Long.toString(mantissa) + "E" + Integer.toString(exp));
++            add((value < 0 ? "-" : "") + String.format("%dE%d", mantissa, exp));
+         } else {
+             add(Long.toString(value));
+         }

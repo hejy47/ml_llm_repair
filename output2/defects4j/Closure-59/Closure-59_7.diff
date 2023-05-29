@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/Compiler.java@initOptions
++++ com/google/javascript/jscomp/Compiler.java@initOptions
+@@ -18,7 +18,7 @@
+         // If DiagnosticGroups did not override the plain checkTypes
+         // option, and checkTypes is enabled, then turn off the
+         // parser type warnings.
+-        options.setWarningLevel(DiagnosticGroup.forType(RhinoErrorReporter.TYPE_PARSE_ERROR), CheckLevel.OFF);
++        options.setWarningLevel(DiagnosticGroups.forType(RhinoErrorReporter.TYPE_PARSE_ERROR), CheckLevel.OFF);
+     }
+     if (options.checkGlobalThisLevel.isOn()) {
+         options.setWarningLevel(DiagnosticGroups.GLOBAL_THIS, options.checkGlobalThisLevel);
+@@ -31,12 +31,15 @@
+     guards.add(new SuppressDocWarningsGuard(getDiagnosticGroups().getRegisteredGroups()));
+     guards.add(options.getWarningsGuard());
+     ComposeWarningsGuard composedGuards = new ComposeWarningsGuard(guards);
+-    // All passes must run the variable check. This synthesizes
+-    // variables later so that the compiler doesn't crash. It also
+-    // checks the externs file for validity. If you don't want to warn
+-    // about missing variable declarations, we shut that specific
+-    // error off.
+-    if (!options.checkSymbols && !composedGuards.enables(DiagnosticGroups.CHECK_VARIABLES)) {
++    // All checks on symbols should be done so that JSCompiler does not crash.
++    boolean checkSymbols = true;
++    if (options.checkSymbols) { // overridden
++        checkSymbols = true;
++    } else {
++        // Check variables only if there is no warning guard that disables CHECK_VARIABLES.
++        checkSymbols = !composedGuards.disables(DiagnosticGroups.CHECK_VARIABLES);
++    }
++    if (!checkSymbols) {
+         composedGuards.addGuard(new DiagnosticGroupWarningsGuard(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.OFF));
+     }
+     this.warningsGuard = composedGuards;

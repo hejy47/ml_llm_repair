@@ -1,0 +1,54 @@
+--- com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
++++ com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
+@@ -7,11 +7,11 @@
+         case Token.WHILE:
+         case Token.DO:
+         case Token.IF:
+-            computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++            computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, true); // Always consider if/while/do conditions as conditional
+             return;
+         case Token.FOR:
+             if (!NodeUtil.isForIn(n)) {
+-                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, true); // Always consider for loop conditions as conditional
+             } else {
+                 // for(x in y) {...}
+                 Node lhs = n.getFirstChild();
+@@ -22,13 +22,14 @@
+                 }
+                 addToSetIfLocal(lhs, kill);
+                 addToSetIfLocal(lhs, gen);
+-                computeGenKill(rhs, gen, kill, conditional);
++                computeGenKill(rhs, gen, kill, true); // Always consider for..in rhs as conditional
+             }
+             return;
+         case Token.VAR:
+             for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+                 if (c.hasChildren()) {
+-                    computeGenKill(c.getFirstChild(), gen, kill, conditional);
++                    computeGenKill(c.getFirstChild(), gen, kill, true); // Always consider var declarations as conditional
++                    // However, only add to kill set if not in a conditional block
+                     if (!conditional) {
+                         addToSetIfLocal(c, kill);
+                     }
+@@ -37,15 +38,15 @@
+             return;
+         case Token.AND:
+         case Token.OR:
+-            computeGenKill(n.getFirstChild(), gen, kill, conditional);
++            computeGenKill(n.getFirstChild(), gen, kill, true); // Always consider logical operators as conditional
+             // May short circuit.
+-            computeGenKill(n.getLastChild(), gen, kill, true);
++            computeGenKill(n.getLastChild(), gen, kill, true); // Always consider logical operators as conditional
+             return;
+         case Token.HOOK:
+-            computeGenKill(n.getFirstChild(), gen, kill, conditional);
++            computeGenKill(n.getFirstChild(), gen, kill, true); // Always consider ternary conditions as conditional
+             // Assume both sides are conditional.
+-            computeGenKill(n.getFirstChild().getNext(), gen, kill, true);
+-            computeGenKill(n.getLastChild(), gen, kill, true);
++            computeGenKill(n.getFirstChild().getNext(), gen, kill, true); // Always consider ternary conditions as conditional
++            computeGenKill(n.getLastChild(), gen, kill, true); // Always consider ternary conditions as conditional
+             return;
+         case Token.NAME:
+             if (isArgumentsName(n)) {

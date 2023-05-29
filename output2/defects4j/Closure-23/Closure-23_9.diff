@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -6,7 +6,7 @@
+     if (isAssignmentTarget(n)) {
+         return n;
+     }
+-    if (!right.isNumber()) {
++    if (!NodeUtil.isImmutableValue(right)) { // check if right is immutable value
+         // Sometimes people like to use complex expressions to index into
+         // arrays, or strings to index into array methods.
+         return n;

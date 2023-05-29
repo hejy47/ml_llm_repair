@@ -1,0 +1,69 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -14,12 +14,12 @@
+         // We're overriding with a function literal. Apply type information
+         // to each parameter of the literal.
+         FunctionParamBuilder paramBuilder = new FunctionParamBuilder(typeRegistry);
+-        Iterator<Node> oldParams = oldType.getParameters().iterator();
++        List<Node> oldParams = oldType.getParameters();
+         boolean warnedAboutArgList = false;
+         boolean oldParamsListHitOptArgs = false;
+         for (Node currentParam = paramsParent.getFirstChild(); currentParam != null; currentParam = currentParam.getNext()) {
+-            if (oldParams.hasNext()) {
+-                Node oldParam = oldParams.next();
++            if (oldParams.size() > 0) {
++                Node oldParam = oldParams.remove(0);
+                 Node newParam = paramBuilder.newParameterFromNode(oldParam);
+                 oldParamsListHitOptArgs = oldParamsListHitOptArgs || oldParam.isVarArgs() || oldParam.isOptionalArg();
+                 // The subclass method might write its var_args as individual
+@@ -33,6 +33,10 @@
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
++        while(oldParams.size() > 0 ) {
++          Node oldParam = oldParams.remove(0);
++          paramBuilder.newParameterFromNode(oldParam);
++        }
+         parametersNode = paramBuilder.build();
+     }
+     return this;
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -16,7 +16,9 @@
+     Set<String> allJsDocParams = (info == null) ? Sets.<String>newHashSet() : Sets.newHashSet(info.getParameterNames());
+     boolean foundTemplateType = false;
+     boolean isVarArgs = false;
+-    for (Node arg : argsParent.children()) {
++    Iterator<Node> argsIterator = argsParent.children().iterator();
++    while (argsIterator.hasNext()) {
++        Node arg = argsIterator.next();
+         String argumentName = arg.getString();
+         allJsDocParams.remove(argumentName);
+         // type from JSDocInfo
+@@ -29,6 +31,7 @@
+             parameterType = oldParameterType.getJSType();
+             isOptionalParam = oldParameterType.isOptionalArg();
+             isVarArgs = oldParameterType.isVarArgs();
++            oldParameterType = oldParameterType.getNext();
+         } else {
+             parameterType = typeRegistry.getNativeType(UNKNOWN_TYPE);
+         }
+@@ -39,11 +42,15 @@
+             foundTemplateType = true;
+         }
+         warnedAboutArgList |= addParameter(builder, parameterType, warnedAboutArgList, isOptionalParam, isVarArgs);
+-        if (oldParameterType != null) {
+-            oldParameterType = oldParameterType.getNext();
+-        }
+     }
+     // Copy over any old parameters that aren't in the param list.
++    while (oldParameterType != null) {
++        Node newParam = builder.newParameterFromNode(oldParameterType);
++        newParam.makeOptional();
++        warnedAboutArgList |= addParameter(builder, oldParameterType.getJSType(), warnedAboutArgList, true, isVarArgs);
++        oldParameterType = oldParameterType.getNext();
++    }
++ 
+     if (templateTypeName != null && !foundTemplateType) {
+         reportError(TEMPLATE_TYPE_EXPECTED, fnName);
+     }

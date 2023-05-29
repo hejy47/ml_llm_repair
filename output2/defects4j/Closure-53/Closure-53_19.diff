@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
+@@ -27,14 +27,13 @@
+     replacement = new Node(Token.COMMA);
+     Node cur = replacement;
+     int i;
+-    for (i = 0; i < nodes.size() - 2; i++) {
++    for (i = 0; i < nodes.size() - 1; i++) { // Fix: changed nodes.size() - 2 to nodes.size() - 1
+         cur.addChildToFront(nodes.get(i));
+         Node t = new Node(Token.COMMA);
+         cur.addChildToFront(t);
+         cur = t;
+     }
+     cur.addChildToFront(nodes.get(i));
+-    cur.addChildToFront(nodes.get(i + 1));
+     Node replace = ref.getParent();
+     replacement.copyInformationFromForTree(replace);
+     if (replace.getType() == Token.VAR) {

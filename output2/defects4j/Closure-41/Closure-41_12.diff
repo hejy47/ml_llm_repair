@@ -1,0 +1,52 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -29,10 +29,18 @@
+                     newParam.setOptionalArg(true);
+                 }
+             } else {
+-                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
++                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs || currentParam.isOptArg(), codingConvention.isVarArgsParameter(currentParam));
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
++        while (oldParams.hasNext()) {
++            Node oldParam = oldParams.next();
++            Node newParam = paramBuilder.newParameterFromNode(oldParam);
++            oldParamsListHitOptArgs = oldParamsListHitOptArgs || oldParam.isVarArgs() || oldParam.isOptionalArg();
++        }
++        if (oldParamsListHitOptArgs) {
++            paramBuilder.markParameterOptional();
++        }
+         parametersNode = paramBuilder.build();
+     }
+     return this;
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -21,13 +21,13 @@
+         allJsDocParams.remove(argumentName);
+         // type from JSDocInfo
+         JSType parameterType = null;
+-        boolean isOptionalParam = isOptionalParameter(arg, info);
++        boolean isOptionalParam = isOptionalParameter(arg, info) || isOptArgParameter(arg, info);
+         isVarArgs = isVarArgsParameter(arg, info);
+         if (info != null && info.hasParameterType(argumentName)) {
+             parameterType = info.getParameterType(argumentName).evaluate(scope, typeRegistry);
+         } else if (oldParameterType != null && oldParameterType.getJSType() != null) {
+             parameterType = oldParameterType.getJSType();
+-            isOptionalParam = oldParameterType.isOptionalArg();
++            isOptionalParam = oldParameterType.isOptionalArg() || isOptionalParam;
+             isVarArgs = oldParameterType.isVarArgs();
+         } else {
+             parameterType = typeRegistry.getNativeType(UNKNOWN_TYPE);
+@@ -44,6 +44,11 @@
+         }
+     }
+     // Copy over any old parameters that aren't in the param list.
++    while (oldParameterType != null) {
++        Node newParam = builder.newParameterFromNode(oldParameterType);
++        builder.markParameterOptional();
++        oldParameterType = oldParameterType.getNext();
++    }
+     if (templateTypeName != null && !foundTemplateType) {
+         reportError(TEMPLATE_TYPE_EXPECTED, fnName);
+     }

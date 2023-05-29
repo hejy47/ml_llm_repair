@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -1,6 +1,7 @@
+ private void traverseFunction(Node n, Node parent) {
++    // Check that n is a function node before checking its child count
++    Preconditions.checkState(n.isFunction());
+     Preconditions.checkState(n.getChildCount() == 3);
+-    Preconditions.checkState(n.isFunction());
+     final Node fnName = n.getFirstChild();
+     boolean isFunctionExpression = (parent != null) && NodeUtil.isFunctionExpression(n);
+     if (!isFunctionExpression) {
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -7,7 +7,7 @@
+         if (functionType != FunctionNode.FUNCTION_EXPRESSION) {
+             errorReporter.error("unnamed function statement", sourceName, functionNode.getLineno(), "", 0);
+             // Return the bare minimum to put the AST in a valid state.
+-            return newNode(Token.EXPR_RESULT, Node.newNumber(0));
++            return newNode(Token.EMPTY);
+         }
+         name = new Name();
+         name.setIdentifier("");

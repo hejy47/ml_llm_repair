@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -29,7 +29,10 @@
+             } else {
+                 sb.append(joinString);
+             }
+-            sb.append(NodeUtil.getArrayElementStringValue(elem));
++            String value = NodeUtil.getArrayElementStringValue(elem);
++            if(value != null) {
++                sb.append(value);
++            }
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);
+@@ -66,8 +69,10 @@
+             }
+             arrayNode.detachChildren();
+             if (foldedStringNode.getType() != Token.STRING) {
+-                // If the Node is not a string literal, ensure that
+-                // it is coerced to a string.
++                //If the Node is not a string literal and not null, ensure that it is coerced to a string.
++                if (NodeUtil.getStringValue(foldedStringNode) == null) {
++                    return n;
++                }
+                 Node replacement = new Node(Token.ADD, Node.newString("").copyInformationFrom(n), foldedStringNode);
+                 foldedStringNode = replacement;
+             }

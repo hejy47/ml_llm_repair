@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -1,22 +1,12 @@
+ void addNumber(double x) {
+-    // This is not pretty printing. This is to prevent misparsing of x- -4 as
+-    // x--4 (which is a syntax error).
+     char prev = getLastChar();
+     if (x < 0 && prev == '-') {
+         add(" ");
+     }
+     if ((long) x == x) {
+         long value = (long) x;
+-        long mantissa = value;
+-        int exp = 0;
+-        if (Math.abs(x) >= 100) {
+-            while (mantissa / 10 * Math.pow(10, exp + 1) == value) {
+-                mantissa /= 10;
+-                exp++;
+-            }
+-        }
+-        if (exp > 2) {
+-            add(Long.toString(mantissa) + "E" + Integer.toString(exp));
++        if (Math.abs(x) >= 10E6 || Math.abs(x) < 10E-6) { // add condition to handle scientific notation
++            add(String.format("%1.2E", x)); // format output as scientific notation with 2 decimal places
+         } else {
+             add(Long.toString(value));
+         }

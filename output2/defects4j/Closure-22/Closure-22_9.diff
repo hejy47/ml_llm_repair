@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -16,7 +16,8 @@
+     if (parent.getType() == Token.COMMA) {
+         Node gramps = parent.getParent();
+         if (gramps.isCall() && parent == gramps.getFirstChild()) {
+-            if (n == parent.getFirstChild() && parent.getChildCount() == 2 && n.getNext().isName() && "eval".equals(n.getNext().getString())) {
++            if (n == parent.getFirstChild() && parent.getChildCount() == 2 && n.getNext().isName()
++                    && "eval".equals(n.getNext().getString())) {
+                 return;
+             }
+         }
+@@ -34,7 +35,9 @@
+             }
+         }
+     } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+-        if (parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext())) {
++        if (parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild()
++                || n == parent.getFirstChild().getNext().getNext())) {
++            return; // fix: added return statement to handle case without side effects
+         } else {
+             return;
+         }
+@@ -53,6 +56,10 @@
+         } else if (isSimpleOp) {
+             msg = "The result of the '" + Token.name(n.getType()).toLowerCase() + "' operator is not being used.";
+         }
++        // fix: added return statement to handle case without side effects
++        if (problemNodes.contains(n)) {
++            return;
++        }
+         t.getCompiler().report(t.makeError(n, level, USELESS_CODE_ERROR, msg));
+         // TODO(johnlenz): determine if it is necessary to
+         // try to protect side-effect free statements as well.

@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/SourceFile.java@getLine
++++ com/google/javascript/jscomp/SourceFile.java@getLine
+@@ -15,6 +15,9 @@
+     if (lineNumber >= lastLine) {
+         pos = lastOffset;
+         startLine = lastLine;
++    } else {
++        // Reset lastOffset to 0 if the requested line is earlier than the last one.
++        lastOffset = 0;
+     }
+     for (int n = startLine; n < lineNumber; n++) {
+         int nextpos = js.indexOf('\n', pos);

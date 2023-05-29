@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -29,6 +29,9 @@
+                     return TernaryValue.UNKNOWN;
+                 }
+             }
++        case Token.REGEXP:
++            // added case for regular expression literals
++            return TernaryValue.TRUE;
+         case Token.ARRAYLIT:
+         case Token.OBJECTLIT:
+             // ignoring side-effects
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -22,6 +22,8 @@
+             }
+             break;
+         case Token.TRUE:
++            // changed case for true to return TernaryValue.TRUE instead of UNKNOWN
++            return TernaryValue.TRUE;
+         case Token.REGEXP:
+             return TernaryValue.TRUE;
+         case Token.ARRAYLIT:

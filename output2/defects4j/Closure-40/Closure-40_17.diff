@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -11,7 +11,9 @@
+             NameInformation ns = createNameInformation(t, nameNode, n);
+             if (ns != null) {
+                 JsName nameInfo = getName(nameNode.getString(), true);
+-                recordSet(nameInfo.name, nameNode);
++                if (nameInfo != null) {
++                    recordSet(nameInfo.name, nameNode);
++                }
+             }
+         } else if (NodeUtil.isObjectLitKey(n, parent)) {
+             NameInformation ns = createNameInformation(t, n, parent);
+@@ -28,7 +30,10 @@
+             if (ns.isPrototype) {
+                 recordPrototypeSet(ns.prototypeClass, ns.prototypeProperty, n);
+             } else {
+-                recordSet(ns.name, nameNode);
++                JsName name = getName(ns.name, false);
++                if (name != null) {
++                    recordSet(name, nameNode);
++                }
+             }
+         }
+     } else if (n.isCall()) {

@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -29,7 +29,11 @@
+             } else {
+                 sb.append(joinString);
+             }
+-            sb.append(NodeUtil.getArrayElementStringValue(elem));
++            String strValue = NodeUtil.getArrayElementStringValue(elem);
++            if (strValue == null) {
++                return n; // If the element is not a string literal, cannot fold.
++            }
++            sb.append(strValue);
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);

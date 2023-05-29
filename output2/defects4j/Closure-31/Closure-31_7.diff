@@ -1,0 +1,46 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -86,30 +86,25 @@
+                     staleInputs = true;
+                 }
+             }
++            else {
++                jsRoot.addChildToBack(n);
++            }
+         }
+         if (staleInputs) {
+             fillEmptyModules(modules);
+             rebuildInputsFromModules();
+         }
+-        // Build the AST.
+-        for (CompilerInput input : inputs) {
+-            Node n = input.getAstRoot(this);
+-            if (n == null) {
+-                continue;
++        if (devMode) {
++            runSanityCheck();
++            if (hasErrors()) {
++                return null;
+             }
+-            if (devMode) {
+-                runSanityCheck();
+-                if (hasErrors()) {
+-                    return null;
+-                }
+-            }
+-            if (options.sourceMapOutputPath != null || options.nameReferenceReportPath != null) {
+-                // Annotate the nodes in the tree with information from the
+-                // input file. This information is used to construct the SourceMap.
+-                SourceInformationAnnotator sia = new SourceInformationAnnotator(input.getName(), options.devMode != DevMode.OFF);
+-                NodeTraversal.traverse(this, n, sia);
+-            }
+-            jsRoot.addChildToBack(n);
++        }
++        if (options.sourceMapOutputPath != null || options.nameReferenceReportPath != null) {
++            // Annotate the nodes in the tree with information from the
++            // input file. This information is used to construct the SourceMap.
++            SourceInformationAnnotator sia = new SourceInformationAnnotator(input.getName(), options.devMode != DevMode.OFF);
++            NodeTraversal.traverse(this, jsRoot, sia);
+         }
+         if (hasErrors()) {
+             return null;

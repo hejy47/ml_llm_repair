@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -1,7 +1,7 @@
+ @Override
+ public void visit(NodeTraversal t, Node n, Node parent) {
+     // Record global variable and function declarations
+-    if (t.inGlobalScope()) {
++    if (t.inGlobalScope() && !NodeUtil.isTopLevel(n)) { // check if the node is not the top level node
+         if (NodeUtil.isVarDeclaration(n)) {
+             NameInformation ns = createNameInformation(t, n, parent);
+             Preconditions.checkNotNull(ns);

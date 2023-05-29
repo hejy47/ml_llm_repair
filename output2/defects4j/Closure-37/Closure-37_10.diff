@@ -1,0 +1,36 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,7 +12,7 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+-        traverseBranch(fnName, n);
++        pushScope(fnName);
+     }
+     final Node args = fnName.getNext();
+     final Node body = args.getNext();
+@@ -21,5 +21,8 @@
+     // Body
+     Preconditions.checkState(body.getNext() == null && body.isBlock());
+     traverseBranch(body, n);
++    if (isFunctionExpression) {
++        popScope();
++    }
+     popScope();
+ }
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -46,11 +46,13 @@
+         lp.addChildToBack(transform(param));
+     }
+     node.addChildToBack(lp);
++    pushScope(functionNode);
+     Node bodyNode = transform(functionNode.getBody());
+     // When in ideMode Rhino tries to parse some constructs the compiler
+     // doesn't support, repair it here. see Rhino's
+     // Parser#parseFunctionBodyExpr.
+     parseDirectives(bodyNode);
+     node.addChildToBack(bodyNode);
++    popScope();
+     return node;
+ }

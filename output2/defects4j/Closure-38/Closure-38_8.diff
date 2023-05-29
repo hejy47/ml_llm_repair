@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -1,6 +1,4 @@
+ void addNumber(double x) {
+-    // This is not pretty printing. This is to prevent misparsing of x- -4 as
+-    // x--4 (which is a syntax error).
+     char prev = getLastChar();
+     boolean negativeZero = isNegativeZero(x);
+     if (x < 0 && prev == '-') {
+@@ -11,7 +9,7 @@
+         long mantissa = value;
+         int exp = 0;
+         if (Math.abs(x) >= 100) {
+-            while (mantissa / 10 * Math.pow(10, exp + 1) == value) {
++            while ((mantissa / 10) * Math.pow(10, exp + 1) == value) {
+                 mantissa /= 10;
+                 exp++;
+             }
+@@ -22,6 +20,6 @@
+             add(Long.toString(value));
+         }
+     } else {
+-        add(String.valueOf(x));
++        add(String.format(Locale.US, "%s", x)); // Use string formatting to fix precision errors
+     }
+ }

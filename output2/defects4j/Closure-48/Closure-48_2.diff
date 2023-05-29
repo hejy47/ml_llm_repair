@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -17,11 +17,11 @@
+     // FUNCTION literals are special because TypedScopeCreator is very smart
+     // about getting as much type information as possible for them.
+     // Determining type for #1 + #2 + #3 + #4
+-    JSType valueType = getDeclaredType(t.getSourceName(), info, n, rhsValue);
+-    if (valueType == null && rhsValue != null) {
+-        // Determining type for #5
++    JSType valueType = null;
++    if(rhsValue != null)
++        valueType = getDeclaredType(t.getSourceName(), info, n, rhsValue);
++    if (valueType == null && rhsValue != null && rhsValue.getJSType() != null && !ObjectType.cast(rhsValue.getJSType()).isEmptyType())
+         valueType = rhsValue.getJSType();
+-    }
+     // Function prototypes are special.
+     // It's a common JS idiom to do:
+     // F.prototype = { ... };
+@@ -63,12 +63,14 @@
+     // The problem is that there are two (equally valid) coding styles:
+     //
+     // (function() {
+-    //       //   goog.bar = function() {};
++    //   /* The authoritative definition of goog.bar. */
++    //   goog.bar = function() {};
+     // })();
+     //
+     // function f() {
+     //   goog.bar();
+-    //       //   goog.bar = function() {};
++    //   /* Reset goog.bar to a no-op. */
++    //   goog.bar = function() {};
+     // }
+     //
+     // In a dynamic language with first-class functions, it's very difficult

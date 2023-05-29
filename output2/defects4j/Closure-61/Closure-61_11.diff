@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -13,10 +13,15 @@
+             return false;
+         }
+     } else if (nameNode.getType() == Token.GETPROP) {
+-        if (callNode.hasOneChild() && OBJECT_METHODS_WITHOUT_SIDEEFFECTS.contains(nameNode.getLastChild().getString())) {
++        if (callNode.isOnlyModifiesArgumentsCall()) { //fix to check if callNode modifies only its arguments
+             return false;
+         }
+         if (callNode.isOnlyModifiesThisCall() && evaluatesToLocalValue(nameNode.getFirstChild())) {
++            return false;
++        }
++        if (callNode.isCallTo(NodeUtil.getQualifiedNameNode("goog.reflect.object")) //fix to check if callNode is a call to goog.reflect.object
++                && callNode.getChildCount() == 3
++                && callNode.getLastChild().getType() == Token.OBJECTLIT) {
+             return false;
+         }
+         // Functions in the "Math" namespace have no side effects.

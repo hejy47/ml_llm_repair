@@ -1,0 +1,41 @@
+--- com/google/javascript/rhino/jstype/PrototypeObjectType.java@matchConstraint
++++ com/google/javascript/rhino/jstype/PrototypeObjectType.java@matchConstraint
+@@ -1,25 +1,28 @@
+ @Override
+ public void matchConstraint(ObjectType constraintObj) {
+-    // We only want to match contraints on anonymous types.
++    // We only want to match constraints on anonymous types and record types.
++    if (!constraintObj.isAnonymousType() && !constraintObj.isRecordType()) {
++        return;
++    }
+     // Handle the case where the constraint object is a record type.
+-    //
+-    // param constraintObj {{prop: (number|undefined)}}
+-    // function f(constraintObj) {}
+-    // f({});
+-    //
+-    // We want to modify the object literal to match the constraint, by
+-    // taking any each property on the record and trying to match
+-    // properties on this object.
+     if (constraintObj.isRecordType()) {
+         for (String prop : constraintObj.getOwnPropertyNames()) {
++            // Get the property type.
+             JSType propType = constraintObj.getPropertyType(prop);
++            // Check if the property type is declared.
+             if (!isPropertyTypeDeclared(prop)) {
++                // If the property is not declared, infer its type.
+                 JSType typeToInfer = propType;
+                 if (!hasProperty(prop)) {
+-                    typeToInfer = getNativeType(JSTypeNative.VOID_TYPE).getLeastSupertype(propType);
++                    typeToInfer = getNativeType(JSTypeNative.VOID_TYPE)
++                            .getLeastSupertype(propType);
+                 }
+                 defineInferredProperty(prop, typeToInfer, null);
+             }
+         }
++    } else {
++        // Handle the case where the constraint object is an anonymous type.
++        // Call the superclass matchConstraint method.
++        super.matchConstraint(constraintObj);
+     }
+ }

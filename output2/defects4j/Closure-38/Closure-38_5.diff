@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -21,6 +21,12 @@
+         } else {
+             add(Long.toString(value));
+         }
++    } else if (Double.isNaN(x)) {
++        add("NaN");
++    } else if (Double.isInfinite(x) && x > 0) {
++        add("+Infinity");
++    } else if (Double.isInfinite(x) && x < 0) {
++        add("-Infinity");
+     } else {
+         add(String.valueOf(x));
+     }

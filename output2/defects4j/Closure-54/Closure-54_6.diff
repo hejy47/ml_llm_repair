@@ -1,0 +1,47 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -3,7 +3,9 @@
+     String ownerName = ownerNode.getQualifiedName();
+     String qName = n.getQualifiedName();
+     String propName = n.getLastChild().getString();
+-    Preconditions.checkArgument(qName != null && ownerName != null);
++    Preconditions.checkNotNull(qName);
++    Preconditions.checkNotNull(ownerName);
++
+     // Precedence of type information on GETPROPs:
+     // 1) @type annnotation / @enum annotation
+     // 2) ASSIGN to FUNCTION literal
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -19,5 +19,5 @@
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+         baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
+     }
+-    setPrototype((PrototypeObjectType) baseType);
++    setInstanceType((PrototypeObjectType) baseType);
+ }
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -12,15 +12,13 @@
+     this.prototype.setOwnerFunction(this);
+     // Disassociating the old prototype makes this easier to debug--
+     // we don't have to worry about two prototypes running around.
+-    if (isConstructor() || isInterface()) {
+-        FunctionType superClass = getSuperClassConstructor();
+-        if (superClass != null) {
+-            superClass.addSubType(this);
+-        }
+-        if (isInterface()) {
+-            for (ObjectType interfaceType : getExtendedInterfaces()) {
+-                if (interfaceType.getConstructor() != null) {
+-                    interfaceType.getConstructor().addSubType(this);
++    if (!isInterface()) {
++        for (JSType subType : cachedTypes.getSubtypes()) {
++            if (subType instanceof FunctionType) {
++                FunctionType ctor = (FunctionType) subType;
++                if (ctor.getPrototype() == this.prototype || ctor.getInstanceType() == this.prototype) {
++                    cachedTypes.markInvalid();
++                    break;
+                 }
+             }
+         }

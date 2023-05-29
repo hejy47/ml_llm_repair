@@ -1,0 +1,53 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -1,5 +1,4 @@
+ private boolean isInlinableObject(List<Reference> refs) {
+-    boolean ret = false;
+     for (Reference ref : refs) {
+         Node name = ref.getNode();
+         Node parent = ref.getParent();
+@@ -7,8 +6,7 @@
+         // Ignore indirect references, like x.y (except x.y(), since
+         // the function referenced by y might reference 'this').
+         //
+-        if (parent.isGetProp()) {
+-            Preconditions.checkState(parent.getFirstChild() == name);
++        if (parent.isGetProp() && parent.getFirstChild() == name) {
+             // A call target maybe using the object as a 'this' value.
+             if (gramps.isCall() && gramps.getFirstChild() == parent) {
+                 return false;
+@@ -28,13 +26,9 @@
+             return false;
+         }
+         Node val = ref.getAssignedValue();
+-        if (val == null) {
+-            // A var with no assignment.
++        if (val == null || !val.isObjectLit()) {
++            // A var with no assignment or not an object literal.
+             continue;
+-        }
+-        // We're looking for object literal assignments only.
+-        if (!val.isObjectLit()) {
+-            return false;
+         }
+         // Make sure that the value is not self-refential. IOW,
+         // disallow things like x = {b: x.a}.
+@@ -55,7 +49,7 @@
+             // will happen.
+             for (Reference t : refs) {
+                 Node refNode = t.getParent();
+-                while (!NodeUtil.isStatementBlock(refNode)) {
++                while (refNode != null) {
+                     if (refNode == childVal) {
+                         // There's a self-referential assignment
+                         return false;
+@@ -67,7 +61,7 @@
+         // We have found an acceptable object literal assignment. As
+         // long as there are no other assignments that mess things up,
+         // we can inline.
+-        ret = true;
++        return true;
+     }
+-    return ret;
++    return false;
+ }

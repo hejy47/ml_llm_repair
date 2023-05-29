@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -23,7 +23,7 @@
+     Node elem = arrayNode.getFirstChild();
+     // Merges adjacent String nodes.
+     while (elem != null) {
+-        if (NodeUtil.isImmutableValue(elem) || elem.getType() == Token.EMPTY) {
++        if (elem.getType() == Token.STRING || elem.getType() == Token.NUMBER || elem.getType() == Token.TRUE || elem.getType() == Token.FALSE) {
+             if (sb == null) {
+                 sb = new StringBuilder();
+             } else {

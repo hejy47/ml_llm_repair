@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldArrayAccess
+@@ -13,7 +13,7 @@
+     }
+     double index = right.getDouble();
+     int intIndex = (int) index;
+-    if (intIndex != index) {
++    if (intIndex != index || index >= Integer.MAX_VALUE) {
+         error(INVALID_GETELEM_INDEX_ERROR, right);
+         return n;
+     }

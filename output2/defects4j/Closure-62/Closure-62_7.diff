@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/LightweightMessageFormatter.java@format
++++ com/google/javascript/jscomp/LightweightMessageFormatter.java@format
+@@ -32,8 +32,9 @@
+                     b.append(' ');
+                 }
+             }
+-            b.append("^\n");
++            b.append("^");
+         }
++        b.append('\n');
+     }
+     return b.toString();
+ }

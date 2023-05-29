@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@add
++++ com/google/javascript/jscomp/CodeConsumer.java@add
+@@ -1,6 +1,6 @@
+ void add(String newcode) {
+     maybeEndStatement();
+-    if (newcode.length() == 0) {
++    if (newcode.isEmpty()) {
+         return;
+     }
+     char c = newcode.charAt(0);
+@@ -8,11 +8,14 @@
+         // need space to separate. This is not pretty printing.
+         // For example: "return foo;"
+         append(" ");
+-        // Do not allow a forward slash to appear after a DIV.
+-        // For example,
+-        // REGEXP DIV REGEXP
+-        // is valid and should print like
+-        // / // / /
++    }
++    // Do not allow a forward slash to appear after a DIV.
++    // For example,
++    // REGEXP DIV REGEXP
++    // is valid and should print like
++    // / // / /
++    else if (c == '/' && getLastChar() == '/') {
++        append(" ");
+     }
+     append(newcode);
+ }

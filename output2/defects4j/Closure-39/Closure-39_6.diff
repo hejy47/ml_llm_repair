@@ -1,0 +1,14 @@
+--- com/google/javascript/rhino/jstype/PrototypeObjectType.java@toStringHelper
++++ com/google/javascript/rhino/jstype/PrototypeObjectType.java@toStringHelper
+@@ -7,8 +7,10 @@
+         prettyPrint = false;
+         // Use a tree set so that the properties are sorted.
+         Set<String> propertyNames = Sets.newTreeSet();
+-        for (ObjectType current = this; current != null && !current.isNativeObjectType() && propertyNames.size() <= MAX_PRETTY_PRINTED_PROPERTIES; current = current.getImplicitPrototype()) {
++        ObjectType current = this; // current is initialized outside of the loop
++        while (current != null && !current.isNativeObjectType() && propertyNames.size() <= MAX_PRETTY_PRINTED_PROPERTIES) {
+             propertyNames.addAll(current.getOwnPropertyNames());
++            current = current.getImplicitPrototype(); // current is updated at the end of the loop
+         }
+         StringBuilder sb = new StringBuilder();
+         sb.append("{");

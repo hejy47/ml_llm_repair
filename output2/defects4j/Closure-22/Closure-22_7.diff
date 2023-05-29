@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -35,6 +35,8 @@
+         }
+     } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+         if (parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext())) {
++            //return added for FOR loops with no side effects
++            return;
+         } else {
+             return;
+         }
+@@ -48,7 +50,7 @@
+             return;
+         }
+         String msg = "This code lacks side-effects. Is there a bug?";
+-        if (n.isString()) {
++        if (n.isString() || n.isTemplateLit()) {
+             msg = "Is there a missing '+' on the previous line?";
+         } else if (isSimpleOp) {
+             msg = "The result of the '" + Token.name(n.getType()).toLowerCase() + "' operator is not being used.";

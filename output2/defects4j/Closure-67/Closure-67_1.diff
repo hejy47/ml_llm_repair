@@ -1,0 +1,9 @@
+--- com/google/javascript/jscomp/AnalyzePrototypeProperties.java@isPrototypePropertyAssign
++++ com/google/javascript/jscomp/AnalyzePrototypeProperties.java@isPrototypePropertyAssign
+@@ -1,5 +1,5 @@
+ private boolean isPrototypePropertyAssign(Node assign) {
+-    Node n = assign.getFirstChild();
++    Node n = assign.getFirstFirstChild();
+     if (n != null && NodeUtil.isVarOrSimpleAssignLhs(n, assign) && n.getType() == Token.GETPROP) {
+         // We want to exclude the assignment itself from the usage list
+         boolean isChainedProperty = n.getFirstChild().getType() == Token.GETPROP;

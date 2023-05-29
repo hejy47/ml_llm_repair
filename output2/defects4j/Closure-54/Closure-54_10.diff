@@ -1,0 +1,74 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -3,7 +3,7 @@
+     String ownerName = ownerNode.getQualifiedName();
+     String qName = n.getQualifiedName();
+     String propName = n.getLastChild().getString();
+-    Preconditions.checkArgument(qName != null && ownerName != null);
++    Preconditions.checkArgument(qName != null && ownerName != null, "Either qualified name or owner name is null");
+     // Precedence of type information on GETPROPs:
+     // 1) @type annnotation / @enum annotation
+     // 2) ASSIGN to FUNCTION literal
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -17,7 +17,7 @@
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+     if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+-        baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
++        baseType = new PrototypeObjectType(registry, getReferenceName() + ".prototype", baseType);
+     }
+     setPrototype((PrototypeObjectType) baseType);
+ }
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -2,8 +2,11 @@
+     if (prototype == null) {
+         return false;
+     }
+-    // getInstanceType fails if the function is not a constructor
+-    if (isConstructor() && prototype == getInstanceType()) {
++    // getInstanceType fails if the function is not a constructor, or it's native
++    if (!isConstructor() || isNativeObjectType()) {
++        return false;
++    }
++    if (prototype == getInstanceType()) {
+         return false;
+     }
+     boolean replacedPrototype = prototype != null;
+@@ -12,17 +15,25 @@
+     this.prototype.setOwnerFunction(this);
+     // Disassociating the old prototype makes this easier to debug--
+     // we don't have to worry about two prototypes running around.
+-    if (isConstructor() || isInterface()) {
+-        FunctionType superClass = getSuperClassConstructor();
+-        if (superClass != null) {
+-            superClass.addSubType(this);
++    FunctionType superClass = getSuperClassConstructor();
++    // We will only add the prototype tree to a superclass function if the
++    // prototype of the child has information, which will be used later in
++    // type inference and checking
++    if (superClass != null && prototype != null &&
++            prototype != superClass.getPrototype() && 
++            !prototype.isEmptyType()) {
++        superClass.addSubType(this);
++    }
++    for (ObjectType interfaceType : getExtendedInterfaces()) {
++        if (interfaceType.getConstructor() != null) {
++        // We will only add a sub type to the interface if the
++        // prototype of the child has information, which will be
++        // used later in type inference and checking
++        if (prototype != null 
++            && prototype != interfaceType.getConstructor().getPrototype()
++            && !prototype.isEmptyType()) {
++            interfaceType.getConstructor().addSubType(this);
+         }
+-        if (isInterface()) {
+-            for (ObjectType interfaceType : getExtendedInterfaces()) {
+-                if (interfaceType.getConstructor() != null) {
+-                    interfaceType.getConstructor().addSubType(this);
+-                }
+-            }
+         }
+     }
+     if (replacedPrototype) {

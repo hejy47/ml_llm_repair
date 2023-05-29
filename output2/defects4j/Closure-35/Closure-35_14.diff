@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferPropertyTypesToMatchConstraint
++++ com/google/javascript/jscomp/TypeInference.java@inferPropertyTypesToMatchConstraint
+@@ -8,7 +8,7 @@
+         if (objType != null) {
+             for (String prop : constraintObj.getOwnPropertyNames()) {
+                 JSType propType = constraintObj.getPropertyType(prop);
+-                if (!objType.isPropertyTypeDeclared(prop)) {
++                if (!objType.isPropertyTypeDeclared(prop) && !objType.isPropertyInferred(prop)) {
+                     JSType typeToInfer = propType;
+                     if (!objType.hasProperty(prop)) {
+                         typeToInfer = getNativeType(VOID_TYPE).getLeastSupertype(propType);

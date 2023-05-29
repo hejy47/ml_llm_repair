@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -4,13 +4,20 @@
+         Node n = v.getNode();
+         int type = n.getType();
+         Node parent = n.getParent();
+-        if (parent.isVar()) {
++        if (parent != null && parent.isVar()) {
+             if (n.hasChildren() && n.getFirstChild().isQualifiedName()) {
+                 String name = n.getString();
+                 Var aliasVar = scope.getVar(name);
++                if(aliasVar == null){
++                    continue; // Skip if aliasVar is null
++                }
+                 aliases.put(name, aliasVar);
+-                String qualifiedName = aliasVar.getInitialValue().getQualifiedName();
+-                transformation.addAlias(name, qualifiedName);
++                if(aliasVar.getInitialValue() != null){
++                    String qualifiedName = aliasVar.getInitialValue().getQualifiedName();
++                    if(qualifiedName != null){
++                        transformation.addAlias(name, qualifiedName);
++                    }
++                }
+                 // Bleeding functions already get a BAD_PARAMETERS error, so just
+                 // do nothing.
+                 // Parameters of the scope function also get a BAD_PARAMETERS

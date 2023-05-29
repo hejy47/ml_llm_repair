@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -20,13 +20,20 @@
+             return false;
+         }
+         // Functions in the "Math" namespace have no side effects.
+-        if (compiler != null && !compiler.hasRegExpGlobalReferences()) {
+-            if (nameNode.getFirstChild().getType() == Token.REGEXP && REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
+-                return false;
+-            } else if (nameNode.getFirstChild().getType() == Token.STRING && STRING_REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
+-                Node param = nameNode.getNext();
+-                if (param != null && (param.getType() == Token.STRING || param.getType() == Token.REGEXP))
++        if (compiler != null) {
++            if (!compiler.hasRegExpGlobalReferences()) {
++                if (nameNode.getFirstChild().getType() == Token.REGEXP && REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
+                     return false;
++                } else if (nameNode.getFirstChild().getType() == Token.STRING && STRING_REGEXP_METHODS.contains(nameNode.getLastChild().getString())) {
++                    Node param = nameNode.getNext();
++                    if (param != null && (param.getType() == Token.STRING || param.getType() == Token.REGEXP)) {
++                        return false;
++                    }
++                }
++            } else if (compiler.getOptions().getLanguageMode().isES6OrHigher()) {
++                if (nameNode.getFirstChild().getType() == Token.NAME && nameNode.getLastChild().getString().equals("toString")) {
++                    return false;
++                }
+             }
+         }
+     }

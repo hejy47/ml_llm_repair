@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
++++ com/google/javascript/jscomp/parsing/JsDocInfoParser.java@extractMultilineTextualBlock
+@@ -1,4 +1,5 @@
+ @SuppressWarnings("fallthrough")
++
+ private ExtractionInfo extractMultilineTextualBlock(JsDocToken token, WhitespaceOption option) {
+     if (token == JsDocToken.EOC || token == JsDocToken.EOL || token == JsDocToken.EOF) {
+         return new ExtractionInfo("", token);
+@@ -24,6 +25,7 @@
+             case STAR:
+                 if (ignoreStar) {
+                     // Mark the position after the star as the new start of the line.
++                    startCharno += 1;
+                 } else {
+                     // The star is part of the comment.
+                     if (builder.length() > 0) {
+@@ -52,7 +54,7 @@
+                         multilineText = multilineText.trim();
+                     }
+                     int endLineno = stream.getLineno();
+-                    int endCharno = stream.getCharno();
++                    int endCharno = stream.getCharno() + 1;
+                     if (multilineText.length() > 0) {
+                         jsdocBuilder.markText(multilineText, startLineno, startCharno, endLineno, endCharno);
+                     }

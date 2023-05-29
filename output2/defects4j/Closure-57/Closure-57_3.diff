@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/ClosureCodingConvention.java@extractClassNameIfGoog
++++ com/google/javascript/jscomp/ClosureCodingConvention.java@extractClassNameIfGoog
+@@ -3,12 +3,10 @@
+     if (NodeUtil.isExprCall(parent)) {
+         Node callee = node.getFirstChild();
+         if (callee != null && callee.getType() == Token.GETPROP) {
+-            String qualifiedName = callee.getQualifiedName();
+-            if (functionName.equals(qualifiedName)) {
+-                Node target = callee.getNext();
+-                if (target != null) {
+-                    className = target.getString();
+-                }
++            Node target = callee.getLastChild();
++            String qualifiedName = callee.getFirstChild().getQualifiedName();
++            if (functionName.equals(qualifiedName) && target != null && target.isString()) {
++                className = target.getString();
+             }
+         }
+     }

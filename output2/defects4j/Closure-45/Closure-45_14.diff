@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
+@@ -3,6 +3,6 @@
+     this.assignNode = assignNode;
+     this.nameNode = nameNode;
+     this.isPropertyAssign = isPropertyAssign;
+-    this.maybeAliased = !assignNode.getParent().isExprResult();
++    this.maybeAliased = assignNode.getParent() != null && !assignNode.getParent().isExprResult();
+     this.mayHaveSecondarySideEffects = maybeAliased || NodeUtil.mayHaveSideEffects(assignNode.getFirstChild()) || NodeUtil.mayHaveSideEffects(assignNode.getLastChild());
+ }
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
+@@ -2,9 +2,6 @@
+     boolean changes = false;
+     do {
+         changes = false;
+-        // We can't use traditional iterators and iterables for this list,
+-        // because our lazily-evaluated continuations will modify it while
+-        // we traverse it.
+         for (int current = 0; current < maybeUnreferenced.size(); current++) {
+             Var var = maybeUnreferenced.get(current);
+             if (referenced.contains(var)) {
+@@ -13,12 +10,12 @@
+             } else {
+                 boolean assignedToUnknownValue = false;
+                 boolean hasPropertyAssign = false;
+-                if (var.getParentNode().isVar() && !NodeUtil.isForIn(var.getParentNode().getParent())) {
++                if (var.getParentNode().isLet() || var.getParentNode().isConst()) {
++                    assignedToUnknownValue = true;
++                } else if (var.getParentNode().isVar() && !NodeUtil.isForIn(var.getParentNode().getParent())) {
+                     Node value = var.getInitialValue();
+                     assignedToUnknownValue = value != null && !NodeUtil.isLiteralValue(value, true);
+                 } else {
+-                    // This was initialized to a function arg or a catch param
+-                    // or a for...in variable.
+                     assignedToUnknownValue = true;
+                 }
+                 for (Assign assign : assignsByVar.get(var)) {

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeInference.java@traverseNew
++++ com/google/javascript/jscomp/TypeInference.java@traverseNew
+@@ -17,6 +17,8 @@
+             }
+             if (ct != null && ct.isConstructor()) {
+                 type = ct.getInstanceType();
++            } else if (ct != null) {
++                type = ct.getTypeOfThis();
+             }
+         }
+     }

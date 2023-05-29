@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@replaceAssignmentExpression
+@@ -16,27 +16,14 @@
+     for (String var : all) {
+         nodes.add(new Node(Token.ASSIGN, Node.newString(Token.NAME, varmap.get(var)), NodeUtil.newUndefinedNode(null)));
+     }
+-    Node replacement;
+     // All assignments evaluate to true, so make sure that the
+     // expr statement evaluates to true in case it matters.
+     nodes.add(new Node(Token.TRUE));
+-    // Join these using COMMA.  A COMMA node must have 2 children, so we
+-    // create a tree. In the tree the first child be the COMMA to match
+-    // the parser, otherwise tree equality tests fail.
+-    nodes = Lists.reverse(nodes);
+-    replacement = new Node(Token.COMMA);
+-    Node cur = replacement;
+-    int i;
+-    for (i = 0; i < nodes.size() - 2; i++) {
+-        cur.addChildToFront(nodes.get(i));
+-        Node t = new Node(Token.COMMA);
+-        cur.addChildToFront(t);
+-        cur = t;
+-    }
+-    cur.addChildToFront(nodes.get(i));
+-    cur.addChildToFront(nodes.get(i + 1));
++    Node replacement = NodeUtil.newExpr(
++            new Node(Token.COMMA, Lists.reverse(nodes).toArray(new Node[nodes.size()]))
++    );
+     Node replace = ref.getParent();
+-    replacement.copyInformationFromForTree(replace);
++    replacement.useSourceInfoIfMissingFrom(replace);
+     if (replace.getType() == Token.VAR) {
+         replace.getParent().replaceChild(replace, NodeUtil.newExpr(replacement));
+     } else {

@@ -1,0 +1,44 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -8,9 +8,9 @@
+     if (declaration != initialization && !initialization.getGrandparent().isExprResult()) {
+         return false;
+     }
+-    // Be very conservative and do no cross control structures or
++    // Be very conservative and do not cross control structures or
+     // scope boundaries
+-    if (declaration.getBasicBlock() != initialization.getBasicBlock() || declaration.getBasicBlock() != reference.getBasicBlock()) {
++    if (!declaration.getBasicBlock().equals(initialization.getBasicBlock()) || !declaration.getBasicBlock().equals(reference.getBasicBlock())) {
+         return false;
+     }
+     // Do not inline into a call node. This would change
+@@ -23,22 +23,22 @@
+     //   f(a)
+     // is ok.
+     Node value = initialization.getAssignedValue();
+-    Preconditions.checkState(value != null);
+-    if (value.isGetProp() && reference.getParent().isCall() && reference.getParent().getFirstChild() == reference.getNode()) {
++    Preconditions.checkNotNull(value);
++    if (value.isGetProp() && reference.getParent().isCall() && reference.getParent().getFirstChild() == reference) {
+         return false;
+     }
+     if (value.isFunction()) {
+         Node callNode = reference.getParent();
+-        if (reference.getParent().isCall()) {
++        if (callNode.isCall()) {
+             CodingConvention convention = compiler.getCodingConvention();
+-            // Bug 2388531: Don't inline subclass definitions into class defining
+-            // calls as this confused class removing logic.
++            // Bug 2388531: Do not inline subclass definitions into class defining
++            // calls as this confuses class removing logic.
+             SubclassRelationship relationship = convention.getClassesDefinedByCall(callNode);
+             if (relationship != null) {
+                 return false;
+             }
+-            // issue 668: Don't inline singleton getter methods
+-            // calls as this confused class removing logic.
++            // issue 668: Do not inline singleton getter methods
++            // calls as this confuses class removing logic.
+         }
+     }
+     return canMoveAggressively(value) || canMoveModerately(initialization, reference);

@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,7 +12,8 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+-        traverseBranch(fnName, n);
++        pushScope(fnName);
++        traverseBranch(fnName.getNext(), n);
+     }
+     final Node args = fnName.getNext();
+     final Node body = args.getNext();
+@@ -22,4 +23,7 @@
+     Preconditions.checkState(body.getNext() == null && body.isBlock());
+     traverseBranch(body, n);
+     popScope();
++    if (isFunctionExpression) {
++        popScope();
++    }
+ }
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -37,11 +37,12 @@
+     Name fnName = functionNode.getFunctionName();
+     if (fnName != null) {
+         lp.setLineno(fnName.getLineno());
++        lp.setCharno(fnName.getLength() + functionNode.getAbsolutePosition());
+     } else {
+         lp.setLineno(functionNode.getLineno());
++        int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
++        lp.setCharno(position2charno(lparenCharno));
+     }
+-    int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+-    lp.setCharno(position2charno(lparenCharno));
+     for (AstNode param : functionNode.getParams()) {
+         lp.addChildToBack(transform(param));
+     }

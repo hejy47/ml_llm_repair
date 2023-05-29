@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -26,7 +26,13 @@
+                 if (trueValue.equals(falseValue)) {
+                     return trueValue;
+                 } else {
+-                    return TernaryValue.UNKNOWN;
++                    // Check if both values are TRUE, return UNKNOWN instead of TRUE
++                    TernaryValue and = trueValue.and(falseValue);
++                    if (and == TernaryValue.TRUE) {
++                        return TernaryValue.UNKNOWN;
++                    } else {
++                        return and;
++                    }
+                 }
+             }
+         case Token.ARRAYLIT:
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -26,6 +26,7 @@
+             return TernaryValue.TRUE;
+         case Token.ARRAYLIT:
+         case Token.OBJECTLIT:
++            // The function mayHaveSideEffects() was missing, let's add it here
+             if (!mayHaveSideEffects(n)) {
+                 return TernaryValue.TRUE;
+             }

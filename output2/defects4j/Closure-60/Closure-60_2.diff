@@ -1,0 +1,36 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -1,13 +1,10 @@
+ static TernaryValue getPureBooleanValue(Node n) {
+     switch(n.getType()) {
+-        case Token.STRING:
+-            return TernaryValue.forBoolean(n.getString().length() > 0);
+-        case Token.NUMBER:
+-            return TernaryValue.forBoolean(n.getDouble() != 0);
+-        case Token.NOT:
+-            return getPureBooleanValue(n.getLastChild()).not();
++        case Token.TRUE:
++            return TernaryValue.TRUE;
++        case Token.FALSE:
++            return TernaryValue.FALSE;
+         case Token.NULL:
+-        case Token.FALSE:
+             return TernaryValue.FALSE;
+         case Token.VOID:
+             return TernaryValue.FALSE;
+@@ -21,9 +18,14 @@
+                 return TernaryValue.TRUE;
+             }
+             break;
+-        case Token.TRUE:
++        case Token.NUMBER:
++            return TernaryValue.forBoolean(n.getDouble() != 0);
++        case Token.STRING:
++            return TernaryValue.forBoolean(n.getString().length() > 0);
+         case Token.REGEXP:
+             return TernaryValue.TRUE;
++        case Token.NOT:
++            return getPureBooleanValue(n.getLastChild()).not();
+         case Token.ARRAYLIT:
+         case Token.OBJECTLIT:
+             if (!mayHaveSideEffects(n)) {

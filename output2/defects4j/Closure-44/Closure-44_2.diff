@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@add
++++ com/google/javascript/jscomp/CodeConsumer.java@add
+@@ -5,14 +5,13 @@
+     }
+     char c = newcode.charAt(0);
+     if ((isWordChar(c) || c == '\\') && isWordChar(getLastChar())) {
+-        // need space to separate. This is not pretty printing.
++        // need space to separate if not already separated by space or forward slash
++        // This is not pretty printing.
+         // For example: "return foo;"
+-        append(" ");
+-        // Do not allow a forward slash to appear after a DIV.
+-        // For example,
+-        // REGEXP DIV REGEXP
+-        // is valid and should print like
+-        // / // / /
++        String lastCode = getLastCode();
++        if (!lastCode.endsWith(" ") && !lastCode.endsWith("/")) {
++            append(" ");
++        }
+     }
+     append(newcode);
+ }

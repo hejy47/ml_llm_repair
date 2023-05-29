@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -23,7 +23,9 @@
+     //   f(a)
+     // is ok.
+     Node value = initialization.getAssignedValue();
+-    Preconditions.checkState(value != null);
++    if (value == null) { // added check for null value
++        return false;
++    }
+     if (value.isGetProp() && reference.getParent().isCall() && reference.getParent().getFirstChild() == reference.getNode()) {
+         return false;
+     }

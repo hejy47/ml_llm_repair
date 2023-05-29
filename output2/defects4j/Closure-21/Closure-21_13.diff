@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -7,13 +7,13 @@
+     if (n.isEmpty() || n.isComma()) {
+         return;
+     }
+-    if (parent == null) {
++    if (parent == null || NodeUtil.isFunctionDeclaration(parent)) {
+         return;
+     }
+     // Do not try to remove a block or an expr result. We already handle
+     // these cases when we visit the child, and the peephole passes will
+     // fix up the tree in more clever ways when these are removed.
+-    if (n.isExprResult()) {
++    if (n.isExprResult() && !n.hasOneChild() && !NodeUtil.mayHaveSideEffects(n.getFirstChild(), t.getCompiler())) {
+         return;
+     }
+     // This no-op statement was there so that JSDoc information could
+@@ -43,7 +43,7 @@
+             return;
+         }
+     }
+-    if ((isSimpleOp || !NodeUtil.mayHaveSideEffects(n, t.getCompiler()))) {
++    if ((isSimpleOp || !NodeUtil.mayHaveSideEffects(n, t.getCompiler())) && !n.isCall() && !n.isNew()) {
+         String msg = "This code lacks side-effects. Is there a bug?";
+         if (n.isString()) {
+             msg = "Is there a missing '+' on the previous line?";

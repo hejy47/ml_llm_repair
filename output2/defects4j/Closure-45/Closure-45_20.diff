@@ -1,0 +1,53 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
+@@ -1,5 +1,5 @@
+ Assign(Node assignNode, Node nameNode, boolean isPropertyAssign) {
+-    Preconditions.checkState(NodeUtil.isAssignmentOp(assignNode));
++    Preconditions.checkArgument(NodeUtil.isAssignmentOp(assignNode), assignNode);
+     this.assignNode = assignNode;
+     this.nameNode = nameNode;
+     this.isPropertyAssign = isPropertyAssign;
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
+@@ -2,9 +2,6 @@
+     boolean changes = false;
+     do {
+         changes = false;
+-        // We can't use traditional iterators and iterables for this list,
+-        // because our lazily-evaluated continuations will modify it while
+-        // we traverse it.
+         for (int current = 0; current < maybeUnreferenced.size(); current++) {
+             Var var = maybeUnreferenced.get(current);
+             if (referenced.contains(var)) {
+@@ -15,17 +12,26 @@
+                 boolean hasPropertyAssign = false;
+                 if (var.getParentNode().isVar() && !NodeUtil.isForIn(var.getParentNode().getParent())) {
+                     Node value = var.getInitialValue();
+-                    assignedToUnknownValue = value != null && !NodeUtil.isLiteralValue(value, true);
++                    if (value == null) {
++                        assignedToUnknownValue = true;
++                    } else if (NodeUtil.isLiteralValue(value, true)) {
++                        assignedToUnknownValue = false;
++                    } else {
++                        assignedToUnknownValue = true;
++                    }
+                 } else {
+-                    // This was initialized to a function arg or a catch param
+-                    // or a for...in variable.
+                     assignedToUnknownValue = true;
+                 }
+                 for (Assign assign : assignsByVar.get(var)) {
+                     if (assign.isPropertyAssign) {
+                         hasPropertyAssign = true;
+-                    } else if (!NodeUtil.isLiteralValue(assign.assignNode.getLastChild(), true)) {
+-                        assignedToUnknownValue = true;
++                    } else {
++                        Node lastChild = assign.assignNode.getLastChild();
++                        if (lastChild == null || NodeUtil.isLiteralValue(lastChild, true)) {
++                            assignedToUnknownValue = false;
++                        } else {
++                            assignedToUnknownValue = true;
++                        }
+                     }
+                 }
+                 if (assignedToUnknownValue && hasPropertyAssign) {

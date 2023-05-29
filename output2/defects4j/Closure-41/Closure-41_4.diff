@@ -1,0 +1,41 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -28,12 +28,21 @@
+                     newParam.setVarArgs(false);
+                     newParam.setOptionalArg(true);
+                 }
++                paramBuilder.add(newParam); // Add the new parameter to paramBuilder
++                parametersNode = paramBuilder.build(); // Update the parametersNode with the new parameters list
+             } else {
+                 warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
++                paramBuilder.add(newParam); // Add the new parameter to paramBuilder
++                parametersNode = paramBuilder.build(); // Update the parametersNode with the new parameters list
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
+-        parametersNode = paramBuilder.build();
++        while (oldParams.hasNext()) {
++            Node oldParam = oldParams.next();
++            Node newParam = paramBuilder.newParameterFromNode(oldParam);
++            paramBuilder.add(newParam); // Add the new parameter to paramBuilder
++            parametersNode = paramBuilder.build(); // Update the parametersNode with the new parameters list
++        }
+     }
+     return this;
+ }
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -44,6 +44,13 @@
+         }
+     }
+     // Copy over any old parameters that aren't in the param list.
++    while (oldParameterType != null) {
++        boolean isOptionalParam = oldParameterType.isOptionalArg();
++        boolean isVarArgs = oldParameterType.isVarArgs();
++        parameterType = oldParameterType.getJSType();
++        builder.add(paramBuilder.newParameter("", parameterType, isOptionalParam, isVarArgs));
++        oldParameterType = oldParameterType.getNext();
++    }
+     if (templateTypeName != null && !foundTemplateType) {
+         reportError(TEMPLATE_TYPE_EXPECTED, fnName);
+     }

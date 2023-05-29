@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -8,7 +8,7 @@
+     Node nameNode = callNode.getFirstChild();
+     // Built-in functions with no side effects.
+     if (nameNode.getType() == Token.NAME) {
+-        String name = nameNode.getString();
++        String name = nameNode.getString().toLowerCase();
+         if (BUILTIN_FUNCTIONS_WITHOUT_SIDEEFFECTS.contains(name)) {
+             return false;
+         }

@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processForInLoop
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processForInLoop
+@@ -1,5 +1,11 @@
+ @Override
+ Node processForInLoop(ForInLoop loopNode) {
+     // Return the bare minimum to put the AST in a valid state.
+-    return newNode(Token.FOR, transform(loopNode.getIterator()), transform(loopNode.getIteratedObject()), transformBlock(loopNode.getBody()));
++    Node lhs = loopNode.getIterator();
++    Node obj = loopNode.getIteratedObject();
++
++    lhs.setShouldBeJsonObject();
++    obj.setShouldBeJsonObject();
++
++    return newNode(Token.FOR, lhs, obj, transformBlock(loopNode.getBody()));
+ }

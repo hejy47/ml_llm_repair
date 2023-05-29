@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -31,7 +31,12 @@
+             }
+         case Token.ARRAYLIT:
+         case Token.OBJECTLIT:
+-            // ignoring side-effects
++        case Token.NEW:
++        case Token.DELPROP:
++        case Token.GETPROP:
++        case Token.GETELEM:
++        case Token.CALL:
++            // ignoring side-effects for certain types of nodes
+             return TernaryValue.TRUE;
+         default:
+             return getPureBooleanValue(n);
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -26,6 +26,11 @@
+             return TernaryValue.TRUE;
+         case Token.ARRAYLIT:
+         case Token.OBJECTLIT:
++        case Token.NEW:
++        case Token.DELPROP:
++        case Token.GETPROP:
++        case Token.GETELEM:
++        case Token.CALL:
+             if (!mayHaveSideEffects(n)) {
+                 return TernaryValue.TRUE;
+             }

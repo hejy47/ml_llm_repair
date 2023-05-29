@@ -1,0 +1,84 @@
+--- com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
++++ com/google/javascript/jscomp/LiveVariablesAnalysis.java@computeGenKill
+@@ -7,11 +7,11 @@
+         case Token.WHILE:
+         case Token.DO:
+         case Token.IF:
+-            computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++            computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, true); //fix: set conditional to true for if statements
+             return;
+         case Token.FOR:
+             if (!NodeUtil.isForIn(n)) {
+-                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, conditional);
++                computeGenKill(NodeUtil.getConditionExpression(n), gen, kill, true); //fix: set conditional to true for for loops
+             } else {
+                 // for(x in y) {...}
+                 Node lhs = n.getFirstChild();
+@@ -22,52 +22,54 @@
+                 }
+                 addToSetIfLocal(lhs, kill);
+                 addToSetIfLocal(lhs, gen);
+-                computeGenKill(rhs, gen, kill, conditional);
++                computeGenKill(rhs, gen, kill, true); //fix: set conditional to true for for-in loops
+             }
+             return;
+         case Token.VAR:
+             for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+                 if (c.hasChildren()) {
+-                    computeGenKill(c.getFirstChild(), gen, kill, conditional);
++                    computeGenKill(c.getFirstChild(), gen, kill, true); //fix: set conditional to true for var statements
+                     if (!conditional) {
+-                        addToSetIfLocal(c, kill);
++                        addToSetIfLocal(c.getFirstChild(), kill); //fix: add variable to kill set if not conditional
+                     }
+                 }
+             }
+             return;
+         case Token.AND:
+         case Token.OR:
+-            computeGenKill(n.getFirstChild(), gen, kill, conditional);
+-            // May short circuit.
+-            computeGenKill(n.getLastChild(), gen, kill, true);
++            computeGenKill(n.getFirstChild(), gen, kill, true); //fix: set conditional to true for logical operators
++            computeGenKill(n.getLastChild(), gen, kill, true); //fix: set conditional to true for logical operators
+             return;
+         case Token.HOOK:
+-            computeGenKill(n.getFirstChild(), gen, kill, conditional);
++            computeGenKill(n.getFirstChild(), gen, kill, true); //fix: set conditional to true for ternary operator
+             // Assume both sides are conditional.
+-            computeGenKill(n.getFirstChild().getNext(), gen, kill, true);
+-            computeGenKill(n.getLastChild(), gen, kill, true);
++            computeGenKill(n.getFirstChild().getNext(), gen, kill, true); //fix: set conditional to true for ternary operator
++            computeGenKill(n.getLastChild(), gen, kill, true); //fix: set conditional to true for ternary operator
+             return;
+         case Token.NAME:
+             if (isArgumentsName(n)) {
+                 markAllParametersEscaped();
+             } else {
+                 addToSetIfLocal(n, gen);
++                if (!conditional) {
++                    addToSetIfLocal(n, kill); //fix: add variable to kill set if not conditional
++                }
+             }
+             return;
+         default:
+             if (NodeUtil.isAssignmentOp(n) && NodeUtil.isName(n.getFirstChild())) {
+                 Node lhs = n.getFirstChild();
++                addToSetIfLocal(lhs, gen);
+                 if (!conditional) {
+-                    addToSetIfLocal(lhs, kill);
++                    addToSetIfLocal(lhs, kill); //fix: add variable to kill set if not conditional
+                 }
+                 if (!NodeUtil.isAssign(n)) {
+                     // assignments such as a += 1 reads a.
+-                    addToSetIfLocal(lhs, gen);
++                    computeGenKill(lhs.getNext(), gen, kill, true); //fix: set conditional to true for assignments
+                 }
+-                computeGenKill(lhs.getNext(), gen, kill, conditional);
+             } else {
+                 for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+-                    computeGenKill(c, gen, kill, conditional);
++                    computeGenKill(c, gen, kill, true); //fix: set conditional to true for other nodes
+                 }
+             }
+             return;

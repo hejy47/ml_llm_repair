@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -56,7 +56,7 @@
+     switch(arrayFoldedChildren.size()) {
+         case 0:
+             Node emptyStringNode = Node.newString("");
+-            n.getParent().replaceChild(n, emptyStringNode);
++            n.replaceWith(emptyStringNode);
+             reportCodeChange();
+             return emptyStringNode;
+         case 1:
+@@ -71,7 +71,7 @@
+                 Node replacement = new Node(Token.ADD, Node.newString("").copyInformationFrom(n), foldedStringNode);
+                 foldedStringNode = replacement;
+             }
+-            n.getParent().replaceChild(n, foldedStringNode);
++            n.replaceWith(foldedStringNode);
+             reportCodeChange();
+             return foldedStringNode;
+         default:
+@@ -89,6 +89,13 @@
+             for (Node node : arrayFoldedChildren) {
+                 arrayNode.addChildToBack(node);
+             }
++            Node newCallTarget = new Node(Token.GETPROP,
++                                          callTarget.detachFromParent(),
++                                          Node.newString("join"));
++            Node newNode = new Node(Token.STRING);
++            newNode.setString(joinString);
++            Node call = IR.call(newCallTarget, arrayNode, newNode);
++            n.getParent().replaceChild(n, call);
+             reportCodeChange();
+             break;
+     }

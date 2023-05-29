@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -85,8 +85,20 @@
+             if (foldedSize > originalSize) {
+                 return n;
+             }
++            List<Node> newChildren = new ArrayList<>();
++            for (Node node : arrayFoldedChildren) {
++                if (node.getType() == Token.STRING) {
++                    String value = node.getString();
++                    if (value.isEmpty()) {
++                        continue;
++                    }
++                    newChildren.add(Node.newString(value));
++                } else {
++                    newChildren.add(node);
++                }
++            }
+             arrayNode.detachChildren();
+-            for (Node node : arrayFoldedChildren) {
++            for (Node node : newChildren) {
+                 arrayNode.addChildToBack(node);
+             }
+             reportCodeChange();

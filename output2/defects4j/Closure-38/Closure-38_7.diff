@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/CodeConsumer.java@addNumber
++++ com/google/javascript/jscomp/CodeConsumer.java@addNumber
+@@ -11,7 +11,7 @@
+         long mantissa = value;
+         int exp = 0;
+         if (Math.abs(x) >= 100) {
+-            while (mantissa / 10 * Math.pow(10, exp + 1) == value) {
++            while (mantissa % 10 == 0) {
+                 mantissa /= 10;
+                 exp++;
+             }
+@@ -22,6 +22,6 @@
+             add(Long.toString(value));
+         }
+     } else {
+-        add(String.valueOf(x));
++        add(Double.toString(x));
+     }
+ }

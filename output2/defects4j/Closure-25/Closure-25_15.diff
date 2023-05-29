@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypeInference.java@traverseNew
++++ com/google/javascript/jscomp/TypeInference.java@traverseNew
+@@ -18,6 +18,9 @@
+             if (ct != null && ct.isConstructor()) {
+                 type = ct.getInstanceType();
+             }
++            else{
++                type = getNativeType(OBJECT_TYPE); //FIX: If constructorType is not a constructor, set type to OBJECT_TYPE
++            }
+         }
+     }
+     n.setJSType(type);

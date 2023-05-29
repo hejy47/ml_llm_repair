@@ -1,0 +1,44 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -23,18 +23,21 @@
+         // This no-op statement was there so that JSDoc information could
+         // be attached to the name. This check should not complain about it.
+         if (n == parent.getLastChild()) {
+-            for (Node an : parent.getAncestors()) {
+-                int ancestorType = an.getType();
+-                if (ancestorType == Token.COMMA)
++            for (Node ancestor : parent.getAncestors()) {
++                int ancestorType = ancestor.getType();
++                if (ancestorType == Token.COMMA) {
+                     continue;
+-                if (ancestorType != Token.EXPR_RESULT && ancestorType != Token.BLOCK)
++                }
++                if (ancestorType != Token.EXPR_RESULT && ancestorType != Token.BLOCK) {
+                     return;
+-                else
++                } else {
+                     break;
++                }
+             }
+         }
+     } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
+         if (parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext())) {
++            return;
+         } else {
+             return;
+         }
+@@ -47,11 +50,13 @@
+         } else if (n.isExprResult()) {
+             return;
+         }
+-        String msg = "This code lacks side-effects. Is there a bug?";
++        String msg = "";
+         if (n.isString()) {
+             msg = "Is there a missing '+' on the previous line?";
+         } else if (isSimpleOp) {
+             msg = "The result of the '" + Token.name(n.getType()).toLowerCase() + "' operator is not being used.";
++        } else {
++            msg = "This code lacks side-effects. Is there a bug?";
+         }
+         t.getCompiler().report(t.makeError(n, level, USELESS_CODE_ERROR, msg));
+         // TODO(johnlenz): determine if it is necessary to

@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -4,8 +4,9 @@
+     if (t.inGlobalScope()) {
+         if (NodeUtil.isVarDeclaration(n)) {
+             NameInformation ns = createNameInformation(t, n, parent);
+-            Preconditions.checkNotNull(ns);
+-            recordSet(ns.name, n);
++            if (ns != null) {
++                recordSet(ns.name, n);
++            }
+         } else if (NodeUtil.isFunctionDeclaration(n)) {
+             Node nameNode = n.getFirstChild();
+             NameInformation ns = createNameInformation(t, nameNode, n);
+@@ -14,7 +15,7 @@
+                 recordSet(nameInfo.name, nameNode);
+             }
+         } else if (NodeUtil.isObjectLitKey(n, parent)) {
+-            NameInformation ns = createNameInformation(t, n, parent);
++            NameInformation ns = createNameInformation(t, n.getFirstChild(), n);
+             if (ns != null) {
+                 recordSet(ns.name, n);
+             }
+@@ -28,7 +29,7 @@
+             if (ns.isPrototype) {
+                 recordPrototypeSet(ns.prototypeClass, ns.prototypeProperty, n);
+             } else {
+-                recordSet(ns.name, nameNode);
++                recordSet(ns.name, n);
+             }
+         }
+     } else if (n.isCall()) {

@@ -1,0 +1,49 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -4,16 +4,21 @@
+     }
+     returnType = oldType.getReturnType();
+     returnTypeInferred = oldType.isReturnTypeInferred();
++    FunctionParamBuilder paramBuilder = new FunctionParamBuilder(typeRegistry);
+     if (paramsParent == null) {
+         // Not a function literal.
+         parametersNode = oldType.getParametersNode();
+         if (parametersNode == null) {
+-            parametersNode = new FunctionParamBuilder(typeRegistry).build();
++            parametersNode = paramBuilder.build();
++        } else {
++            for (Node oldParam : oldType.getParameters()) {
++                paramBuilder.newParameterFromNode(oldParam);
++            }
++            parametersNode = paramBuilder.build();
+         }
+     } else {
+         // We're overriding with a function literal. Apply type information
+         // to each parameter of the literal.
+-        FunctionParamBuilder paramBuilder = new FunctionParamBuilder(typeRegistry);
+         Iterator<Node> oldParams = oldType.getParameters().iterator();
+         boolean warnedAboutArgList = false;
+         boolean oldParamsListHitOptArgs = false;
+@@ -33,6 +38,9 @@
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
++        while(oldParams.hasNext()) {
++            paramBuilder.newParameterFromNode(oldParams.next());
++        }
+         parametersNode = paramBuilder.build();
+     }
+     return this;
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -44,6 +44,10 @@
+         }
+     }
+     // Copy over any old parameters that aren't in the param list.
++    while(oldParameterType != null) {
++        builder.newParameterFromNode(oldParameterType);
++        oldParameterType = oldParameterType.getNext();
++    }
+     if (templateTypeName != null && !foundTemplateType) {
+         reportError(TEMPLATE_TYPE_EXPECTED, fnName);
+     }

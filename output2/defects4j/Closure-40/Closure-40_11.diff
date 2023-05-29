@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -2,7 +2,7 @@
+ public void visit(NodeTraversal t, Node n, Node parent) {
+     // Record global variable and function declarations
+     if (t.inGlobalScope()) {
+-        if (NodeUtil.isVarDeclaration(n)) {
++        if (NodeUtil.isNameDeclaration(n)) { // fix: changed isVarDeclaration to isNameDeclaration
+             NameInformation ns = createNameInformation(t, n, parent);
+             Preconditions.checkNotNull(ns);
+             recordSet(ns.name, n);

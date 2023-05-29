@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -5,10 +5,12 @@
+     boolean isFunctionExpression = (parent != null) && NodeUtil.isFunctionExpression(n);
+     if (!isFunctionExpression) {
+         // Functions declarations are in the scope containing the declaration.
++        pushScope(n); // moved pushScope call here
+         traverseBranch(fnName, n);
++    } else {
++        curNode = n; // moved curNode assignment here
++        pushScope(n);
+     }
+-    curNode = n;
+-    pushScope(n);
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.

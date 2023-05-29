@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -4,7 +4,7 @@
+         Node n = v.getNode();
+         int type = n.getType();
+         Node parent = n.getParent();
+-        if (parent.isVar()) {
++        if (parent.isVar() && parent.getFirstChild() == n) { // Add a check to make sure the node is the first child of its parent
+             if (n.hasChildren() && n.getFirstChild().isQualifiedName()) {
+                 String name = n.getString();
+                 Var aliasVar = scope.getVar(name);

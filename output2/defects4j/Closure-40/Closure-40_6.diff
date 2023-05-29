@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -4,14 +4,17 @@
+     if (t.inGlobalScope()) {
+         if (NodeUtil.isVarDeclaration(n)) {
+             NameInformation ns = createNameInformation(t, n, parent);
+-            Preconditions.checkNotNull(ns);
+-            recordSet(ns.name, n);
++            if (ns != null) {
++                recordSet(ns.name, n);
++            }
+         } else if (NodeUtil.isFunctionDeclaration(n)) {
+             Node nameNode = n.getFirstChild();
+             NameInformation ns = createNameInformation(t, nameNode, n);
+             if (ns != null) {
+-                JsName nameInfo = getName(nameNode.getString(), true);
+-                recordSet(nameInfo.name, nameNode);
++                JsName nameInfo = getName(ns.name, true);
++                if (nameInfo != null) {
++                    recordSet(nameInfo.name, nameNode);
++                }
+             }
+         } else if (NodeUtil.isObjectLitKey(n, parent)) {
+             NameInformation ns = createNameInformation(t, n, parent);

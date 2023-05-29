@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
++++ com/google/javascript/jscomp/InlineObjectLiterals.java@isInlinableObject
+@@ -1,14 +1,13 @@
+ private boolean isInlinableObject(List<Reference> refs) {
+-    boolean ret = false;
+     for (Reference ref : refs) {
+         Node name = ref.getNode();
+         Node parent = ref.getParent();
+-        Node gramps = ref.getGrandparent();
+         // Ignore indirect references, like x.y (except x.y(), since
+         // the function referenced by y might reference 'this').
+         //
+         if (parent.isGetProp()) {
+             Preconditions.checkState(parent.getFirstChild() == name);
++            Node gramps = ref.getGrandparent();
+             // A call target maybe using the object as a 'this' value.
+             if (gramps.isCall() && gramps.getFirstChild() == parent) {
+                 return false;
+@@ -67,7 +66,7 @@
+         // We have found an acceptable object literal assignment. As
+         // long as there are no other assignments that mess things up,
+         // we can inline.
+-        ret = true;
++        return true;
+     }
+-    return ret;
++    return false;
+ }

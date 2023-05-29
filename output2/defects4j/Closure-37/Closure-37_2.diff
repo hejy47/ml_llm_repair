@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,6 +12,7 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
++        pushScope(parent);  // push the parent scope instead
+         traverseBranch(fnName, n);
+     }
+     final Node args = fnName.getNext();

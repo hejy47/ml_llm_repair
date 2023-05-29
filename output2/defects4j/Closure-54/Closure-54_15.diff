@@ -1,0 +1,100 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -5,7 +5,7 @@
+     String propName = n.getLastChild().getString();
+     Preconditions.checkArgument(qName != null && ownerName != null);
+     // Precedence of type information on GETPROPs:
+-    // 1) @type annnotation / @enum annotation
++    // 1) @type annotation / @enum annotation
+     // 2) ASSIGN to FUNCTION literal
+     // 3) @param/@return annotation (with no function literal)
+     // 4) ASSIGN to something marked @const
+@@ -28,7 +28,7 @@
+     // So if F does not have an explicitly declared super type,
+     // allow F.prototype to be redefined arbitrarily.
+     if ("prototype".equals(propName)) {
+-        Var qVar = scope.getVar(qName);
++        Var qVar = t.getScope().getVar(qName);
+         if (qVar != null) {
+             // If the programmer has declared that F inherits from Super,
+             // and they assign F.prototype to an object literal,
+@@ -43,8 +43,8 @@
+                 // what props are going to be on that prototype.
+                 return;
+             }
+-            if (qVar.getScope() == scope) {
+-                scope.undeclare(qVar);
++            if (qVar.getScope() == t.getScope()) {
++                t.getScope().undeclare(qVar);
+             }
+         }
+     }
+@@ -61,10 +61,10 @@
+     }
+     if (inferred) {
+         // Determining declaration for #2
+-        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !scope.isDeclared(qName, false)));
++        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !t.getScope().isDeclared(qName, false)));
+     }
+     if (!inferred) {
+-        ObjectType ownerType = getObjectSlot(ownerName);
++        ObjectType ownerType = t.getScope().getObjectSlot(ownerName);
+         if (ownerType != null) {
+             // Only declare this as an official property if it has not been
+             // declared yet.
+@@ -79,7 +79,7 @@
+         defineSlot(n, parent, valueType, inferred);
+     } else if (rhsValue != null && rhsValue.getType() == Token.TRUE) {
+         // We declare these for delegate proxy method properties.
+-        FunctionType ownerType = JSType.toMaybeFunctionType(getObjectSlot(ownerName));
++        FunctionType ownerType = JSType.toMaybeFunctionType(t.getScope().getObjectSlot(ownerName));
+         if (ownerType != null) {
+             JSType ownerTypeOfThis = ownerType.getTypeOfThis();
+             String delegateName = codingConvention.getDelegateSuperclassName();
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototypeBasedOn
+@@ -16,8 +16,8 @@
+     // later assigned to Bar will get inherited properly.
+     //
+     // In the second case, we just use the anonymous object as the prototype.
+-    if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || baseType.isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
+-        baseType = new PrototypeObjectType(registry, this.getReferenceName() + ".prototype", baseType);
++    if (baseType.hasReferenceName() || baseType.isUnknownType() || isNativeObjectType() || isFunctionPrototypeType() || !(baseType instanceof PrototypeObjectType)) {
++        baseType = new PrototypeObjectType(registry, getReferenceName() + ".prototype", baseType);
+     }
+     setPrototype((PrototypeObjectType) baseType);
+ }
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -26,6 +26,31 @@
+         }
+     }
+     if (replacedPrototype) {
++        // we need to reset the prototype of all instances
++        // to reflect the new prototype
++        List<Node> instances = getAllNameReferences();
++        for (Node instance : instances) {
++            ObjectType objectType = JSType.toMaybeObjectType(instance.getJSType());
++            if (objectType == null) {
++                continue;
++            }
++            // Native objects cannot have a new prototype
++            if (objectType.isNativeObjectType()) {
++                throw new IllegalStateException("Cannot set prototype on instances of built-in types");
++            }
++            JSType instancePrototype = objectType.getPrototype();
++            if (instancePrototype instanceof PrototypeObjectType) {
++                PrototypeObjectType oldPrototype = (PrototypeObjectType) instancePrototype;
++                PrototypeObjectType newPrototype = PrototypeObjectType.join(registry,
++                        oldPrototype.getImplicitPrototype(),
++                        prototype,
++                        oldPrototype.getImplicitPrototype().getNormalizedPrototype(),
++                        prototype.getNormalizedPrototype());
++                if (!newPrototype.equals(oldPrototype)) {
++                    objectType.setPrototype(newPrototype);
++                }
++            }
++        }
+         clearCachedValues();
+     }
+     return true;

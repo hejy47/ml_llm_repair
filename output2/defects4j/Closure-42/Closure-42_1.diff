@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processForInLoop
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processForInLoop
+@@ -1,5 +1,7 @@
+ @Override
+ Node processForInLoop(ForInLoop loopNode) {
+-    // Return the bare minimum to put the AST in a valid state.
+-    return newNode(Token.FOR, transform(loopNode.getIterator()), transform(loopNode.getIteratedObject()), transformBlock(loopNode.getBody()));
++    Node iterNode = transform(loopNode.getIterator());
++    Node objNode = transform(loopNode.getIteratedObject());
++    Node bodyNode = transformBlock(loopNode.getBody());
++    return newForOf(loopNode.getLineno(), loopNode.getCharno(), iterNode, objNode, bodyNode);
+ }

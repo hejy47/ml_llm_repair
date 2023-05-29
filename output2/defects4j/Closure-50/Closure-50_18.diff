@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
++++ com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java@tryFoldArrayJoin
+@@ -26,15 +26,14 @@
+         if (NodeUtil.isImmutableValue(elem) || elem.getType() == Token.EMPTY) {
+             if (sb == null) {
+                 sb = new StringBuilder();
+-            } else {
+-                sb.append(joinString);
+             }
+             sb.append(NodeUtil.getArrayElementStringValue(elem));
++            sb.append(joinString);  // Moved appending joinString inside the if statement.
+         } else {
+             if (sb != null) {
+                 Preconditions.checkNotNull(prev);
+-                // + 2 for the quotes.
+-                foldedSize += sb.length() + 2;
++                // - 1 for removing the extra joinString appended after the last string is merged.
++                foldedSize += sb.length() - 1;
+                 arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+                 sb = null;
+             }
+@@ -46,8 +45,8 @@
+     }
+     if (sb != null) {
+         Preconditions.checkNotNull(prev);
+-        // + 2 for the quotes.
+-        foldedSize += sb.length() + 2;
++        // - 1 for removing the extra joinString appended after the last string is merged.
++        foldedSize += sb.length() - 1;
+         arrayFoldedChildren.add(Node.newString(sb.toString()).copyInformationFrom(prev));
+     }
+     // one for each comma.

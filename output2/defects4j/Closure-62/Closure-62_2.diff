@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/LightweightMessageFormatter.java@format
++++ com/google/javascript/jscomp/LightweightMessageFormatter.java@format
+@@ -32,7 +32,8 @@
+                     b.append(' ');
+                 }
+             }
+-            b.append("^\n");
++            b.append("\u21E2"); // Unicode right arrow
++            b.append('\n');
+         }
+     }
+     return b.toString();

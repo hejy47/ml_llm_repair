@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@visit
++++ com/google/javascript/jscomp/TypedScopeCreator.java@visit
+@@ -1,7 +1,7 @@
+ @Override
+ public void visit(NodeTraversal t, Node n, Node parent) {
+     inputId = t.getInputId();
+-    attachLiteralTypes(t, n);
++    attachLiteralTypes(n); // Changed to call attachLiteralTypes with only the node as argument
+     switch(n.getType()) {
+         case Token.CALL:
+             checkForClassDefiningCalls(t, n, parent);

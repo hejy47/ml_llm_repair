@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -11,7 +11,9 @@
+             NameInformation ns = createNameInformation(t, nameNode, n);
+             if (ns != null) {
+                 JsName nameInfo = getName(nameNode.getString(), true);
+-                recordSet(nameInfo.name, nameNode);
++                if (nameInfo != null) { // Check for null before using the variable
++                    recordSet(nameInfo.name, nameNode);
++                }
+             }
+         } else if (NodeUtil.isObjectLitKey(n, parent)) {
+             NameInformation ns = createNameInformation(t, n, parent);
+@@ -36,7 +38,7 @@
+         NameInformation ns = createNameInformation(t, nameNode, n);
+         if (ns != null && ns.onlyAffectsClassDef) {
+             JsName name = getName(ns.name, false);
+-            if (name != null) {
++            if (name != null) { // Check for null before using the variable
+                 refNodes.add(new ClassDefiningFunctionNode(name, n, parent, parent.getParent()));
+             }
+         }

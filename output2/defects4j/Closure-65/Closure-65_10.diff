@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/CodeGenerator.java@strEscape
++++ com/google/javascript/jscomp/CodeGenerator.java@strEscape
+@@ -25,9 +25,9 @@
+             case '\'':
+                 sb.append(singlequoteEscape);
+                 break;
+-            case // Break --> into --\> or ]]> into ]]\>
+-            '>':
+-                if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']'))) {
++            case '>':
++                // Change --> into --\> and ]]> into ]]\>
++                if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (i >= 3 && s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']' && s.charAt(i - 3) == ']'))) {
+                     sb.append("\\>");
+                 } else {
+                     sb.append(c);

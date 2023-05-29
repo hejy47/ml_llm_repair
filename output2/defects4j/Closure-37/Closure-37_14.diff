@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -5,7 +5,7 @@
+     if (name == null) {
+         int functionType = functionNode.getFunctionType();
+         if (functionType != FunctionNode.FUNCTION_EXPRESSION) {
+-            errorReporter.error("unnamed function statement", sourceName, functionNode.getLineno(), "", 0);
++            errorReporter.error("unnamed function statement", functionNode.getLineno(), "");
+             // Return the bare minimum to put the AST in a valid state.
+             return newNode(Token.EXPR_RESULT, Node.newNumber(0));
+         }

@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/ClosureCodingConvention.java@extractClassNameIfGoog
++++ com/google/javascript/jscomp/ClosureCodingConvention.java@extractClassNameIfGoog
+@@ -1,10 +1,12 @@
+ private static String extractClassNameIfGoog(Node node, Node parent, String functionName) {
+     String className = null;
+-    if (NodeUtil.isExprCall(parent)) {
++    //added null check for parent
++    if (parent != null && NodeUtil.isExprCall(parent)) {
+         Node callee = node.getFirstChild();
+         if (callee != null && callee.getType() == Token.GETPROP) {
+             String qualifiedName = callee.getQualifiedName();
+-            if (functionName.equals(qualifiedName)) {
++            //changed .equals to .startsWith to handle cases where functionName is a qualified name with a namespace
++            if (qualifiedName != null && qualifiedName.startsWith(functionName)) {
+                 Node target = callee.getNext();
+                 if (target != null) {
+                     className = target.getString();

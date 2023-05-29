@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/Compiler.java@parseInputs
++++ com/google/javascript/jscomp/Compiler.java@parseInputs
+@@ -56,12 +56,14 @@
+                 if (hasErrors()) {
+                     return null;
+                 }
++                continue; // Added to continue loop after error
+             } catch (MissingProvideException e) {
+                 report(JSError.make(MISSING_ENTRY_ERROR, e.getMessage()));
+                 // If in IDE mode, we ignore the error and keep going.
+                 if (hasErrors()) {
+                     return null;
+                 }
++                continue; // Added to continue loop after error
+             }
+         }
+         for (CompilerInput input : inputs) {

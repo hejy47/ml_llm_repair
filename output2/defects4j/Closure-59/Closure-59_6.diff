@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/Compiler.java@initOptions
++++ com/google/javascript/jscomp/Compiler.java@initOptions
+@@ -11,17 +11,17 @@
+     }
+     // DiagnosticGroups override the plain checkTypes option.
+     if (options.enables(DiagnosticGroups.CHECK_TYPES)) {
+-        options.checkTypes = true;
++        options.setCheckTypes(true);
+     } else if (options.disables(DiagnosticGroups.CHECK_TYPES)) {
+-        options.checkTypes = false;
+-    } else if (!options.checkTypes) {
++        options.setCheckTypes(false);
++    } else if (!options.checkTypes()) {
+         // If DiagnosticGroups did not override the plain checkTypes
+         // option, and checkTypes is enabled, then turn off the
+         // parser type warnings.
+-        options.setWarningLevel(DiagnosticGroup.forType(RhinoErrorReporter.TYPE_PARSE_ERROR), CheckLevel.OFF);
++        options.setWarningLevel(RhinoErrorReporter.TYPE_PARSE_ERROR, CheckLevel.OFF);
+     }
+-    if (options.checkGlobalThisLevel.isOn()) {
+-        options.setWarningLevel(DiagnosticGroups.GLOBAL_THIS, options.checkGlobalThisLevel);
++    if (options.getCheckGlobalThisLevel().isOn()) {
++        options.setWarningLevel(DiagnosticGroups.GLOBAL_THIS, options.getCheckGlobalThisLevel());
+     }
+     if (options.getLanguageIn() == LanguageMode.ECMASCRIPT5_STRICT) {
+         options.setWarningLevel(DiagnosticGroups.ES5_STRICT, CheckLevel.ERROR);
+@@ -36,7 +36,7 @@
+     // checks the externs file for validity. If you don't want to warn
+     // about missing variable declarations, we shut that specific
+     // error off.
+-    if (!options.checkSymbols && !composedGuards.enables(DiagnosticGroups.CHECK_VARIABLES)) {
++    if (!options.checkSymbols() && !composedGuards.enables(DiagnosticGroups.CHECK_VARIABLES)) {
+         composedGuards.addGuard(new DiagnosticGroupWarningsGuard(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.OFF));
+     }
+     this.warningsGuard = composedGuards;

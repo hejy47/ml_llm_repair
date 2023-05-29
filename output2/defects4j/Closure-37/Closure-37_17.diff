@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,6 +12,7 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
++        pushScope(fnName);
+         traverseBranch(fnName, n);
+     }
+     final Node args = fnName.getNext();
+@@ -21,5 +22,8 @@
+     // Body
+     Preconditions.checkState(body.getNext() == null && body.isBlock());
+     traverseBranch(body, n);
++    if (isFunctionExpression) {
++        popScope();
++    }
+     popScope();
+ }
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -52,5 +52,7 @@
+     // Parser#parseFunctionBodyExpr.
+     parseDirectives(bodyNode);
+     node.addChildToBack(bodyNode);
++    node.setLength(functionNode.getLength());
++    node.setSourceName(functionNode.getSourceName());
+     return node;
+ }

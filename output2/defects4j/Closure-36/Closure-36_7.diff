@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/InlineVariables.java@canInline
++++ com/google/javascript/jscomp/InlineVariables.java@canInline
+@@ -29,7 +29,7 @@
+     }
+     if (value.isFunction()) {
+         Node callNode = reference.getParent();
+-        if (reference.getParent().isCall()) {
++        if (callNode != null && callNode.isCall()) { // add null check
+             CodingConvention convention = compiler.getCodingConvention();
+             // Bug 2388531: Don't inline subclass definitions into class defining
+             // calls as this confused class removing logic.
+@@ -39,6 +39,9 @@
+             }
+             // issue 668: Don't inline singleton getter methods
+             // calls as this confused class removing logic.
++            if (reference.getNode() != null && reference.getNode().getNext() == null) { // add null check
++                return false;
++            }
+         }
+     }
+     return canMoveAggressively(value) || canMoveModerately(initialization, reference);

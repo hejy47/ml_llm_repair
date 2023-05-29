@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
++++ com/google/javascript/jscomp/NodeTraversal.java@traverseFunction
+@@ -12,7 +12,9 @@
+     if (isFunctionExpression) {
+         // Function expression names are only accessible within the function
+         // scope.
+-        traverseBranch(fnName, n);
++        pushScope(fnName);
++        traverseBranch(fnName.getNext(), n);
++        popScope();
+     }
+     final Node args = fnName.getNext();
+     final Node body = args.getNext();
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -12,6 +12,8 @@
+         name = new Name();
+         name.setIdentifier("");
+         isUnnamedFunction = true;
++        // Add name to function node
++        functionNode.setName(name);
+     }
+     Node node = newNode(Token.FUNCTION);
+     Node newName = transform(name);

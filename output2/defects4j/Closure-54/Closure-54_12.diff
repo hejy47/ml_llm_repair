@@ -1,0 +1,48 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
++++ com/google/javascript/jscomp/TypedScopeCreator.java@maybeDeclareQualifiedName
+@@ -28,7 +28,7 @@
+     // So if F does not have an explicitly declared super type,
+     // allow F.prototype to be redefined arbitrarily.
+     if ("prototype".equals(propName)) {
+-        Var qVar = scope.getVar(qName);
++        Var qVar = t.getScope().getVar(qName);
+         if (qVar != null) {
+             // If the programmer has declared that F inherits from Super,
+             // and they assign F.prototype to an object literal,
+@@ -43,8 +43,8 @@
+                 // what props are going to be on that prototype.
+                 return;
+             }
+-            if (qVar.getScope() == scope) {
+-                scope.undeclare(qVar);
++            if (qVar.getScope() == t.getScope()) {
++                t.getScope().undeclare(qVar);
+             }
+         }
+     }
+@@ -61,7 +61,7 @@
+     }
+     if (inferred) {
+         // Determining declaration for #2
+-        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !scope.isDeclared(qName, false)));
++        inferred = !(rhsValue != null && rhsValue.getType() == Token.FUNCTION && (info != null || !t.getScope().isDeclared(qName, false)));
+     }
+     if (!inferred) {
+         ObjectType ownerType = getObjectSlot(ownerName);
+--- com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
++++ com/google/javascript/rhino/jstype/FunctionType.java@setPrototype
+@@ -15,12 +15,12 @@
+     if (isConstructor() || isInterface()) {
+         FunctionType superClass = getSuperClassConstructor();
+         if (superClass != null) {
+-            superClass.addSubType(this);
++            superClass.addSubtype(this);
+         }
+         if (isInterface()) {
+             for (ObjectType interfaceType : getExtendedInterfaces()) {
+                 if (interfaceType.getConstructor() != null) {
+-                    interfaceType.getConstructor().addSubType(this);
++                    interfaceType.getConstructor().addSubtype(this);
+                 }
+             }
+         }

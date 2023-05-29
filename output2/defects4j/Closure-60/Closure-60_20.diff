@@ -1,0 +1,41 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -11,13 +11,25 @@
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.and(rhs);
++                if (lhs == TernaryValue.FALSE || rhs == TernaryValue.FALSE) {
++                    return TernaryValue.FALSE;
++                }
++                if (lhs == TernaryValue.TRUE && rhs == TernaryValue.TRUE) {
++                    return TernaryValue.TRUE;
++                }
++                return TernaryValue.UNKNOWN;
+             }
+         case Token.OR:
+             {
+                 TernaryValue lhs = getImpureBooleanValue(n.getFirstChild());
+                 TernaryValue rhs = getImpureBooleanValue(n.getLastChild());
+-                return lhs.or(rhs);
++                if (lhs == TernaryValue.TRUE || rhs == TernaryValue.TRUE) {
++                    return TernaryValue.TRUE;
++                }
++                if (lhs == TernaryValue.FALSE && rhs == TernaryValue.FALSE) {
++                    return TernaryValue.FALSE;
++                }
++                return TernaryValue.UNKNOWN;
+             }
+         case Token.HOOK:
+             {
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -29,7 +29,7 @@
+             if (!mayHaveSideEffects(n)) {
+                 return TernaryValue.TRUE;
+             }
+-            break;
++            return TernaryValue.UNKNOWN; // added return statement
+     }
+     return TernaryValue.UNKNOWN;
+ }

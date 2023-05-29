@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/CheckSideEffects.java@visit
++++ com/google/javascript/jscomp/CheckSideEffects.java@visit
+@@ -27,13 +27,13 @@
+                 int ancestorType = an.getType();
+                 if (ancestorType == Token.COMMA)
+                     continue;
+-                if (ancestorType != Token.EXPR_RESULT && ancestorType != Token.BLOCK)
++                if (ancestorType != Token.EXPR_RESULT && ancestorType != Token.BLOCK && ancestorType != Token.SWITCH)
+                     return;
+                 else
+                     break;
+             }
+         }
+-    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK) {
++    } else if (parent.getType() != Token.EXPR_RESULT && parent.getType() != Token.BLOCK && parent.getType() != Token.SWITCH) {
+         if (parent.getType() == Token.FOR && parent.getChildCount() == 4 && (n == parent.getFirstChild() || n == parent.getFirstChild().getNext().getNext())) {
+         } else {
+             return;

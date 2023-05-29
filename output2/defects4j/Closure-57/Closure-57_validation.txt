@@ -1,0 +1,17 @@
+Closure-57_1:True
+Closure-57_2:True
+Closure-57_3:False
+Closure-57_4:False
+Closure-57_5:True
+Closure-57_6:False
+Closure-57_7:False
+Closure-57_8:True
+Closure-57_9:False
+Closure-57_10:False
+Closure-57_11:True
+Closure-57_12:False
+Closure-57_13:False
+Closure-57_14:False
+Closure-57_15:False
+Closure-57_16:False
+Closure-57_17:False

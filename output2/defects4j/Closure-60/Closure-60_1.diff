@@ -1,0 +1,64 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getImpureBooleanValue
+@@ -33,6 +33,42 @@
+         case Token.OBJECTLIT:
+             // ignoring side-effects
+             return TernaryValue.TRUE;
++        case Token.VOID:
++        case Token.NEW:
++        case Token.DELPROP:
++        case Token.CALL:
++        case Token.TYPEOF:
++        case Token.POS:
++        case Token.NEG:
++        case Token.INC:
++        case Token.DEC:
++        case Token.BITOR:
++        case Token.BITXOR:
++        case Token.BITAND:
++        case Token.LSH:
++        case Token.RSH:
++        case Token.URSH:
++        case Token.ADD:
++        case Token.SUB:
++        case Token.MUL:
++        case Token.DIV:
++        case Token.MOD:
++        case Token.EQ:
++        case Token.NE:
++        case Token.SHEQ:
++        case Token.SHNE:
++        case Token.LT:
++        case Token.LE:
++        case Token.GE:
++        case Token.GT:
++        case Token.INSTANCEOF:
++        case Token.IN:
++        case Token.GETPROP:
++        case Token.GETELEM:
++        case Token.CHECKCAST:
++        case Token.INSTANCEOFEXPR:
++            // These nodes have no impure boolean value.
++            return TernaryValue.UNKNOWN;
+         default:
+             return getPureBooleanValue(n);
+     }
+--- com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
++++ com/google/javascript/jscomp/NodeUtil.java@getPureBooleanValue
+@@ -26,10 +26,13 @@
+             return TernaryValue.TRUE;
+         case Token.ARRAYLIT:
+         case Token.OBJECTLIT:
+-            if (!mayHaveSideEffects(n)) {
++            //checking for side-effect free expression
++            if (NodeUtil.mayHaveSideEffects(n)) {
++                return TernaryValue.FALSE;
++            } else {
+                 return TernaryValue.TRUE;
+             }
+-            break;
++        default:
++            return TernaryValue.UNKNOWN;
+     }
+-    return TernaryValue.UNKNOWN;
+ }

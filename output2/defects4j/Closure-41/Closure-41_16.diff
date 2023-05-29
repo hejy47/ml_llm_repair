@@ -1,0 +1,81 @@
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferFromOverriddenFunction
+@@ -1,14 +1,15 @@
+ FunctionTypeBuilder inferFromOverriddenFunction(@Nullable FunctionType oldType, @Nullable Node paramsParent) {
++    FunctionTypeBuilder builder = new FunctionTypeBuilder(typeRegistry);
+     if (oldType == null) {
+-        return this;
++        return builder;
+     }
+-    returnType = oldType.getReturnType();
+-    returnTypeInferred = oldType.isReturnTypeInferred();
++    builder.returnType(oldType.getReturnType());
++    builder.returnTypeInferred(oldType.isReturnTypeInferred());
+     if (paramsParent == null) {
+         // Not a function literal.
+-        parametersNode = oldType.getParametersNode();
+-        if (parametersNode == null) {
+-            parametersNode = new FunctionParamBuilder(typeRegistry).build();
++        builder.parametersNode(oldType.getParametersNode());
++        if (builder.parametersNode() == null) {
++            builder.parametersNode(new FunctionParamBuilder(typeRegistry).build());
+         }
+     } else {
+         // We're overriding with a function literal. Apply type information
+@@ -29,11 +30,11 @@
+                     newParam.setOptionalArg(true);
+                 }
+             } else {
+-                warnedAboutArgList |= addParameter(paramBuilder, typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
++                warnedAboutArgList |= builder.addParameter(typeRegistry.getNativeType(UNKNOWN_TYPE), warnedAboutArgList, codingConvention.isOptionalParameter(currentParam) || oldParamsListHitOptArgs, codingConvention.isVarArgsParameter(currentParam));
+             }
+         }
+         // Clone any remaining params that aren't in the function literal.
+-        parametersNode = paramBuilder.build();
++        builder.parametersNode(paramBuilder.build());
+     }
+-    return this;
++    return builder;
+ }
+--- com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
++++ com/google/javascript/jscomp/FunctionTypeBuilder.java@inferParameterTypes
+@@ -1,9 +1,10 @@
+ FunctionTypeBuilder inferParameterTypes(@Nullable Node argsParent, @Nullable JSDocInfo info) {
++    FunctionTypeBuilder builder = new FunctionTypeBuilder(typeRegistry);
+     if (argsParent == null) {
+         if (info == null) {
+-            return this;
++            return builder;
+         } else {
+-            return inferParameterTypes(info);
++            return builder.inferParameterTypes(info);
+         }
+     }
+     // arguments
+@@ -11,7 +12,7 @@
+     if (parametersNode != null) {
+         oldParameterType = parametersNode.getFirstChild();
+     }
+-    FunctionParamBuilder builder = new FunctionParamBuilder(typeRegistry);
++    FunctionParamBuilder paramBuilder = new FunctionParamBuilder(typeRegistry);
+     boolean warnedAboutArgList = false;
+     Set<String> allJsDocParams = (info == null) ? Sets.<String>newHashSet() : Sets.newHashSet(info.getParameterNames());
+     boolean foundTemplateType = false;
+@@ -38,7 +39,7 @@
+             }
+             foundTemplateType = true;
+         }
+-        warnedAboutArgList |= addParameter(builder, parameterType, warnedAboutArgList, isOptionalParam, isVarArgs);
++        warnedAboutArgList |= builder.addParameter(parameterType, warnedAboutArgList, isOptionalParam, isVarArgs);
+         if (oldParameterType != null) {
+             oldParameterType = oldParameterType.getNext();
+         }
+@@ -50,6 +51,6 @@
+     for (String inexistentName : allJsDocParams) {
+         reportWarning(INEXISTANT_PARAM, inexistentName, fnName);
+     }
+-    parametersNode = builder.build();
+-    return this;
++    builder.parametersNode(paramBuilder.build());
++    return builder;
+ }

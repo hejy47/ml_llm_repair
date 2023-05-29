@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
++++ com/google/javascript/jscomp/NodeUtil.java@functionCallHasSideEffects
+@@ -13,8 +13,8 @@
+             return false;
+         }
+     } else if (nameNode.getType() == Token.GETPROP) {
+-        if (callNode.hasOneChild() && OBJECT_METHODS_WITHOUT_SIDEEFFECTS.contains(nameNode.getLastChild().getString())) {
+-            return false;
++        if (callNode.isOnlyModifiesArgumentsCall() || callNode.isOnlyModifiesArgumentsAndGlobalCall()) {
++            return true;
+         }
+         if (callNode.isOnlyModifiesThisCall() && evaluatesToLocalValue(nameNode.getFirstChild())) {
+             return false;

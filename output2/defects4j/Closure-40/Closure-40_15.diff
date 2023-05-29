@@ -1,0 +1,53 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@visit
++++ com/google/javascript/jscomp/NameAnalyzer.java@visit
+@@ -11,7 +11,7 @@
+             NameInformation ns = createNameInformation(t, nameNode, n);
+             if (ns != null) {
+                 JsName nameInfo = getName(nameNode.getString(), true);
+-                recordSet(nameInfo.name, nameNode);
++                recordSet(nameInfo.name, n);
+             }
+         } else if (NodeUtil.isObjectLitKey(n, parent)) {
+             NameInformation ns = createNameInformation(t, n, parent);
+@@ -21,23 +21,25 @@
+         }
+     }
+     // Record assignments and call sites
+-    if (n.isAssign()) {
+-        Node nameNode = n.getFirstChild();
+-        NameInformation ns = createNameInformation(t, nameNode, n);
+-        if (ns != null) {
+-            if (ns.isPrototype) {
+-                recordPrototypeSet(ns.prototypeClass, ns.prototypeProperty, n);
+-            } else {
+-                recordSet(ns.name, nameNode);
++    else if (t.getClosestHoistScope().getRootNode().isFunction()) {
++        if (n.isAssign()) {
++            Node nameNode = n.getFirstChild();
++            NameInformation ns = createNameInformation(t, nameNode, n);
++            if (ns != null) {
++                if (ns.isPrototype) {
++                    recordPrototypeSet(ns.prototypeClass, ns.prototypeProperty, n);
++                } else {
++                    recordSet(ns.name, nameNode);
++                }
+             }
+-        }
+-    } else if (n.isCall()) {
+-        Node nameNode = n.getFirstChild();
+-        NameInformation ns = createNameInformation(t, nameNode, n);
+-        if (ns != null && ns.onlyAffectsClassDef) {
+-            JsName name = getName(ns.name, false);
+-            if (name != null) {
+-                refNodes.add(new ClassDefiningFunctionNode(name, n, parent, parent.getParent()));
++        } else if (n.isCall()) {
++            Node nameNode = n.getFirstChild();
++            NameInformation ns = createNameInformation(t, nameNode, n);
++            if (ns != null && ns.onlyAffectsClassDef) {
++                JsName name = getName(ns.name, false);
++                if (name != null) {
++                    refNodes.add(new ClassDefiningFunctionNode(name, n, parent, parent.getParent()));
++                }
+             }
+         }
+     }

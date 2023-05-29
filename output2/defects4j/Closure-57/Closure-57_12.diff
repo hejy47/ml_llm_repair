@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/ClosureCodingConvention.java@extractClassNameIfGoog
++++ com/google/javascript/jscomp/ClosureCodingConvention.java@extractClassNameIfGoog
+@@ -4,7 +4,7 @@
+         Node callee = node.getFirstChild();
+         if (callee != null && callee.getType() == Token.GETPROP) {
+             String qualifiedName = callee.getQualifiedName();
+-            if (functionName.equals(qualifiedName)) {
++            if (qualifiedName != null && qualifiedName.endsWith("." + functionName)) { // check for qualified name and end with functionName
+                 Node target = callee.getNext();
+                 if (target != null) {
+                     className = target.getString();

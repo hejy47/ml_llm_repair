@@ -1,0 +1,53 @@
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@Assign
+@@ -1,7 +1,7 @@
+ Assign(Node assignNode, Node nameNode, boolean isPropertyAssign) {
+-    Preconditions.checkState(NodeUtil.isAssignmentOp(assignNode));
++    Preconditions.checkArgument(NodeUtil.isAssignmentOp(assignNode)); // Use checkArgument instead of checkState
+     this.assignNode = assignNode;
+-    this.nameNode = nameNode;
++    this.nameNode = nameNode.cloneTree(); // Clone the node instead of just referencing it
+     this.isPropertyAssign = isPropertyAssign;
+     this.maybeAliased = !assignNode.getParent().isExprResult();
+     this.mayHaveSecondarySideEffects = maybeAliased || NodeUtil.mayHaveSideEffects(assignNode.getFirstChild()) || NodeUtil.mayHaveSideEffects(assignNode.getLastChild());
+--- com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
++++ com/google/javascript/jscomp/RemoveUnusedVars.java@interpretAssigns
+@@ -1,15 +1,14 @@
+ private void interpretAssigns() {
+-    boolean changes = false;
+-    do {
++    boolean changes = true; // Set initially to true so that the loop runs at least once
++    while (changes) { // Use while loop instead of do-while
+         changes = false;
+-        // We can't use traditional iterators and iterables for this list,
+-        // because our lazily-evaluated continuations will modify it while
+-        // we traverse it.
+-        for (int current = 0; current < maybeUnreferenced.size(); current++) {
+-            Var var = maybeUnreferenced.get(current);
++        // Use traditional iterators and iterables for the list
++        Iterator<Var> it = maybeUnreferenced.iterator();
++        while (it.hasNext()) {
++            Var var = it.next();
+             if (referenced.contains(var)) {
+-                maybeUnreferenced.remove(current);
+-                current--;
++                it.remove(); // Use iterator to safely remove item from list
++                changes = true;
+             } else {
+                 boolean assignedToUnknownValue = false;
+                 boolean hasPropertyAssign = false;
+@@ -29,11 +28,10 @@
+                     }
+                 }
+                 if (assignedToUnknownValue && hasPropertyAssign) {
+-                    changes = markReferencedVar(var) || changes;
+-                    maybeUnreferenced.remove(current);
+-                    current--;
++                    changes = markReferencedVar(var);
++                    it.remove();
+                 }
+             }
+         }
+-    } while (changes);
++    }
+ }
