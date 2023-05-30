@@ -1,0 +1,16 @@
+--- org/joda/time/field/FieldUtils.java@safeMultiply
++++ org/joda/time/field/FieldUtils.java@safeMultiply
+@@ -6,10 +6,8 @@
+             return 0L;
+         case 1:
+             return val1;
++        default:
++            // using Math.multiplyExact to perform multiplication and throw exception if overflow occurs
++            return Math.multiplyExact(val1, val2);
+     }
+-    long total = val1 * val2;
+-    if (total / val2 != val1) {
+-        throw new ArithmeticException("Multiplication overflows a long: " + val1 + " * " + val2);
+-    }
+-    return total;
+ }

@@ -1,0 +1,19 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@init
++++ org/apache/commons/lang3/time/FastDateParser.java@init
+@@ -4,14 +4,14 @@
+     StringBuilder regex = new StringBuilder();
+     List<Strategy> collector = new ArrayList<Strategy>();
+     Matcher patternMatcher = formatPattern.matcher(pattern);
+-    if (!patternMatcher.lookingAt()) {
++    if (!patternMatcher.find()) { // use find instead of lookingAt to properly find the beginning of the pattern
+         throw new IllegalArgumentException("Invalid pattern");
+     }
+     currentFormatField = patternMatcher.group();
+     Strategy currentStrategy = getStrategy(currentFormatField);
+     for (; ; ) {
+         patternMatcher.region(patternMatcher.end(), patternMatcher.regionEnd());
+-        if (!patternMatcher.lookingAt()) {
++        if (!patternMatcher.find()) { // use find instead of lookingAt to properly find the next format field
+             nextStrategy = null;
+             break;
+         }

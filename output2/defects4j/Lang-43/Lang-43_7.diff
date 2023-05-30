@@ -1,0 +1,9 @@
+--- org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
++++ org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
+@@ -20,5 +20,5 @@
+                 next(pos);
+         }
+     }
+-    throw new IllegalArgumentException("Unterminated quoted string at position " + start);
++    throw new IllegalArgumentException("Unterminated quoted string at position " + lastHold);
+ }

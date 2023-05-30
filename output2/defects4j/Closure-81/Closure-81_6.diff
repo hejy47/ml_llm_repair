@@ -1,0 +1,9 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -42,5 +42,6 @@
+     Node bodyNode = transform(functionNode.getBody());
+     parseDirectives(bodyNode);
+     node.addChildToBack(bodyNode);
++    //Below if added to return the node
+     return node;
+ }

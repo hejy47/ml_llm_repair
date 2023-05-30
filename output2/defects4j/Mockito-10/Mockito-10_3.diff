@@ -1,0 +1,29 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@deepStub
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@deepStub
+@@ -1,9 +1,9 @@
+ private Object deepStub(InvocationOnMock invocation, GenericMetadataSupport returnTypeGenericMetadata) throws Throwable {
+     InternalMockHandler<Object> handler = new MockUtil().getMockHandler(invocation.getMock());
+-    InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
++    InvocationContainer container = handler.getInvocationContainer(); // use the interface instead of implementation
+     // matches invocation for verification
+     for (StubbedInvocationMatcher stubbedInvocationMatcher : container.getStubbedInvocations()) {
+-        if (container.getInvocationForStubbing().matches(stubbedInvocationMatcher.getInvocation())) {
++        if (invocation.matches(stubbedInvocationMatcher.getInvocation())) { // use matches() method of the invocation
+             return stubbedInvocationMatcher.answer(invocation);
+         }
+     }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@newDeepStubMock
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@newDeepStubMock
+@@ -1,3 +1,3 @@
+ private Object newDeepStubMock(GenericMetadataSupport returnTypeGenericMetadata) {
+-    return mockitoCore().mock(returnTypeGenericMetadata.rawType(), withSettingsUsing(returnTypeGenericMetadata));
++    return mockitoCore().mock(returnTypeGenericMetadata.rawType(), withSettingsUsing(returnTypeGenericMetadata).defaultAnswer(CALLS_REAL_METHODS)); // specify default answer as CALLS_REAL_METHODS for deep stubs
+ }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
+@@ -1,4 +1,4 @@
+ private MockSettings withSettingsUsing(GenericMetadataSupport returnTypeGenericMetadata) {
+     MockSettings mockSettings = returnTypeGenericMetadata.hasRawExtraInterfaces() ? withSettings().extraInterfaces(returnTypeGenericMetadata.rawExtraInterfaces()) : withSettings();
+-    return mockSettings.serializable().defaultAnswer(returnsDeepStubsAnswerUsing(returnTypeGenericMetadata));
++    return mockSettings.serializable().defaultAnswer(RETURNS_DEFAULTS); // specify default answer as RETURNS_DEFAULTS for top-level mocks
+ }

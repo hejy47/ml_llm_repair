@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -33,20 +33,32 @@
+         // Handle the case where there's not a duplicate definition.
+         replacementNode = createDeclarationNode();
+         if (firstModule == minimumModule) {
+-            firstNode.getParent().addChildBefore(replacementNode, firstNode);
++            Node parent = firstNode.getParent();
++            if(parent != null) {
++                parent.addChildBefore(replacementNode, firstNode);
++                compiler.reportCodeChange();
++            }
+         } else {
+             // In this case, the name was implicitly provided by two independent
+             // modules. We need to move this code up to a common module.
+             int indexOfDot = namespace.indexOf('.');
+             if (indexOfDot == -1) {
+                 // Any old place is fine.
+-                compiler.getNodeForCodeInsertion(minimumModule).addChildToBack(replacementNode);
++                Node insertionNode = compiler.getNodeForCodeInsertion(minimumModule);
++                if(insertionNode != null) {
++                    insertionNode.addChildToBack(replacementNode);
++                    compiler.reportCodeChange();
++                }
+             } else {
+                 // Add it after the parent namespace.
+                 ProvidedName parentName = providedNames.get(namespace.substring(0, indexOfDot));
+                 Preconditions.checkNotNull(parentName);
+                 Preconditions.checkNotNull(parentName.replacementNode);
+-                parentName.replacementNode.getParent().addChildAfter(replacementNode, parentName.replacementNode);
++                Node parentNode = parentName.replacementNode.getParent();
++                if(parentNode != null) {
++                    parentNode.addChildAfter(replacementNode, parentName.replacementNode);
++                    compiler.reportCodeChange();
++                }
+             }
+         }
+         if (explicitNode != null) {

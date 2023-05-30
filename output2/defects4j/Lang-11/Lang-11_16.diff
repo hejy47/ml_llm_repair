@@ -1,0 +1,57 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -7,16 +7,18 @@
+     if (chars != null && chars.length == 0) {
+         throw new IllegalArgumentException("The chars array must not be empty");
+     }
+-    if (start == 0 && end == 0) {
++    if (start == end) {
+         if (chars != null) {
+             end = chars.length;
++        } else if (!letters && !numbers) {
++            // Fix: If start == end and neither letters nor numbers are selected,
++            // set end to the highest printable ASCII character
++            end = '~' + 1; // ~ is the last printable ASCII character
+         } else {
+-            if (!letters && !numbers) {
+-                end = Integer.MAX_VALUE;
+-            } else {
+-                end = 'z' + 1;
+-                start = ' ';
+-            }
++            // Fix: If start == end and either letters or numbers are selected,
++            // shift start and end to the corresponding ASCII values
++            end = 'z' + 1;
++            start = ' ';
+         }
+     }
+     char[] buffer = new char[count];
+@@ -29,26 +31,8 @@
+             ch = chars[random.nextInt(gap) + start];
+         }
+         if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
+-            if (ch >= 56320 && ch <= 57343) {
+-                if (count == 0) {
+-                    count++;
+-                } else {
+-                    // low surrogate, insert high surrogate after putting it in
+-                    buffer[count] = ch;
+-                    count--;
+-                    buffer[count] = (char) (55296 + random.nextInt(128));
+-                }
+-            } else if (ch >= 55296 && ch <= 56191) {
+-                if (count == 0) {
+-                    count++;
+-                } else {
+-                    // high surrogate, insert low surrogate before putting it in
+-                    buffer[count] = (char) (56320 + random.nextInt(128));
+-                    count--;
+-                    buffer[count] = ch;
+-                }
+-            } else if (ch >= 56192 && ch <= 56319) {
+-                // private high surrogate, no effing clue, so skip it
++            if (Character.isHighSurrogate(ch) || Character.isLowSurrogate(ch)) {
++                // Fix: Skip surrogate code points
+                 count++;
+             } else {
+                 buffer[count] = ch;

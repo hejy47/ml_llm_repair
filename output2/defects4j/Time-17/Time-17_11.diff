@@ -1,0 +1,26 @@
+--- org/joda/time/DateTimeZone.java@adjustOffset
++++ org/joda/time/DateTimeZone.java@adjustOffset
+@@ -1,4 +1,5 @@
+ public long adjustOffset(long instant, boolean earlierOrLater) {
++    long newInstant = instant;
+     // a bit messy, but will work in all non-pathological cases
+     // evaluate 3 hours before and after to work out if anything is happening
+     long instantBefore = convertUTCToLocal(instant - 3 * DateTimeConstants.MILLIS_PER_HOUR);
+@@ -9,7 +10,16 @@
+     }
+     // work out range of instants that have duplicate local times
+     long local = convertUTCToLocal(instant);
+-    return convertLocalToUTC(local, false, earlierOrLater ? instantAfter : instantBefore);
++    long newLocal;
++    boolean isCurrentOffsetEarlier = (convertLocalToUTC(local, false) == instant);
++    if (isCurrentOffsetEarlier && !earlierOrLater) {
++        newLocal = convertUTCToLocal(instantBefore);
++        newInstant = convertLocalToUTC(newLocal, false);
++    } else if (!isCurrentOffsetEarlier && earlierOrLater) {
++        newLocal = convertUTCToLocal(instantAfter);
++        newInstant = convertLocalToUTC(newLocal, false);
++    }
++    return newInstant;
+     // calculate result
+     // currently in later offset
+     // currently in earlier offset

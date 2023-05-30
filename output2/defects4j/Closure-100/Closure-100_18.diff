@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -33,6 +33,11 @@
+                 if (leftName != null && leftName.contains(".prototype.")) {
+                     return false;
+                 }
++            } else if (lhs.getType() == Token.NAME) {
++                // Do not traverse the right side of the assignment if the name is 'this'.
++                if (lhs.getString().equals("this")) {
++                    return false;
++                }
+             }
+         }
+     }
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -4,5 +4,8 @@
+         return true;
+     }
+     // Also report a THIS with a property access.
++    if (parent != null && parent.getType() == Token.GETPROP && parent.getFirstChild() == n) {
++        return true;
++    }
+     return false;
+ }

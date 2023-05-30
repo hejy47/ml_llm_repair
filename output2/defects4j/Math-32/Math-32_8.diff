@@ -1,0 +1,13 @@
+--- org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java@computeGeometricalProperties
++++ org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java@computeGeometricalProperties
+@@ -38,6 +38,10 @@
+             // the polygon as a finite outside surrounded by an infinite inside
+             setSize(Double.POSITIVE_INFINITY);
+             setBarycenter(Vector2D.NaN);
++        } else if (sum == 0) {
++            // the polygon is a single point
++            setSize(0);
++            setBarycenter(v[0][0]);
+         } else {
+             setSize(sum / 2);
+             setBarycenter(new Vector2D(sumX / (3 * sum), sumY / (3 * sum)));

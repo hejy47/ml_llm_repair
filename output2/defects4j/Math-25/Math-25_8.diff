@@ -1,0 +1,27 @@
+--- org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
++++ org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
+@@ -16,8 +16,8 @@
+         final double previousY = currentY;
+         currentX = observations[i].getX();
+         currentY = observations[i].getY();
+-        // update the integrals of f<sup>2</sup> and f'<sup>2</sup>
+-        // considering a linear model for f (and therefore constant f')
++        // update the integrals of f^2 and f'^2
++        // using the trapezoidal rule
+         final double dx = currentX - previousX;
+         final double dy = currentY - previousY;
+         final double f2StepIntegral = dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;
+@@ -26,10 +26,10 @@
+         f2Integral += f2StepIntegral;
+         fPrime2Integral += fPrime2StepIntegral;
+         sx2 += x * x;
+-        sy2 += f2Integral * f2Integral;
+-        sxy += x * f2Integral;
++        sy2 += f2StepIntegral;
++        sxy += x * f2StepIntegral;
+         sxz += x * fPrime2Integral;
+-        syz += f2Integral * fPrime2Integral;
++        syz += f2StepIntegral * fPrime2Integral;
+     }
+     // compute the amplitude and pulsation coefficients
+     double c1 = sy2 * sxz - sxy * syz;

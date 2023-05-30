@@ -1,0 +1,20 @@
+--- org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getRMS
++++ org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getRMS
+@@ -4,5 +4,5 @@
+         final double residual = residuals[i];
+         criterion += residual * residual * residualsWeights[i];
+     }
+-    return Math.sqrt(criterion / rows);
++    return Math.sqrt(criterion / (double)rows); //cast rows to double to ensure correct division
+ }
+--- org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getChiSquare
++++ org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getChiSquare
+@@ -2,7 +2,7 @@
+     double chiSquare = 0;
+     for (int i = 0; i < rows; ++i) {
+         final double residual = residuals[i];
+-        chiSquare += residual * residual / residualsWeights[i];
++        chiSquare += residual * residual / Math.abs(residualsWeights[i]); //use absolute value to avoid negative weights
+     }
+     return chiSquare;
+ }

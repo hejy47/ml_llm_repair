@@ -1,0 +1,11 @@
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -23,6 +23,8 @@
+                         DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
+                         if (rangeField.compareTo(loopRangeField) > 0) {
+                             break;
++                        } else if (rangeField.compareTo(loopRangeField) == 0) {
++                            throw new IllegalArgumentException("Values are equal");
+                         }
+                     }
+                 }

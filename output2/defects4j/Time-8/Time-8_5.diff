@@ -1,0 +1,11 @@
+--- org/joda/time/DateTimeZone.java@forOffsetHoursMinutes
++++ org/joda/time/DateTimeZone.java@forOffsetHoursMinutes
+@@ -8,7 +8,7 @@
+     if (minutesOffset < 0 || minutesOffset > 59) {
+         throw new IllegalArgumentException("Minutes out of range: " + minutesOffset);
+     }
+-    int offset = 0;
++    long offset = 0; // Changed to 'long' type to handle larger values
+     try {
+         int hoursInMinutes = hoursOffset * 60;
+         if (hoursInMinutes < 0) {

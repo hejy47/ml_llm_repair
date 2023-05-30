@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -46,8 +46,6 @@
+                             type = getValueType(n.getNext());
+                         }
+                         break;
+-                    case Token.GETPROP:
+-                        return;
+                     case Token.FUNCTION:
+                         Node gramps = parent.getParent();
+                         if (gramps == null || NodeUtil.isFunctionExpression(parent)) {
+@@ -67,8 +65,12 @@
+                             type = Name.Type.OTHER;
+                         }
+                 }
++                if (!isSet) {
++                    if (!NodeUtil.mayBeObjectLitKey(parent)) {
++                        name = n.getString();
++                    }
++                }
+             }
+-            name = n.getString();
+             break;
+         case Token.GETPROP:
+             // This may be a namespaced name get or set.
+@@ -94,8 +96,10 @@
+                             type = Name.Type.OTHER;
+                         }
+                 }
++                if (!isSet) {
++                    name = n.getQualifiedName();
++                }
+             }
+-            name = n.getQualifiedName();
+             if (name == null) {
+                 return;
+             }

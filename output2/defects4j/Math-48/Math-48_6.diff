@@ -1,0 +1,44 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -23,7 +23,7 @@
+     // larger than the right bound.
+     boolean inverted = false;
+     // Keep finding better approximations.
+-    while (true) {
++    for (int i = 0; i < getMaximalIterationCount(); ++i) {
+         // Calculate the next approximation.
+         final double x = x1 - ((f1 * (x1 - x0)) / (f1 - f0));
+         final double fx = computeObjectiveValue(x);
+@@ -46,11 +46,24 @@
+                     f0 *= 0.5;
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    f0 *= f1 / (f1 - fx);
+                     break;
+                 case REGULA_FALSI:
+                     // Detect early that algorithm is stuck, instead of waiting
+                     // for the maximum number of iterations to be exceeded.
++                    if (i > 0 && x == x1) {
++                        double delta = inverted ? x1 - x0 : x0 - x1;
++                        if (FastMath.abs(delta) < FastMath.max(rtol * FastMath.abs(x1), atol)) {
++                            if (fx >= f1) {
++                                x1 = x;
++                                f1 = fx;
++                            } else {
++                                x0 = x;
++                                f0 = fx;
++                            }
++                            return inverted ? x0 : x1;
++                        }
++                    }
+                     break;
+                 default:
+                     // Should never happen.
+@@ -110,4 +123,6 @@
+             }
+         }
+     }
++    // Maximum allowed iterations exceeded
++    throw new MaxCountExceededException(getMaximalIterationCount());
+ }

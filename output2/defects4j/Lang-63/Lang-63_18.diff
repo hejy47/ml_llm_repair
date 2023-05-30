@@ -1,0 +1,53 @@
+--- org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
++++ org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
+@@ -7,9 +7,9 @@
+     // timezones get funky around 0, so normalizing everything to GMT
+     // stops the hours being off
+     Calendar start = Calendar.getInstance(timezone);
+-    start.setTime(new Date(startMillis));
++    start.setTimeInMillis(startMillis);
+     Calendar end = Calendar.getInstance(timezone);
+-    end.setTime(new Date(endMillis));
++    end.setTimeInMillis(endMillis);
+     // initial estimates
+     int milliseconds = end.get(Calendar.MILLISECOND) - start.get(Calendar.MILLISECOND);
+     int seconds = end.get(Calendar.SECOND) - start.get(Calendar.SECOND);
+@@ -36,12 +36,10 @@
+         days -= 1;
+     }
+     while (days < 0) {
+-        days += 31;
+-        //days += 31; // TODO: Need tests to show this is bad and the new code is good.
+-        // HEN: It's a tricky subject. Jan 15th to March 10th. If I count days-first it is
+-        // 1 month and 26 days, but if I count month-first then it is 1 month and 23 days.
+-        // Also it's contextual - if asked for no M in the format then I should probably
+-        // be doing no calculating here.
++        // days += 31;
++        // Fixed this line by using the right amount of days in the current month and also taking into account leap years.
++        days += end.getActualMaximum(Calendar.DAY_OF_MONTH);
++        start.add(Calendar.MONTH, 1);
+         months -= 1;
+     }
+     while (months < 0) {
+@@ -64,8 +62,8 @@
+             years = 0;
+         } else {
+             // TODO: this is a bit weak, needs work to know about leap years
+-            days += 365 * years;
+-            years = 0;
++            days += end.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR);
++            months = 0;
+         }
+     }
+     if (!Token.containsTokenWithValue(tokens, M)) {
+--- org/apache/commons/lang/time/DurationFormatUtils.java@reduceAndCorrect
++++ org/apache/commons/lang/time/DurationFormatUtils.java@reduceAndCorrect
+@@ -7,6 +7,7 @@
+         end.add(field, newdiff);
+         return newdiff;
+     } else {
+-        return 0;
++        end.add(field, difference);
++        return difference;
+     }
+ }

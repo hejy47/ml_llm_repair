@@ -1,0 +1,59 @@
+--- org/apache/commons/lang3/StringUtils.java@replaceEach
++++ org/apache/commons/lang3/StringUtils.java@replaceEach
+@@ -1,7 +1,7 @@
+ private static String replaceEach(String text, String[] searchList, String[] replacementList, boolean repeat, int timeToLive) {
+     // mchyzer Performance note: This creates very few new objects (one major goal)
+     // let me know if there are performance requests, we can create a harness to measure
+-    if (text == null || text.length() == 0 || searchList == null || searchList.length == 0 || replacementList == null || replacementList.length == 0) {
++    if (text == null || text.isEmpty() || searchList == null || searchList.length == 0 || replacementList == null || replacementList.length == 0) {
+         return text;
+     }
+     // if recursing, this shouldnt be less than 0
+@@ -23,18 +23,22 @@
+     // index of replace array that will replace the search string found
+     // NOTE: logic duplicated below START
+     for (int i = 0; i < searchLength; i++) {
+-        if (noMoreMatchesForReplIndex[i] || searchList[i] == null || searchList[i].length() == 0 || replacementList[i] == null) {
++        if (noMoreMatchesForReplIndex[i] || searchList[i] == null || searchList[i].isEmpty() || replacementList[i] == null) {
+             continue;
+         }
+         tempIndex = text.indexOf(searchList[i]);
+         // see if we need to keep searching for this
+-        if (tempIndex == -1) {
+-            noMoreMatchesForReplIndex[i] = true;
+-        } else {
++        while (tempIndex != -1) {
+             if (textIndex == -1 || tempIndex < textIndex) {
+                 textIndex = tempIndex;
+                 replaceIndex = i;
+             }
++            tempIndex = text.indexOf(searchList[i], tempIndex + 1);
++        }
++        if (textIndex != -1) {
++            break;
++        } else {
++            noMoreMatchesForReplIndex[i] = true;
+         }
+     }
+     // NOTE: logic mostly below END
+@@ -73,13 +77,17 @@
+             }
+             tempIndex = text.indexOf(searchList[i], start);
+             // see if we need to keep searching for this
+-            if (tempIndex == -1) {
+-                noMoreMatchesForReplIndex[i] = true;
+-            } else {
++            while (tempIndex != -1) {
+                 if (textIndex == -1 || tempIndex < textIndex) {
+                     textIndex = tempIndex;
+                     replaceIndex = i;
+                 }
++                tempIndex = text.indexOf(searchList[i], tempIndex + 1);
++            }
++            if (textIndex != -1) {
++                break;
++            } else {
++                noMoreMatchesForReplIndex[i] = true;
+             }
+         }
+         // NOTE: logic duplicated above END

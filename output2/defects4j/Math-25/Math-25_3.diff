@@ -1,0 +1,21 @@
+--- org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
++++ org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
+@@ -35,7 +35,7 @@
+     double c1 = sy2 * sxz - sxy * syz;
+     double c2 = sxy * sxz - sx2 * syz;
+     double c3 = sx2 * sy2 - sxy * sxy;
+-    if ((c1 / c2 < 0) || (c2 / c3 < 0)) {
++    if (((c1 / c2) < 0) || ((c2 / c3) < 0) || Double.isNaN(c1 / c2) || Double.isNaN(c2 / c3)) {
+         final int last = observations.length - 1;
+         // Range of the observations, assuming that the
+         // observations are sorted.
+@@ -57,8 +57,7 @@
+         }
+         a = 0.5 * (yMax - yMin);
+     } else {
+-        // In some ill-conditioned cases (cf. MATH-844), the guesser
+-        // procedure cannot produce sensible results.
++        // In some ill-conditioned cases (cf. MATH-844), the guesser procedure cannot produce sensible results.
+         a = FastMath.sqrt(c1 / c2);
+         omega = FastMath.sqrt(c2 / c3);
+     }

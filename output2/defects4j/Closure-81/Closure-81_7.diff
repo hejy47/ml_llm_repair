@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -36,6 +36,9 @@
+     int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+     lp.setCharno(position2charno(lparenCharno));
+     for (AstNode param : functionNode.getParams()) {
++        if (param.getType() == Token.PARAMS) {
++            throw new RuntimeException("Function parameters should not be a Parameters node.");
++        }
+         lp.addChildToBack(transform(param));
+     }
+     node.addChildToBack(lp);

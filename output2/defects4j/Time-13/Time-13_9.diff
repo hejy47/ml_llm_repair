@@ -1,0 +1,55 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -1,5 +1,5 @@
+ public int calculatePrintedLength(ReadablePeriod period, Locale locale) {
+-    long valueLong = getFieldValue(period);
++    long valueLong = period.toDurationFrom(DateTimeUtils.currentTimeMillis()).getMillis();
+     if (valueLong == Long.MAX_VALUE) {
+         return 0;
+     }
+@@ -14,15 +14,14 @@
+             // remove three digits and decimal point
+             sum -= 4;
+         }
+-        // reset valueLong to refer to the seconds part for the prefic/suffix calculation
+-        valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
++        // reset valueLong to refer to the seconds part for the prefix/suffix calculation
++        valueLong /= DateTimeConstants.MILLIS_PER_SECOND;
+     }
+-    int value = (int) valueLong;
+     if (iPrefix != null) {
+-        sum += iPrefix.calculatePrintedLength(value);
++        sum += iPrefix.calculatePrintedLength(period, locale);
+     }
+     if (iSuffix != null) {
+-        sum += iSuffix.calculatePrintedLength(value);
++        sum += iSuffix.calculatePrintedLength(period, locale);
+     }
+     return sum;
+ }
+--- org/joda/time/format/PeriodFormatterBuilder.java@printTo
++++ org/joda/time/format/PeriodFormatterBuilder.java@printTo
+@@ -1,5 +1,5 @@
+ public void printTo(StringBuffer buf, ReadablePeriod period, Locale locale) {
+-    long valueLong = getFieldValue(period);
++    long valueLong = period.toDurationFrom(DateTimeUtils.currentTimeMillis()).getMillis();
+     if (valueLong == Long.MAX_VALUE) {
+         return;
+     }
+@@ -8,7 +8,7 @@
+         value = (int) (valueLong / DateTimeConstants.MILLIS_PER_SECOND);
+     }
+     if (iPrefix != null) {
+-        iPrefix.printTo(buf, value);
++        iPrefix.printTo(buf, period, locale);
+     }
+     int minDigits = iMinPrintedDigits;
+     if (minDigits <= 1) {
+@@ -24,6 +24,6 @@
+         }
+     }
+     if (iSuffix != null) {
+-        iSuffix.printTo(buf, value);
++        iSuffix.printTo(buf, period, locale);
+     }
+ }

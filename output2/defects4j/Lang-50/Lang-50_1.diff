@@ -1,0 +1,22 @@
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
+@@ -18,6 +18,8 @@
+             cDateInstanceCache.put(key, format);
+         } catch (ClassCastException ex) {
+             throw new IllegalArgumentException("No date pattern for locale: " + locale);
++        } catch (NullPointerException ex) { // added catch statement for NullPointerException
++            throw new IllegalArgumentException("Unexpected null pointer encountered");
+         }
+     }
+     return format;
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
+@@ -18,6 +18,8 @@
+             cDateTimeInstanceCache.put(key, format);
+         } catch (ClassCastException ex) {
+             throw new IllegalArgumentException("No date time pattern for locale: " + locale);
++        } catch (NullPointerException ex) { // added catch statement for NullPointerException
++            throw new IllegalArgumentException("Unexpected null pointer encountered");
+         }
+     }
+     return format;

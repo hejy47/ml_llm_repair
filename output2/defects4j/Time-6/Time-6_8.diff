@@ -1,0 +1,79 @@
+--- org/joda/time/chrono/GJChronology.java@getInstance
++++ org/joda/time/chrono/GJChronology.java@getInstance
+@@ -1,11 +1,13 @@
+ public static synchronized GJChronology getInstance(DateTimeZone zone, ReadableInstant gregorianCutover, int minDaysInFirstWeek) {
+     zone = DateTimeUtils.getZone(zone);
++
+     Instant cutoverInstant;
+     if (gregorianCutover == null) {
+         cutoverInstant = DEFAULT_CUTOVER;
+     } else {
+         cutoverInstant = gregorianCutover.toInstant();
+     }
++
+     GJChronology chrono;
+     synchronized (cCache) {
+         ArrayList<GJChronology> chronos = cCache.get(zone);
+@@ -20,10 +22,13 @@
+                 }
+             }
+         }
++
+         if (zone == DateTimeZone.UTC) {
+             chrono = new GJChronology(JulianChronology.getInstance(zone, minDaysInFirstWeek), GregorianChronology.getInstance(zone, minDaysInFirstWeek), cutoverInstant);
+         } else {
+-            chrono = getInstance(DateTimeZone.UTC, cutoverInstant, minDaysInFirstWeek);
++            // Fix: Use the provided zone
++            //chrono = getInstance(DateTimeZone.UTC, cutoverInstant, minDaysInFirstWeek);
++            chrono = getInstance(zone, cutoverInstant, minDaysInFirstWeek);
+             chrono = new GJChronology(ZonedChronology.getInstance(chrono, zone), chrono.iJulianChronology, chrono.iGregorianChronology, chrono.iCutoverInstant);
+         }
+         chronos.add(chrono);
+--- org/joda/time/chrono/GJChronology.java@add
++++ org/joda/time/chrono/GJChronology.java@add
+@@ -3,7 +3,9 @@
+         instant = iGregorianField.add(instant, value);
+         if (instant < iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
++            // Fix: Use the correct variable name for the gap duration
++            //if (instant + iGapDuration < iCutover) {
++            if (instant + iGregorianAdvance < iCutover) {
+                 instant = gregorianToJulian(instant);
+             }
+         }
+@@ -11,7 +13,9 @@
+         instant = iJulianField.add(instant, value);
+         if (instant >= iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
++            // Fix: Use the correct variable name for the gap duration
++            //if (instant - iGapDuration >= iCutover) {
++            if (instant - iJulianAdvance >= iCutover) {
+                 // no special handling for year zero as cutover always after year zero
+                 instant = julianToGregorian(instant);
+             }
+--- org/joda/time/chrono/GJChronology.java@add2
++++ org/joda/time/chrono/GJChronology.java@add2
+@@ -3,7 +3,9 @@
+         instant = iGregorianField.add(instant, value);
+         if (instant < iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
++            // Fix: Use the correct variable name for the gap duration
++            //if (instant + iGapDuration < iCutover) {
++            if (instant + iGregorianAdvance < iCutover) {
+                 instant = gregorianToJulian(instant);
+             }
+         }
+@@ -11,7 +13,9 @@
+         instant = iJulianField.add(instant, value);
+         if (instant >= iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
++            // Fix: Use the correct variable name for the gap duration
++            //if (instant - iGapDuration >= iCutover) {
++            if (instant - iJulianAdvance >= iCutover) {
+                 // no special handling for year zero as cutover always after year zero
+                 instant = julianToGregorian(instant);
+             }

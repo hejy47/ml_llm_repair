@@ -1,0 +1,31 @@
+--- org/apache/commons/math3/util/MathArrays.java@linearCombination
++++ org/apache/commons/math3/util/MathArrays.java@linearCombination
+@@ -20,19 +20,22 @@
+         prodLowSum += prodLow;
+     }
+     final double prodHighCur = prodHigh[0];
+-    double prodHighNext = prodHigh[1];
+-    double sHighPrev = prodHighCur + prodHighNext;
+-    double sPrime = sHighPrev - prodHighNext;
+-    double sLowSum = (prodHighNext - (sHighPrev - sPrime)) + (prodHighCur - sPrime);
++    double sHighPrev = prodHighCur;
++    double sPrime = 0;
++    double sLowSum = 0;
+     final int lenMinusOne = len - 1;
+     for (int i = 1; i < lenMinusOne; i++) {
+-        prodHighNext = prodHigh[i + 1];
++        final double prodHighNext = prodHigh[i];
+         final double sHighCur = sHighPrev + prodHighNext;
+         sPrime = sHighCur - prodHighNext;
+         sLowSum += (prodHighNext - (sHighCur - sPrime)) + (sHighPrev - sPrime);
+         sHighPrev = sHighCur;
+     }
+-    double result = sHighPrev + (prodLowSum + sLowSum);
++    final double prodHighNext = prodHigh[lenMinusOne];
++    final double sHighCur = sHighPrev + prodHighNext;
++    sPrime = sHighCur - prodHighNext;
++    sLowSum += (prodHighNext - (sHighCur - sPrime)) + (sHighPrev - sPrime);
++    double result = sHighCur + (prodLowSum + sLowSum);
+     if (Double.isNaN(result)) {
+         // either we have split infinite numbers or some coefficients were NaNs,
+         // just rely on the naive implementation and let IEEE754 handle this

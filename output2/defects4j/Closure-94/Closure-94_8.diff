@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isValidDefineValue
++++ com/google/javascript/jscomp/NodeUtil.java@isValidDefineValue
+@@ -10,7 +10,10 @@
+         case Token.BITNOT:
+         case Token.BITOR:
+         case Token.BITXOR:
+-        // Uniary operators are valid if the child is valid.
++            // Fixed: Check if both children are valid define values.
++            return isValidDefineValue(val.getFirstChild(), defines)
++                    && isValidDefineValue(val.getLastChild(), defines);
++        // Unary operators are valid if the child is valid.
+         case Token.NOT:
+         case Token.NEG:
+             return isValidDefineValue(val.getFirstChild(), defines);

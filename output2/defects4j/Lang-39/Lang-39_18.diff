@@ -1,0 +1,53 @@
+--- org/apache/commons/lang3/StringUtils.java@replaceEach
++++ org/apache/commons/lang3/StringUtils.java@replaceEach
+@@ -26,11 +26,15 @@
+         if (noMoreMatchesForReplIndex[i] || searchList[i] == null || searchList[i].length() == 0 || replacementList[i] == null) {
+             continue;
+         }
+-        tempIndex = text.indexOf(searchList[i]);
+-        // see if we need to keep searching for this
+-        if (tempIndex == -1) {
+-            noMoreMatchesForReplIndex[i] = true;
+-        } else {
++        fixTempIndex:
++        {
++            tempIndex = text.indexOf(searchList[i], tempIndex + 1);
++            // see if we need to keep searching for this
++            if (tempIndex == -1) {
++                noMoreMatchesForReplIndex[i] = true;
++                break fixTempIndex;
++            }
++
+             if (textIndex == -1 || tempIndex < textIndex) {
+                 textIndex = tempIndex;
+                 replaceIndex = i;
+@@ -64,18 +68,23 @@
+         start = textIndex + searchList[replaceIndex].length();
+         textIndex = -1;
+         replaceIndex = -1;
+-        tempIndex = -1;
++        tempIndex = start - 1;
+         // find the next earliest match
+         // NOTE: logic mostly duplicated above START
+         for (int i = 0; i < searchLength; i++) {
+             if (noMoreMatchesForReplIndex[i] || searchList[i] == null || searchList[i].length() == 0 || replacementList[i] == null) {
+                 continue;
+             }
+-            tempIndex = text.indexOf(searchList[i], start);
+-            // see if we need to keep searching for this
+-            if (tempIndex == -1) {
+-                noMoreMatchesForReplIndex[i] = true;
+-            } else {
++            fixTempIndex:
++            {
++                tempIndex = text.indexOf(searchList[i], tempIndex + 1);
++                // see if we need to keep searching for this
++                if (tempIndex == -1) {
++                    noMoreMatchesForReplIndex[i] = true;
++                    break fixTempIndex;
++                }
++
++                // see if we need to keep searching for this
+                 if (textIndex == -1 || tempIndex < textIndex) {
+                     textIndex = tempIndex;
+                     replaceIndex = i;

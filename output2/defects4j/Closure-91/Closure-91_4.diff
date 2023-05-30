@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -14,10 +14,13 @@
+         // var a = {x: function() {}};
+         int pType = parent.getType();
+         if (!(pType == Token.BLOCK || pType == Token.SCRIPT || pType == Token.NAME || pType == Token.ASSIGN || // object literal keys
+-        pType == Token.STRING || pType == Token.NUMBER)) {
++        pType == Token.STRING || pType == Token.NUMBER || pType == Token.OBJECTLIT)) {
+             return false;
+         }
+         // Don't traverse functions that are getting lent to a prototype.
++        if (parent.getType() == Token.ASSIGN && parent.getFirstChild().getType() == Token.GETPROP && parent.getFirstChild().getLastChild().getString().equals("prototype")) {
++            return false;
++        }
+     }
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+         Node lhs = parent.getFirstChild();

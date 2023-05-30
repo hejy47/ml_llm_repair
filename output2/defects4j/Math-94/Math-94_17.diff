@@ -1,0 +1,47 @@
+--- org/apache/commons/math/util/MathUtils.java@gcd
++++ org/apache/commons/math/util/MathUtils.java@gcd
+@@ -6,7 +6,7 @@
+     // -2^31, while positive numbers can only be as large as 2^31-1
+     // (i.e. we can't necessarily negate a negative number without
+     // overflow)
+-        if (u > 0) {
++    if (u > 0) {
+         u = -u;
+     }
+     // make u negative
+@@ -29,27 +29,15 @@
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least
+     // one is odd.
+-    int t = ((u & 1) == 1) ? v : -(u / 2);
+-    // t negative: u was odd, v may be even (t replaces v)
+-    // t positive: u was even, v is odd (t replaces u)
+-    do {
+-                // B4/B3: cast out twos from t.
+-        while ((t & 1) == 0) {
+-            // while t is even..
+-            // cast out twos
+-            t /= 2;
+-        }
+-        // B5 [reset max(u,v)]
+-        if (t > 0) {
+-            u = -t;
+-        } else {
++    int t;
++    while (v != 0) {
++        if (-u < -v) {
++            t = u;
++            u = -v;
+             v = t;
+         }
+-        // B6/B3. at this point both u and v should be odd.
+-        t = (v - u) / 2;
+-        // |u| larger: t positive (replace u)
+-        // |v| larger: t negative (replace v)
+-    } while (t != 0);
++        u -= v;
++    }
+     // gcd is u*2^k
+-    return -u * (1 << k);
++    return -(u << k);
+ }

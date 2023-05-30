@@ -1,0 +1,11 @@
+--- org/joda/time/chrono/BasicMonthOfYearDateTimeField.java@add
++++ org/joda/time/chrono/BasicMonthOfYearDateTimeField.java@add
+@@ -10,7 +10,7 @@
+         for (int i = 0, isize = partial.size(); i < isize; i++) {
+             instant = partial.getFieldType(i).getField(iChronology).set(instant, values[i]);
+         }
+-        instant = add(instant, valueToAdd);
++        instant = add(instant, valueToAdd, partial);
+         return iChronology.get(partial, instant);
+     } else {
+         return super.add(partial, fieldIndex, values, valueToAdd);

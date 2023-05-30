@@ -1,0 +1,46 @@
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
+@@ -4,13 +4,16 @@
+     int _longest = 0;
+     if (lookup != null) {
+         for (final CharSequence[] seq : lookup) {
+-            this.lookupMap.put(seq[0], seq[1]);
+-            final int sz = seq[0].length();
+-            if (sz < _shortest) {
+-                _shortest = sz;
+-            }
+-            if (sz > _longest) {
+-                _longest = sz;
++            // Verify that the seq array is not null and has length 2
++            if (seq != null && seq.length == 2) {
++                this.lookupMap.put(seq[0], seq[1]);
++                final int sz = seq[0].length();
++                if (sz < _shortest) {
++                    _shortest = sz;
++                }
++                if (sz > _longest) {
++                    _longest = sz;
++                }
+             }
+         }
+     }
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
+@@ -4,7 +4,7 @@
+     if (index + longest > input.length()) {
+         max = input.length() - index;
+     }
+-    // descend so as to get a greedy algorithm
++    // Descend so as to get a greedy algorithm
+     for (int i = max; i >= shortest; i--) {
+         final CharSequence subSeq = input.subSequence(index, index + i);
+         final CharSequence result = lookupMap.get(subSeq);
+@@ -13,5 +13,7 @@
+             return i;
+         }
+     }
+-    return 0;
++    // Write the character at the current index to the output stream
++    out.write(input.charAt(index));
++    return 1;
+ }

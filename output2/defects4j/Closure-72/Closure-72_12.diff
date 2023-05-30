@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
++++ com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
+@@ -1,6 +1,9 @@
+ private void makeLocalNamesUnique(Node fnNode, boolean isCallInLoop) {
+     Supplier<String> idSupplier = compiler.getUniqueNameIdSupplier();
+     // Make variable names unique to this instance.
+-    NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop)));
++    RenameDeclaredVariables uniqueRename = new RenameDeclaredVariables(idSupplier, new SymbolTable(), isCallInLoop);
++    NodeTraversal.traverse(compiler, fnNode, uniqueRename);
+     // Make label names unique to this instance.
++    MakeDeclaredNamesUnique labelRename = new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop));
++    NodeTraversal.traverse(compiler, fnNode, labelRename);
+ }
+--- com/google/javascript/jscomp/RenameLabels.java@visitLabel
++++ com/google/javascript/jscomp/RenameLabels.java@visitLabel
+@@ -8,16 +8,16 @@
+         String newName = getNameForId(li.id);
+         if (!name.equals(newName)) {
+             // ... and it is used, give it the short name.
+-            nameNode.setString(newName);
++            Node newNameNode = nameNode.cloneTree();
++            newNameNode.setString(newName);
++            node.replaceChild(nameNode, newNameNode);
+             compiler.reportCodeChange();
+         }
+     } else {
+         // ... and it is not referenced, just remove it.
+-        Node newChild = node.getLastChild();
+-        node.removeChild(newChild);
+-        parent.replaceChild(node, newChild);
+-        if (newChild.getType() == Token.BLOCK) {
+-            NodeUtil.tryMergeBlock(newChild);
++        parent.removeChild(node);
++        if (node.getLastChild().getType() == Token.BLOCK) {
++            NodeUtil.tryMergeBlock(node.getLastChild());
+         }
+         compiler.reportCodeChange();
+     }

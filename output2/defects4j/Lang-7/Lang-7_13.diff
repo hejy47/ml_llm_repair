@@ -1,0 +1,21 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
++++ org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
+@@ -2,7 +2,6 @@
+     if (str == null) {
+         return null;
+     }
+-    // handle JDK1.3.1 bug where "" throws IndexOutOfBoundsException
+     if (StringUtils.isBlank(str)) {
+         throw new NumberFormatException("A blank string is not a valid number");
+     }
+@@ -10,5 +9,9 @@
+     // it accepts this as a legal value, but it does not appear
+     // to be in specification of class. OS X Java parses it to
+     // a wrong value.
+-    return new BigDecimal(str);
++    try {
++        return new BigDecimal(str);
++    } catch (NumberFormatException nfe) {
++        throw new NumberFormatException(str + " is not a valid number.");
++    }
+ }

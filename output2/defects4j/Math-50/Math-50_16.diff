@@ -1,0 +1,47 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -25,13 +25,12 @@
+     // Keep finding better approximations.
+     while (true) {
+         // Calculate the next approximation.
+-        final double x = x1 - ((f1 * (x1 - x0)) / (f1 - f0));
+-        final double fx = computeObjectiveValue(x);
++        final double fx = computeObjectiveValue(x1 - ((f1 * (x1 - x0)) / (f1 - f0)));
+         // If the new approximation is the exact root, return it. Since
+         // this is not an under-approximation or an over-approximation,
+         // we can return it regardless of the allowed solutions.
+         if (fx == 0.0) {
+-            return x;
++            return x1 - ((f1 * (x1 - x0)) / (f1 - f0));
+         }
+         // Update the bounds with the new approximation.
+         if (f1 * fx < 0) {
+@@ -46,11 +45,11 @@
+                     f0 *= 0.5;
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    f0 *= f1 / (f1 - fx);
+                     break;
+                 case REGULA_FALSI:
+                     // Nothing.
+-                    if (x == x1) {
++                    if (x1 == x) {
+                         x0 = 0.5 * (x0 + x1 - FastMath.max(rtol * FastMath.abs(x1), atol));
+                         f0 = computeObjectiveValue(x0);
+                     }
+@@ -60,9 +59,12 @@
+                     throw new MathInternalError();
+             }
+         }
++        // Swap f0 and f1
++        double temp = f0;
++        f0 = f1;
++        f1 = temp;
+         // Update from [x0, x1] to [x0, x].
+-        x1 = x;
+-        f1 = fx;
++        x1 = x1 - ((f1 * (x1 - x0)) / (f1 - f0));
+         // If the function value of the last approximation is too small,
+         // given the function value accuracy, then we can't get closer to
+         // the root than we already are.

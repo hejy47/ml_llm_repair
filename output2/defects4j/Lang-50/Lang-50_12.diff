@@ -1,0 +1,30 @@
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
+@@ -17,7 +17,7 @@
+             format = getInstance(pattern, timeZone, locale);
+             cDateInstanceCache.put(key, format);
+         } catch (ClassCastException ex) {
+-            throw new IllegalArgumentException("No date pattern for locale: " + locale);
++            throw new IllegalArgumentException("No date pattern for locale: " + locale, ex);
+         }
+     }
+     return format;
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
+@@ -12,12 +12,13 @@
+             locale = Locale.getDefault();
+         }
+         try {
+-            SimpleDateFormat formatter = (SimpleDateFormat) DateFormat.getDateTimeInstance(dateStyle, timeStyle, locale);
+-            String pattern = formatter.toPattern();
++            SimpleDateFormat dateFormatter = (SimpleDateFormat) DateFormat.getDateInstance(dateStyle, locale);
++            SimpleDateFormat timeFormatter = (SimpleDateFormat) DateFormat.getTimeInstance(timeStyle, locale);
++            String pattern = dateFormatter.toPattern() + " " + timeFormatter.toPattern();
+             format = getInstance(pattern, timeZone, locale);
+             cDateTimeInstanceCache.put(key, format);
+         } catch (ClassCastException ex) {
+-            throw new IllegalArgumentException("No date time pattern for locale: " + locale);
++            throw new IllegalArgumentException("No date time pattern for locale: " + locale, ex);
+         }
+     }
+     return format;

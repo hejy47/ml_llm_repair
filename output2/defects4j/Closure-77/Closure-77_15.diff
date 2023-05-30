@@ -1,0 +1,49 @@
+--- com/google/javascript/jscomp/CodeGenerator.java@strEscape
++++ com/google/javascript/jscomp/CodeGenerator.java@strEscape
+@@ -22,18 +22,15 @@
+             case '\'':
+                 sb.append(singlequoteEscape);
+                 break;
+-            case // Break --> into --\> or ]]> into ]]\>
+-            '>':
+-                if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']'))) {
++            case '>':
++                if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (i >= 3 && s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']' && s.charAt(i - 3) == '!'))) {
+                     sb.append("\\>");
+                 } else {
+                     sb.append(c);
+                 }
+                 break;
+             case '<':
+-                // Break </script into <\/script
+                 final String END_SCRIPT = "/script";
+-                // Break <!-- into <\!--
+                 final String START_COMMENT = "!--";
+                 if (s.regionMatches(true, i + 1, END_SCRIPT, 0, END_SCRIPT.length())) {
+                     sb.append("<\\");
+@@ -44,25 +41,16 @@
+                 }
+                 break;
+             default:
+-                // If we're given an outputCharsetEncoder, then check if the
+-                //  character can be represented in this character set.
+                 if (outputCharsetEncoder != null) {
+                     if (outputCharsetEncoder.canEncode(c)) {
+                         sb.append(c);
+                     } else {
+-                        // Unicode-escape the character.
+                         appendHexJavaScriptRepresentation(sb, c);
+                     }
+                 } else {
+-                    // No charsetEncoder provided - pass straight latin characters
+-                    // through, and escape the rest.  Doing the explicit character
+-                    // check is measurably faster than using the CharsetEncoder.
+                     if (c > 0x1f && c <= 0x7f) {
+                         sb.append(c);
+                     } else {
+-                        // Other characters can be misinterpreted by some js parsers,
+-                        // or perhaps mangled by proxies along the way,
+-                        // so we play it safe and unicode escape them.
+                         appendHexJavaScriptRepresentation(sb, c);
+                     }
+                 }

@@ -1,0 +1,16 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -58,9 +58,12 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
+-    // minus signs must be leading, invalid
++    // minus signs must be leading if there is no whole part
+     int w = whole.intValue();
+     int n = num.intValue();
+     int d = den.intValue();
++    if (w < 0 || (w == 0 && n < 0)) {
++        n = -n;
++    }
+     return new Fraction(((Math.abs(w) * d) + n) * MathUtils.sign(w), d);
+ }

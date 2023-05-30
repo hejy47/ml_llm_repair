@@ -1,0 +1,90 @@
+--- org/joda/time/chrono/ZonedChronology.java@add
++++ org/joda/time/chrono/ZonedChronology.java@add
+@@ -1,8 +1,8 @@
+ public long add(long instant, int value) {
+     if (iTimeField) {
+         int offset = getOffsetToAdd(instant);
+-        long localInstant = iField.add(instant + offset, value);
+-        return localInstant - offset;
++        long localInstant = iField.add(instant, value);
++        return iZone.convertLocalToUTC(localInstant, false) - offset;
+     } else {
+         long localInstant = iZone.convertUTCToLocal(instant);
+         localInstant = iField.add(localInstant, value);
+--- org/joda/time/chrono/ZonedChronology.java@add1
++++ org/joda/time/chrono/ZonedChronology.java@add1
+@@ -1,8 +1,8 @@
+ public long add(long instant, long value) {
+     if (iTimeField) {
+         int offset = getOffsetToAdd(instant);
+-        long localInstant = iField.add(instant + offset, value);
+-        return localInstant - offset;
++        long localInstant = iField.add(instant, value);
++        return iZone.convertLocalToUTC(localInstant, false) - offset;
+     } else {
+         long localInstant = iZone.convertUTCToLocal(instant);
+         localInstant = iField.add(localInstant, value);
+--- org/joda/time/chrono/ZonedChronology.java@addWrapField
++++ org/joda/time/chrono/ZonedChronology.java@addWrapField
+@@ -1,8 +1,8 @@
+ public long addWrapField(long instant, int value) {
+     if (iTimeField) {
+         int offset = getOffsetToAdd(instant);
+-        long localInstant = iField.addWrapField(instant + offset, value);
+-        return localInstant - offset;
++        long localInstant = iField.addWrapField(instant, value);
++        return iZone.convertLocalToUTC(localInstant, false) - offset;
+     } else {
+         long localInstant = iZone.convertUTCToLocal(instant);
+         localInstant = iField.addWrapField(localInstant, value);
+--- org/joda/time/chrono/ZonedChronology.java@set
++++ org/joda/time/chrono/ZonedChronology.java@set
+@@ -3,7 +3,7 @@
+     localInstant = iField.set(localInstant, value);
+     long result = iZone.convertLocalToUTC(localInstant, false);
+     if (get(result) != value) {
+-        throw new IllegalFieldValueException(iField.getType(), new Integer(value), "Illegal instant due to time zone offset transition: " + DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS").print(new Instant(localInstant)) + " (" + iZone.getID() + ")");
++        throw new IllegalFieldValueException(iField.getType(), new Integer(value), "Illegal instant due to time zone offset transition: " + DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS").withZone(iZone).print(new Instant(localInstant)) + " (" + iZone.getID() + ")");
+     }
+     return result;
+ }
+--- org/joda/time/chrono/ZonedChronology.java@roundFloor
++++ org/joda/time/chrono/ZonedChronology.java@roundFloor
+@@ -2,7 +2,7 @@
+     if (iTimeField) {
+         int offset = getOffsetToAdd(instant);
+         instant = iField.roundFloor(instant + offset);
+-        return instant - offset;
++        return iZone.convertLocalToUTC(instant, false) - offset;
+     } else {
+         long localInstant = iZone.convertUTCToLocal(instant);
+         localInstant = iField.roundFloor(localInstant);
+--- org/joda/time/chrono/ZonedChronology.java@roundCeiling
++++ org/joda/time/chrono/ZonedChronology.java@roundCeiling
+@@ -2,7 +2,7 @@
+     if (iTimeField) {
+         int offset = getOffsetToAdd(instant);
+         instant = iField.roundCeiling(instant + offset);
+-        return instant - offset;
++        return iZone.convertLocalToUTC(instant, false) - offset;
+     } else {
+         long localInstant = iZone.convertUTCToLocal(instant);
+         localInstant = iField.roundCeiling(localInstant);
+--- org/joda/time/field/LenientDateTimeField.java@set
++++ org/joda/time/field/LenientDateTimeField.java@set
+@@ -1,8 +1,9 @@
+ public long set(long instant, int value) {
+-    // lenient needs to handle time zone chronologies
+-    // so we do the calculation using local milliseconds
+-    long localInstant = iBase.getZone().convertUTCToLocal(instant);
+-    long difference = FieldUtils.safeSubtract(value, get(instant));
+-    localInstant = getType().getField(iBase.withUTC()).add(localInstant, difference);
+-    return iBase.getZone().convertLocalToUTC(localInstant, false);
++    long localInstant = iZone.convertUTCToLocal(instant);
++    localInstant = iField.set(localInstant, value);
++    long result = iZone.convertLocalToUTC(localInstant, false);
++    if (get(result) != value) {
++        throw new IllegalFieldValueException(iField.getType(), new Integer(value), "Illegal instant due to time zone offset transition: " + DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS").withZone(iZone).print(new Instant(localInstant)) + " (" + iZone.getID() + ")");
++    }
++    return result;
+ }

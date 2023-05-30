@@ -1,0 +1,26 @@
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
+@@ -12,8 +12,8 @@
+             locale = Locale.getDefault();
+         }
+         try {
+-            SimpleDateFormat formatter = (SimpleDateFormat) DateFormat.getDateInstance(style, locale);
+-            String pattern = formatter.toPattern();
++            DateFormat formatter = DateFormat.getDateInstance(style, locale);
++            String pattern = ((SimpleDateFormat) formatter).toPattern(); // Cast to SimpleDateFormat to access toPattern() method
+             format = getInstance(pattern, timeZone, locale);
+             cDateInstanceCache.put(key, format);
+         } catch (ClassCastException ex) {
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
+@@ -12,8 +12,8 @@
+             locale = Locale.getDefault();
+         }
+         try {
+-            SimpleDateFormat formatter = (SimpleDateFormat) DateFormat.getDateTimeInstance(dateStyle, timeStyle, locale);
+-            String pattern = formatter.toPattern();
++            DateFormat formatter = DateFormat.getDateTimeInstance(dateStyle, timeStyle, locale);
++            String pattern = ((SimpleDateFormat) formatter).toPattern(); // Cast to SimpleDateFormat to access toPattern() method
+             format = getInstance(pattern, timeZone, locale);
+             cDateTimeInstanceCache.put(key, format);
+         } catch (ClassCastException ex) {

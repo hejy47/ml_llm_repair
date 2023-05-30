@@ -1,0 +1,47 @@
+--- org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java@translate
++++ org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java@translate
+@@ -2,7 +2,7 @@
+ public int translate(CharSequence input, int index, Writer out) throws IOException {
+     int seqEnd = input.length();
+     // Uses -2 to ensure there is something after the &#
+-    if (input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {
++    if (index < seqEnd - 2 && input.charAt(index) == '&' && input.charAt(index + 1) == '#') {
+         int start = index + 2;
+         boolean isHex = false;
+         char firstChar = input.charAt(start);
+@@ -10,11 +10,17 @@
+             start++;
+             isHex = true;
+             // Check there's more than just an x after the &#
++            if (start == seqEnd) {
++                return 0;
++            }
+         }
+         int end = start;
+         // Note that this supports character codes without a ; on the end
+-        while (input.charAt(end) != ';') {
++        while (end < seqEnd && input.charAt(end) != ';') {
+             end++;
++        }
++        if (end == seqEnd) {
++            return 0;
+         }
+         int entityValue;
+         try {
+@@ -24,7 +30,6 @@
+                 entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);
+             }
+         } catch (NumberFormatException nfe) {
+-            System.err.println("FAIL: " + input.subSequence(start, end) + "[" + start + "][" + end + "]");
+             return 0;
+         }
+         if (entityValue > 0xFFFF) {
+@@ -34,7 +39,7 @@
+         } else {
+             out.write(entityValue);
+         }
+-        return 2 + (end - start) + (isHex ? 1 : 0) + 1;
++        return end + 1 - index;
+     }
+     return 0;
+ }

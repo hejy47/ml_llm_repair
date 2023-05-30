@@ -1,0 +1,21 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -6,6 +6,9 @@
+     }
+     if (chars != null && chars.length == 0) {
+         throw new IllegalArgumentException("The chars array must not be empty");
++    }
++    if (start == end && start != 0) { // fixed condition
++        return "";
+     }
+     if (start == 0 && end == 0) {
+         if (chars != null) {
+@@ -26,7 +29,7 @@
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+         } else {
+-            ch = chars[random.nextInt(gap) + start];
++            ch = chars[random.nextInt(chars.length)]; // fixed potential array index out of bounds exception
+         }
+         if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
+             if (ch >= 56320 && ch <= 57343) {

@@ -1,0 +1,43 @@
+--- org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
++++ org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
+@@ -7,9 +7,9 @@
+     // timezones get funky around 0, so normalizing everything to GMT
+     // stops the hours being off
+     Calendar start = Calendar.getInstance(timezone);
+-    start.setTime(new Date(startMillis));
++    start.setTimeInMillis(startMillis);
+     Calendar end = Calendar.getInstance(timezone);
+-    end.setTime(new Date(endMillis));
++    end.setTimeInMillis(endMillis);
+     // initial estimates
+     int milliseconds = end.get(Calendar.MILLISECOND) - start.get(Calendar.MILLISECOND);
+     int seconds = end.get(Calendar.SECOND) - start.get(Calendar.SECOND);
+@@ -36,12 +36,22 @@
+         days -= 1;
+     }
+     while (days < 0) {
+-        days += 31;
+-        //days += 31; // TODO: Need tests to show this is bad and the new code is good.
+-        // HEN: It's a tricky subject. Jan 15th to March 10th. If I count days-first it is
+-        // 1 month and 26 days, but if I count month-first then it is 1 month and 23 days.
+-        // Also it's contextual - if asked for no M in the format then I should probably
+-        // be doing no calculating here.
++        if (months == 1 && start.get(Calendar.MONTH) == 1 && end.get(Calendar.YEAR) == start.get(Calendar.YEAR) && end.get(Calendar.MONTH) == start.get(Calendar.MONTH) + 1){
++            days = 28;
++            // for checking if the year is leap year or not
++            int daysInFeb = 28;
++            if (end.get(Calendar.YEAR) % 4 == 0) {
++                daysInFeb = 29;
++            }
++            if (end.get(Calendar.YEAR) % 100 == 0 && end.get(Calendar.YEAR) % 400 != 0) {
++                daysInFeb = 28;
++            }
++            if (end.get(Calendar.MONTH) == 2 && end.get(Calendar.DAY_OF_MONTH) == daysInFeb && start.get(Calendar.DAY_OF_MONTH) == 31) {
++                days = 29;
++            }
++        } else {
++            days += start.getActualMaximum(Calendar.DAY_OF_MONTH);
++        }
+         months -= 1;
+     }
+     while (months < 0) {

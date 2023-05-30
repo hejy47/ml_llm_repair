@@ -1,0 +1,36 @@
+--- org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
++++ org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
+@@ -21,21 +21,28 @@
+             if (Math.abs(lIJ - lJI) > maxDelta) {
+                 throw new NotSymmetricMatrixException();
+             }
+-            lJ[i] = 0;
++            lJ[i] = lI[j] = (lI[j] + lJ[i]) / 2.0; // fix off-diagonal elements
+         }
+     }
+     // transform the matrix
+     for (int i = 0; i < order; ++i) {
+         final double[] ltI = lTData[i];
+         // check diagonal element
++        for (int j = 0; j < i; ++j) {
++            ltI[i] -= ltI[j] * ltI[j];
++        }
++        if (ltI[i] < 0) {
++            throw new NotPositiveDefiniteMatrixException(); // fix negative value on diagonal element
++        }
+         ltI[i] = Math.sqrt(ltI[i]);
+         final double inverse = 1.0 / ltI[i];
+-        for (int q = order - 1; q > i; --q) {
+-            ltI[q] *= inverse;
++        for (int q = i + 1; q < order; ++q) {
+             final double[] ltQ = lTData[q];
+-            for (int p = q; p < order; ++p) {
+-                ltQ[p] -= ltI[q] * ltI[p];
++            for (int p = i + 1; p < order; ++p) {
++                ltQ[p] -= ltI[i] * ltI[q];
+             }
++            ltQ[i] = (ltQ[i] - ltI[i] * ltQ[q]) * inverse;
+         }
++        ltI[i] *= inverse;
+     }
+ }

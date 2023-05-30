@@ -1,0 +1,9 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
++++ com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
+@@ -1,5 +1,5 @@
+ private void declareArguments(Node functionNode) {
+-    Node astParameters = functionNode.getFirstChild().getNext();
++    Node astParameters = functionNode.getSecondChild();
+     Node body = astParameters.getNext();
+     FunctionType functionType = (FunctionType) functionNode.getJSType();
+     if (functionType != null) {

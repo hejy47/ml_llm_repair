@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -10,7 +10,7 @@
+     boolean result;
+     // TODO(johnlenz): Use the JSType to compare nodes of different types.
+     boolean rightLiteral = NodeUtil.isLiteralValue(right, false);
+-    boolean undefinedRight = ((Token.NAME == right.getType() && right.getString().equals("undefined")) || (Token.VOID == right.getType() && NodeUtil.isLiteralValue(right.getFirstChild(), false)));
++    boolean undefinedRight = ((Token.NAME == right.getType() && right.getString().equals("undefined")) || (Token.VOID == right.getType() && NodeUtil.isLiteralValue(right.getFirstChild(), false))); 
+     int lhType = left.getType();
+     int rhType = right.getType();
+     switch(lhType) {
+@@ -30,8 +30,19 @@
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (rhType != Token.TRUE && rhType != Token.FALSE && rhType != Token.NULL) {
+-                return n;
++            if (rhType != lhType && (parseFloat(left.getString()) == null || parseFloat(right.getString()) == null)) { // Handle NaN comparison
++                if (op == Token.GE || op == Token.LE || op == Token.GT || op == Token.LT) {
++                    if(lhType == Token.TRUE || lhType == Token.FALSE){
++                        result = compareBooleans(lhType == Token.TRUE, rhType == Token.TRUE, op);
++                    } else if(lhType == Token.NULL) {
++                        result = compareNull(lhType, rhType, op);
++                    } else {
++                        result = false;
++                    }
++                } else {
++                    return n;
++                }
++                break;
+             }
+             switch(op) {
+                 case Token.SHEQ:

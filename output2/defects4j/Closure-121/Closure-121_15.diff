@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -25,7 +25,7 @@
+             inline(v, declaration, init, reference);
+             staleVars.add(v);
+         }
+-    } else if (declaration != init && refCount == 2) {
++    } else if (declaration != null && declaration != init && refCount == 2) { //fixed: add null check for declaration
+         if (isValidDeclaration(declaration) && isValidInitialization(init)) {
+             // The only reference is the initialization, remove the assignment and
+             // the variable declaration.

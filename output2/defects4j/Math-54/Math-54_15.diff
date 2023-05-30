@@ -1,0 +1,40 @@
+--- org/apache/commons/math/dfp/Dfp.java@Dfp
++++ org/apache/commons/math/dfp/Dfp.java@Dfp
+@@ -24,7 +24,7 @@
+     }
+     if (exponent == 1024) {
+         // infinity or NAN
+-        if (x != x) {
++        if (Double.isNaN(x)) {
+             sign = (byte) 1;
+             nans = QNAN;
+         } else if (x < 0) {
+--- org/apache/commons/math/dfp/Dfp.java@toDouble
++++ org/apache/commons/math/dfp/Dfp.java@toDouble
+@@ -15,7 +15,7 @@
+         y = negate();
+         negate = true;
+     }
+-        int exponent = (int) (y.log10() * 3.32);
++    int exponent = (int) (y.log10() * 3.32192809488736218170856773213);
+     if (exponent < 0) {
+         exponent--;
+     }
+@@ -25,7 +25,7 @@
+         exponent++;
+     }
+     exponent--;
+-        y = y.divide(DfpMath.pow(getTwo(), exponent));
++    y = y.divide(DfpMath.pow(getTwo(), exponent));
+     if (exponent > -1023) {
+         y = y.subtract(getOne());
+     }
+@@ -44,7 +44,7 @@
+         mantissa = 0;
+         exponent++;
+     }
+-        if (exponent <= -1023) {
++    if (exponent <= -1023) {
+         exponent--;
+     }
+     while (exponent < -1023) {

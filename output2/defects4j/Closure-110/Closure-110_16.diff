@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -3,13 +3,13 @@
+     for (Var v : scope.getVarIterable()) {
+         Node n = v.getNode();
+         Node parent = n.getParent();
+-        boolean isVar = parent.isVar();
++        boolean isVar = NodeUtil.isNameDeclaration(parent);
+         if (isVar && n.getFirstChild() != null && n.getFirstChild().isQualifiedName()) {
+             recordAlias(v);
+         } else if (v.isBleedingFunction()) {
+             // Bleeding functions already get a BAD_PARAMETERS error, so just
+             // do nothing.
+-        } else if (parent.getType() == Token.LP) {
++        } else if (NodeUtil.isFunctionBlock(parent)) {
+             // Parameters of the scope function also get a BAD_PARAMETERS
+             // error.
+         } else if (isVar) {
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -3,8 +3,8 @@
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
+-        n = n.next;
++    while (n.getNext() != child) {
++        n = n.getNext();
+         if (n == null) {
+             throw new RuntimeException("node is not a child");
+         }

@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -23,7 +23,7 @@
+             if (sb.length() > 0) {
+                 // + 2 for the quotes.
+                 foldedSize += sb.length() + 2;
+-                arrayFoldedChildren.add(Node.newString(sb.toString()));
++                arrayFoldedChildren.add(NodeUtil.newStringNode(sb.toString()));
+                 sb = new StringBuilder();
+             }
+             foldedSize += InlineCostEstimator.getCost(elem);
+@@ -34,14 +34,14 @@
+     if (sb.length() > 0) {
+         // + 2 for the quotes.
+         foldedSize += sb.length() + 2;
+-        arrayFoldedChildren.add(Node.newString(sb.toString()));
++        arrayFoldedChildren.add(NodeUtil.newStringNode(sb.toString()));
+     }
+     // one for each comma.
+     foldedSize += arrayFoldedChildren.size() - 1;
+     int originalSize = InlineCostEstimator.getCost(n);
+     switch(arrayFoldedChildren.size()) {
+         case 0:
+-            Node emptyStringNode = Node.newString("");
++            Node emptyStringNode = NodeUtil.newStringNode("");
+             parent.replaceChild(n, emptyStringNode);
+             break;
+         case 1:
+@@ -53,7 +53,7 @@
+             if (foldedStringNode.getType() != Token.STRING) {
+                 // If the Node is not a string literal, ensure that
+                 // it is coerced to a string.
+-                Node replacement = new Node(Token.ADD, Node.newString(""), foldedStringNode);
++                Node replacement = NodeUtil.newAdd(foldedStringNode, NodeUtil.newStringNode(""));
+                 foldedStringNode = replacement;
+             }
+             parent.replaceChild(n, foldedStringNode);

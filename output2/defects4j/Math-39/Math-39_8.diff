@@ -1,0 +1,11 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -43,6 +43,8 @@
+                 }
+                 hNew = initializeStep(forward, getOrder(), scale, stepStart, y, yDotK[0], yTmp, yDotK[1]);
+                 firstTime = false;
++            } else { // added missing else statement
++                hNew = updateStepSize(hNew, error);
+             }
+             stepSize = hNew;
+             // next stages

@@ -1,0 +1,65 @@
+--- org/apache/commons/lang3/StringUtils.java@replaceEach
++++ org/apache/commons/lang3/StringUtils.java@replaceEach
+@@ -4,7 +4,7 @@
+     if (text == null || text.length() == 0 || searchList == null || searchList.length == 0 || replacementList == null || replacementList.length == 0) {
+         return text;
+     }
+-    // if recursing, this shouldnt be less than 0
++    // if recursing, this shouldn't be less than 0
+     if (timeToLive < 0) {
+         throw new IllegalStateException("TimeToLive of " + timeToLive + " is less than 0: " + text);
+     }
+@@ -16,7 +16,7 @@
+     }
+     // keep track of which still have matches
+     boolean[] noMoreMatchesForReplIndex = new boolean[searchLength];
+-    // index on index that the match was found
++    // index of index that the match was found
+     int textIndex = -1;
+     int replaceIndex = -1;
+     int tempIndex = -1;
+@@ -28,14 +28,14 @@
+         }
+         tempIndex = text.indexOf(searchList[i]);
+         // see if we need to keep searching for this
+-        if (tempIndex == -1) {
+-            noMoreMatchesForReplIndex[i] = true;
+-        } else {
++        while (tempIndex != -1) {
+             if (textIndex == -1 || tempIndex < textIndex) {
+                 textIndex = tempIndex;
+                 replaceIndex = i;
+             }
++            tempIndex = text.indexOf(searchList[i], tempIndex + 1);
+         }
++        noMoreMatchesForReplIndex[i] = true; // mark this search string as done
+     }
+     // NOTE: logic mostly below END
+     // no search strings found, we are done
+@@ -43,7 +43,7 @@
+         return text;
+     }
+     int start = 0;
+-    // get a good guess on the size of the result buffer so it doesnt have to double if it goes over a bit
++    // get a good guess on the size of the result buffer so it doesn't have to double if it goes over a bit
+     int increase = 0;
+     // count the replacement text elements that are larger than their corresponding text being replaced
+     for (int i = 0; i < searchList.length; i++) {
+@@ -73,14 +73,14 @@
+             }
+             tempIndex = text.indexOf(searchList[i], start);
+             // see if we need to keep searching for this
+-            if (tempIndex == -1) {
+-                noMoreMatchesForReplIndex[i] = true;
+-            } else {
++            while (tempIndex != -1) {
+                 if (textIndex == -1 || tempIndex < textIndex) {
+                     textIndex = tempIndex;
+                     replaceIndex = i;
+                 }
++                tempIndex = text.indexOf(searchList[i], tempIndex + 1);
+             }
++            noMoreMatchesForReplIndex[i] = true; // mark this search string as done
+         }
+         // NOTE: logic duplicated above END
+     }

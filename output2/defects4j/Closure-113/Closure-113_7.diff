@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
+@@ -15,14 +15,13 @@
+                 compiler.report(t.makeError(n, XMODULE_REQUIRE_ERROR, ns, providedModule.getName(), module.getName()));
+             }
+         }
+-        maybeAddToSymbolTable(left);
+-        maybeAddStringNodeToSymbolTable(arg);
+-        // Requires should be removed before further processing.
+-        // Some clients run closure pass multiple times, first with
+-        // the checks for broken requires turned off. In these cases, we
+-        // allow broken requires to be preserved by the first run to
+-        // let them be caught in the subsequent run.
++        // Fixed: Only add to symbol table if provided name exists.
+         if (provided != null) {
++            maybeAddToSymbolTable(left);
++            maybeAddStringNodeToSymbolTable(arg);
++        }
++        // Fixed: Only detach if provided name exists and is not explicitly provided.
++        if (provided != null && !provided.isExplicitlyProvided()) {
+             parent.detachFromParent();
+             compiler.reportCodeChange();
+         }

@@ -1,0 +1,24 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@deepStub
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@deepStub
+@@ -2,10 +2,9 @@
+     InternalMockHandler<Object> handler = new MockUtil().getMockHandler(invocation.getMock());
+     InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
+     // matches invocation for verification
+-    for (StubbedInvocationMatcher stubbedInvocationMatcher : container.getStubbedInvocations()) {
+-        if (container.getInvocationForStubbing().matches(stubbedInvocationMatcher.getInvocation())) {
+-            return stubbedInvocationMatcher.answer(invocation);
+-        }
++    StubbedInvocationMatcher invocationMatcher = container.findAnswerFor(invocation);
++    if (invocationMatcher != null) {
++        return invocationMatcher.answer(invocation);
+     }
+     // record deep stub answer
+     return recordDeepStubAnswer(newDeepStubMock(returnTypeGenericMetadata), container);
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
+@@ -1,4 +1,4 @@
+ private MockSettings withSettingsUsing(GenericMetadataSupport returnTypeGenericMetadata) {
+     MockSettings mockSettings = returnTypeGenericMetadata.hasRawExtraInterfaces() ? withSettings().extraInterfaces(returnTypeGenericMetadata.rawExtraInterfaces()) : withSettings();
+-    return mockSettings.serializable().defaultAnswer(returnsDeepStubsAnswerUsing(returnTypeGenericMetadata));
++    return mockSettings.defaultAnswer(returnsDeepStubsAnswerUsing(returnTypeGenericMetadata)).serializable();
+ }

@@ -1,0 +1,26 @@
+--- org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -14,12 +14,12 @@
+                 minRatioPositions.add(i);
+             } else if (cmp < 0) {
+                 minRatio = ratio;
+-                minRatioPositions = new ArrayList<Integer>();
++                minRatioPositions.clear(); // clears the array instead of reinitializing it
+                 minRatioPositions.add(i);
+             }
+         }
+     }
+-    if (minRatioPositions.size() == 0) {
++    if (minRatioPositions.isEmpty()) { // uses isEmpty() instead of checking size() == 0
+         return null;
+     } else if (minRatioPositions.size() > 1) {
+         // there's a degeneracy as indicated by a tie in the minimum ratio test
+@@ -47,7 +47,7 @@
+         for (Integer row : minRatioPositions) {
+             int i = tableau.getNumObjectiveFunctions();
+             for (; i < tableau.getWidth() - 1 && minRow != row; i++) {
+-                if (row == tableau.getBasicRow(i)) {
++                if (row.equals(tableau.getBasicRow(i))) { // changed "==" to equals()
+                     if (i < minIndex) {
+                         minIndex = i;
+                         minRow = row;

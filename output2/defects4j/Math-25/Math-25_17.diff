@@ -1,0 +1,27 @@
+--- org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
++++ org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
+@@ -16,12 +16,13 @@
+         final double previousY = currentY;
+         currentX = observations[i].getX();
+         currentY = observations[i].getY();
+-        // update the integrals of f<sup>2</sup> and f'<sup>2</sup>
++        // update the integrals of f^2 and f'^2
+         // considering a linear model for f (and therefore constant f')
+         final double dx = currentX - previousX;
+         final double dy = currentY - previousY;
+         final double f2StepIntegral = dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;
+-        final double fPrime2StepIntegral = dy * dy / dx;
++        // Handle divide by zero case where dx is 0
++        final double fPrime2StepIntegral = dx == 0 ? 0 : dy * dy / dx;
+         final double x = currentX - startX;
+         f2Integral += f2StepIntegral;
+         fPrime2Integral += fPrime2StepIntegral;
+@@ -40,7 +41,7 @@
+         // Range of the observations, assuming that the
+         // observations are sorted.
+         final double xRange = observations[last].getX() - observations[0].getX();
+-        if (xRange == 0) {
++        if (Double.compare(xRange, 0.0) == 0) {
+             throw new ZeroException();
+         }
+         omega = 2 * Math.PI / xRange;

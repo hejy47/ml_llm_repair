@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -57,6 +57,8 @@
+                         type = Name.Type.FUNCTION;
+                         break;
+                     case Token.INC:
++                    
++## The buggy code missed the Token.DEC below
+                     case Token.DEC:
+                         isSet = true;
+                         type = Name.Type.OTHER;

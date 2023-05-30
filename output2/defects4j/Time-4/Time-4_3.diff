@@ -1,0 +1,23 @@
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -27,13 +27,18 @@
+                     }
+                 }
+             }
++        } else {
++            i = iTypes.length;
+         }
+         System.arraycopy(iTypes, 0, newTypes, 0, i);
+         System.arraycopy(iValues, 0, newValues, 0, i);
++
+         newTypes[i] = fieldType;
+         newValues[i] = value;
+-        System.arraycopy(iTypes, i, newTypes, i + 1, newTypes.length - i - 1);
+-        System.arraycopy(iValues, i, newValues, i + 1, newValues.length - i - 1);
++
++        System.arraycopy(iTypes, i, newTypes, i + 1, iTypes.length - i);
++        System.arraycopy(iValues, i, newValues, i + 1, iValues.length - i);
++
+         // use public constructor to ensure full validation
+         // this isn't overly efficient, but is safe
+         Partial newPartial = new Partial(iChronology, newTypes, newValues);

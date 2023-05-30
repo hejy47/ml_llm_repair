@@ -1,0 +1,26 @@
+--- org/apache/commons/lang3/SerializationUtils.java@ClassLoaderAwareObjectInputStream
++++ org/apache/commons/lang3/SerializationUtils.java@ClassLoaderAwareObjectInputStream
+@@ -1,4 +1,8 @@
+ public ClassLoaderAwareObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException {
+     super(in);
+-    this.classLoader = classLoader;
++    if (classLoader == null) {
++        this.classLoader = Thread.currentThread().getContextClassLoader();
++    } else {
++        this.classLoader = classLoader;
++    }
+ }
+--- org/apache/commons/lang3/SerializationUtils.java@resolveClass
++++ org/apache/commons/lang3/SerializationUtils.java@resolveClass
+@@ -4,6 +4,10 @@
+     try {
+         return Class.forName(name, false, classLoader);
+     } catch (ClassNotFoundException ex) {
+-        return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
++        if (classLoader != Thread.currentThread().getContextClassLoader()) {
++            return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
++        } else {
++            throw ex;
++        }
+     }
+ }

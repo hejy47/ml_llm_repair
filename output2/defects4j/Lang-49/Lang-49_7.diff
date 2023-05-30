@@ -1,0 +1,15 @@
+--- org/apache/commons/lang/math/Fraction.java@reduce
++++ org/apache/commons/lang/math/Fraction.java@reduce
+@@ -5,5 +5,11 @@
+     if (gcd == 1) {
+         return this;
+     }
+-    return Fraction.getFraction(numerator / gcd, denominator / gcd);
++    int reducedNumerator = numerator / gcd;
++    int reducedDenominator = denominator / gcd;
++    if (reducedDenominator < 0) {
++        reducedNumerator *= -1;
++        reducedDenominator *= -1;
++    }
++    return Fraction.getFraction(reducedNumerator, reducedDenominator);
+ }

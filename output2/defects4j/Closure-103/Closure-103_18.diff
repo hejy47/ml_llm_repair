@@ -1,0 +1,40 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -10,6 +10,7 @@
+         case Token.DEC:
+             return true;
+         case Token.FUNCTION:
++        case Token.NAME:
+             return false;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -12,13 +12,14 @@
+         return null;
+     }
+     // We look up the prototype chain to find the highest place (if any) that
+-    // this appears.  This will make references to overriden properties look
++    // this appears.  This will make references to overridden properties look
+     // like references to the initial property, so they are renamed alike.
+     ObjectType foundType = null;
+     ObjectType objType = ObjectType.cast(type);
+     while (objType != null && objType.getImplicitPrototype() != objType) {
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
++            break;
+         }
+         objType = objType.getImplicitPrototype();
+     }
+@@ -27,5 +28,11 @@
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+     // so we have to double check.
++    if (foundType == null && type instanceof ObjectType) {
++        ObjectType subType = ((ObjectType) type).getGreatestSubtypeWithProperty(field);
++        if (subType != null && subType.hasOwnProperty(field)) {
++            foundType = subType;
++        }
++    }
+     return foundType;
+ }

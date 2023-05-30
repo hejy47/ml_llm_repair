@@ -1,0 +1,9 @@
+--- org/apache/commons/math/stat/Frequency.java@addValue
++++ org/apache/commons/math/stat/Frequency.java@addValue
+@@ -1,4 +1,4 @@
+ @Deprecated
+-public void addValue(Object v) {
+-    addValue((Comparable<?>) v);
++public void addValue(Comparable<?> v) {
++    add(v);
+ }

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -37,7 +37,7 @@
+         // ... (x$y = 3);
+         Node current = gramps;
+         Node currentParent = gramps.getParent();
+-        for (; currentParent.getType() != Token.SCRIPT && currentParent.getType() != Token.BLOCK; current = currentParent, currentParent = currentParent.getParent()) {
++        for (; currentParent != null && currentParent.getType() != Token.SCRIPT && currentParent.getType() != Token.BLOCK; current = currentParent, currentParent = currentParent.getParent()) {
+         }
+         // Create a stub variable declaration right
+         // before the current statement.

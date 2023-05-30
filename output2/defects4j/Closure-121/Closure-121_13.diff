@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -2,7 +2,7 @@
+     int refCount = referenceInfo.references.size();
+     Reference declaration = referenceInfo.references.get(0);
+     Reference init = referenceInfo.getInitializingReference();
+-    int firstRefAfterInit = (declaration == init) ? 2 : 3;
++    int firstRefAfterInit = (init == null || declaration != init) ? 1 : 2;
+     if (refCount > 1 && isImmutableAndWellDefinedVariable(v, referenceInfo)) {
+         // if the variable is referenced more than once, we can only
+         // inline it if it's immutable and never defined before referenced.
+@@ -44,7 +44,7 @@
+         // once is *NOT* correct. We relax the correctness requirement if
+         // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
++        for (int i = 1; i < refs.size(); i++) {
+             Node nameNode = refs.get(i).getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);

@@ -1,0 +1,20 @@
+--- org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
++++ org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
+@@ -18,7 +18,7 @@
+     }
+     // B1. [Find power of 2]
+     int k = 0;
+-    while ((u & 1) == 0 && (v & 1) == 0 && k < 31) {
++    while ((u & 1) == 0 && (v & 1) == 0 && k <= 31) {
+         // while u and v are both even...
+         // cast out twos.
+         u /= 2;
+@@ -27,7 +27,7 @@
+         // cast out twos.
+         k++;
+     }
+-    if (k == 31) {
++    if (k == 32) {
+         throw new ArithmeticException("overflow: gcd is 2^31");
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least

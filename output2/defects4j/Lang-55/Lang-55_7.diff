@@ -1,0 +1,13 @@
+--- org/apache/commons/lang/time/StopWatch.java@stop
++++ org/apache/commons/lang/time/StopWatch.java@stop
+@@ -1,6 +1,8 @@
+ public void stop() {
+-    if (this.runningState != STATE_RUNNING && this.runningState != STATE_SUSPENDED) {
+-        throw new IllegalStateException("Stopwatch is not running. ");
++    if (this.runningState == STATE_NOT_STARTED) {
++        throw new IllegalStateException("Stopwatch has not been started. ");
++    } else if (this.runningState == STATE_STOPPED) {
++        throw new IllegalStateException("Stopwatch has already been stopped. ");
+     }
+     stopTime = System.currentTimeMillis();
+     this.runningState = STATE_STOPPED;

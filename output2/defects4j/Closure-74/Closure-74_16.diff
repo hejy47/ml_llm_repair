@@ -1,0 +1,67 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -13,7 +13,7 @@
+     boolean undefinedRight = ((Token.NAME == right.getType() && right.getString().equals("undefined")) || (Token.VOID == right.getType() && NodeUtil.isLiteralValue(right.getFirstChild(), false)));
+     int lhType = left.getType();
+     int rhType = right.getType();
+-    switch(lhType) {
++    switch (lhType) {
+         case Token.VOID:
+             if (!NodeUtil.isLiteralValue(left.getFirstChild(), false)) {
+                 return n;
+@@ -33,7 +33,7 @@
+             if (rhType != Token.TRUE && rhType != Token.FALSE && rhType != Token.NULL) {
+                 return n;
+             }
+-            switch(op) {
++            switch (op) {
+                 case Token.SHEQ:
+                 case Token.EQ:
+                     result = lhType == rhType;
+@@ -46,6 +46,10 @@
+                 case Token.LE:
+                 case Token.GT:
+                 case Token.LT:
++                    // Only compare numbers if both operands are numbers
++                    if (lhType != rhType || lhType != Token.NUMBER) {
++                        return n;
++                    }
+                     Boolean compareResult = compareAsNumbers(op, left, right);
+                     if (compareResult != null) {
+                         result = compareResult;
+@@ -62,7 +66,7 @@
+             if (right.getType() != Token.THIS) {
+                 return n;
+             }
+-            switch(op) {
++            switch (op) {
+                 case Token.SHEQ:
+                 case Token.EQ:
+                     result = true;
+@@ -88,7 +92,7 @@
+                 // Only eval if they are the same type
+                 return n;
+             }
+-            switch(op) {
++            switch (op) {
+                 case Token.SHEQ:
+                 case Token.EQ:
+                     result = left.getString().equals(right.getString());
+@@ -140,7 +144,7 @@
+                 // Not the same value name.
+                 return n;
+             }
+-            switch(op) {
++            switch (op) {
+                 // If we knew the named value wouldn't be NaN, it would be nice
+                 // to handle EQ,NE,LE,GE,SHEQ, and SHNE.
+                 case Token.LT:
+@@ -157,7 +161,7 @@
+             return n;
+     }
+     Node newNode = new Node(result ? Token.TRUE : Token.FALSE);
+-    n.getParent().replaceChild(n, newNode);
++    n.replaceWith(newNode);
+     reportCodeChange();
+     return newNode;
+ }

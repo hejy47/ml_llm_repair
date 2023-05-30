@@ -1,0 +1,25 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -25,7 +25,12 @@
+     // Keep finding better approximations.
+     while (true) {
+         // Calculate the next approximation.
+-        final double x = x1 - ((f1 * (x1 - x0)) / (f1 - f0));
++        final double denom = (f1 - f0);
++        if (denom == 0.0) {
++            //throw an exception to stop infinite loop
++            throw new MathIllegalStateException(LocalizedFormats.ZERO_DENOMINATOR_IN_SECANT_METHOD, x0, x1);
++        }
++        final double x = x1 - ((f1 * (x1 - x0)) / denom);
+         final double fx = computeObjectiveValue(x);
+         // If the new approximation is the exact root, return it. Since
+         // this is not an under-approximation or an over-approximation,
+@@ -51,6 +56,8 @@
+                 // Update formula cannot make any progress: Update the
+                 // search interval.
+                 default:
++                    x0 = x1;
++                    f0 = f1;
+             }
+         }
+         // Update from [x0, x1] to [x0, x].

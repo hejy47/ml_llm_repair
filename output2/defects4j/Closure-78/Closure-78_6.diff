@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -19,15 +19,21 @@
+     double rval = rValObj;
+     switch(opType) {
+         case Token.BITAND:
+-            result = ScriptRuntime.toInt32(lval) & ScriptRuntime.toInt32(rval);
++            result = (long) lval & (long) rval; // cast double to long before bitwise AND operation
+             break;
+         case Token.BITOR:
+-            result = ScriptRuntime.toInt32(lval) | ScriptRuntime.toInt32(rval);
++            result = (long) lval | (long) rval; // cast double to long before bitwise OR operation
+             break;
+         case Token.BITXOR:
+-            result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
++            result = (long) lval ^ (long) rval; // cast double to long before bitwise XOR operation
+             break;
+         case Token.ADD:
++            if (NodeUtil.isTypeOf(left, Token.STRING) || NodeUtil.isTypeOf(right, Token.STRING)) {
++                // if either operand is a string, concatenate them
++                String lStr = NodeUtil.getStringValue(left);
++                String rStr = NodeUtil.getStringValue(right);
++                return Node.newString(lStr + rStr);
++            }
+             result = lval + rval;
+             break;
+         case Token.SUB:

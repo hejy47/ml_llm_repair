@@ -1,0 +1,53 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -36,12 +36,27 @@
+             // Add $jscomp.scope.name = EXPR;
+             // Make sure we copy over all the jsdoc and debug info.
+             if (value != null || v.getJSDocInfo() != null) {
+-                Node newDecl = NodeUtil.newQualifiedNameNodeDeclaration(compiler.getCodingConvention(), globalName, value, v.getJSDocInfo()).useSourceInfoIfMissingFromForTree(n);
++                Node newDecl = NodeUtil.newQualifiedNameNodeDeclaration(
++                    compiler.getCodingConvention(),
++                    globalName,
++                    value,
++                    v.getJSDocInfo()
++                ).useSourceInfoIfMissingFromForTree(n);
+                 NodeUtil.setDebugInformation(newDecl.getFirstChild().getFirstChild(), n, name);
+                 grandparent.addChildBefore(newDecl, varNode);
+             }
+             // Rewrite "var name = EXPR;" to "var name = $jscomp.scope.name;"
+-            v.getNameNode().addChildToFront(NodeUtil.newQualifiedNameNode(compiler.getCodingConvention(), globalName, n, name));
++            Node nameNode = v.getNameNode();
++            if (nameNode != null) {
++                nameNode.addChildToFront(
++                    NodeUtil.newQualifiedNameNode(
++                        compiler.getCodingConvention(),
++                        globalName,
++                        n,
++                        name
++                    )
++                );
++            }
+             recordAlias(v);
+         } else {
+             // Do not other kinds of local symbols, like catch params.
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -1,13 +1,10 @@
+ public Node getChildBefore(Node child) {
+-    if (child == first) {
+-        return null;
++    Node n = first;
++    while (n != null && n.next != child) {
++        n = n.next;
+     }
+-    Node n = first;
+-    while (n.next != child) {
+-        n = n.next;
+-        if (n == null) {
+-            throw new RuntimeException("node is not a child");
+-        }
++    if (n == null) {
++        throw new RuntimeException("node is not a child");
+     }
+     return n;
+ }

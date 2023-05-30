@@ -1,0 +1,35 @@
+--- org/apache/commons/lang3/StringUtils.java@join
++++ org/apache/commons/lang3/StringUtils.java@join
+@@ -4,9 +4,9 @@
+     }
+     int noOfItems = (endIndex - startIndex);
+     if (noOfItems <= 0) {
+-        return EMPTY;
++        return "";
+     }
+-    StringBuilder buf = new StringBuilder((array[startIndex] == null ? 16 : array[startIndex].toString().length()) + 1);
++    StringBuilder buf = new StringBuilder((array[startIndex] == null ? 16 : array[startIndex].toString().length()) + (noOfItems - 1));
+     for (int i = startIndex; i < endIndex; i++) {
+         if (i > startIndex) {
+             buf.append(separator);
+--- org/apache/commons/lang3/StringUtils.java@join1
++++ org/apache/commons/lang3/StringUtils.java@join1
+@@ -3,15 +3,13 @@
+         return null;
+     }
+     if (separator == null) {
+-        separator = EMPTY;
++        separator = "";
+     }
+-    // endIndex - startIndex > 0:   Len = NofStrings *(len(firstString) + len(separator))
+-    //           (Assuming that all Strings are roughly equally long)
+     int noOfItems = (endIndex - startIndex);
+     if (noOfItems <= 0) {
+-        return EMPTY;
++        return "";
+     }
+-    StringBuilder buf = new StringBuilder((array[startIndex] == null ? 16 : array[startIndex].toString().length()) + separator.length());
++    StringBuilder buf = new StringBuilder((array[startIndex] == null ? 16 : array[startIndex].toString().length()) + ((noOfItems - 1) * separator.length()));
+     for (int i = startIndex; i < endIndex; i++) {
+         if (i > startIndex) {
+             buf.append(separator);

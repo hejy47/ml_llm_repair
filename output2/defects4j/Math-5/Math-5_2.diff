@@ -1,0 +1,15 @@
+--- org/apache/commons/math3/complex/Complex.java@reciprocal
++++ org/apache/commons/math3/complex/Complex.java@reciprocal
+@@ -3,9 +3,11 @@
+         return NaN;
+     }
+     if (real == 0.0 && imaginary == 0.0) {
+-        return NaN;
++        // The reciprocal of 0 is undefined, so return infinite.
++        return INF;
+     }
+     if (isInfinite) {
++        // The reciprocal of infinity is 0.
+         return ZERO;
+     }
+     if (FastMath.abs(real) < FastMath.abs(imaginary)) {

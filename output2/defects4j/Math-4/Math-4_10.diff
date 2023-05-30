@@ -1,0 +1,29 @@
+--- org/apache/commons/math3/geometry/euclidean/threed/SubLine.java@intersection
++++ org/apache/commons/math3/geometry/euclidean/threed/SubLine.java@intersection
+@@ -6,8 +6,10 @@
+     // check location of point with respect to second sub-line
+     Location loc2 = subLine.remainingRegion.checkPoint(subLine.line.toSubSpace(v1D));
+     if (includeEndPoints) {
++        //Fixed the condition to check if both loc1 and loc2 are not OUTSIDE
+         return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v1D : null;
+     } else {
+-        return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE)) ? v1D : null;
++        //Fixed the condition to check if both loc1 and loc2 are INSIDE or ON_BOUNDARY
++        return ((loc1 == Location.INSIDE || loc1 == Location.ON_BOUNDARY) && (loc2 == Location.INSIDE || loc2 == Location.ON_BOUNDARY)) ? v1D : null;
+     }
+ }
+--- org/apache/commons/math3/geometry/euclidean/twod/SubLine.java@intersection
++++ org/apache/commons/math3/geometry/euclidean/twod/SubLine.java@intersection
+@@ -9,8 +9,10 @@
+     // check location of point with respect to second sub-line
+     Location loc2 = subLine.getRemainingRegion().checkPoint(line2.toSubSpace(v2D));
+     if (includeEndPoints) {
+-        return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v2D : null;
++        //Fixed the condition to check if both loc1 and loc2 are not OUTSIDE
++        return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v2D : null;             
+     } else {
+-        return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE)) ? v2D : null;
++        //Fixed the condition to check if both loc1 and loc2 are INSIDE or ON_BOUNDARY
++        return ((loc1 == Location.INSIDE || loc1 == Location.ON_BOUNDARY) && (loc2 == Location.INSIDE || loc2 == Location.ON_BOUNDARY)) ? v2D : null;
+     }
+ }

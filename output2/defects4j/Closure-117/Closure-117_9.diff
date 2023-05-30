@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -13,6 +13,12 @@
+                 // classes
+                 while (objectType != null && !objectType.hasOwnProperty(propName)) {
+                     objectType = objectType.getImplicitPrototype();
++                }
++                if (objectType != null && objectType.getConstructor() != null && objectType.getConstructor().getSource() != null) {
++                    JSDocInfo info = objectType.getConstructor().getSource().getJSDocInfo();
++                    if (info != null && info.getVisibility() == JSDocInfo.Visibility.PRIVATE) {
++                        objectType = null;
++                    }
+                 }
+             }
+             // Don't show complex function names or anonymous types.

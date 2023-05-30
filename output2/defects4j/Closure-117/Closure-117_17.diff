@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -18,7 +18,11 @@
+             // Don't show complex function names or anonymous types.
+             // Instead, try to get a human-readable type name.
+             if (objectType != null && (objectType.getConstructor() != null || objectType.isFunctionPrototypeType())) {
+-                return objectType.toString() + "." + propName;
++                if (objectType.getConstructor() != null) {
++                    return objectType.getConstructor().getDisplayName() + "." + propName;
++                } else {
++                    return "Object.prototype." + propName;
++                }
+             }
+         }
+     }
+@@ -30,7 +34,11 @@
+         }
+     }
+     if (type.isFunctionPrototypeType() || (type.toObjectType() != null && type.toObjectType().getConstructor() != null)) {
+-        return type.toString();
++        if (type.toObjectType().getConstructor() != null) {
++            return type.toObjectType().getConstructor().getDisplayName();
++        } else {
++            return "Object";
++        }
+     }
+     String qualifiedName = n.getQualifiedName();
+     if (qualifiedName != null) {

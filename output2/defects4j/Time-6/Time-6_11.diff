@@ -1,0 +1,33 @@
+--- org/joda/time/chrono/GJChronology.java@getInstance
++++ org/joda/time/chrono/GJChronology.java@getInstance
+@@ -23,7 +23,7 @@
+         if (zone == DateTimeZone.UTC) {
+             chrono = new GJChronology(JulianChronology.getInstance(zone, minDaysInFirstWeek), GregorianChronology.getInstance(zone, minDaysInFirstWeek), cutoverInstant);
+         } else {
+-            chrono = getInstance(DateTimeZone.UTC, cutoverInstant, minDaysInFirstWeek);
++            chrono = getInstance(zone, cutoverInstant, minDaysInFirstWeek);
+             chrono = new GJChronology(ZonedChronology.getInstance(chrono, zone), chrono.iJulianChronology, chrono.iGregorianChronology, chrono.iCutoverInstant);
+         }
+         chronos.add(chrono);
+--- org/joda/time/chrono/GJChronology.java@add
++++ org/joda/time/chrono/GJChronology.java@add
+@@ -3,7 +3,7 @@
+         instant = iGregorianField.add(instant, value);
+         if (instant < iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
++            if (instant + iGapDuration > iCutover) { //change operator from < to >
+                 instant = gregorianToJulian(instant);
+             }
+         }
+--- org/joda/time/chrono/GJChronology.java@add2
++++ org/joda/time/chrono/GJChronology.java@add2
+@@ -3,7 +3,7 @@
+         instant = iGregorianField.add(instant, value);
+         if (instant < iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
++            if (instant + iGapDuration > iCutover) { //change operator from < to >
+                 instant = gregorianToJulian(instant);
+             }
+         }

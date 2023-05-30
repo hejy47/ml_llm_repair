@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -2,7 +2,7 @@
+     int refCount = referenceInfo.references.size();
+     Reference declaration = referenceInfo.references.get(0);
+     Reference init = referenceInfo.getInitializingReference();
+-    int firstRefAfterInit = (declaration == init) ? 2 : 3;
++    int firstRefAfterInit = (declaration == init) ? 1 : 2; // fix: change `firstRefAfterInit` to 1 if `declaration == init`
+     if (refCount > 1 && isImmutableAndWellDefinedVariable(v, referenceInfo)) {
+         // if the variable is referenced more than once, we can only
+         // inline it if it's immutable and never defined before referenced.

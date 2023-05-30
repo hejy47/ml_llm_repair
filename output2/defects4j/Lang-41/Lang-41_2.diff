@@ -1,0 +1,22 @@
+--- org/apache/commons/lang/ClassUtils.java@getShortClassName
++++ org/apache/commons/lang/ClassUtils.java@getShortClassName
+@@ -12,6 +12,7 @@
+     String out = className.substring(lastDotIdx + 1);
+     if (innerIdx != -1) {
+         out = out.replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR);
++        out = out.substring(0, innerIdx - lastDotIdx - 1) + "$" + out.substring(innerIdx - lastDotIdx);
+     }
+     return out;
+ }
+--- org/apache/commons/lang/ClassUtils.java@getPackageName
++++ org/apache/commons/lang/ClassUtils.java@getPackageName
+@@ -5,7 +5,8 @@
+     // Strip array encoding
+     // Strip Object type encoding
+     int i = className.lastIndexOf(PACKAGE_SEPARATOR_CHAR);
+-    if (i == -1) {
++    int j = className.lastIndexOf(INNER_CLASS_SEPARATOR_CHAR);
++    if (i == -1 || j != -1 && j > i) {
+         return StringUtils.EMPTY;
+     }
+     return className.substring(0, i);

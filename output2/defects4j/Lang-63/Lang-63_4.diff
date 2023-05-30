@@ -1,0 +1,88 @@
+--- org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
++++ org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
+@@ -7,9 +7,9 @@
+     // timezones get funky around 0, so normalizing everything to GMT
+     // stops the hours being off
+     Calendar start = Calendar.getInstance(timezone);
+-    start.setTime(new Date(startMillis));
++    start.setTimeInMillis(startMillis);
+     Calendar end = Calendar.getInstance(timezone);
+-    end.setTime(new Date(endMillis));
++    end.setTimeInMillis(endMillis);
+     // initial estimates
+     int milliseconds = end.get(Calendar.MILLISECOND) - start.get(Calendar.MILLISECOND);
+     int seconds = end.get(Calendar.SECOND) - start.get(Calendar.SECOND);
+@@ -36,18 +36,18 @@
+         days -= 1;
+     }
+     while (days < 0) {
+-        days += 31;
+-        //days += 31; // TODO: Need tests to show this is bad and the new code is good.
+-        // HEN: It's a tricky subject. Jan 15th to March 10th. If I count days-first it is
+-        // 1 month and 26 days, but if I count month-first then it is 1 month and 23 days.
+-        // Also it's contextual - if asked for no M in the format then I should probably
+-        // be doing no calculating here.
++        days += end.getActualMaximum(Calendar.DAY_OF_MONTH);
+         months -= 1;
++        end.add(Calendar.MONTH, -1);
+     }
+     while (months < 0) {
+         months += 12;
+         years -= 1;
+     }
++
++    end = Calendar.getInstance(timezone);
++    end.setTimeInMillis(endMillis);
++
+     milliseconds -= reduceAndCorrect(start, end, Calendar.MILLISECOND, milliseconds);
+     seconds -= reduceAndCorrect(start, end, Calendar.SECOND, seconds);
+     minutes -= reduceAndCorrect(start, end, Calendar.MINUTE, minutes);
+@@ -55,6 +55,7 @@
+     days -= reduceAndCorrect(start, end, Calendar.DAY_OF_MONTH, days);
+     months -= reduceAndCorrect(start, end, Calendar.MONTH, months);
+     years -= reduceAndCorrect(start, end, Calendar.YEAR, years);
++
+     // This next block of code adds in values that
+     // aren't requested. This allows the user to ask for the
+     // number of months and get the real count and not just 0->11.
+@@ -63,8 +64,13 @@
+             months += 12 * years;
+             years = 0;
+         } else {
+-            // TODO: this is a bit weak, needs work to know about leap years
+-            days += 365 * years;
++            end = Calendar.getInstance(timezone);
++            end.setTimeInMillis(endMillis);
++
++            long endTime = end.getTimeInMillis() + timezone.getOffset(end.getTimeInMillis());
++            long startTime = start.getTimeInMillis() + timezone.getOffset(start.getTimeInMillis());
++            long diff = endTime-startTime;
++            days = (int) (diff / DateUtils.MILLIS_PER_DAY);
+             years = 0;
+         }
+     }
+--- org/apache/commons/lang/time/DurationFormatUtils.java@reduceAndCorrect
++++ org/apache/commons/lang/time/DurationFormatUtils.java@reduceAndCorrect
+@@ -3,8 +3,20 @@
+     int endValue = end.get(field);
+     int startValue = start.get(field);
+     if (endValue < startValue) {
+-        int newdiff = startValue - endValue;
+-        end.add(field, newdiff);
++        int newdiff;
++        if (field == Calendar.MONTH) {
++            newdiff = 1;
++            end.add(field, -newdiff);
++        } else if (field == Calendar.HOUR_OF_DAY) {
++            newdiff = 24;
++            end.add(field, -newdiff);
++        } else if (field == Calendar.DAY_OF_MONTH) {
++            newdiff = end.getActualMaximum(Calendar.DAY_OF_MONTH);
++            end.add(field, -newdiff);
++        } else {
++            newdiff = startValue - endValue;
++            end.add(field, newdiff);
++        }
+         return newdiff;
+     } else {
+         return 0;

@@ -1,0 +1,19 @@
+--- org/apache/commons/math/analysis/BrentSolver.java@solve
++++ org/apache/commons/math/analysis/BrentSolver.java@solve
+@@ -8,8 +8,14 @@
+     double sign = yMin * yMax;
+     if (sign >= 0) {
+         // check if either value is close to a zero
+-        // neither value is close to zero and min and max do not bracket root.
+-        throw new IllegalArgumentException("Function values at endpoints do not have different signs." + "  Endpoints: [" + min + "," + max + "]" + "  Values: [" + yMin + "," + yMax + "]");
++        if(Math.abs(yMin) < Function.EPSILON) {
++            ret = min;
++        } else if(Math.abs(yMax) < Function.EPSILON) {
++            ret = max;
++        } else {
++            // neither value is close to zero and min and max do not bracket root.
++            throw new IllegalArgumentException("Function values at endpoints do not have different signs." + "  Endpoints: [" + min + "," + max + "]" + "  Values: [" + yMin + "," + yMax + "]");
++        }
+     } else {
+         // solve using only the first endpoint as initial guess
+         ret = solve(min, yMin, max, yMax, min, yMin);

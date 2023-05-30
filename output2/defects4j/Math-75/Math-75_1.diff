@@ -1,0 +1,10 @@
+--- org/apache/commons/math/stat/Frequency.java@getPct
++++ org/apache/commons/math/stat/Frequency.java@getPct
+@@ -1,5 +1,5 @@
+ //-------------------------------------------------------------
+ @Deprecated
+-public double getPct(Object v) {
+-    return getCumPct((Comparable<?>) v);
++public double getPct(Comparable<?> v) { // changed input parameter to Comparable type
++    return getCumPct(v);
+ }

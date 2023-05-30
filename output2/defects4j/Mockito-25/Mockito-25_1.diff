@@ -1,0 +1,9 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
+@@ -4,5 +4,5 @@
+     if (!new MockCreationValidator().isTypeMockable(rawType)) {
+         return delegate.returnValueFor(rawType);
+     }
+-    return getMock(invocation);
++    return getMock(invocation, rawType);
+ }

@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -23,9 +23,22 @@
+     for (FormattingOption formattingOption : flags.formatting) {
+         formattingOption.applyToOptions(options);
+     }
+-    options.closurePass = flags.processClosurePrimitives;
+-    options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives;
+-    options.angularPass = flags.angularPass;
++    options.setProcessClosurePrimitives(flags.processClosurePrimitives);
++    options.setProcessCommonJSModules(flags.processCommonJSModules);
++    options.setChecksOnly(flags.checksOnly);
++    options.setIdGenerators(flags.idGenerators);
++    options.setLanguageIn(flags.languageIn);
++    options.setLanguageOut(flags.languageOut);
++    options.setModuleResolutionMode(flags.moduleResolutionMode);
++    options.setRemoveAbstractMethods(flags.removeAbstractMethods);
++    options.setRewritePolyfills(flags.rewritePolyfills);
++    options.setRewriteScripts(flags.rewriteScripts);
++    options.setTweakProcessing(flags.tweakProcessing);
++    if (flags.processObjectPropertyString) {
++        options.setObjectPropertyStringPreprocess(true);
++        options.setObjectPropertyStringEscapeRegex(flags.objectPropertyStringEscapeRegex);
++    }
++    options.setAngularPass(flags.angularPass);
+     if (!flags.translationsFile.isEmpty()) {
+         try {
+             options.messageBundle = new XtbMessageBundle(new FileInputStream(flags.translationsFile), flags.translationsProject);

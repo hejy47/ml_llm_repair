@@ -1,0 +1,10 @@
+--- org/apache/commons/math/fraction/Fraction.java@compareTo
++++ org/apache/commons/math/fraction/Fraction.java@compareTo
+@@ -1,5 +1,5 @@
+ public int compareTo(Fraction object) {
+-    double nOd = doubleValue();
+-    double dOn = object.doubleValue();
++    double nOd = this.numerator * 1.0 / this.denominator;
++    double dOn = object.numerator * 1.0 / object.denominator;
+     return (nOd < dOn) ? -1 : ((nOd > dOn) ? +1 : 0);
+ }

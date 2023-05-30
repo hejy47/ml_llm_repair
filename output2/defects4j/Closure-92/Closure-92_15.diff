@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -24,9 +24,10 @@
+                 Node varNode = new Node(Token.VAR, nameNode);
+                 varNode.copyInformationFrom(candidateDefinition);
+                 candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
+-                nameNode.setJSDocInfo(assignNode.getJSDocInfo());
++                varNode.setJSDocInfo(assignNode.getJSDocInfo());
+                 compiler.reportCodeChange();
+                 replacementNode = varNode;
++                candidateDefinition = varNode;
+             }
+         }
+     } else {
+@@ -44,8 +45,8 @@
+             } else {
+                 // Add it after the parent namespace.
+                 ProvidedName parentName = providedNames.get(namespace.substring(0, indexOfDot));
+-                Preconditions.checkNotNull(parentName);
+-                Preconditions.checkNotNull(parentName.replacementNode);
++                Preconditions.checkNotNull(parentName, "null check on parentName failed for namespace " + namespace);
++                Preconditions.checkNotNull(parentName.replacementNode, "null check on parentName.replacementNode failed for namespace " + namespace);
+                 parentName.replacementNode.getParent().addChildAfter(replacementNode, parentName.replacementNode);
+             }
+         }

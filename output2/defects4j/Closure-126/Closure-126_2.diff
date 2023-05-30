@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -26,7 +26,7 @@
+             Node catchCodeBlock = catchNode.getLastChild();
+             tryMinimizeExits(catchCodeBlock, exitType, labelName);
+         }
+-                if (NodeUtil.hasFinally(n)) {
++        if (NodeUtil.hasFinally(n)) {
+             Node finallyBlock = n.getLastChild();
+             tryMinimizeExits(finallyBlock, exitType, labelName);
+         }
+@@ -45,7 +45,9 @@
+     // Convert "if (blah) break;  if (blah2) break; other_stmt;" to
+     // become "if (blah); else { if (blah2); else { other_stmt; } }"
+     // which will get converted to "if (!blah && !blah2) { other_stmt; }".
+-    for (Node c : n.children()) {
++    List<Node> children = new ArrayList<>(n.children());
++    for (int i = 0; i < children.size(); i++) {
++        Node c = children.get(i);
+         // An 'if' block to process below.
+         if (c.isIf()) {
+             Node ifTree = c;
+@@ -62,9 +64,6 @@
+                 tryMinimizeIfBlockExits(falseBlock, trueBlock, ifTree, exitType, labelName);
+             }
+         }
+-        if (c == n.getLastChild()) {
+-            break;
+-        }
+     }
+     // Now try to minimize the exits of the last child, if it is removed
+     // look at what has become the last child.

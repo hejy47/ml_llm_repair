@@ -1,0 +1,39 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -19,30 +19,27 @@
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+         } else {
+-            ch = chars[random.nextInt(gap) + start];
++            ch = chars[random.nextInt(chars.length)];
+         }
+-        if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
+-            if (ch >= 56320 && ch <= 57343) {
++        if ((letters && Character.isLetter(ch)) || (numbers && Character.isDigit(ch)) || (!letters && !numbers)) {
++            if (Character.isHighSurrogate(ch)) {
+                 if (count == 0) {
+                     count++;
+                 } else {
+                     // low surrogate, insert high surrogate after putting it in
+                     buffer[count] = ch;
+                     count--;
+-                    buffer[count] = (char) (55296 + random.nextInt(128));
++                    buffer[count] = (char) (Character.MIN_LOW_SURROGATE + random.nextInt(Character.MAX_LOW_SURROGATE));
+                 }
+-            } else if (ch >= 55296 && ch <= 56191) {
++            } else if (Character.isLowSurrogate(ch)) {
+                 if (count == 0) {
+                     count++;
+                 } else {
+                     // high surrogate, insert low surrogate before putting it in
+-                    buffer[count] = (char) (56320 + random.nextInt(128));
++                    buffer[count] = (char) (Character.MIN_HIGH_SURROGATE + random.nextInt(Character.MAX_HIGH_SURROGATE));
+                     count--;
+                     buffer[count] = ch;
+                 }
+-            } else if (ch >= 56192 && ch <= 56319) {
+-                // private high surrogate, no effing clue, so skip it
+-                count++;
+             } else {
+                 buffer[count] = ch;
+             }

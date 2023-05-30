@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -62,13 +62,13 @@
+                 tryMinimizeIfBlockExits(falseBlock, trueBlock, ifTree, exitType, labelName);
+             }
+         }
+-        if (c == n.getLastChild()) {
++        if (c.getNext() == null) {
+             break;
+         }
+     }
+     // Now try to minimize the exits of the last child, if it is removed
+     // look at what has become the last child.
+-    for (Node c = n.getLastChild(); c != null; c = n.getLastChild()) {
++    for (Node c = n.getLastChild(); c != null; c = c.getPrevious()) {
+         tryMinimizeExits(c, exitType, labelName);
+         // If the node is still the last child, we are done.
+         if (c == n.getLastChild()) {

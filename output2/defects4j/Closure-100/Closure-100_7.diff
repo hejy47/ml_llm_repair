@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -11,6 +11,8 @@
+         // var a = function() { }; // or
+         // function a() {} // or
+         // a.x = function() {};
++        // Fix: add a return statement for false
++        return !NodeUtil.mayHaveThisLocal(n);
+     }
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+         Node lhs = parent.getFirstChild();
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -4,5 +4,6 @@
+         return true;
+     }
+     // Also report a THIS with a property access.
+-    return false;
++    // Fix: Add a check for Token.GETPROP type
++    return parent != null && parent.getType() == Token.GETPROP;
+ }

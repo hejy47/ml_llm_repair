@@ -1,0 +1,32 @@
+## Fixed Function 1
+public static <T> T[] add(T[] array, T element) {
+    Class<?> type;
+    if (array != null) {
+        type = array.getClass().getComponentType();
+    } else if (element != null) {
+        type = element.getClass();
+    } else {
+        throw new IllegalArgumentException("Cannot determine the type of the array or element");
+    }
+    // type must be T
+    @SuppressWarnings("unchecked")
+    T[] newArray = (T[]) copyArrayGrow1(array, type);
+    newArray[newArray.length - 1] = element;
+    return newArray;
+}
+
+## Fixed Function 2
+public static <T> T[] add(T[] array, int index, T element) {
+    Class<?> clss;
+    if (array != null) {
+        clss = array.getClass().getComponentType();
+    } else if (element != null) {
+        clss = element.getClass();
+    } else {
+        throw new IllegalArgumentException("Cannot determine the type of the array or element");
+    }
+    // the add method creates an array of type clss, which is type T
+    @SuppressWarnings("unchecked")
+    final T[] newArray = (T[]) add(array, index, element, clss);
+    return newArray;
+}

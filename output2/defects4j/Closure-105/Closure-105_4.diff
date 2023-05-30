@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -26,7 +26,12 @@
+                 arrayFoldedChildren.add(Node.newString(sb.toString()));
+                 sb = new StringBuilder();
+             }
+-            foldedSize += InlineCostEstimator.getCost(elem);
++            int childCost = InlineCostEstimator.getCost(elem);
++            if (childCost == -1) {
++                // childCost == -1 means elem cannot be inlined.
++                return;
++            }
++            foldedSize += childCost;
+             arrayFoldedChildren.add(elem);
+         }
+         elem = elem.getNext();
+@@ -39,6 +44,10 @@
+     // one for each comma.
+     foldedSize += arrayFoldedChildren.size() - 1;
+     int originalSize = InlineCostEstimator.getCost(n);
++    if (originalSize == -1) {
++        // originalSize == -1 means n cannot be inlined.
++        return;
++    }
+     switch(arrayFoldedChildren.size()) {
+         case 0:
+             Node emptyStringNode = Node.newString("");

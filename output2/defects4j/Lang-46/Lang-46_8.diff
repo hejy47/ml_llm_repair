@@ -1,0 +1,43 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJava
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJava
+@@ -1,5 +1,5 @@
+ // Java and JavaScript
+ //--------------------------------------------------------------------------
+ public static String escapeJava(String str) {
+-    return escapeJavaStyleString(str, false);
++    return escapeJavaStyleString(str, true); // Changed false to true
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJava1
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJava1
+@@ -1,3 +1,3 @@
+ public static void escapeJava(Writer out, String str) throws IOException {
+-    escapeJavaStyleString(out, str, false);
++    escapeJavaStyleString(out, str, true); // Changed false to true
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript
+@@ -1,3 +1,3 @@
+ public static String escapeJavaScript(String str) {
+-    return escapeJavaStyleString(str, true);
++    return escapeJavaScriptStyleString(str); // Changed to call the fixed function
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript3
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript3
+@@ -1,3 +1,3 @@
+ public static void escapeJavaScript(Writer out, String str) throws IOException {
+-    escapeJavaStyleString(out, str, true);
++    escapeJavaScriptStyleString(out, str); // Changed to call the fixed function
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString5
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString5
+@@ -63,9 +63,8 @@
+                     out.write('\\');
+                     break;
+                 case '/':
+-                    out.write('\\');
+                     out.write('/');
+-                    break;
++                    break;  // Removed extra backslash
+                 default:
+                     out.write(ch);
+                     break;

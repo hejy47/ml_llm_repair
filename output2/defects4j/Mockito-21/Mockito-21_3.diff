@@ -1,0 +1,27 @@
+--- org/mockito/internal/creation/instance/ConstructorInstantiator.java@newInstance
++++ org/mockito/internal/creation/instance/ConstructorInstantiator.java@newInstance
+@@ -1,6 +1,6 @@
+ public <T> T newInstance(Class<T> cls) {
+-    if (outerClassInstance == null) {
+-        return noArgConstructor(cls);
++    if (outerClassInstance != null) {
++        return withOuterClass(cls);
+     }
+-    return withOuterClass(cls);
++    return noArgConstructor(cls);
+ }
+--- org/mockito/internal/creation/instance/ConstructorInstantiator.java@withOuterClass
++++ org/mockito/internal/creation/instance/ConstructorInstantiator.java@withOuterClass
+@@ -1,10 +1,9 @@
+ private <T> T withOuterClass(Class<T> cls) {
+     try {
+-        //this is kind of overengineered because we don't need to support more params
+-        //however, I know we will be needing it :)
+         Constructor<T> c = cls.getDeclaredConstructor(outerClassInstance.getClass());
++        c.setAccessible(true); // need to set accessible to true
+         return c.newInstance(outerClassInstance);
+     } catch (Exception e) {
+-        throw paramsException(cls, e);
++        throw new IllegalStateException("Unable to create mock instance of '" + cls.getSimpleName() + "'.", e);
+     }
+ }

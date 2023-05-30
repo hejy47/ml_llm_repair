@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -95,7 +95,7 @@
+                         }
+                 }
+             }
+-            name = n.getQualifiedName();
++            name = NodeUtil.getNameOfNode(n);
+             if (name == null) {
+                 return;
+             }

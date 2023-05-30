@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -25,6 +25,9 @@
+                 }
+         }
+         n = n.getParent();
++        if (ControlFlowGraph.isEnteringNewCfgNode(n)) {
++            return false;
++        }
+     }
+     return false;
+ }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -9,8 +9,10 @@
+             VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
+             if (state == VariableLiveness.READ) {
+                 return state;
++            } else if (state == VariableLiveness.KILL) {
++                return VariableLiveness.KILL;
+             }
+-            return VariableLiveness.KILL;
++            return VariableLiveness.MAYBE_LIVE;
+         } else {
+             return VariableLiveness.READ;
+         }

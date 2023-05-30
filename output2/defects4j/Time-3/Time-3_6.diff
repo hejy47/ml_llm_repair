@@ -1,0 +1,9 @@
+--- org/joda/time/MutableDateTime.java@add
++++ org/joda/time/MutableDateTime.java@add
+@@ -2,5 +2,5 @@
+     if (type == null) {
+         throw new IllegalArgumentException("Field must not be null");
+     }
+-    setMillis(type.getField(getChronology()).add(getMillis(), amount));
++    setMillis(type.getField(getChronology()).add(getMillis(), amount, getChronology()));
+ }

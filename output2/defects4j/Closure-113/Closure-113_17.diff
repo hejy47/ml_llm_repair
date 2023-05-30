@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
+@@ -11,7 +11,9 @@
+             // This must be non-null, because there was an explicit provide.
+             Preconditions.checkNotNull(providedModule);
+             JSModule module = t.getModule();
+-            if (moduleGraph != null && module != providedModule && !moduleGraph.dependsOn(module, providedModule)) {
++            if (moduleGraph != null && module != providedModule && !moduleGraph.dependsOn(module, providedModule)
++                    && !providedModule.getInputs().isEmpty()) {
++                // adding one more check so that error is not thrown if the provided module does not have any inputs
+                 compiler.report(t.makeError(n, XMODULE_REQUIRE_ERROR, ns, providedModule.getName(), module.getName()));
+             }
+         }

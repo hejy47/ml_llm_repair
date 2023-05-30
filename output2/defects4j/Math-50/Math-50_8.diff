@@ -1,0 +1,15 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -13,8 +13,10 @@
+     if (f1 == 0.0) {
+         return x1;
+     }
+-    // Verify bracketing of initial solution.
+-    verifyBracketing(x0, x1);
++    if (f0 * f1 > 0.0) {
++        throw new MathIllegalStateException(LocalizedFormats.INVALID_INTERVAL_INITIAL_VALUE_PARAMETERS,
++                                            x0, x1, f0, f1);
++    }
+     // Get accuracies.
+     final double ftol = getFunctionValueAccuracy();
+     final double atol = getAbsoluteAccuracy();

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitNew
++++ com/google/javascript/jscomp/TypeCheck.java@visitNew
+@@ -10,7 +10,7 @@
+             ensureTyped(t, n);
+         }
+     } else {
+-        report(t, n, NOT_A_CONSTRUCTOR);
++        report(t, constructor, NOT_A_CONSTRUCTOR); // fixed by passing 'constructor' instead of 'n'
+         ensureTyped(t, n);
+     }
+ }

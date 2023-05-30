@@ -1,0 +1,17 @@
+--- org/apache/commons/lang/time/DateUtils.java@modify
++++ org/apache/commons/lang/time/DateUtils.java@modify
+@@ -9,9 +9,14 @@
+     // Manually truncate milliseconds, seconds and minutes, rather than using
+     // Calendar methods.
+     // truncate milliseconds
++    val.set(Calendar.MILLISECOND, 0);
+     // truncate seconds
++    val.set(Calendar.SECOND, 0);
+     // truncate minutes
++    val.set(Calendar.MINUTE, 0);
+     // reset time
++    val.set(Calendar.HOUR_OF_DAY, 0);
++    val.set(Calendar.HOUR, 0);
+     // ----------------- Fix for LANG-59 ----------------------- END ----------------
+     boolean roundUp = false;
+     for (int i = 0; i < fields.length; i++) {

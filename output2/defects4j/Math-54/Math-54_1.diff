@@ -1,0 +1,38 @@
+--- org/apache/commons/math/dfp/Dfp.java@Dfp
++++ org/apache/commons/math/dfp/Dfp.java@Dfp
+@@ -12,6 +12,7 @@
+         // Zero or sub-normal
+         if (x == 0) {
+             // make sure 0 has the right sign
++            sign = (byte) 0;
+             return;
+         }
+         exponent++;
+@@ -31,7 +32,6 @@
+             sign = (byte) -1;
+             nans = INFINITE;
+         } else {
+-            sign = (byte) 1;
+             nans = INFINITE;
+         }
+         return;
+--- org/apache/commons/math/dfp/Dfp.java@toDouble
++++ org/apache/commons/math/dfp/Dfp.java@toDouble
+@@ -15,7 +15,7 @@
+         y = negate();
+         negate = true;
+     }
+-        int exponent = (int) (y.log10() * 3.32);
++        int exponent = (int) (y.log10() * 3.3219280948873626);
+     if (exponent < 0) {
+         exponent--;
+     }
+@@ -51,7 +51,7 @@
+         exponent++;
+         mantissa >>>= 1;
+     }
+-    long bits = mantissa | ((exponent + 1023L) << 52);
++    long bits = mantissa | ((long)(exponent + 1023) << 52);
+     double x = Double.longBitsToDouble(bits);
+     if (negate) {
+         x = -x;

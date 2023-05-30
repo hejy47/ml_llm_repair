@@ -1,0 +1,19 @@
+--- org/apache/commons/lang/time/DateUtils.java@modify
++++ org/apache/commons/lang/time/DateUtils.java@modify
+@@ -14,6 +14,16 @@
+     // reset time
+     // ----------------- Fix for LANG-59 ----------------------- END ----------------
+     boolean roundUp = false;
++    int[][] fields = {
++            {Calendar.MILLISECOND},
++            {Calendar.SECOND},
++            {Calendar.MINUTE},
++            {Calendar.HOUR_OF_DAY, Calendar.HOUR},
++            {Calendar.DATE, Calendar.DAY_OF_MONTH, Calendar.AM_PM},
++            {Calendar.MONTH},
++            {Calendar.YEAR},
++            {Calendar.ERA}
++    };
+     for (int i = 0; i < fields.length; i++) {
+         for (int j = 0; j < fields[i].length; j++) {
+             if (fields[i][j] == field) {

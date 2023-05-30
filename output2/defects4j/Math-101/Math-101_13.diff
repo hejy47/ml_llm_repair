@@ -1,0 +1,74 @@
+--- org/apache/commons/math/complex/ComplexFormat.java@parse
++++ org/apache/commons/math/complex/ComplexFormat.java@parse
+@@ -14,7 +14,7 @@
+     // parse sign
+     int startIndex = pos.getIndex();
+     char c = parseNextCharacter(source, pos);
+-    int sign = 0;
++    int sign = 1; // default sign is positive
+     switch(c) {
+         case 0:
+             // no sign
+@@ -22,10 +22,30 @@
+             return new Complex(re.doubleValue(), 0.0);
+         case '-':
+             sign = -1;
+-            break;
++            // Fall through to '+' case
+         case '+':
+-            sign = 1;
+-            break;
++            // parse imaginary
++            Number im = parseNumber(source, getRealFormat(), pos);
++            if (im == null) {
++                // invalid imaginary number
++                // set index back to initial, error index should already be set
++                // character examined.
++                pos.setIndex(initialIndex);
++                return null;
++            }
++            // parse imaginary character
++            int n = getImaginaryCharacter().length();
++            startIndex = pos.getIndex();
++            int endIndex = startIndex + n;
++            if (source.substring(startIndex, endIndex).compareTo(getImaginaryCharacter()) != 0) {
++                // set index back to initial, error index should be the start index
++                // character examined.
++                pos.setIndex(initialIndex);
++                pos.setErrorIndex(startIndex);
++                return null;
++            }
++            pos.setIndex(endIndex);
++            return new Complex(re.doubleValue(), im.doubleValue() * sign);
+         default:
+             // invalid sign
+             // set index back to initial, error index should be the last
+@@ -34,28 +54,4 @@
+             pos.setErrorIndex(startIndex);
+             return null;
+     }
+-    // parse whitespace
+-    parseAndIgnoreWhitespace(source, pos);
+-    // parse imaginary
+-    Number im = parseNumber(source, getRealFormat(), pos);
+-    if (im == null) {
+-        // invalid imaginary number
+-        // set index back to initial, error index should already be set
+-        // character examined.
+-        pos.setIndex(initialIndex);
+-        return null;
+-    }
+-    // parse imaginary character
+-    int n = getImaginaryCharacter().length();
+-    startIndex = pos.getIndex();
+-    int endIndex = startIndex + n;
+-    if (source.substring(startIndex, endIndex).compareTo(getImaginaryCharacter()) != 0) {
+-        // set index back to initial, error index should be the start index
+-        // character examined.
+-        pos.setIndex(initialIndex);
+-        pos.setErrorIndex(startIndex);
+-        return null;
+-    }
+-    pos.setIndex(endIndex);
+-    return new Complex(re.doubleValue(), im.doubleValue() * sign);
+ }

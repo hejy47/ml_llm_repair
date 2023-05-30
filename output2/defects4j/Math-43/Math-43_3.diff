@@ -1,0 +1,11 @@
+--- org/apache/commons/math/stat/descriptive/SummaryStatistics.java@addValue
++++ org/apache/commons/math/stat/descriptive/SummaryStatistics.java@addValue
+@@ -3,7 +3,7 @@
+     sumsqImpl.increment(value);
+     minImpl.increment(value);
+     maxImpl.increment(value);
+-    sumLogImpl.increment(value);
++    sumLogImpl.increment(Math.log(value)); // change to log(value)
+     secondMoment.increment(value);
+     // If mean, variance or geomean have been overridden,
+     // need to increment these

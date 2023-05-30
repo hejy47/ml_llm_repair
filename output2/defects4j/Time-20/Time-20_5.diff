@@ -1,0 +1,9 @@
+--- org/joda/time/format/DateTimeFormatterBuilder.java@parseInto
++++ org/joda/time/format/DateTimeFormatterBuilder.java@parseInto
+@@ -6,5 +6,5 @@
+             return position + id.length();
+         }
+     }
+-    return ~position;
++    return ~position - 1; // add -1 to make it two's complement of position
+ }

@@ -1,0 +1,59 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -1,8 +1,8 @@
+ public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+-    if (n.getType() == Token.FUNCTION) {
++    if (n.isFunction()) {
+         // Don't traverse functions that are constructors or have the @this
+         // annotation.
+-        JSDocInfo jsDoc = getFunctionJsDocInfo(n);
++        JSDocInfo jsDoc = n.getJSDocInfo();
+         if (jsDoc != null && (jsDoc.isConstructor() || jsDoc.hasThisType())) {
+             return false;
+         }
+@@ -11,8 +11,9 @@
+         // var a = function() { }; // or
+         // function a() {} // or
+         // a.x = function() {};
++        return NodeUtil.mayHaveSideEffects(n);
+     }
+-    if (parent != null && parent.getType() == Token.ASSIGN) {
++    if (parent != null && parent.isAssign()) {
+         Node lhs = parent.getFirstChild();
+         Node rhs = lhs.getNext();
+         if (n == lhs) {
+@@ -25,14 +26,13 @@
+         } else {
+             // Only traverse the right side if it's not an assignment to a prototype
+             // property or subproperty.
+-            if (lhs.getType() == Token.GETPROP) {
+-                if (lhs.getLastChild().getString().equals("prototype")) {
+-                    return false;
+-                }
+-                String leftName = lhs.getQualifiedName();
+-                if (leftName != null && leftName.contains(".prototype.")) {
+-                    return false;
+-                }
++            boolean lhsIsPrototype = lhs.isGetProp()
++                    && lhs.getLastChild().getString().equals("prototype");
++            boolean lhsContainsPrototype = lhs
++                    .getQualifiedName()
++                    .contains(".prototype.");
++            if (lhsIsPrototype || lhsContainsPrototype) {
++                return false;
+             }
+         }
+     }
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -1,8 +1,8 @@
+ private boolean shouldReportThis(Node n, Node parent) {
+-    if (assignLhsChild != null) {
++    if (assignLhsChild != null && NodeUtil.isThis(n)) {
+         // Always report a THIS on the left side of an assign.
+         return true;
+     }
+     // Also report a THIS with a property access.
+-    return false;
++    return n.isGetProp() && NodeUtil.isThis(n.getFirstChild());
+ }

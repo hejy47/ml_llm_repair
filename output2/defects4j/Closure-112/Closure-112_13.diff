@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -13,5 +13,11 @@
+     Preconditions.checkNotNull(replacementFnType);
+     callTarget.setJSType(replacementFnType);
+     n.setJSType(replacementFnType.getReturnType());
++
++    // We need to update inferred map from new template type coming from the replacement
++    // function type so that all the template type replaces that happened using this map are
++    // based on the correct inferred type.
++    inferred = replacementFnType.getTemplateTypeMap().getResolvedTemplateTypeMap();
++
+     return replacer.madeChanges;
+ }

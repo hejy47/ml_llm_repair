@@ -1,0 +1,72 @@
+--- org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
+@@ -1,5 +1,5 @@
+ @Override
+-protected double doSolve() {
++protected double doSolve() throws TooManyEvaluationsException{
+     // prepare arrays with the first points
+     final double[] x = new double[maximalOrder + 1];
+     final double[] y = new double[maximalOrder + 1];
+@@ -72,6 +72,9 @@
+                     throw new MathInternalError(null);
+             }
+         }
++        if (nbPoints > getMaximalOrder()) {
++            throw new TooManyEvaluationsException(maximalOrder);
++        }
+         // target for the next evaluation point
+         double targetY;
+         if (agingA >= MAXIMAL_AGING) {
+@@ -88,27 +91,35 @@
+         double nextX;
+         int start = 0;
+         int end = nbPoints;
+-        do {
++        boolean bisect = true;
++        while (true) {
+             // guess a value for current target, using inverse polynomial interpolation
+             System.arraycopy(x, start, tmpX, start, end - start);
+-            nextX = guessX(targetY, tmpX, y, start, end);
+-            if (!((nextX > xA) && (nextX < xB))) {
+-                // the guessed root is not strictly inside of the tightest bracketing interval
+-                // the guessed root is either not strictly inside the interval or it
+-                // is a NaN (which occurs when some sampling points share the same y)
+-                // we try again with a lower interpolation order
+-                if (signChangeIndex - start >= end - signChangeIndex) {
+-                    // we have more points before the sign change, drop the lowest point
+-                    ++start;
+-                } else {
+-                    // we have more points after sign change, drop the highest point
+-                    --end;
+-                }
++            try {
++                nextX = UnivariateSolverUtils.solve( new LaguerreSolver(), getFunctionValueAccuracy(), tmpX, y, start, end);
++            } catch (NoBracketingException ex) {
++                bisect = true;
++                break;
++            }
++            if ((nextX > xA) && (nextX < xB)) {
++                break;
++            }
++            // the guessed root is not strictly
++            // inside of the tightest bracketing interval
++            if (signChangeIndex - start >= end - signChangeIndex) {
++                // we have more points before the sign change, drop the lowest point
++                ++start;
++            } else {
++                // we have more points after sign change, drop the highest point
++                --end;
++            }
++            if (end - start < 2) {
+                 // we need to do one more attempt
+-                nextX = Double.NaN;
++                bisect = true;
++                break;
+             }
+-        } while (Double.isNaN(nextX) && (end - start > 1));
+-        if (Double.isNaN(nextX)) {
++        }
++        if (bisect) {
+             // fall back to bisection
+             nextX = xA + 0.5 * (xB - xA);
+             start = signChangeIndex - 1;

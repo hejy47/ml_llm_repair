@@ -1,0 +1,9 @@
+--- org/joda/time/base/BaseSingleFieldPeriod.java@between
++++ org/joda/time/base/BaseSingleFieldPeriod.java@between
+@@ -16,5 +16,5 @@
+     }
+     Chronology chrono = DateTimeUtils.getChronology(start.getChronology()).withUTC();
+     int[] values = chrono.get(zeroInstance, chrono.set(start, 0L), chrono.set(end, 0L));
+-    return values[0];
++    return values.length > 0 ? values[0] : 0;
+ }

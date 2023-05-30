@@ -1,0 +1,32 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -19,24 +19,19 @@
+         } else if (ch < 32) {
+             switch(ch) {
+                 case '\b':
+-                    out.write('\\');
+-                    out.write('b');
++                    out.write("\\b");
+                     break;
+                 case '\n':
+-                    out.write('\\');
+-                    out.write('n');
++                    out.write("\\n");
+                     break;
+                 case '\t':
+-                    out.write('\\');
+-                    out.write('t');
++                    out.write("\\t");
+                     break;
+                 case '\f':
+-                    out.write('\\');
+-                    out.write('f');
++                    out.write("\\f");
+                     break;
+                 case '\r':
+-                    out.write('\\');
+-                    out.write('r');
++                    out.write("\\r");
+                     break;
+                 default:
+                     if (ch > 0xf) {

@@ -1,0 +1,17 @@
+--- org/apache/commons/lang/text/StrBuilder.java@indexOf
++++ org/apache/commons/lang/text/StrBuilder.java@indexOf
+@@ -10,12 +10,12 @@
+     if (strLen == 0) {
+         return startIndex;
+     }
+-    if (strLen > size) {
++    if (strLen > size - startIndex) { // fix: check if strLen exceeds remaining length of buffer
+         return -1;
+     }
+     char[] thisBuf = buffer;
+     int len = thisBuf.length - strLen;
+-    outer: for (int i = startIndex; i < len; i++) {
++    outer: for (int i = startIndex; i <= len; i++) { // fix: change "<" to "<="
+         for (int j = 0; j < strLen; j++) {
+             if (str.charAt(j) != thisBuf[i + j]) {
+                 continue outer;

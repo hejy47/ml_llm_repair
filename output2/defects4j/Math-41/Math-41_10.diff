@@ -1,0 +1,11 @@
+--- org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
++++ org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
+@@ -13,7 +13,7 @@
+                 accum2 += weights[i] * dev;
+             }
+             double sumWts = 0;
+-            for (int i = 0; i < weights.length; i++) {
++            for (int i = begin; i < begin + length; i++) { // only calculate sumWts within specified range
+                 sumWts += weights[i];
+             }
+             if (isBiasCorrected) {

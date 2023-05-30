@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -20,8 +20,8 @@
+                 Node valueNode = nameNode.getNext();
+                 assignNode.removeChild(nameNode);
+                 assignNode.removeChild(valueNode);
+-                nameNode.addChildToFront(valueNode);
+                 Node varNode = new Node(Token.VAR, nameNode);
++                varNode.addChildToFront(valueNode);
+                 varNode.copyInformationFrom(candidateDefinition);
+                 candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
+                 nameNode.setJSDocInfo(assignNode.getJSDocInfo());
+@@ -33,20 +33,22 @@
+         // Handle the case where there's not a duplicate definition.
+         replacementNode = createDeclarationNode();
+         if (firstModule == minimumModule) {
+-            firstNode.getParent().addChildBefore(replacementNode, firstNode);
++            Node parent = firstNode.getParent();
++            parent.addChildBefore(replacementNode, firstNode);
+         } else {
+             // In this case, the name was implicitly provided by two independent
+             // modules. We need to move this code up to a common module.
+             int indexOfDot = namespace.indexOf('.');
+             if (indexOfDot == -1) {
+                 // Any old place is fine.
+-                compiler.getNodeForCodeInsertion(minimumModule).addChildToBack(replacementNode);
++                minimumModule.getBody().addChildToBack(replacementNode);
+             } else {
+                 // Add it after the parent namespace.
+                 ProvidedName parentName = providedNames.get(namespace.substring(0, indexOfDot));
+                 Preconditions.checkNotNull(parentName);
+                 Preconditions.checkNotNull(parentName.replacementNode);
+-                parentName.replacementNode.getParent().addChildAfter(replacementNode, parentName.replacementNode);
++                Node parent = parentName.replacementNode.getParent();
++                parent.addChildAfter(replacementNode, parentName.replacementNode);
+             }
+         }
+         if (explicitNode != null) {

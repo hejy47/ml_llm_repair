@@ -1,0 +1,13 @@
+--- org/apache/commons/lang3/ArrayUtils.java@addAll
++++ org/apache/commons/lang3/ArrayUtils.java@addAll
+@@ -6,9 +6,7 @@
+         return clone(array1);
+     }
+     final Class<?> type1 = array1.getClass().getComponentType();
+-    T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
+-    System.arraycopy(array1, 0, joinedArray, 0, array1.length);
++    T[] joinedArray = Arrays.copyOf(array1, array1.length + array2.length);
+     System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+-    // Check if problem is incompatible types
+     return joinedArray;
+ }

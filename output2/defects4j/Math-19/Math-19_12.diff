@@ -1,0 +1,26 @@
+--- org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@checkParameters
++++ org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@checkParameters
+@@ -5,7 +5,7 @@
+     // Checks whether there is at least one finite bound value.
+     boolean hasFiniteBounds = false;
+     for (int i = 0; i < lB.length; i++) {
+-        if (!Double.isInfinite(lB[i]) || !Double.isInfinite(uB[i])) {
++        if (!Double.isInfinite(lB[i]) && !Double.isInfinite(uB[i])) { // Change || to &&
+             hasFiniteBounds = true;
+             break;
+         }
+@@ -29,6 +29,14 @@
+             boundaries[0] = lB;
+             boundaries[1] = uB;
+             // Abort early if the normalization will overflow (cf. "encode" method).
++            for (int i = 0; i < lB.length; i++) { // Add loop to check boundaries are valid
++                if (Double.isNaN(lB[i]) || Double.isNaN(uB[i])) {
++                    throw new NumberIsTooLargeException();
++                }
++                if (lB[i] >= uB[i]) {
++                    throw new NumberIsTooLargeException();
++                }
++            }
+         }
+     } else {
+         // Convert API to internal handling of boundaries.

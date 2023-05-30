@@ -1,0 +1,22 @@
+--- org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
++++ org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
+@@ -5,7 +5,9 @@
+     List<Integer> columnsToDrop = new ArrayList<Integer>();
+     columnsToDrop.add(0);
+     // positive cost non-artificial variables
+-    for (int i = getNumObjectiveFunctions(); i < getArtificialVariableOffset(); i++) {
++    int numObjFunc = getNumObjectiveFunctions(); // Fixed line
++    int artVarOffset = getArtificialVariableOffset(); // Fixed line
++    for (int i = numObjFunc; i < artVarOffset; i++) { // Fixed line
+         final double entry = tableau.getEntry(0, i);
+         if (Precision.compareTo(entry, 0d, maxUlps) > 0) {
+             columnsToDrop.add(i);
+@@ -13,7 +15,7 @@
+     }
+     // non-basic artificial variables
+     for (int i = 0; i < getNumArtificialVariables(); i++) {
+-        int col = i + getArtificialVariableOffset();
++        int col = i + artVarOffset;
+         if (getBasicRow(col) == null) {
+             columnsToDrop.add(col);
+         }

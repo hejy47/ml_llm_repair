@@ -1,0 +1,42 @@
+--- com/google/javascript/jscomp/Normalize.java@process
++++ com/google/javascript/jscomp/Normalize.java@process
+@@ -1,8 +1,8 @@
+ @Override
+ public void process(Node externs, Node root) {
+-    new NodeTraversal(compiler, new NormalizeStatements(compiler, assertOnChange)).traverse(root);
++    new NodeTraversal(compiler, new NormalizeStatements(compiler, assertOnChange)).traverseRoots(externs, root);
+     if (MAKE_LOCAL_NAMES_UNIQUE) {
+-        MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique();
++        MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique(compiler);
+         NodeTraversal t = new NodeTraversal(compiler, renamer);
+         t.traverseRoots(externs, root);
+     }
+@@ -20,8 +20,8 @@
+     //   }
+     // otherwise 'var e = 1' would be rewritten as 'e = 1'.
+     // TODO(johnlenz): Introduce a seperate scope for catch nodes.
+-    removeDuplicateDeclarations(externs, root);
+-    new PropagateConstantAnnotationsOverVars(compiler, assertOnChange).process(externs, root);
++    new NodeTraversal(compiler, new RemoveDuplicateDeclarations()).traverseRoots(externs, root);
++    new PropagateConstantAnnotations(compiler, assertOnChange).process(externs, root);
+     if (!compiler.getLifeCycleStage().isNormalized()) {
+         compiler.setLifeCycleStage(LifeCycleStage.NORMALIZED);
+     }
+--- com/google/javascript/jscomp/VarCheck.java@createSynthesizedExternVar
++++ com/google/javascript/jscomp/VarCheck.java@createSynthesizedExternVar
+@@ -1,5 +1,5 @@
+ private void createSynthesizedExternVar(String varName) {
+-    Node nameNode = Node.newString(Token.NAME, varName);
++    Node nameNode = IR.name(varName);
+     // Mark the variable as constant if it matches the coding convention
+     // for constant vars.
+     // NOTE(nicksantos): honestly, i'm not sure how much this matters.
+@@ -9,6 +9,7 @@
+     if (compiler.getCodingConvention().isConstant(varName)) {
+         nameNode.putBooleanProp(Node.IS_CONSTANT_NAME, true);
+     }
+-    getSynthesizedExternsRoot().addChildToBack(new Node(Token.VAR, nameNode));
++    Node varNode = IR.var(nameNode);
++    getSynthesizedExternsRoot().addChildToBack(varNode);
+     varsToDeclareInExterns.remove(varName);
+ }

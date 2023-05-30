@@ -1,0 +1,17 @@
+--- org/mockito/internal/MockitoCore.java@verify
++++ org/mockito/internal/MockitoCore.java@verify
+@@ -1,9 +1,12 @@
+ public <T> T verify(T mock, VerificationMode mode) {
+     if (mock == null) {
+         reporter.nullPassedToVerify();
++        return null;
+     } else if (!mockUtil.isMock(mock)) {
+         reporter.notAMockPassedToVerify();
++        return null;
++    } else {
++        mockingProgress.verificationStarted(mode);
++        return mock;
+     }
+-    mockingProgress.verificationStarted(mode);
+-    return mock;
+ }

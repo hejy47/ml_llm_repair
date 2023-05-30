@@ -1,0 +1,21 @@
+--- org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -25,12 +25,17 @@
+         // there's a degeneracy as indicated by a tie in the minimum ratio test
+         // 1. check if there's an artificial variable that can be forced out of the basis
+         for (Integer row : minRatioPositions) {
++            boolean isForcedOut = false; // Check added
+             for (int i = 0; i < tableau.getNumArtificialVariables(); i++) {
+                 int column = i + tableau.getArtificialVariableOffset();
+                 final double entry = tableau.getEntry(row, column);
+                 if (Precision.equals(entry, 1d, maxUlps) && row.equals(tableau.getBasicRow(column))) {
+-                    return row;
++                    isForcedOut = true;  // Check added
++                    break; // Check added
+                 }
++            }
++            if (isForcedOut) { // Check added
++                return row;
+             }
+         }
+         // 2. apply Bland's rule to prevent cycling:

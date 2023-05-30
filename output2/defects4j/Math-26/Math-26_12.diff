@@ -1,0 +1,13 @@
+--- org/apache/commons/math3/fraction/Fraction.java@Fraction
++++ org/apache/commons/math3/fraction/Fraction.java@Fraction
+@@ -24,8 +24,8 @@
+         ++n;
+         double r1 = 1.0 / (r0 - a0);
+         long a1 = (long) FastMath.floor(r1);
+-        p2 = (a1 * p1) + p0;
+-        q2 = (a1 * q1) + q0;
++        p2 = Math.addExact(Math.multiplyExact(a1, p1), p0);   // Updated with Math.addExact and Math.multiplyExact
++        q2 = Math.addExact(Math.multiplyExact(a1, q1), q0);   // Updated with Math.addExact and Math.multiplyExact
+         if ((p2 > overflow) || (q2 > overflow)) {
+             throw new FractionConversionException(value, p2, q2);
+         }

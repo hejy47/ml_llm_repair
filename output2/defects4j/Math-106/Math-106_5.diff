@@ -1,0 +1,52 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -16,8 +16,11 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
+-    // parse whitespace
+-    parseAndIgnoreWhitespace(source, pos);
++    // parse whitespace and check for '/'
++    if (!parseNextCharacterIfPresent(source, pos, '/')) {
++        // return whole as a fraction
++        return new Fraction(whole.intValue(), 1);
++    }
+     // parse numerator
+     Number num = getNumeratorFormat().parse(source, pos);
+     if (num == null) {
+@@ -26,26 +29,6 @@
+         // character examined.
+         pos.setIndex(initialIndex);
+         return null;
+-    }
+-    // minus signs should be leading, invalid expression
+-    // parse '/'
+-    int startIndex = pos.getIndex();
+-    char c = parseNextCharacter(source, pos);
+-    switch(c) {
+-        case 0:
+-            // no '/'
+-            // return num as a fraction
+-            return new Fraction(num.intValue(), 1);
+-        case '/':
+-            // found '/', continue parsing denominator
+-            break;
+-        default:
+-            // invalid '/'
+-            // set index back to initial, error index should be the last
+-            // character examined.
+-            pos.setIndex(initialIndex);
+-            pos.setErrorIndex(startIndex);
+-            return null;
+     }
+     // parse whitespace
+     parseAndIgnoreWhitespace(source, pos);
+@@ -58,7 +41,7 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
+-    // minus signs must be leading, invalid
++    // create fraction
+     int w = whole.intValue();
+     int n = num.intValue();
+     int d = den.intValue();

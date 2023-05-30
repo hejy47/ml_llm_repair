@@ -1,0 +1,14 @@
+--- org/apache/commons/math/ode/events/EventState.java@evaluateStep
++++ org/apache/commons/math/ode/events/EventState.java@evaluateStep
+@@ -32,9 +32,9 @@
+                             interpolator.setInterpolatedTime(t);
+                             return handler.g(t, interpolator.getInterpolatedState());
+                         } catch (DerivativeException e) {
+-                            throw new FunctionEvaluationException(e, t);
++                            throw new FunctionEvaluationException(e);
+                         } catch (EventException e) {
+-                            throw new FunctionEvaluationException(e, t);
++                            throw new FunctionEvaluationException(e);
+                         }
+                     }
+                 };

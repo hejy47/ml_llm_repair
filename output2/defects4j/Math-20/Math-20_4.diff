@@ -1,0 +1,8 @@
+--- org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@repairAndDecode
++++ org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@repairAndDecode
+@@ -1,3 +1,4 @@
+ public double[] repairAndDecode(final double[] x) {
+-    return decode(x);
++    double[] repairedArray = repair(x);
++    return decode(repairedArray);
+ }

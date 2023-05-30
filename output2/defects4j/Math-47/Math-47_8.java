@@ -1,0 +1,46 @@
+## Fixed Function 1
+public Complex(double real, double imaginary) {
+    this.real = real;
+    this.imaginary = imaginary;
+    isNaN = Double.isNaN(real) || Double.isNaN(imaginary);
+    isInfinite = !isNaN && (Double.isInfinite(real) || Double.isInfinite(imaginary));
+}
+
+## Fixed Function 2
+public Complex divide(Complex divisor) throws NullArgumentException {
+    MathUtils.checkNotNull(divisor);
+    if (isNaN || divisor.isNaN) {
+        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+    }
+    if (divisor.getReal() == 0.0 && divisor.getImaginary() == 0.0) {
+        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+    }
+    if (divisor.isInfinite() && !isInfinite()) {
+        return Complex.ZERO; //explicitly reference the static constant ZERO of the Complex class
+    }
+    final double c = divisor.getReal();
+    final double d = divisor.getImaginary();
+    if (FastMath.abs(c) < FastMath.abs(d)) {
+        double q = c / d;
+        double denominator = c * q + d;
+        return createComplex((real * q + imaginary) / denominator, (imaginary * q - real) / denominator);
+    } else {
+        double q = d / c;
+        double denominator = d * q + c;
+        return createComplex((imaginary * q + real) / denominator, (imaginary - real * q) / denominator);
+    }
+}
+
+## Fixed Function 3
+public Complex divide(double divisor) {
+    if (isNaN || Double.isNaN(divisor)) {
+        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+    }
+    if (divisor == 0d) {
+        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+    }
+    if (Double.isInfinite(divisor)) {
+        return (!isInfinite()) ? Complex.ZERO : Complex.NaN; //explicitly reference the static constants ZERO and NaN of the Complex class
+    }
+    return createComplex(real / divisor, imaginary / divisor);
+}

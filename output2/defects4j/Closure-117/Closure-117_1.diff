@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -29,15 +29,20 @@
+             type = dereferenced;
+         }
+     }
+-    if (type.isFunctionPrototypeType() || (type.toObjectType() != null && type.toObjectType().getConstructor() != null)) {
+-        return type.toString();
++    ObjectType objectType = type.toObjectType();
++    if (type.isFunctionPrototypeType() || objectType != null && objectType.getConstructor() instanceof FunctionType) {
++        // Return a more readable type name for function prototypes and function types.
++        FunctionType constructor = (FunctionType) objectType.getConstructor();
++        // Return qualified function name only if it is not anonymous.
++        if (constructor != null && constructor.isNominalConstructor() && !constructor.getDisplayName().isEmpty()) {
++            return constructor.getDisplayName();
++        } else {
++            return "function";
++        }
+     }
+     String qualifiedName = n.getQualifiedName();
+     if (qualifiedName != null) {
+         return qualifiedName;
+-    } else if (type.isFunctionType()) {
+-        // Don't show complex function names.
+-        return "function";
+     } else {
+         return type.toString();
+     }

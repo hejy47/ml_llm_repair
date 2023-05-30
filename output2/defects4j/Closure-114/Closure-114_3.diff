@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
++++ com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
+@@ -4,18 +4,24 @@
+     NameInformation ns = createNameInformation(t, nameNode);
+     if (ns != null) {
+         if (parent.isFor() && !NodeUtil.isForIn(parent)) {
+-            // Patch for assignments that appear in the init,
+-            // condition or iteration part of a FOR loop.  Without
+-            // this change, all 3 of those parts try to claim the for
+-            // loop as their dependency scope.  The last assignment in
+-            // those three fields wins, which can result in incorrect
+-            // reference edges between referenced and assigned variables.
+-            //
+-            // TODO(user) revisit the dependency scope calculation
+-            // logic.
+-            if (parent.getFirstChild().getNext() != n) {
++
++            // Check if the assignment is in the initialization part of FOR loop
++            if (parent.getFirstChild() == n) {
+                 recordDepScope(recordNode, ns);
+             } else {
++                // For assignments in condition and iteration part, only the last
++                // assignment should be considered for dependency scope
++                Node prevSibling = n.getPrevious();
++                while (prevSibling != null && NodeUtil.isAssignmentOp(prevSibling)) {
++                    prevSibling = prevSibling.getPrevious();
++                }
++                if (prevSibling != null) {
++                    Node prevNameNode = prevSibling.getFirstChild();
++                    NameInformation prevNs = createNameInformation(t, prevNameNode);
++                    if (prevNs != null) {
++                        recordDepScope(prevNameNode, prevNs);
++                    }
++                }
+                 recordDepScope(nameNode, ns);
+             }
+         } else {

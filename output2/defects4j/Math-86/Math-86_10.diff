@@ -1,0 +1,20 @@
+--- org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
++++ org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
+@@ -9,7 +9,7 @@
+     // check the matrix before transformation
+     for (int i = 0; i < order; ++i) {
+         final double[] lI = lTData[i];
+-        if (lTData[i][i] < absolutePositivityThreshold) {
++        if (lTData[i][i] <= absolutePositivityThreshold) {
+             throw new NotPositiveDefiniteMatrixException();
+         }
+         // check off-diagonal elements (and reset them to 0)
+@@ -21,7 +21,7 @@
+             if (Math.abs(lIJ - lJI) > maxDelta) {
+                 throw new NotSymmetricMatrixException();
+             }
+-            lJ[i] = 0;
++            lJ[i] = lJI / lI[i]; // Fixed: use lJ[i] instead of 0 when resetting off-diagonal elements
+         }
+     }
+     // transform the matrix

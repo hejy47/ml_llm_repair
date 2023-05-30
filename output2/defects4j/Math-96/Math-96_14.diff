@@ -1,0 +1,32 @@
+--- org/apache/commons/math/complex/Complex.java@equals
++++ org/apache/commons/math/complex/Complex.java@equals
+@@ -1,21 +1,14 @@
+ public boolean equals(Object other) {
+-    boolean ret;
+     if (this == other) {
+-        ret = true;
+-    } else if (other == null) {
+-        ret = false;
++        return true;
++    } else if (other == null || getClass() != other.getClass()) {
++        return false;
+     } else {
+-        try {
+-            Complex rhs = (Complex) other;
+-            if (rhs.isNaN()) {
+-                ret = this.isNaN();
+-            } else {
+-                ret = (Double.doubleToRawLongBits(real) == Double.doubleToRawLongBits(rhs.getReal())) && (Double.doubleToRawLongBits(imaginary) == Double.doubleToRawLongBits(rhs.getImaginary()));
+-            }
+-        } catch (ClassCastException ex) {
+-            // ignore exception
+-            ret = false;
++        Complex rhs = (Complex) other;
++        if (rhs.isNaN()) {
++            return this.isNaN();
++        } else {
++            return Double.compare(rhs.getReal(), real) == 0 && Double.compare(rhs.getImaginary(), imaginary) == 0;
+         }
+     }
+-    return ret;
+ }

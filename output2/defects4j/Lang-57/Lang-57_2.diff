@@ -1,0 +1,13 @@
+--- org/apache/commons/lang/LocaleUtils.java@isAvailableLocale
++++ org/apache/commons/lang/LocaleUtils.java@isAvailableLocale
+@@ -1,4 +1,9 @@
+ //-----------------------------------------------------------------------
+ public static boolean isAvailableLocale(Locale locale) {
+-    return cAvailableLocaleSet.contains(locale);
++    for(Locale loc: Locale.getAvailableLocales()){
++        if(loc.equals(locale)){
++            return true;
++        }
++    }
++    return false;
+ }

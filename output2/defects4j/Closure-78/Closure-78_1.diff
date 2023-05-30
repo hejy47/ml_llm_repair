@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -2,7 +2,11 @@
+     // Unlike other operations, ADD operands are not always converted
+     // to Number.
+     if (opType == Token.ADD && (NodeUtil.mayBeString(left, false) || NodeUtil.mayBeString(right, false))) {
+-        return null;
++        if (left.isString() || right.isString()) {
++            return new Node(Token.ADD, left, right);
++        } else {
++            return null;
++        }
+     }
+     double result;
+     // TODO(johnlenz): Handle NaN with unknown value. BIT ops convert NaN

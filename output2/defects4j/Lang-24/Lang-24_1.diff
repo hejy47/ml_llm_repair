@@ -1,0 +1,61 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@isNumber
++++ org/apache/commons/lang3/math/NumberUtils.java@isNumber
+@@ -26,7 +26,7 @@
+             return true;
+         }
+     }
+-    // don't want to loop to the last char, check it afterwords
++    // don't want to loop to the last char, check it afterwards
+     sz--;
+     // for type qualifiers
+     int i = start;
+@@ -43,12 +43,8 @@
+             }
+             hasDecPoint = true;
+         } else if (chars[i] == 'e' || chars[i] == 'E') {
+-            // we've already taken care of hex.
+-            if (hasExp) {
+-                // two E's
+-                return false;
+-            }
+-            if (!foundDigit) {
++            // we've already taken care of hex. If there are no digits, we return false
++            if (hasExp || !foundDigit) {
+                 return false;
+             }
+             hasExp = true;
+@@ -70,29 +66,18 @@
+             // no type qualifier, OK
+             return true;
+         }
+-        if (chars[i] == 'e' || chars[i] == 'E') {
+-            // can't have an E at the last byte
+-            return false;
+-        }
+-        if (chars[i] == '.') {
+-            if (hasDecPoint || hasExp) {
+-                // two decimal points or dec in exponent
+-                return false;
+-            }
+-            // single trailing decimal point after non-exponent is ok
+-            return foundDigit;
+-        }
+-        if (!allowSigns && (chars[i] == 'd' || chars[i] == 'D' || chars[i] == 'f' || chars[i] == 'F')) {
++        // Checking for type qualifiers (e.g. 123F)
++        if (chars[i] == 'd' || chars[i] == 'D' || chars[i] == 'f' || chars[i] == 'F') {
+             return foundDigit;
+         }
+         if (chars[i] == 'l' || chars[i] == 'L') {
+-            // not allowing L with an exponent or decimal point
+-            return foundDigit && !hasExp;
++            // Not allowing L with an exponent or decimal point
++            return foundDigit && !hasExp && !hasDecPoint;
+         }
+         // last character is illegal
+         return false;
+     }
+-    // allowSigns is true iff the val ends in 'E'
++    // allowSigns is true if the val ends in 'E'
+     // found digit it to make sure weird stuff like '.' and '1E-' doesn't pass
+     return !allowSigns && foundDigit;
+ }

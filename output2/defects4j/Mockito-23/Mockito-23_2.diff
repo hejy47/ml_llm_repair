@@ -1,0 +1,29 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
+@@ -1,7 +1,7 @@
+ public Object answer(InvocationOnMock invocation) throws Throwable {
+     GenericMetadataSupport returnTypeGenericMetadata = actualParameterizedType(invocation.getMock()).resolveGenericReturnType(invocation.getMethod());
+     Class<?> rawType = returnTypeGenericMetadata.rawType();
+-    if (!mockitoCore.isTypeMockable(rawType)) {
++    if (rawType != null && !mockitoCore.isTypeMockable(rawType)) {
+         return delegate.returnValueFor(rawType);
+     }
+     return getMock(invocation, returnTypeGenericMetadata);
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
+@@ -1,4 +1,5 @@
+ private MockSettings withSettingsUsing(GenericMetadataSupport returnTypeGenericMetadata) {
+-    MockSettings mockSettings = returnTypeGenericMetadata.rawExtraInterfaces().length > 0 ? withSettings().extraInterfaces(returnTypeGenericMetadata.rawExtraInterfaces()) : withSettings();
++    Class<?>[] rawExtraInterfaces = returnTypeGenericMetadata.rawExtraInterfaces();
++    MockSettings mockSettings = rawExtraInterfaces.length > 0 ? withSettings().extraInterfaces(rawExtraInterfaces) : withSettings();
+     return mockSettings.defaultAnswer(returnsDeepStubsAnswerUsing(returnTypeGenericMetadata));
+ }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@recordDeepStubMock
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@recordDeepStubMock
+@@ -1,5 +1,5 @@
+ private Object recordDeepStubMock(final Object mock, InvocationContainerImpl container) throws Throwable {
+-    container.addAnswer(new Answer<Object>() {
++    container.setAnswerForVoidMock(new Answer<Object>() {
+ 
+         public Object answer(InvocationOnMock invocation) throws Throwable {
+             return mock;

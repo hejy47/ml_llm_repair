@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -12,7 +12,11 @@
+             } else {
+                 // classes
+                 while (objectType != null && !objectType.hasOwnProperty(propName)) {
+-                    objectType = objectType.getImplicitPrototype();
++                    ObjectType proto = objectType.getImplicitPrototype();
++                    if (proto == null) {
++                        break;
++                    }
++                    objectType = proto.dereference();
+                 }
+             }
+             // Don't show complex function names or anonymous types.

@@ -1,0 +1,43 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -10,6 +10,8 @@
+         case Token.DEC:
+             return true;
+         case Token.FUNCTION:
++        case Token.CATCH:
++        case Token.EXPR_RESULT:
+             return false;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -3,6 +3,9 @@
+     if (!(type instanceof ObjectType)) {
+         if (type.autoboxesTo() != null) {
+             type = type.autoboxesTo();
++            if (!(type instanceof ObjectType)) {
++                return null;
++            }
+         } else {
+             return null;
+         }
+@@ -22,10 +25,14 @@
+         }
+         objType = objType.getImplicitPrototype();
+     }
+-    // If the property does not exist on the referenced type but the original
+-    // type is an object type, see if any subtype has the property.
+-    // getGreatestSubtypeWithProperty does not guarantee that the property
+-    // is defined on the returned type, it just indicates that it might be,
+-    // so we have to double check.
++    // If the property does not exist on the referenced type, search in the subtypes.
++    if (foundType == null) {
++        for (SubtypeController subtype : compiler.getSubtypeControllers()) {
++            foundType = subtype.getGreatestSubtypeWithProperty(objType, field);
++            if (foundType != null && foundType.hasOwnProperty(field)) {
++                break;
++            }
++        }
++    }
+     return foundType;
+ }

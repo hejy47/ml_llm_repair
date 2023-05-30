@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/ExploitAssigns.java@isSafeReplacement
++++ com/google/javascript/jscomp/ExploitAssigns.java@isSafeReplacement
+@@ -4,8 +4,8 @@
+         return true;
+     }
+     Preconditions.checkArgument(node.isGetProp());
+-    node = node.getFirstChild();
+-    if (node.isName() && isNameAssignedTo(node.getString(), replacement)) {
++    Node childNode = node.getFirstChild();
++    if (childNode.isName() && isNameAssignedTo(childNode.getString(), replacement)) {
+         return false;
+     }
+     return true;

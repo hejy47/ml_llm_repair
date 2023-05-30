@@ -1,0 +1,30 @@
+--- org/apache/commons/math/stat/Frequency.java@addValue
++++ org/apache/commons/math/stat/Frequency.java@addValue
+@@ -1,18 +1,21 @@
+ @Deprecated
+ public void addValue(Object v) {
+-        Object obj = v;
++    Object obj = v;
+     if (v instanceof Integer) {
+         obj = Long.valueOf(((Integer) v).longValue());
+     }
+     try {
+-        Long count = (Long) freqTable.get(obj);
+-        if (count == null) {
+-            freqTable.put(obj, Long.valueOf(1));
++        if (obj instanceof Comparable) { // check if obj is comparable
++            Long count = (Long) freqTable.get(obj);
++            if (count == null) {
++                freqTable.put(obj, Long.valueOf(1));
++            } else {
++                freqTable.put(obj, Long.valueOf(count.longValue() + 1));
++            }
+         } else {
+-            freqTable.put(obj, Long.valueOf(count.longValue() + 1));
++            throw new IllegalArgumentException("Value not comparable to existing values.");
+         }
+     } catch (ClassCastException ex) {
+-        //TreeMap will throw ClassCastException if v is not comparable
+         throw new IllegalArgumentException("Value not comparable to existing values.");
+     }
+ }

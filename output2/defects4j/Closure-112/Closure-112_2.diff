@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -7,11 +7,11 @@
+     Map<TemplateType, JSType> inferred = inferTemplateTypesFromParameters(fnType, n);
+     // Replace all template types. If we couldn't find a replacement, we
+     // replace it with UNKNOWN.
+-    TemplateTypeReplacer replacer = new TemplateTypeReplacer(registry, inferred);
++    TemplateTypeReplacer replacer = new TemplateTypeReplacer(registry, inferred, false);
+     Node callTarget = n.getFirstChild();
+     FunctionType replacementFnType = fnType.visit(replacer).toMaybeFunctionType();
+     Preconditions.checkNotNull(replacementFnType);
+     callTarget.setJSType(replacementFnType);
+     n.setJSType(replacementFnType.getReturnType());
+-    return replacer.madeChanges;
++    return replacer.madeChanges();
+ }

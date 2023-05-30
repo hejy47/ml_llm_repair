@@ -1,0 +1,10 @@
+--- org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
++++ org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
+@@ -23,6 +23,7 @@
+             if (dx2[i] >= r) {
+                 final T p = pointSet.remove(i);
+                 resultSet.add(new Cluster<T>(p));
++                dx2 = ArrayUtils.remove(dx2, i); // Fix: update the dx2 array after removing element from pointSet
+                 break;
+             }
+         }

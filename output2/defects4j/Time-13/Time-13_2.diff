@@ -1,0 +1,40 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -14,15 +14,15 @@
+             // remove three digits and decimal point
+             sum -= 4;
+         }
+-        // reset valueLong to refer to the seconds part for the prefic/suffix calculation
++        // reset valueLong to refer to the seconds part for the prefix/suffix calculation
+         valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
+     }
+     int value = (int) valueLong;
+     if (iPrefix != null) {
+-        sum += iPrefix.calculatePrintedLength(value);
++        sum += iPrefix.calculatePrintedLength(period, locale); // fixed argument
+     }
+     if (iSuffix != null) {
+-        sum += iSuffix.calculatePrintedLength(value);
++        sum += iSuffix.calculatePrintedLength(period, locale); // fixed argument
+     }
+     return sum;
+ }
+--- org/joda/time/format/PeriodFormatterBuilder.java@printTo
++++ org/joda/time/format/PeriodFormatterBuilder.java@printTo
+@@ -8,7 +8,7 @@
+         value = (int) (valueLong / DateTimeConstants.MILLIS_PER_SECOND);
+     }
+     if (iPrefix != null) {
+-        iPrefix.printTo(buf, value);
++        iPrefix.printTo(buf, period, locale); // fixed argument
+     }
+     int minDigits = iMinPrintedDigits;
+     if (minDigits <= 1) {
+@@ -24,6 +24,6 @@
+         }
+     }
+     if (iSuffix != null) {
+-        iSuffix.printTo(buf, value);
++        iSuffix.printTo(buf, period, locale); // fixed argument
+     }
+ }

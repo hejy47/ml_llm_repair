@@ -1,0 +1,18 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -73,7 +73,7 @@
+     }
+     // last part of the step, after the last event
+     interpolator.setInterpolatedTime(currentT);
+-    final double[] currentY = interpolator.getInterpolatedState();
++    final double[] currentY = interpolator.getInterpolatedState().clone();
+     for (final EventState state : eventsStates) {
+         state.stepAccepted(currentT, currentY);
+         isLastStep = isLastStep || state.stop();
+@@ -83,5 +83,6 @@
+     for (StepHandler handler : stepHandlers) {
+         handler.handleStep(interpolator, isLastStep);
+     }
++    System.arraycopy(currentY, 0, y, 0, y.length);
+     return currentT;
+ }

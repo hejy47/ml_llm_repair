@@ -1,0 +1,15 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -12,7 +12,11 @@
+     final int orderingSign = interpolator.isForward() ? +1 : -1;
+     SortedSet<EventState> occuringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
+ 
+-                public int compare(EventState es0, EventState es1) {
++        public int compare(EventState es0, EventState es1) {
++            if (Math.abs(es0.getEventTime() - es1.getEventTime()) <= interpolator.getEpsilon()) {
++                // If two events are too close, we need to consider the order as undefined to respect the compareTo contract
++                return es0.hashCode() < es1.hashCode() ? -1 : 1;
++            }
+             return orderingSign * Double.compare(es0.getEventTime(), es1.getEventTime());
+         }
+     });

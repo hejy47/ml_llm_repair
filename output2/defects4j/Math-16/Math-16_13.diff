@@ -1,0 +1,109 @@
+--- org/apache/commons/math3/util/FastMath.java@cosh
++++ org/apache/commons/math3/util/FastMath.java@cosh
+@@ -1,31 +1,31 @@
+ public static double cosh(double x) {
+-    if (x != x) {
+-        return x;
++    if (Double.isNaN(x)) {
++        return Double.NaN;
+     }
+     // cosh[z] = (exp(z) + exp(-z))/2
+     // for numbers with magnitude 20 or so,
+     // exp(-z) can be ignored in comparison with exp(z)
+     if (x > 20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(x);
++        return 0.5 * Math.exp(x);
+     }
+     if (x < -20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(-x);
++        return 0.5 * Math.exp(-x);
+     }
+     final double[] hiPrec = new double[2];
+     if (x < 0.0) {
+         x = -x;
+     }
+-    exp(x, 0.0, hiPrec);
++    Math.exp(x, 0.0, hiPrec);
+     double ya = hiPrec[0] + hiPrec[1];
+     double yb = -(ya - hiPrec[0] - hiPrec[1]);
+-    double temp = ya * HEX_40000000;
++    double temp = ya * 0x1.0p30;
+     double yaa = ya + temp - temp;
+     double yab = ya - yaa;
+     // recip = 1/y
+     double recip = 1.0 / ya;
+-    temp = recip * HEX_40000000;
++    temp = recip * 0x1.0p30;
+     double recipa = recip + temp - temp;
+     double recipb = recip - recipa;
+     // Correct for rounding in division
+--- org/apache/commons/math3/util/FastMath.java@sinh
++++ org/apache/commons/math3/util/FastMath.java@sinh
+@@ -1,18 +1,18 @@
+ public static double sinh(double x) {
++    if (Double.isNaN(x)) {
++        return Double.NaN;
++    }
+     boolean negate = false;
+-    if (x != x) {
+-        return x;
+-    }
+-    // sinh[z] = (exp(z) - exp(-z) / 2
++    // sinh[z] = (exp(z) - exp(-z))/2
+     // for values of z larger than about 20,
+     // exp(-z) can be ignored in comparison with exp(z)
+     if (x > 20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(x);
++        return 0.5 * Math.exp(x);
+     }
+     if (x < -20) {
+         // Avoid overflow (MATH-905).
+-        return -0.5 * exp(-x);
++        return -0.5 * Math.exp(-x);
+     }
+     if (x == 0) {
+         return x;
+@@ -24,15 +24,15 @@
+     double result;
+     if (x > 0.25) {
+         double[] hiPrec = new double[2];
+-        exp(x, 0.0, hiPrec);
++        Math.exp(x, 0.0, hiPrec);
+         double ya = hiPrec[0] + hiPrec[1];
+         double yb = -(ya - hiPrec[0] - hiPrec[1]);
+-        double temp = ya * HEX_40000000;
++        double temp = ya * 0x1.0p30;
+         double yaa = ya + temp - temp;
+         double yab = ya - yaa;
+         // recip = 1/y
+         double recip = 1.0 / ya;
+-        temp = recip * HEX_40000000;
++        temp = recip * 0x1.0p30;
+         double recipa = recip + temp - temp;
+         double recipb = recip - recipa;
+         // Correct for rounding in division
+@@ -52,17 +52,17 @@
+         result *= 0.5;
+     } else {
+         double[] hiPrec = new double[2];
+-        expm1(x, hiPrec);
++        Math.expm1(x, hiPrec);
+         double ya = hiPrec[0] + hiPrec[1];
+         double yb = -(ya - hiPrec[0] - hiPrec[1]);
+-                double denom = 1.0 + ya;
++        double denom = 1.0 + ya;
+         double denomr = 1.0 / denom;
+         double denomb = -(denom - 1.0 - ya) + yb;
+         double ratio = ya * denomr;
+-        double temp = ratio * HEX_40000000;
++        double temp = ratio * 0x1.0p30;
+         double ra = ratio + temp - temp;
+         double rb = ratio - ra;
+-        temp = denom * HEX_40000000;
++        temp = denom * 0x1.0p30;
+         double za = denom + temp - temp;
+         double zb = denom - za;
+         rb += (ya - za * ra - za * rb - zb * ra - zb * rb) * denomr;

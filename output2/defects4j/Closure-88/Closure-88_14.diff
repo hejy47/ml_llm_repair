@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -17,6 +17,16 @@
+             if (state != VariableLiveness.MAYBE_LIVE) {
+                 return state;
+             }
++        } else {
++            // Ensure to keep track of variable use inside a function.
++            // This is necessary to avoid incorrectly marking variables as live
++            // after they have been killed inside a function.
++            if (NodeUtil.isFunctionBlock(child)) {
++                VariableLiveness state = isVariableReadBeforeKill(child.getLastChild(), variable);
++                if (state != VariableLiveness.MAYBE_LIVE) {
++                    return state;
++                }
++            }
+         }
+     }
+     return VariableLiveness.MAYBE_LIVE;

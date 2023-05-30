@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -21,7 +21,7 @@
+                 assignNode.removeChild(nameNode);
+                 assignNode.removeChild(valueNode);
+                 nameNode.addChildToFront(valueNode);
+-                Node varNode = new Node(Token.VAR, nameNode);
++                Node varNode = new Node(Token.LET, nameNode);
+                 varNode.copyInformationFrom(candidateDefinition);
+                 candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
+                 nameNode.setJSDocInfo(assignNode.getJSDocInfo());

@@ -1,0 +1,22 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,6 +1,6 @@
+ public int compareTo(DurationField durationField) {
+-    if (durationField.isSupported()) {
+-        return 1;
++    if (durationField == null || !durationField.isSupported()) { // add null check
++        return -1; // return -1 if field is not supported or is null
+     }
+     return 0;
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -33,6 +33,8 @@
+                 if (types[i - 1].getRangeDurationType() == null) {
+                     if (loopType.getRangeDurationType() == null) {
+                         throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + loopType.getName());
++                    } else {
++                        throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+                     }
+                 } else {
+                     if (loopType.getRangeDurationType() == null) {

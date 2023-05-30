@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getStringNumberValue
++++ com/google/javascript/jscomp/NodeUtil.java@getStringNumberValue
+@@ -15,12 +15,12 @@
+     }
+     if (s.length() > 3 && (s.charAt(0) == '-' || s.charAt(0) == '+') && s.charAt(1) == '0' && (s.charAt(2) == 'x' || s.charAt(2) == 'X')) {
+         // hex numbers with explicit signs vary between browsers.
+-        return null;
++        return Double.NaN;  // Changed from null to Double.NaN
+     }
+     // FireFox and IE treat the "Infinity" differently. FireFox is case
+     // insensitive, but IE treats "infinity" as NaN.  So leave it alone.
+-    if (s.equals("infinity") || s.equals("-infinity") || s.equals("+infinity")) {
+-        return null;
++    if (s.equals("Infinity") || s.equals("-Infinity") || s.equals("+Infinity")) {  // Capitalized Infinity
++        return Double.valueOf(s);
+     }
+     try {
+         return Double.parseDouble(s);
+--- com/google/javascript/jscomp/NodeUtil.java@isStrWhiteSpaceChar
++++ com/google/javascript/jscomp/NodeUtil.java@isStrWhiteSpaceChar
+@@ -23,6 +23,6 @@
+         '\uFEFF':
+             return TernaryValue.TRUE;
+         default:
+-            return (Character.getType(c) == Character.SPACE_SEPARATOR) ? TernaryValue.TRUE : TernaryValue.FALSE;
++            return (Character.getType(c) == Character.SPACE_SEPARATOR || c == 0x200B) ? TernaryValue.TRUE : TernaryValue.FALSE;  // Added zero width space case
+     }
+ }

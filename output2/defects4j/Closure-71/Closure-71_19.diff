@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -33,9 +33,9 @@
+             // (b) that the visibility of the override is the same as the
+             // visibility of the original property.
+             if (visibility == Visibility.PRIVATE && !sameInput) {
+-                compiler.report(t.makeError(getprop, PRIVATE_OVERRIDE, objectType.toString()));
++                compiler.report(t.makeError(getprop, BaseCheckAccessControls.PRIVATE_OVERRIDE, objectType.toString()));
+             } else if (overridingVisibility != Visibility.INHERITED && overridingVisibility != visibility) {
+-                compiler.report(t.makeError(getprop, VISIBILITY_MISMATCH, visibility.name(), objectType.toString(), overridingVisibility.name()));
++                compiler.report(t.makeError(getprop, BaseCheckAccessControls.VISIBILITY_MISMATCH, visibility.name(), objectType.toString(), overridingVisibility.name()));
+             }
+         } else {
+             if (sameInput) {
+@@ -47,15 +47,15 @@
+                 }
+                 // private access is not allowed outside the file from a different
+                 // enclosing class.
+-                compiler.report(t.makeError(getprop, BAD_PRIVATE_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
++                compiler.report(t.makeError(getprop, BaseCheckAccessControls.BAD_PRIVATE_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+             } else if (visibility == Visibility.PROTECTED) {
+                 // There are 3 types of legal accesses of a protected property:
+                 // 1) Accesses in the same file
+                 // 2) Overriding the property in a subclass
+                 // 3) Accessing the property from inside a subclass
+                 // The first two have already been checked for.
+-                if (currentClass == null || !currentClass.isSubtype(ownerType)) {
+-                    compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
++                if (currentClass == null || !currentClass.isSubclassOf(ownerType)) {
++                    compiler.report(t.makeError(getprop, BaseCheckAccessControls.BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+                 }
+             }
+         }

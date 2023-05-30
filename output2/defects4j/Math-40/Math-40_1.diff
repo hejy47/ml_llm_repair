@@ -1,0 +1,61 @@
+--- org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
+@@ -1,11 +1,12 @@
+ @Override
+-protected double doSolve() {
++protected double doSolve() throws TooManyEvaluationsException {
+     // prepare arrays with the first points
+     final double[] x = new double[maximalOrder + 1];
+     final double[] y = new double[maximalOrder + 1];
+     x[0] = getMin();
+     x[1] = getStartValue();
+     x[2] = getMax();
++    verifyInterval(x[0], x[2]);
+     verifySequence(x[0], x[1], x[2]);
+     // evaluate initial guess
+     y[1] = computeObjectiveValue(x[1]);
+@@ -13,7 +14,7 @@
+         // return the initial guess if it is a perfect root.
+         return x[1];
+     }
+-    // evaluate first  endpoint
++    // evaluate first endpoint
+     y[0] = computeObjectiveValue(x[0]);
+     if (Precision.equals(y[0], 0.0, 1)) {
+         // return the first endpoint if it is a perfect root.
+@@ -37,7 +38,7 @@
+             nbPoints = 3;
+             signChangeIndex = 2;
+         } else {
+-            throw new NoBracketingException(x[0], x[2], y[0], y[2]);
++            throw new NoBracketingException(LocalizedFormats.SIMPLE ,x[0], x[2], y[0], y[2]);
+         }
+     }
+     // prepare a work array for inverse polynomial interpolation
+@@ -56,7 +57,7 @@
+         // check convergence of bracketing interval
+         final double xTol = getAbsoluteAccuracy() + getRelativeAccuracy() * FastMath.max(FastMath.abs(xA), FastMath.abs(xB));
+         if (((xB - xA) <= xTol) || (FastMath.max(absYA, absYB) < getFunctionValueAccuracy())) {
+-            switch(allowed) {
++            switch (allowed) {
+                 case ANY_SIDE:
+                     return absYA < absYB ? xA : xB;
+                 case LEFT_SIDE:
+@@ -140,7 +141,7 @@
+             }
+         }
+         // insert the last computed point
+-        //(by construction, we know it lies inside the tightest bracketing interval)
++        // (by construction, we know it lies inside the tightest bracketing interval)
+         System.arraycopy(x, signChangeIndex, x, signChangeIndex + 1, nbPoints - signChangeIndex);
+         x[signChangeIndex] = nextX;
+         System.arraycopy(y, signChangeIndex, y, signChangeIndex + 1, nbPoints - signChangeIndex);
+@@ -164,5 +165,8 @@
+             // update the sign change index
+             signChangeIndex++;
+         }
++        if (getMaxEvaluations() - nbPoints <= 0) {
++            throw new TooManyEvaluationsException(getMaxEvaluations());
++        }
+     }
+ }

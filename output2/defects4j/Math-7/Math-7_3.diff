@@ -1,0 +1,10 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -53,6 +53,7 @@
+         if (needReset) {
+             // some event handler has triggered changes that
+             // invalidate the derivatives, we need to recompute them
++            interpolator.setInterpolatedTime(eventT);
+             System.arraycopy(eventY, 0, y, 0, y.length);
+             computeDerivatives(eventT, y, yDot);
+             resetOccurred = true;

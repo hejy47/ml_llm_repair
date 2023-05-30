@@ -1,0 +1,37 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
++++ org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
+@@ -13,14 +13,6 @@
+         }
+         wasWhite = false;
+         switch(c) {
+-            case '\'':
+-                if (unquote) {
+-                    if (++i == value.length()) {
+-                        return regex;
+-                    }
+-                    c = value.charAt(i);
+-                }
+-                break;
+             case '?':
+             case '[':
+             case ']':
+@@ -36,8 +28,18 @@
+             case '$':
+             case '.':
+                 regex.append('\\');
++                break;
++            case '\'':
++                if (unquote) {
++                    if (++i == value.length()) {
++                        return regex;
++                    }
++                    c = value.charAt(i);
++                }
++                break;
++            default:
++                regex.append(c);
+         }
+-        regex.append(c);
+     }
+     return regex;
+ }

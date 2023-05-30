@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/ReferenceCollectingCallback.java@BasicBlock
++++ com/google/javascript/jscomp/ReferenceCollectingCallback.java@BasicBlock
+@@ -1,5 +1,5 @@
+ BasicBlock(BasicBlock parent, Node root) {
+     this.parent = parent;
+     // only named functions may be hoisted.
+-    this.isHoisted = NodeUtil.isHoistedFunctionDeclaration(root);
++    this.isHoisted = NodeUtil.isFunctionDeclaration(root) && NodeUtil.isNameDeclaration(root.getFirstChild());
+ }
+--- com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
++++ com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
+@@ -4,5 +4,13 @@
+         return false;
+     }
+     // Make sure this assignment is not in a loop.
++    Node refNode = ref.getNode();
++    Node parent = refNode.getParent();
++    while (parent != null) {
++        if (parent.isLoopStructure()) {
++            return false;
++        }
++        parent = parent.getParent();
++    }
+     return true;
+ }

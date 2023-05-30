@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
++++ com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
+@@ -12,7 +12,7 @@
+             // and try to inline them.
+             List<Ref> refs = Lists.newArrayList(name.getRefs());
+             for (Ref ref : refs) {
+-                if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {
++                if (ref.type == Type.ALIASING_GET && ref.getSymbol().getScope().isLocal()) { //fixed to check if the scope of the symbol of the reference is local.
+                     // {@code name} meets condition (c). Try to inline it.
+                     if (inlineAliasIfPossible(ref, namespace)) {
+                         name.removeRef(ref);
+@@ -22,7 +22,7 @@
+         }
+         // Check if {@code name} has any aliases left after the
+         // local-alias-inlining above.
+-        if ((name.type == Name.Type.OBJECTLIT || name.type == Name.Type.FUNCTION) && name.aliasingGets == 0 && name.props != null) {
++        if ((name.type == Name.Type.OBJECTLIT || name.type == Name.Type.FUNCTION) && name.aliasingGets == 0 && (name.props != null && !name.props.isEmpty())) { //fixed to check if name.props is not null and not empty before adding to the worklist.
+             // All of {@code name}'s children meet condition (a), so they can be
+             // added to the worklist.
+             workList.addAll(name.props);

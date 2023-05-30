@@ -1,0 +1,12 @@
+--- org/apache/commons/math/estimation/AbstractEstimator.java@getCovariances
++++ org/apache/commons/math/estimation/AbstractEstimator.java@getCovariances
+@@ -18,7 +18,8 @@
+     }
+     try {
+         // compute the covariances matrix
+-        return new RealMatrixImpl(jTj).inverse().getData();
++        // Use a LUDecomposition solver to avoid singular matrices.
++        return new LUDecompositionImpl(new Array2DRowRealMatrix(jTj)).getSolver().getInverse().getData();
+     } catch (InvalidMatrixException ime) {
+         throw new EstimationException("unable to compute covariances: singular problem", new Object[0]);
+     }

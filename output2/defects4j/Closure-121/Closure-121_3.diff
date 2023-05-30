@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -2,10 +2,8 @@
+     int refCount = referenceInfo.references.size();
+     Reference declaration = referenceInfo.references.get(0);
+     Reference init = referenceInfo.getInitializingReference();
+-    int firstRefAfterInit = (declaration == init) ? 2 : 3;
++    int firstRefAfterInit = (declaration == init) ? 1 : 2; // fix: changed from 3 to 2
+     if (refCount > 1 && isImmutableAndWellDefinedVariable(v, referenceInfo)) {
+-        // if the variable is referenced more than once, we can only
+-        // inline it if it's immutable and never defined before referenced.
+         Node value;
+         if (init != null) {
+             value = init.getAssignedValue();
+@@ -40,17 +38,13 @@
+     // reference data is out of sync. We're better off just waiting for
+     // the next pass.)
+     if (!maybeModifiedArguments && !staleVars.contains(v) && referenceInfo.isWellDefined() && referenceInfo.isAssignedOnceInLifetime()) {
+-        // Inlining the variable based solely on well-defined and assigned
+-        // once is *NOT* correct. We relax the correctness requirement if
+-        // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
++        for (int i = firstRefAfterInit; i < refs.size(); i++) { // fix: changed from i=1 to i=firstRefAfterInit
+             Node nameNode = refs.get(i).getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);
+                 if (!staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias)) {
+-                    Reference aliasInit;
+-                    aliasInit = candidate.refInfo.getInitializingReference();
++                    Reference aliasInit = candidate.refInfo.getInitializingReference();
+                     Node value = aliasInit.getAssignedValue();
+                     Preconditions.checkNotNull(value);
+                     inlineWellDefinedVariable(candidate.alias, value, candidate.refInfo.references);

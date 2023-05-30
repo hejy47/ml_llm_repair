@@ -1,0 +1,54 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,3 +1,15 @@
+ public int compareTo(DurationField durationField) {
++    if (durationField == null) {
++        throw new NullPointerException("The DurationField must not be null");
++    }
++    if (this == durationField) {
++        return 0;
++    }
++    if (getUnitMillis() < durationField.getUnitMillis()) {
++        return -1;
++    }
++    if (getUnitMillis() > durationField.getUnitMillis()) {
++        return 1;
++    }
+     return 0;
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -51,7 +51,8 @@
+         }
+         lastUnitField = loopUnitField;
+     }
++    // validate after the loop to ensure that check has been made for all fields
++    chronology.validate(this, values);
+     iTypes = (DateTimeFieldType[]) types.clone();
+-    chronology.validate(this, values);
+     iValues = (int[]) values.clone();
+ }
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -15,10 +15,9 @@
+                 DateTimeFieldType loopType = iTypes[i];
+                 DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+                 if (loopUnitField.isSupported()) {
+-                    int compare = unitField.compareTo(loopUnitField);
+-                    if (compare > 0) {
++                    if (unitField.compareTo(loopUnitField) > 0) {
+                         break;
+-                    } else if (compare == 0) {
++                    } else if (unitField.compareTo(loopUnitField) == 0) {
+                         DurationField rangeField = fieldType.getRangeDurationType().getField(iChronology);
+                         DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
+                         if (rangeField.compareTo(loopRangeField) > 0) {
+@@ -43,7 +42,7 @@
+     if (value == getValue(index)) {
+         return this;
+     }
+-    int[] newValues = getValues();
++    int[] newValues = (int[]) iValues.clone();
+     newValues = getField(index).set(this, index, newValues, value);
+     return new Partial(this, newValues);
+ }

@@ -1,0 +1,21 @@
+--- org/apache/commons/math/geometry/Vector3D.java@crossProduct
++++ org/apache/commons/math/geometry/Vector3D.java@crossProduct
+@@ -8,5 +8,17 @@
+     // available at http://www.cs.berkeley.edu/~wkahan/MathH110/Cross.pdf
+     // compute rho as an 8 bits approximation of v1.v2 / v2.v2
+     // compute cross product from v3 and v2 instead of v1 and v2
+-    return new Vector3D(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
++    
++    // Calculate rho before rescaling the vectors
++    double rho = v1.dotProduct(v2) / v2.dotProduct(v2);
++
++    // Subtract rho v2 from v1 to calculate v3
++    Vector3D v3 = new Vector3D(v1.getX() - rho * v2.getX(),
++                               v1.getY() - rho * v2.getY(),
++                               v1.getZ() - rho * v2.getZ());
++
++    // Calculate the cross product of v3 and v2
++    return new Vector3D(v3.getY() * v2.getZ() - v3.getZ() * v2.getY(),
++                        v3.getZ() * v2.getX() - v3.getX() * v2.getZ(),
++                        v3.getX() * v2.getY() - v3.getY() * v2.getX());
+ }

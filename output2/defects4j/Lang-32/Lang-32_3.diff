@@ -1,0 +1,28 @@
+--- org/apache/commons/lang3/builder/HashCodeBuilder.java@initialValue
++++ org/apache/commons/lang3/builder/HashCodeBuilder.java@initialValue
+@@ -1,4 +1,4 @@
+ @Override
+ protected Set<IDKey> initialValue() {
+-    return new HashSet<IDKey>();
++    return new HashSet<>();
+ }
+--- org/apache/commons/lang3/builder/HashCodeBuilder.java@isRegistered
++++ org/apache/commons/lang3/builder/HashCodeBuilder.java@isRegistered
+@@ -1,3 +1,6 @@
+ static boolean isRegistered(Object value) {
+-    return getRegistry().contains(new IDKey(value));
++    Set<IDKey> registry = getRegistry();
++    synchronized (registry) {
++        return registry.contains(new IDKey(value));
++    }
+ }
+--- org/apache/commons/lang3/builder/HashCodeBuilder.java@unregister
++++ org/apache/commons/lang3/builder/HashCodeBuilder.java@unregister
+@@ -1,3 +1,6 @@
+ static void unregister(Object value) {
+-    getRegistry().remove(new IDKey(value));
++    Set<IDKey> registry = getRegistry();
++    synchronized (registry) {
++        registry.remove(new IDKey(value));
++    }
+ }

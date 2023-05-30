@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
++++ com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
+@@ -22,10 +22,17 @@
+         }
+         // Check if {@code name} has any aliases left after the
+         // local-alias-inlining above.
+-        if ((name.type == Name.Type.OBJECTLIT || name.type == Name.Type.FUNCTION) && name.aliasingGets == 0 && name.props != null) {
+-            // All of {@code name}'s children meet condition (a), so they can be
+-            // added to the worklist.
+-            workList.addAll(name.props);
++        if (name.props != null && (name.type == Name.Type.OBJECTLIT || name.type == Name.Type.FUNCTION)) {
++            boolean allPropsMeetConditionA = true;
++            for (Name prop : name.props) {
++                if (!prop.isComplete() || prop.getDeclaration().getInitialValue() != null || prop.getRefs().size() != 1) {
++                    allPropsMeetConditionA = false;
++                    break;
++                }
++            }
++            if (allPropsMeetConditionA) {
++                workList.addAll(name.props);
++            }
+         }
+     }
+ }

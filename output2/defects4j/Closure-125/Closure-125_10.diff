@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitNew
++++ com/google/javascript/jscomp/TypeCheck.java@visitNew
+@@ -5,12 +5,12 @@
+         FunctionType fnType = type.toMaybeFunctionType();
+         if (fnType != null) {
+             visitParameterList(t, n, fnType);
+-            ensureTyped(t, n, fnType.getInstanceType());
++            ensureTyped(t, constructor, fnType.getInstanceType());
+         } else {
+-            ensureTyped(t, n);
++            ensureTyped(t, constructor);
+         }
+     } else {
+-        report(t, n, NOT_A_CONSTRUCTOR);
+-        ensureTyped(t, n);
++        report(t, constructor, NOT_A_CONSTRUCTOR);
++        ensureTyped(t, constructor);
+     }
+ }

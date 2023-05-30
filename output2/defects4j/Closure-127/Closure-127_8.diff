@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
++++ com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
+@@ -1,6 +1,6 @@
+ @SuppressWarnings("fallthrough")
+ private void tryRemoveUnconditionalBranching(Node n) {
+-        // If n is null the target is the end of the function, nothing to do.
++    // If n is null the target is the end of the function, nothing to do.
+     if (n == null) {
+         return;
+     }
+@@ -13,6 +13,8 @@
+             if (n.hasChildren()) {
+                 break;
+             }
++            // Add a return statement to break out of the switch case.
++            return;
+         case Token.BREAK:
+         case Token.CONTINUE:
+             // We are looking for a control flow changing statement that always

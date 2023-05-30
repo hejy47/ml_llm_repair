@@ -1,0 +1,28 @@
+--- org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
++++ org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
+@@ -3,19 +3,22 @@
+         throw new NonSquareMatrixException(matrix.getRowDimension(), matrix.getColumnDimension());
+     }
+     final int order = matrix.getRowDimension();
+-    lTData = matrix.getData();
++    lTData = new double[order][order]; // create new array to avoid modifying the original matrix
++    for (int i = 0; i < order; ++i) {
++        System.arraycopy(matrix.getRow(i), 0, lTData[i], 0, order); // copy data from matrix
++    }
+     cachedL = null;
+     cachedLT = null;
+     // check the matrix before transformation
+     for (int i = 0; i < order; ++i) {
+         final double[] lI = lTData[i];
+-        if (lTData[i][i] < absolutePositivityThreshold) {
++        if (lI[i] < absolutePositivityThreshold) {
+             throw new NotPositiveDefiniteMatrixException();
+         }
+         // check off-diagonal elements (and reset them to 0)
+         for (int j = i + 1; j < order; ++j) {
+             final double[] lJ = lTData[j];
+-            final double lIJ = lI[j];
++            final double lIJ = lTData[i][j];
+             final double lJI = lJ[i];
+             final double maxDelta = relativeSymmetryThreshold * Math.max(Math.abs(lIJ), Math.abs(lJI));
+             if (Math.abs(lIJ - lJI) > maxDelta) {

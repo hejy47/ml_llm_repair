@@ -1,0 +1,49 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -16,8 +16,8 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
+-    // parse whitespace
+-    parseAndIgnoreWhitespace(source, pos);
++    // minus signs should be leading, invalid expression
++    Fraction fraction = new Fraction(0);
+     // parse numerator
+     Number num = getNumeratorFormat().parse(source, pos);
+     if (num == null) {
+@@ -26,16 +26,15 @@
+         // character examined.
+         pos.setIndex(initialIndex);
+         return null;
++    } else if (num.intValue() < 0) {
++        throw new ParseException("Negative numerator not allowed", pos.getIndex());
+     }
+-    // minus signs should be leading, invalid expression
++    // parse whitespace
++    parseAndIgnoreWhitespace(source, pos);
+     // parse '/'
+     int startIndex = pos.getIndex();
+     char c = parseNextCharacter(source, pos);
+     switch(c) {
+-        case 0:
+-            // no '/'
+-            // return num as a fraction
+-            return new Fraction(num.intValue(), 1);
+         case '/':
+             // found '/', continue parsing denominator
+             break;
+@@ -57,10 +56,13 @@
+         // character examined.
+         pos.setIndex(initialIndex);
+         return null;
++    } else if (den.intValue() < 0) {
++        throw new ParseException("Negative denominator not allowed", pos.getIndex());
+     }
+     // minus signs must be leading, invalid
+     int w = whole.intValue();
+     int n = num.intValue();
+     int d = den.intValue();
+-    return new Fraction(((Math.abs(w) * d) + n) * MathUtils.sign(w), d);
++    fraction = new Fraction(((Math.abs(w) * d) + n) * ((w < 0) ? -1 : 1), d);
++    return fraction;
+ }

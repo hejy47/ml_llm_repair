@@ -1,0 +1,15 @@
+--- org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
++++ org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
+@@ -21,8 +21,11 @@
+         final double r = random.nextDouble() * sum;
+         for (int i = 0; i < dx2.length; i++) {
+             if (dx2[i] >= r) {
+-                final T p = pointSet.remove(i);
++                final T p = pointSet.get(i);
++                pointSet.remove(i);
+                 resultSet.add(new Cluster<T>(p));
++                // ensure that dx2 length matches new pointSet length
++                dx2 = new double[pointSet.size()];
+                 break;
+             }
+         }

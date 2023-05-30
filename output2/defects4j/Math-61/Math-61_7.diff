@@ -1,0 +1,9 @@
+--- org/apache/commons/math/distribution/PoissonDistributionImpl.java@PoissonDistributionImpl
++++ org/apache/commons/math/distribution/PoissonDistributionImpl.java@PoissonDistributionImpl
+@@ -1,5 +1,5 @@
+ public PoissonDistributionImpl(double p, double epsilon, int maxIterations) {
+-    if (p <= 0) {
++    if (p < 0) { // changed condition from p<=0 to p<0
+         throw MathRuntimeException.createIllegalArgumentException(LocalizedFormats.NOT_POSITIVE_POISSON_MEAN, p);
+     }
+     mean = p;

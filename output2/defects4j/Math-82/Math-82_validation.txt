@@ -1,0 +1,10 @@
+Math-82_1:False
+Math-82_2:False
+Math-82_3:False
+Math-82_4:True
+Math-82_5:True
+Math-82_6:True
+Math-82_7:False
+Math-82_8:True
+Math-82_9:True
+Math-82_10:False

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
++++ com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
+@@ -16,6 +16,8 @@
+                     // {@code name} meets condition (c). Try to inline it.
+                     if (inlineAliasIfPossible(ref, namespace)) {
+                         name.removeRef(ref);
++                        // Update the workList after successfully inlining.
++                        workList.addAll(name.props);
+                     }
+                 }
+             }

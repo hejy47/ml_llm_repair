@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitNew
++++ com/google/javascript/jscomp/TypeCheck.java@visitNew
+@@ -7,10 +7,10 @@
+             visitParameterList(t, n, fnType);
+             ensureTyped(t, n, fnType.getInstanceType());
+         } else {
+-            ensureTyped(t, n);
++            ensureTyped(t, n, type); // Fix: pass 'type' instead of 'null' to ensureTyped when fnType is null
+         }
+     } else {
+         report(t, n, NOT_A_CONSTRUCTOR);
+-        ensureTyped(t, n);
++        ensureTyped(t, n, type); // Fix: pass 'type' instead of 'null' to ensureTyped when the type is not a constructor or function
+     }
+ }

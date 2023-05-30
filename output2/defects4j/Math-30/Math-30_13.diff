@@ -1,0 +1,18 @@
+--- org/apache/commons/math3/stat/inference/MannWhitneyUTest.java@calculateAsymptoticPValue
++++ org/apache/commons/math3/stat/inference/MannWhitneyUTest.java@calculateAsymptoticPValue
+@@ -3,7 +3,12 @@
+     // http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U#Normal_approximation
+     final double EU = n1n2prod / 2.0;
+     final double VarU = n1n2prod * (n1 + n2 + 1) / 12.0;
+-    final double z = (Umin - EU) / FastMath.sqrt(VarU);
+-    final NormalDistribution standardNormal = new NormalDistribution(0, 1);
+-    return 2 * standardNormal.cumulativeProbability(z);
++    double z = Double.NaN;
++    try {
++        z = (Umin - EU) / FastMath.sqrt(VarU);
++        final NormalDistribution standardNormal = new NormalDistribution(0, 1);
++        return 2 * standardNormal.cumulativeProbability(z);
++    } catch (Exception e) {
++        throw new ConvergenceException(new LocalizedFormats("FAILED_TO_CALCULATE_ASYMPTOTIC_P_VALUE"), Umin, n1, n2, e);
++    }
+ }

@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -23,7 +23,7 @@
+         //       NODE
+         // Remove the rvalue (NODE).
+         parent.removeChild(rvalue);
+-        nameNode.addChildToFront(rvalue);
++        nameNode.addChildToFront(rvalue.detach());
+         Node varNode = new Node(Token.VAR, nameNode);
+         greatGramps.replaceChild(gramps, varNode);
+     } else {
+@@ -45,5 +45,5 @@
+         currentParent.addChildBefore(stubVar, current);
+         parent.replaceChild(ref.node, nameNode);
+     }
+-    compiler.reportCodeChange();
++    compiler.reportChangeToEnclosingScope(nameNode);
+ }

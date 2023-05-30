@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
++++ com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
+@@ -22,11 +22,11 @@
+         case Token.THIS:
+             return locals.apply(value);
+         case Token.NAME:
+-            return isImmutableValue(value) || locals.apply(value);
++            return NodeUtil.isImmutableValue(value) || locals.apply(value);
+         case Token.GETELEM:
+         case Token.GETPROP:
+             // There is no information about the locality of object properties.
+-            return locals.apply(value);
++            return locals.apply(value.getFirstChild());
+         case Token.CALL:
+             return callHasLocalResult(value) || isToStringMethodCall(value) || locals.apply(value);
+         case Token.NEW:
+@@ -47,7 +47,7 @@
+             // Other op force a local value:
+             //  x = '' + g (x is now an local string)
+             //  x -= g (x is now an local number)
+-            if (isAssignmentOp(value) || isSimpleOperator(value) || isImmutableValue(value)) {
++            if (NodeUtil.isAssignmentOp(value) || NodeUtil.isSimpleOperator(value) || NodeUtil.isImmutableValue(value)) {
+                 return true;
+             }
+             throw new IllegalStateException("Unexpected expression node" + value + "\n parent:" + value.getParent());

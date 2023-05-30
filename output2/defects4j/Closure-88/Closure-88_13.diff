@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -4,6 +4,10 @@
+             // The expression to which the assignment is made is evaluated before
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.
++            return VariableLiveness.KILL;
++        } else if (NodeUtil.isOpAssignment(n.getParent()) || NodeUtil.isUpdateOp(n.getParent())) {
++            // If the variable is read and then assigned in the same expression, it is still considered a KILL
++            // since the assignment happens after the read.
+             return VariableLiveness.KILL;
+         } else {
+             return VariableLiveness.READ;

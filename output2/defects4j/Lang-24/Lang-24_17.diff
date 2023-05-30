@@ -1,0 +1,36 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@isNumber
++++ org/apache/commons/lang3/math/NumberUtils.java@isNumber
+@@ -26,13 +26,13 @@
+             return true;
+         }
+     }
+-    // don't want to loop to the last char, check it afterwords
++    // don't want to loop to the last char, check it afterwards
+     sz--;
+     // for type qualifiers
+     int i = start;
+     // loop to the next to last char or to the last char if we need another digit to
+     // make a valid number (e.g. chars[0..5] = "1234E")
+-    while (i < sz || (i < sz + 1 && allowSigns && !foundDigit)) {
++    while (i < sz || (i == sz && allowSigns && !foundDigit)) {
+         if (chars[i] >= '0' && chars[i] <= '9') {
+             foundDigit = true;
+             allowSigns = false;
+@@ -54,7 +54,7 @@
+             hasExp = true;
+             allowSigns = true;
+         } else if (chars[i] == '+' || chars[i] == '-') {
+-            if (!allowSigns) {
++            if (!allowSigns && i != start) {
+                 return false;
+             }
+             allowSigns = false;
+@@ -87,7 +87,7 @@
+         }
+         if (chars[i] == 'l' || chars[i] == 'L') {
+             // not allowing L with an exponent or decimal point
+-            return foundDigit && !hasExp;
++            return foundDigit && !hasExp && !hasDecPoint;
+         }
+         // last character is illegal
+         return false;

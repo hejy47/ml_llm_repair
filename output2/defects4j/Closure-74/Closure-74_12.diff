@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -115,7 +115,7 @@
+             if (compareResult != null) {
+                 result = compareResult;
+             } else {
+-                return null;
++                return n;
+             }
+             break;
+         case Token.NAME:
+@@ -145,6 +145,9 @@
+                 // to handle EQ,NE,LE,GE,SHEQ, and SHNE.
+                 case Token.LT:
+                 case Token.GT:
++                // Add missing cases for gte and lte
++                case Token.GE:
++                case Token.LE:
+                     result = false;
+                     break;
+                 default:

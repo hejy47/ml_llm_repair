@@ -1,0 +1,17 @@
+--- org/apache/commons/lang3/ArrayUtils.java@addAll
++++ org/apache/commons/lang3/ArrayUtils.java@addAll
+@@ -9,6 +9,13 @@
+     T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
+     System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+     System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+-    // Check if problem is incompatible types
++    // Cast array2 elements if necessary
++    for (int i = array1.length; i < joinedArray.length; i++) {
++        if (!type1.isInstance(array2[i - array1.length])) {
++            joinedArray[i] = (T) type1.cast(array2[i - array1.length]);
++        } else {
++            joinedArray[i] = array2[i - array1.length];
++        }
++    }
+     return joinedArray;
+ }

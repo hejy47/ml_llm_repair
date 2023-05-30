@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/CodeGenerator.java@strEscape
++++ com/google/javascript/jscomp/CodeGenerator.java@strEscape
+@@ -22,9 +22,9 @@
+             case '\'':
+                 sb.append(singlequoteEscape);
+                 break;
+-            case // Break --> into --\> or ]]> into ]]\>
+-            '>':
+-                if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']'))) {
++            // Fixing the case for > and ]]> to escape properly
++            case '>':
++                if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (i >= 3 && s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']' && s.charAt(i - 3) == ']'))) {
+                     sb.append("\\>");
+                 } else {
+                     sb.append(c);

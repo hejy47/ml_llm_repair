@@ -1,0 +1,9 @@
+--- org/joda/time/DateTimeZone.java@adjustOffset
++++ org/joda/time/DateTimeZone.java@adjustOffset
+@@ -11,6 +11,4 @@
+     long local = convertUTCToLocal(instant);
+     return convertLocalToUTC(local, false, earlierOrLater ? instantAfter : instantBefore);
+     // calculate result
+-    // currently in later offset
+-    // currently in earlier offset
+ }

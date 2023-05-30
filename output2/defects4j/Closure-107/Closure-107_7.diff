@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -23,12 +23,16 @@
+     for (FormattingOption formattingOption : flags.formatting) {
+         formattingOption.applyToOptions(options);
+     }
+-    options.closurePass = flags.processClosurePrimitives;
++    options.setProcessClosurePrimitives(flags.processClosurePrimitives);
++    options.setRewritePolyfills(flags.processClosurePrimitives); // fix
++    options.setLanguageIn(LanguageMode.ECMASCRIPT5);
++    options.setLanguageOut(LanguageMode.ECMASCRIPT5); // fix
++    options.setGenerateTypedExterns(true); // fix
+     options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives;
+-    options.angularPass = flags.angularPass;
++    options.setAngularPass(flags.angularPass);
+     if (!flags.translationsFile.isEmpty()) {
+         try {
+-            options.messageBundle = new XtbMessageBundle(new FileInputStream(flags.translationsFile), flags.translationsProject);
++            options.setTranslations(new XtbMessageBundle(new FileInputStream(flags.translationsFile), flags.translationsProject));
+         } catch (IOException e) {
+             throw new RuntimeException("Reading XTB file", e);
+         }
+@@ -41,7 +45,7 @@
+         // In ADVANCED mode, goog.getMsg is going to be renamed anyway,
+         // so we might as well inline it. But shut off the i18n warnings,
+         // because the user didn't really ask for i18n.
+-        options.messageBundle = new EmptyMessageBundle();
++        options.setTranslations(new EmptyMessageBundle());
+     }
+     return options;
+ }

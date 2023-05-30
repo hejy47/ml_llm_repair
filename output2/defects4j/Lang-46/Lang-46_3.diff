@@ -1,0 +1,28 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString5
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString5
+@@ -16,7 +16,7 @@
+             out.write("\\u0" + hex(ch));
+         } else if (ch > 0x7f) {
+             out.write("\\u00" + hex(ch));
+-        } else if (ch < 32) {
++        } else {
+             switch(ch) {
+                 case '\b':
+                     out.write('\\');
+@@ -38,16 +38,6 @@
+                     out.write('\\');
+                     out.write('r');
+                     break;
+-                default:
+-                    if (ch > 0xf) {
+-                        out.write("\\u00" + hex(ch));
+-                    } else {
+-                        out.write("\\u000" + hex(ch));
+-                    }
+-                    break;
+-            }
+-        } else {
+-            switch(ch) {
+                 case '\'':
+                     if (escapeSingleQuote) {
+                         out.write('\\');

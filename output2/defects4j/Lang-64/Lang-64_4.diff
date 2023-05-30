@@ -1,0 +1,9 @@
+--- org/apache/commons/lang/enums/ValuedEnum.java@compareTo
++++ org/apache/commons/lang/enums/ValuedEnum.java@compareTo
+@@ -1,3 +1,6 @@
+ public int compareTo(Object other) {
++    if (this.getClass() != other.getClass()) {
++        throw new ClassCastException("Cannot compare objects of different classes.");
++    }
+     return iValue - ((ValuedEnum) other).iValue;
+ }

@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -30,11 +30,11 @@
+     Name fnName = functionNode.getFunctionName();
+     if (fnName != null) {
+         lp.setLineno(fnName.getLineno());
++        lp.setCharno(fnName.getCharno() + fnName.getLength() + 1);
+     } else {
+         lp.setLineno(functionNode.getLineno());
++        lp.setCharno(functionNode.getLp() + functionNode.getAbsolutePosition());
+     }
+-    int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+-    lp.setCharno(position2charno(lparenCharno));
+     for (AstNode param : functionNode.getParams()) {
+         lp.addChildToBack(transform(param));
+     }

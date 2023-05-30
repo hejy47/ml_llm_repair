@@ -1,0 +1,122 @@
+--- org/apache/commons/lang/Entities.java@unescape
++++ org/apache/commons/lang/Entities.java@unescape
+@@ -3,21 +3,13 @@
+     if (firstAmp < 0) {
+         return str;
+     }
+-    StringBuffer buf = new StringBuffer(str.length());
+-    buf.append(str.substring(0, firstAmp));
+-    for (int i = firstAmp; i < str.length(); ++i) {
+-        char ch = str.charAt(i);
+-        if (ch == '&') {
++    StringBuilder buf = new StringBuilder(str.substring(0, firstAmp));
++    for (int i = firstAmp; i < str.length();) {
++        if (str.charAt(i) == '&') {
+             int semi = str.indexOf(';', i + 1);
+             if (semi == -1) {
+-                buf.append(ch);
+-                continue;
+-            }
+-            int amph = str.indexOf('&', i + 1);
+-            if (amph != -1 && amph < semi) {
+-                // Then the text looks like &...&...;
+-                buf.append(ch);
+-                continue;
++                buf.append('&');
++                break;
+             }
+             String entityName = str.substring(i + 1, semi);
+             int entityValue;
+@@ -30,7 +22,7 @@
+                     char charAt1 = entityName.charAt(1);
+                     try {
+                         if (charAt1 == 'x' || charAt1 == 'X') {
+-                            entityValue = Integer.valueOf(entityName.substring(2), 16).intValue();
++                            entityValue = Integer.parseInt(entityName.substring(2), 16);
+                         } else {
+                             entityValue = Integer.parseInt(entityName.substring(1));
+                         }
+@@ -46,11 +38,12 @@
+                 buf.append(entityName);
+                 buf.append(';');
+             } else {
+-                buf.append((char) (entityValue));
++                buf.append((char) entityValue);
+             }
+-            i = semi;
++            i = semi + 1;
+         } else {
+-            buf.append(ch);
++            buf.append(str.charAt(i));
++            i++;
+         }
+     }
+     return buf.toString();
+--- org/apache/commons/lang/Entities.java@unescape1
++++ org/apache/commons/lang/Entities.java@unescape1
+@@ -1,24 +1,19 @@
+ public void unescape(Writer writer, String string) throws IOException {
+-    int firstAmp = string.indexOf('&');
+-    if (firstAmp < 0) {
+-        writer.write(string);
+-        return;
+-    }
+-    writer.write(string, 0, firstAmp);
+     int len = string.length();
+-    for (int i = firstAmp; i < len; i++) {
++    StringBuilder builder = new StringBuilder(len);
++    for (int i = 0; i < len; i++) {
+         char c = string.charAt(i);
+         if (c == '&') {
+             int nextIdx = i + 1;
+             int semiColonIdx = string.indexOf(';', nextIdx);
+             if (semiColonIdx == -1) {
+-                writer.write(c);
++                builder.append(c);
+                 continue;
+             }
+             int amphersandIdx = string.indexOf('&', i + 1);
+             if (amphersandIdx != -1 && amphersandIdx < semiColonIdx) {
+                 // Then the text looks like &...&...;
+-                writer.write(c);
++                builder.append(c);
+                 continue;
+             }
+             String entityContent = string.substring(nextIdx, semiColonIdx);
+@@ -34,11 +29,11 @@
+                                 case 'X':
+                                 case 'x':
+                                     {
+-                                        entityValue = Integer.parseInt(entityContent.substring(2), 16);
++                                        entityValue = Integer.parseInt(entityContent.substring(2), 16);                                                
+                                     }
+                                 default:
+                                     {
+-                                        entityValue = Integer.parseInt(entityContent.substring(1), 10);
++                                        entityValue = Integer.parseInt(entityContent.substring(1), 10);                                                
+                                     }
+                             }
+                         } catch (NumberFormatException e) {
+@@ -50,16 +45,17 @@
+                 }
+             }
+             if (entityValue == -1) {
+-                writer.write('&');
+-                writer.write(entityContent);
+-                writer.write(';');
++                builder.append('&');
++                builder.append(entityContent);
++                builder.append(';');
+             } else {
+-                writer.write(entityValue);
++                builder.append((char) entityValue);
+             }
+             //move index up to the semi-colon
+             i = semiColonIdx;
+         } else {
+-            writer.write(c);
++            builder.append(c);
+         }
+     }
++    writer.write(builder.toString());
+ }

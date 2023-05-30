@@ -1,0 +1,12 @@
+--- com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
++++ com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
+@@ -1,6 +1,8 @@
+ public boolean recordBlockDescription(String description) {
+     if (parseDocumentation) {
++        currentInfo.setBlockDescription(description); // Set block description instead of calling documentBlock
+         populated = true;
++        return true;
+     }
+-    return currentInfo.documentBlock(description);
++    return false;
+ }

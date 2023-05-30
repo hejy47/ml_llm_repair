@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -44,13 +44,13 @@
+         // once is *NOT* correct. We relax the correctness requirement if
+         // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
+-            Node nameNode = refs.get(i).getNode();
++        for (int i = 1; i < refs.size(); i++) {
++            Reference reference = refs.get(i);
++            Node nameNode = reference.getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);
+                 if (!staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias)) {
+-                    Reference aliasInit;
+-                    aliasInit = candidate.refInfo.getInitializingReference();
++                    Reference aliasInit = reference.getBasicReference();
+                     Node value = aliasInit.getAssignedValue();
+                     Preconditions.checkNotNull(value);
+                     inlineWellDefinedVariable(candidate.alias, value, candidate.refInfo.references);

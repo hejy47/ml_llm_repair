@@ -1,0 +1,35 @@
+--- org/apache/commons/lang/BooleanUtils.java@toBoolean
++++ org/apache/commons/lang/BooleanUtils.java@toBoolean
+@@ -7,7 +7,7 @@
+     // Optimisation provides same performance as before for interned 'true'.
+     // Similar performance for null, 'false', and other strings not length 2/3/4.
+     // 'true'/'TRUE' match 4 times slower, 'tRUE'/'True' 7 times slower.
+-    if (str == "true") {
++    if ("true".equals(str)) { // Use .equals() to compare strings
+         return true;
+     }
+     if (str == null) {
+@@ -23,21 +23,15 @@
+         case 3:
+             {
+                 char ch = str.charAt(0);
+-                if (ch == 'y') {
++                if (ch == 'y' || ch == 'Y') { // Combine checks for 'y' and 'Y'
+                     return (str.charAt(1) == 'e' || str.charAt(1) == 'E') && (str.charAt(2) == 's' || str.charAt(2) == 'S');
+-                }
+-                if (ch == 'Y') {
+-                    return (str.charAt(1) == 'E' || str.charAt(1) == 'e') && (str.charAt(2) == 'S' || str.charAt(2) == 's');
+                 }
+             }
+         case 4:
+             {
+                 char ch = str.charAt(0);
+-                if (ch == 't') {
++                if (ch == 't' || ch == 'T') { // Combine checks for 't' and 'T'
+                     return (str.charAt(1) == 'r' || str.charAt(1) == 'R') && (str.charAt(2) == 'u' || str.charAt(2) == 'U') && (str.charAt(3) == 'e' || str.charAt(3) == 'E');
+-                }
+-                if (ch == 'T') {
+-                    return (str.charAt(1) == 'R' || str.charAt(1) == 'r') && (str.charAt(2) == 'U' || str.charAt(2) == 'u') && (str.charAt(3) == 'E' || str.charAt(3) == 'e');
+                 }
+             }
+     }

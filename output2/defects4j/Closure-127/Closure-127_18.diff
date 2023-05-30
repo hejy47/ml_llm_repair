@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
++++ com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
+@@ -13,6 +13,7 @@
+             if (n.hasChildren()) {
+                 break;
+             }
++            //$FALL-THROUGH$
+         case Token.BREAK:
+         case Token.CONTINUE:
+             // We are looking for a control flow changing statement that always

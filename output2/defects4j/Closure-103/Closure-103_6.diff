@@ -1,0 +1,36 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -10,6 +10,7 @@
+         case Token.DEC:
+             return true;
+         case Token.FUNCTION:
++        case Token.FUNCTION_PTR:
+             return false;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -1,9 +1,8 @@
+ @Override
+ public ObjectType getTypeWithProperty(String field, JSType type) {
+     if (!(type instanceof ObjectType)) {
+-        if (type.autoboxesTo() != null) {
+-            type = type.autoboxesTo();
+-        } else {
++        type = type.autoboxesTo();
++        if (!(type instanceof ObjectType)) {
+             return null;
+         }
+     }
+@@ -27,5 +26,11 @@
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+     // so we have to double check.
++    if(foundType == null && type instanceof ObjectType) {
++        foundType = ObjectType.cast(type).getGreatestSubtypeWithProperty(field);
++        if(foundType != null && !foundType.hasOwnProperty(field)) {
++            foundType = null;
++        }
++    }
+     return foundType;
+ }

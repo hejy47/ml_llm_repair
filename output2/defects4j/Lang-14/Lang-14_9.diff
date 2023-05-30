@@ -1,0 +1,11 @@
+--- org/apache/commons/lang3/StringUtils.java@equals
++++ org/apache/commons/lang3/StringUtils.java@equals
+@@ -7,5 +7,8 @@
+     if (cs1 == null || cs2 == null) {
+         return false;
+     }
++    if (cs1.length() != cs2.length()) { // added this check
++        return false;
++    }
+     return cs1.equals(cs2);
+ }

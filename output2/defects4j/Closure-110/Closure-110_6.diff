@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -45,7 +45,7 @@
+             recordAlias(v);
+         } else {
+             // Do not other kinds of local symbols, like catch params.
+-            report(t, n, GOOG_SCOPE_NON_ALIAS_LOCAL, n.getString());
++            t.report(n, GOOG_SCOPE_NON_ALIAS_LOCAL, n.getString());
+         }
+     }
+ }
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -3,11 +3,11 @@
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
++    while (n != null && n.next != child) {
+         n = n.next;
+-        if (n == null) {
+-            throw new RuntimeException("node is not a child");
+-        }
++    }
++    if (n == null) {
++        throw new RuntimeException("node is not a child");
+     }
+     return n;
+ }

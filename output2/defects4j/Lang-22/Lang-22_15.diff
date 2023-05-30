@@ -1,0 +1,64 @@
+--- org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
++++ org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
+@@ -18,13 +18,13 @@
+     }
+     // B1. [Find power of 2]
+     int k = 0;
+-    while ((u & 1) == 0 && (v & 1) == 0 && k < 31) {
+-        // while u and v are both even...
+-        // cast out twos.
++    while ((u != 0) && (v != 0) && (k < 31)) {
++        // while u and v are both nonzero and unshifted...
++        // cast out twos
+         u /= 2;
+-        // cast out twos.
++        // cast out twos
+         v /= 2;
+-        // cast out twos.
++        // add to 2^k
+         k++;
+     }
+     if (k == 31) {
+@@ -32,27 +32,22 @@
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least
+     //     one is odd.
+-    int t = ((u & 1) == 1) ? v : -(u / 2);
+-    // t negative: u was odd, v may be even (t replaces v)
+-    // t positive: u was even, v is odd (t replaces u)
+-    do {
+-                // B4/B3: cast out twos from t.
+-        while ((t & 1) == 0) {
+-            // while t is even..
++    int t = ((u & 1) == 1) ? u : v;
++    // t negative: u was odd, v may be even (t replaces u)
++    // t positive: u was even, v is odd (t replaces v)
++    // apply the sign
++    t = -t;
++    // B3 / B4 scaling
++    while (k > 0) {
++        // shift up to 2^k
++        t *= 2;
++        k--;
++        // cast out twos
++        while ((t > 0) && ((t & (1 << 30)) != 0)) {
+             // cast out twos
+             t /= 2;
+         }
+-        // B5 [reset max(u,v)]
+-        if (t > 0) {
+-            u = -t;
+-        } else {
+-            v = t;
+-        }
+-        // B6/B3. at this point both u and v should be odd.
+-        t = (v - u) / 2;
+-        // |u| larger: t positive (replace u)
+-        // |v| larger: t negative (replace v)
+-    } while (t != 0);
+-    // gcd is u*2^k
+-    return -u * (1 << k);
++    }
++    // return abs value of t, which is the gcd
++    return Math.abs(t);
+ }

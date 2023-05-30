@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -7,7 +7,7 @@
+         ObjectType objectType = getJSType(n.getFirstChild()).dereference();
+         if (objectType != null) {
+             String propName = n.getLastChild().getString();
+-            if (objectType.getConstructor() != null && objectType.getConstructor().isInterface()) {
++            if (objectType.isInterface()) {
+                 objectType = FunctionType.getTopDefiningInterface(objectType, propName);
+             } else {
+                 // classes
+@@ -17,7 +17,7 @@
+             }
+             // Don't show complex function names or anonymous types.
+             // Instead, try to get a human-readable type name.
+-            if (objectType != null && (objectType.getConstructor() != null || objectType.isFunctionPrototypeType())) {
++            if (objectType != null && objectType.getConstructor() != null) {
+                 return objectType.toString() + "." + propName;
+             }
+         }

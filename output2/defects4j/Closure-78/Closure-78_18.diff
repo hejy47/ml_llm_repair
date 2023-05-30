@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -38,14 +38,14 @@
+             break;
+         case Token.MOD:
+             if (rval == 0) {
+-                error(DiagnosticType.error("JSC_DIVIDE_BY_0_ERROR", "Divide by 0"), right);
++                warnings.add(DiagnosticType.warning("JSC_DIVIDE_BY_0_WARNING", "Divide by 0"), right); // changed from error to warning
+                 return null;
+             }
+             result = lval % rval;
+             break;
+         case Token.DIV:
+             if (rval == 0) {
+-                error(DiagnosticType.error("JSC_DIVIDE_BY_0_ERROR", "Divide by 0"), right);
++                warnings.add(DiagnosticType.warning("JSC_DIVIDE_BY_0_WARNING", "Divide by 0"), right); // changed from error to warning
+                 return null;
+             }
+             result = lval / rval;

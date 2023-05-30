@@ -1,0 +1,16 @@
+--- org/apache/commons/math/stat/Frequency.java@addValue
++++ org/apache/commons/math/stat/Frequency.java@addValue
+@@ -1,11 +1,11 @@
+ @Deprecated
+ public void addValue(Object v) {
+-        Object obj = v;
++    Object obj = v;
+     if (v instanceof Integer) {
+         obj = Long.valueOf(((Integer) v).longValue());
+     }
+     try {
+-        Long count = (Long) freqTable.get(obj);
++        Long count = freqTable.get(obj);
+         if (count == null) {
+             freqTable.put(obj, Long.valueOf(1));
+         } else {

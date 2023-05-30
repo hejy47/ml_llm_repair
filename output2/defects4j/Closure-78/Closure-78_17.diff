@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -15,8 +15,8 @@
+     if (rValObj == null) {
+         return null;
+     }
+-    double lval = lValObj;
+-    double rval = rValObj;
++    double lval = lValObj.doubleValue();
++    double rval = rValObj.doubleValue();
+     switch(opType) {
+         case Token.BITAND:
+             result = ScriptRuntime.toInt32(lval) & ScriptRuntime.toInt32(rval);
+@@ -55,9 +55,10 @@
+     }
+     // TODO(johnlenz): consider removing the result length check.
+     // length of the left and right value plus 1 byte for the operator.
+-    if (String.valueOf(result).length() <= String.valueOf(lval).length() + String.valueOf(rval).length() + 1 && // Do not try to fold arithmetic for numbers > 2^53. After that
++    // Do not try to fold arithmetic for numbers > 2^53. After that
+     // point, fixed-point math starts to break down and become inaccurate.
+-    Math.abs(result) <= MAX_FOLD_NUMBER) {
++    if (String.valueOf(result).length() <= String.valueOf(lval).length() + String.valueOf(rval).length() + 1 &&
++        Math.abs(result) <= MAX_FOLD_NUMBER) {
+         Node newNumber = Node.newNumber(result);
+         return newNumber;
+     } else if (Double.isNaN(result)) {

@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/ExploitAssigns.java@isSafeReplacement
++++ com/google/javascript/jscomp/ExploitAssigns.java@isSafeReplacement
+@@ -8,5 +8,15 @@
+     if (node.isName() && isNameAssignedTo(node.getString(), replacement)) {
+         return false;
+     }
++    // If the node is a GETPROP and not a simple name, check if the property is safe to replace
++    if (node.isGetProp()) {
++        String propName = node.getLastChild().getString();
++        if (NodeUtil.isLValue(node)) {
++            return isSafeReplacement(node.getParent(), replacement) &&
++                    isNameAssignedToVar(propName, replacement);
++        } else {
++            return isSafeReplacement(node.getFirstChild(), replacement);
++        }
++    }
+     return true;
+ }

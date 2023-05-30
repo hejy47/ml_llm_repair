@@ -1,0 +1,12 @@
+--- org/apache/commons/math/distribution/NormalDistributionImpl.java@cumulativeProbability
++++ org/apache/commons/math/distribution/NormalDistributionImpl.java@cumulativeProbability
+@@ -9,7 +9,8 @@
+         } else if (x > (mean + 20 * standardDeviation)) {
+             return 1;
+         } else {
+-            throw ex;
++            // fix: increase max iterations for Erf.erf
++            return 0.5 * (1.0 + Erf.erf((dev) / (standardDeviation * FastMath.sqrt(2.0)), 1000000));
+         }
+     }
+ }

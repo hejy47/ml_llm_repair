@@ -1,0 +1,46 @@
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
+@@ -4,13 +4,15 @@
+     int _longest = 0;
+     if (lookup != null) {
+         for (final CharSequence[] seq : lookup) {
+-            this.lookupMap.put(seq[0], seq[1]);
+-            final int sz = seq[0].length();
+-            if (sz < _shortest) {
+-                _shortest = sz;
+-            }
+-            if (sz > _longest) {
+-                _longest = sz;
++            if(seq.length >= 2) {
++                this.lookupMap.put(seq[0], seq[1]);
++                final int sz = seq[0].length();
++                if (sz < _shortest) {
++                    _shortest = sz;
++                }
++                if (sz > _longest) {
++                    _longest = sz;
++                }
+             }
+         }
+     }
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
+@@ -6,11 +6,13 @@
+     }
+     // descend so as to get a greedy algorithm
+     for (int i = max; i >= shortest; i--) {
+-        final CharSequence subSeq = input.subSequence(index, index + i);
+-        final CharSequence result = lookupMap.get(subSeq);
+-        if (result != null) {
+-            out.write(result.toString());
+-            return i;
++        if(index + i <= input.length()){
++            final CharSequence subSeq = input.subSequence(index, index + i);
++            final CharSequence result = lookupMap.get(subSeq);
++            if (result != null) {
++                out.write(result.toString());
++                return i;
++            }
+         }
+     }
+     return 0;

@@ -1,0 +1,50 @@
+--- org/apache/commons/lang/Entities.java@unescape
++++ org/apache/commons/lang/Entities.java@unescape
+@@ -3,7 +3,7 @@
+     if (firstAmp < 0) {
+         return str;
+     }
+-    StringBuffer buf = new StringBuffer(str.length());
++    StringBuilder buf = new StringBuilder(str.length());
+     buf.append(str.substring(0, firstAmp));
+     for (int i = firstAmp; i < str.length(); ++i) {
+         char ch = str.charAt(i);
+@@ -30,7 +30,7 @@
+                     char charAt1 = entityName.charAt(1);
+                     try {
+                         if (charAt1 == 'x' || charAt1 == 'X') {
+-                            entityValue = Integer.valueOf(entityName.substring(2), 16).intValue();
++                            entityValue = Integer.parseInt(entityName.substring(2), 16);
+                         } else {
+                             entityValue = Integer.parseInt(entityName.substring(1));
+                         }
+--- org/apache/commons/lang/Entities.java@unescape1
++++ org/apache/commons/lang/Entities.java@unescape1
+@@ -15,8 +15,8 @@
+                 writer.write(c);
+                 continue;
+             }
+-            int amphersandIdx = string.indexOf('&', i + 1);
+-            if (amphersandIdx != -1 && amphersandIdx < semiColonIdx) {
++            int ampersandIdx = string.indexOf('&', i + 1);
++            if (ampersandIdx != -1 && ampersandIdx < semiColonIdx) {
+                 // Then the text looks like &...&...;
+                 writer.write(c);
+                 continue;
+@@ -26,7 +26,7 @@
+             int entityContentLen = entityContent.length();
+             if (entityContentLen > 0) {
+                 if (entityContent.charAt(0) == '#') {
+-                    //escaped value content is an integer (decimal or hexidecimal)
++                    //escaped value content is an integer (decimal or hexadecimal)
+                     if (entityContentLen > 1) {
+                         char isHexChar = entityContent.charAt(1);
+                         try {
+@@ -35,6 +35,7 @@
+                                 case 'x':
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(2), 16);
++                                        break;
+                                     }
+                                 default:
+                                     {

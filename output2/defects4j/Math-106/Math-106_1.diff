@@ -1,0 +1,12 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -62,5 +62,8 @@
+     int w = whole.intValue();
+     int n = num.intValue();
+     int d = den.intValue();
+-    return new Fraction(((Math.abs(w) * d) + n) * MathUtils.sign(w), d);
++    if(w < 0){
++        n *= -1;
++    }
++    return new Fraction((Math.abs(w) * d) + n, d);
+ }

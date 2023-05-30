@@ -1,0 +1,11 @@
+--- org/apache/commons/lang/Entities.java@escape
++++ org/apache/commons/lang/Entities.java@escape
+@@ -17,4 +17,8 @@
+             writer.write(';');
+         }
+     }
++    
++    // add line to flush and close writer
++    writer.flush();
++    writer.close();
+ }

@@ -1,0 +1,9 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@handleBlockComment
++++ com/google/javascript/jscomp/parsing/IRFactory.java@handleBlockComment
+@@ -1,5 +1,5 @@
+ private void handleBlockComment(Comment comment) {
+-    if (comment.getValue().indexOf("/* @") != -1 || comment.getValue().indexOf("\n * @") != -1) {
++    if (comment.getValue().contains("/* @") || comment.getValue().contains("\n * @")) {
+         errorReporter.warning(SUSPICIOUS_COMMENT_WARNING, sourceName, comment.getLineno(), "", 0);
+     }
+ }

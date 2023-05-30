@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -23,16 +23,9 @@
+     Node lp = newNode(Token.LP);
+     // The left paren's complicated because it's not represented by an
+     // AstNode, so there's nothing that has the actual line number that it
+-    // appeared on.  We know the paren has to appear on the same line as the
+-    // function name (or else a semicolon will be inserted.)  If there's no
+-    // function name, assume the paren was on the same line as the function.
+-    // TODO(bowdidge): Mark line number of paren correctly.
+-    Name fnName = functionNode.getFunctionName();
+-    if (fnName != null) {
+-        lp.setLineno(fnName.getLineno());
+-    } else {
+-        lp.setLineno(functionNode.getLineno());
+-    }
++    // appeared on.  We know the paren has to appear *after* the function name.
++    // So we use `+1` to get the next line after the function name.
++    lp.setLineno(newName.getLineno()+1);
+     int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+     lp.setCharno(position2charno(lparenCharno));
+     for (AstNode param : functionNode.getParams()) {

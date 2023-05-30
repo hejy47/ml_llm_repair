@@ -1,0 +1,45 @@
+--- org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
++++ org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
+@@ -9,20 +9,30 @@
+         final RealPointValuePair reflected = evaluateNewSimplex(original, 1.0, comparator);
+         if (comparator.compare(reflected, best) < 0) {
+             // compute the expanded simplex
+-            final RealPointValuePair[] reflectedSimplex = simplex;
+-            final RealPointValuePair expanded = evaluateNewSimplex(original, khi, comparator);
+-            if (comparator.compare(reflected, expanded) <= 0) {
++            final RealPointValuePair[] expandedSimplex = simplex;
++            final RealPointValuePair expanded = evaluateNewSimplex(original, rho, comparator);
++            if (comparator.compare(expanded, reflected) < 0) {
++                // accept the expanded simplex
++                simplex = expandedSimplex;
++            } else {
+                 // accept the reflected simplex
+-                simplex = reflectedSimplex;
++                simplex = reflected;
+             }
+-            return;
+-        }
+-        // compute the contracted simplex
+-        final RealPointValuePair contracted = evaluateNewSimplex(original, gamma, comparator);
+-        if (comparator.compare(contracted, best) < 0) {
+-            // accept the contracted simplex
+-            // check convergence
+-            return;
++        } else {
++            // perform a contraction step
++            final RealPointValuePair contracted = evaluateNewSimplex(original, -sigma, comparator);
++            if (comparator.compare(contracted, best) < 0) {
++                // accept the contracted simplex
++                simplex = contracted;
++            } else {
++                // perform a shrink step
++                for (int i = 1; i < simplex.length; i++) {
++                    final RealPointValuePair[] shrunkSimplex = simplex.clone();
++                    final RealPointValuePair vertex = shrunkSimplex[i];
++                    shrunkSimplex[i] = new RealPointValuePair(getContractedPoint(original, vertex.getPoint(), omega), Double.NaN);
++                    simplex = evaluateSimplex(shrunkSimplex, comparator);
++                }
++            }
+         }
+     }
+ }

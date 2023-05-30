@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitCall
++++ com/google/javascript/jscomp/TypeCheck.java@visitCall
+@@ -1,7 +1,7 @@
+ private void visitCall(NodeTraversal t, Node n) {
+     Node child = n.getFirstChild();
+     JSType childType = getJSType(child).restrictByNotNullOrUndefined();
+-    if (!childType.canBeCalled()) {
++    if (!childType.isFunctionType()) { // check if child is not a function
+         report(t, n, NOT_CALLABLE, childType.toString());
+         ensureTyped(t, n);
+         return;

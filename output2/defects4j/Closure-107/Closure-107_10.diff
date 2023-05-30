@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -17,6 +17,8 @@
+     }
+     if (flags.generateExports) {
+         options.setGenerateExports(flags.generateExports);
++    } else {
++        options.setGenerateExports(false); // Add this line to ensure that generateExports is explicitly set to false if not specified in flags
+     }
+     WarningLevel wLevel = flags.warningLevel;
+     wLevel.setOptionsForWarningLevel(options);
+@@ -42,6 +44,8 @@
+         // so we might as well inline it. But shut off the i18n warnings,
+         // because the user didn't really ask for i18n.
+         options.messageBundle = new EmptyMessageBundle();
++    } else {
++        options.messageBundle = null; // Add this line to ensure that messageBundle is explicitly set to null if not specified in flags
+     }
+     return options;
+ }

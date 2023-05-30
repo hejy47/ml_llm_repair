@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -17,7 +17,7 @@
+                 break;
+             }
+         }
+-        if (objectType == null) {
++        if (docInfo == null) {
+             // We couldn't find a visibility modifier; assume it's public.
+             return;
+         }

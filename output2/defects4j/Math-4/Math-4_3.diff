@@ -1,0 +1,20 @@
+--- org/apache/commons/math3/geometry/euclidean/threed/SubLine.java@intersection
++++ org/apache/commons/math3/geometry/euclidean/threed/SubLine.java@intersection
+@@ -8,6 +8,6 @@
+     if (includeEndPoints) {
+         return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v1D : null;
+     } else {
+-        return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE)) ? v1D : null;
++        return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE) && loc1 != Location.BOUNDARY && loc2 != Location.BOUNDARY) ? v1D : null;
+     }
+ }
+--- org/apache/commons/math3/geometry/euclidean/twod/SubLine.java@intersection
++++ org/apache/commons/math3/geometry/euclidean/twod/SubLine.java@intersection
+@@ -11,6 +11,6 @@
+     if (includeEndPoints) {
+         return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v2D : null;
+     } else {
+-        return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE)) ? v2D : null;
++        return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE) && loc1 != Location.BOUNDARY && loc2 != Location.BOUNDARY) ? v2D : null;
+     }
+ }

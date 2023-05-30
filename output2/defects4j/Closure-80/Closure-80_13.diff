@@ -1,0 +1,47 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
++++ com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
+@@ -1,5 +1,5 @@
+ static boolean isBooleanResultHelper(Node n) {
+-    switch(n.getType()) {
++    switch(n.getToken()) { // getToken instead of getType
+         // Primitives
+         case Token.TRUE:
+         case Token.FALSE:
+--- com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
++++ com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
+@@ -1,10 +1,10 @@
+ static boolean evaluatesToLocalValue(Node value, Predicate<Node> locals) {
+-    switch(value.getType()) {
++    switch(value.getToken()) { // getToken instead of getType
+         case Token.ASSIGN:
+             // A result that is aliased by a non-local name, is the effectively the
+             // same as returning a non-local name, but this doesn't matter if the
+             // value is immutable.
+-            return NodeUtil.isImmutableValue(value.getLastChild()) || (locals.apply(value) && evaluatesToLocalValue(value.getLastChild(), locals));
++            return NodeUtil.isImmutableValue(value.getLastChild()) || (locals.test(value) && evaluatesToLocalValue(value.getLastChild(), locals));
+         case Token.COMMA:
+             return evaluatesToLocalValue(value.getLastChild(), locals);
+         case Token.AND:
+@@ -20,17 +20,17 @@
+                 return true;
+             }
+         case Token.THIS:
+-            return locals.apply(value);
++            return locals.test(value);
+         case Token.NAME:
+-            return isImmutableValue(value) || locals.apply(value);
++            return isImmutableValue(value) || locals.test(value); // isImmutableValue instead of isImmutableValue(value)
+         case Token.GETELEM:
+         case Token.GETPROP:
+             // There is no information about the locality of object properties.
+-            return locals.apply(value);
++            return locals.test(value);
+         case Token.CALL:
+-            return callHasLocalResult(value) || isToStringMethodCall(value) || locals.apply(value);
++            return callHasLocalResult(value) || isToStringMethodCall(value) || locals.test(value);
+         case Token.NEW:
+-            return newHasLocalResult(value) || locals.apply(value);
++            return newHasLocalResult(value) || locals.test(value);
+         case Token.FUNCTION:
+         case Token.REGEXP:
+         case Token.ARRAYLIT:

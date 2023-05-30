@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -12,11 +12,13 @@
+         // Does this need a VAR keyword?
+         replacementNode = candidateDefinition;
+         if (NodeUtil.isExpressionNode(candidateDefinition)) {
+-            candidateDefinition.putBooleanProp(Node.IS_NAMESPACE, true);
+             Node assignNode = candidateDefinition.getFirstChild();
+-            Node nameNode = assignNode.getFirstChild();
+-            if (nameNode.getType() == Token.NAME) {
++            if (assignNode.getType() == Token.VAR) {
++                // Already a var declaration.
++                candidateDefinition.putBooleanProp(Node.IS_NAMESPACE, true);
++            } else {
+                 // Need to convert this assign to a var declaration.
++                Node nameNode = assignNode.getFirstChild();
+                 Node valueNode = nameNode.getNext();
+                 assignNode.removeChild(nameNode);
+                 assignNode.removeChild(valueNode);

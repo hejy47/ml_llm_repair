@@ -1,0 +1,11 @@
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -3,7 +3,7 @@
+     if (isNaN || divisor.isNaN) {
+         return NaN;
+     }
+-    if (divisor.getReal() == 0.0 && divisor.getImaginary() == 0.0) {
++    if (divisor.equals(ZERO)) {
+         return NaN;
+     }
+     if (divisor.isInfinite() && !isInfinite()) {

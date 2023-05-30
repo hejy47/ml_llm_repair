@@ -1,0 +1,10 @@
+--- org/apache/commons/lang/Entities.java@escape
++++ org/apache/commons/lang/Entities.java@escape
+@@ -16,5 +16,7 @@
+             writer.write(entityName);
+             writer.write(';');
+         }
++        
++        writer.flush(); // added to flush the buffer after each character is written
+     }
+ }

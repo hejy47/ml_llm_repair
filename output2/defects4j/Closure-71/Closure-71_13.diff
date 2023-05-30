@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -28,7 +28,11 @@
+             // Check an ASSIGN statement that's trying to override a property
+             // on a superclass.
+             JSDocInfo overridingInfo = parent.getJSDocInfo();
+-            Visibility overridingVisibility = overridingInfo == null ? Visibility.INHERITED : overridingInfo.getVisibility();
++            Visibility overridingVisibility = Visibility.INHERITED;
++
++            if (overridingInfo != null) {
++                overridingVisibility = overridingInfo.getVisibility();
++            }
+             // Check that (a) the property *can* be overridden, and
+             // (b) that the visibility of the override is the same as the
+             // visibility of the original property.
+@@ -54,7 +58,7 @@
+                 // 2) Overriding the property in a subclass
+                 // 3) Accessing the property from inside a subclass
+                 // The first two have already been checked for.
+-                if (currentClass == null || !currentClass.isSubtype(ownerType)) {
++                if (currentClass == null || !ownerType.isSubtype(currentClass)) {
+                     compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+                 }
+             }

@@ -1,0 +1,26 @@
+--- org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
++++ org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
+@@ -18,7 +18,7 @@
+     }
+     // B1. [Find power of 2]
+     int k = 0;
+-    while ((u & 1) == 0 && (v & 1) == 0 && k < 31) {
++    while ((u % 2 == 0) && (v % 2 == 0) && k < 31) {
+         // while u and v are both even...
+         // cast out twos.
+         u /= 2;
+@@ -32,12 +32,12 @@
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least
+     //     one is odd.
+-    int t = ((u & 1) == 1) ? v : -(u / 2);
++    int t = ((u % 2 == 1) ? v : -(u / 2));
+     // t negative: u was odd, v may be even (t replaces v)
+     // t positive: u was even, v is odd (t replaces u)
+     do {
+                 // B4/B3: cast out twos from t.
+-        while ((t & 1) == 0) {
++        while ((t % 2 == 0)) {
+             // while t is even..
+             // cast out twos
+             t /= 2;

@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -15,6 +15,7 @@
+             value = NodeUtil.newUndefinedNode(srcLocation);
+         }
+         Preconditions.checkNotNull(value);
++        NodeUtil.tryToOptimizeUnusedResult(value);
+         inlineWellDefinedVariable(v, value, referenceInfo.references);
+         staleVars.add(v);
+     } else if (refCount == firstRefAfterInit) {
+@@ -31,6 +32,7 @@
+             // the variable declaration.
+             Node value = init.getAssignedValue();
+             Preconditions.checkNotNull(value);
++            NodeUtil.tryToOptimizeUnusedResult(value);
+             inlineWellDefinedVariable(v, value, referenceInfo.references);
+             staleVars.add(v);
+         }
+@@ -44,7 +46,7 @@
+         // once is *NOT* correct. We relax the correctness requirement if
+         // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
++        for (int i = 1; i < refs.size(); i++) {
+             Node nameNode = refs.get(i).getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);
+@@ -53,6 +55,7 @@
+                     aliasInit = candidate.refInfo.getInitializingReference();
+                     Node value = aliasInit.getAssignedValue();
+                     Preconditions.checkNotNull(value);
++                    NodeUtil.tryToOptimizeUnusedResult(value);
+                     inlineWellDefinedVariable(candidate.alias, value, candidate.refInfo.references);
+                     staleVars.add(candidate.alias);
+                 }

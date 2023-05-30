@@ -1,0 +1,32 @@
+--- org/apache/commons/math/util/MathUtils.java@gcd
++++ org/apache/commons/math/util/MathUtils.java@gcd
+@@ -29,11 +29,11 @@
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least
+     // one is odd.
+-    int t = ((u & 1) == 1) ? v : -(u / 2);
++    int t = ((u & 1) == 1) ? u : -(v / 2);
+     // t negative: u was odd, v may be even (t replaces v)
+     // t positive: u was even, v is odd (t replaces u)
+     do {
+-                // B4/B3: cast out twos from t.
++        // B4/B3: cast out twos from t.
+         while ((t & 1) == 0) {
+             // while t is even..
+             // cast out twos
+@@ -41,12 +41,12 @@
+         }
+         // B5 [reset max(u,v)]
+         if (t > 0) {
+-            u = -t;
++            v = -t;
+         } else {
+-            v = t;
++            u = t;
+         }
+         // B6/B3. at this point both u and v should be odd.
+-        t = (v - u) / 2;
++        t = (u - v) / 2;
+         // |u| larger: t positive (replace u)
+         // |v| larger: t negative (replace v)
+     } while (t != 0);

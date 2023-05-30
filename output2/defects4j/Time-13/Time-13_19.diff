@@ -1,0 +1,22 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -15,7 +15,7 @@
+             sum -= 4;
+         }
+         // reset valueLong to refer to the seconds part for the prefic/suffix calculation
+-        valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
++        valueLong = valueLong / DateTimeConstants.SECONDS_PER_MILLI;
+     }
+     int value = (int) valueLong;
+     if (iPrefix != null) {
+--- org/joda/time/format/PeriodFormatterBuilder.java@printTo
++++ org/joda/time/format/PeriodFormatterBuilder.java@printTo
+@@ -5,7 +5,7 @@
+     }
+     int value = (int) valueLong;
+     if (iFieldType >= SECONDS_MILLIS) {
+-        value = (int) (valueLong / DateTimeConstants.MILLIS_PER_SECOND);
++        value = (int) (valueLong / DateTimeConstants.SECONDS_PER_MILLI);
+     }
+     if (iPrefix != null) {
+         iPrefix.printTo(buf, value);

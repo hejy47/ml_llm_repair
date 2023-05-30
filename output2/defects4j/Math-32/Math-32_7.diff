@@ -1,0 +1,18 @@
+--- org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java@computeGeometricalProperties
++++ org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java@computeGeometricalProperties
+@@ -3,13 +3,13 @@
+     final Vector2D[][] v = getVertices();
+     if (v.length == 0) {
+         final BSPTree<Euclidean2D> tree = getTree(false);
+-        if ((Boolean) tree.getAttribute()) {
++        if (tree.getAttribute() instanceof Boolean && (Boolean) tree.getAttribute()) {
+             // the instance covers the whole space
+             setSize(Double.POSITIVE_INFINITY);
+             setBarycenter(Vector2D.NaN);
+         } else {
+             setSize(0);
+-            setBarycenter(new Vector2D(0, 0));
++            setBarycenter(Vector2D.ZERO);
+         }
+     } else if (v[0][0] == null) {
+         // there is at least one open-loop: the polygon is infinite

@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
++++ com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
+@@ -1,6 +1,6 @@
+ private void makeLocalNamesUnique(Node fnNode, boolean isCallInLoop) {
+     Supplier<String> idSupplier = compiler.getUniqueNameIdSupplier();
+     // Make variable names unique to this instance.
+-    NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop)));
++    NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new RenamePrivateVariables(idSupplier, "inline_", isCallInLoop)));
+     // Make label names unique to this instance.
+ }
+--- com/google/javascript/jscomp/RenameLabels.java@visitLabel
++++ com/google/javascript/jscomp/RenameLabels.java@visitLabel
+@@ -13,8 +13,7 @@
+         }
+     } else {
+         // ... and it is not referenced, just remove it.
+-        Node newChild = node.getLastChild();
+-        node.removeChild(newChild);
++        Node newChild = node.getFirstChild();
+         parent.replaceChild(node, newChild);
+         if (newChild.getType() == Token.BLOCK) {
+             NodeUtil.tryMergeBlock(newChild);

@@ -1,0 +1,18 @@
+--- org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getU
++++ org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getU
+@@ -32,5 +32,5 @@
+         }
+     }
+     // return the cached matrix
+-    return cachedU;
++    return cachedU.copy(); //Fixed to return a copy of the cached matrix to prevent it from being modified
+ }
+--- org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getV
++++ org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getV
+@@ -32,5 +32,5 @@
+         }
+     }
+     // return the cached matrix
+-    return cachedV;
++    return cachedV.copy(); //Fixed to return a copy of the cached matrix to prevent it from being modified
+ }

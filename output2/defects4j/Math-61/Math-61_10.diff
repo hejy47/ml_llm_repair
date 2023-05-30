@@ -1,0 +1,10 @@
+--- org/apache/commons/math/distribution/PoissonDistributionImpl.java@PoissonDistributionImpl
++++ org/apache/commons/math/distribution/PoissonDistributionImpl.java@PoissonDistributionImpl
+@@ -1,6 +1,6 @@
+ public PoissonDistributionImpl(double p, double epsilon, int maxIterations) {
+     if (p <= 0) {
+-        throw MathRuntimeException.createIllegalArgumentException(LocalizedFormats.NOT_POSITIVE_POISSON_MEAN, p);
++        throw new IllegalArgumentException("The Poisson mean must be positive");
+     }
+     mean = p;
+     normal = new NormalDistributionImpl(p, FastMath.sqrt(p));

@@ -1,0 +1,35 @@
+--- org/apache/commons/lang3/text/translate/CharSequenceTranslator.java@translate
++++ org/apache/commons/lang3/text/translate/CharSequenceTranslator.java@translate
+@@ -10,20 +10,19 @@
+     while (pos < len) {
+         int consumed = translate(input, pos, out);
+         if (consumed == 0) {
+-            char[] c = Character.toChars(Character.codePointAt(input, pos));
+-            out.write(c);
++            int codepoint = Character.codePointAt(input, pos);
++            // Check if the input character is a supplementary Unicode character
++            if (Character.isSupplementaryCodePoint(codepoint)) {
++                // If it is, write the character as two consecutive UTF-16 code units
++                out.write(Character.highSurrogate(codepoint));
++                out.write(Character.lowSurrogate(codepoint));
++            } else {
++                // If it is not, write the character as a single UTF-16 code unit
++                out.write((char) codepoint);
++            }
++            pos += Character.charCount(codepoint);
+         } else {
+-            //          // contract with translators is that they have to understand codepoints
+-            //          // and they just took care of a surrogate pair
+-            for (int pt = 0; pt < consumed; pt++) {
+-                if (pos < len - 2) {
+-                    pos += Character.charCount(Character.codePointAt(input, pos));
+-                } else {
+-                    pos++;
+-                }
+-            }
+-            pos--;
++            pos += consumed;
+         }
+-        pos++;
+     }
+ }

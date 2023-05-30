@@ -1,0 +1,65 @@
+--- org/apache/commons/math/complex/Complex.java@Complex
++++ org/apache/commons/math/complex/Complex.java@Complex
+@@ -1,6 +1,6 @@
+ public Complex(double real, double imaginary) {
+     this.real = real;
+     this.imaginary = imaginary;
+-    isNaN = Double.isNaN(real) || Double.isNaN(imaginary);
+-    isInfinite = !isNaN && (Double.isInfinite(real) || Double.isInfinite(imaginary));
++    this.isNaN = Double.isNaN(real) || Double.isNaN(imaginary);
++    this.isInfinite = !this.isNaN && (Double.isInfinite(real) || Double.isInfinite(imaginary));
+ }
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -1,23 +1,23 @@
+ public Complex divide(Complex divisor) throws NullArgumentException {
+     MathUtils.checkNotNull(divisor);
+-    if (isNaN || divisor.isNaN) {
+-        return NaN;
++    if (this.isNaN || divisor.isNaN) {
++        return Complex.NaN;
+     }
+     if (divisor.getReal() == 0.0 && divisor.getImaginary() == 0.0) {
+-        return NaN;
++        return Complex.NaN;
+     }
+-    if (divisor.isInfinite() && !isInfinite()) {
+-        return ZERO;
++    if (divisor.isInfinite() && !this.isInfinite()) {
++        return Complex.ZERO;
+     }
+     final double c = divisor.getReal();
+     final double d = divisor.getImaginary();
+     if (FastMath.abs(c) < FastMath.abs(d)) {
+         double q = c / d;
+         double denominator = c * q + d;
+-        return createComplex((real * q + imaginary) / denominator, (imaginary * q - real) / denominator);
++        return createComplex((this.real * q + this.imaginary) / denominator, (this.imaginary * q - this.real) / denominator);
+     } else {
+         double q = d / c;
+         double denominator = d * q + c;
+-        return createComplex((imaginary * q + real) / denominator, (imaginary - real * q) / denominator);
++        return createComplex((this.imaginary * q + this.real) / denominator, (this.imaginary - this.real * q) / denominator);
+     }
+ }
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -1,12 +1,12 @@
+ public Complex divide(double divisor) {
+-    if (isNaN || Double.isNaN(divisor)) {
+-        return NaN;
++    if (this.isNaN || Double.isNaN(divisor)) {
++        return Complex.NaN;
+     }
+-    if (divisor == 0d) {
+-        return NaN;
++    if (divisor == 0.0d) {
++        return Complex.NaN;
+     }
+     if (Double.isInfinite(divisor)) {
+-        return !isInfinite() ? ZERO : NaN;
++        return !this.isInfinite() ? Complex.ZERO : Complex.NaN;
+     }
+-    return createComplex(real / divisor, imaginary / divisor);
++    return createComplex(this.real / divisor, this.imaginary / divisor);
+ }

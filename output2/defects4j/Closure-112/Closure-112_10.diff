@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -12,6 +12,8 @@
+     FunctionType replacementFnType = fnType.visit(replacer).toMaybeFunctionType();
+     Preconditions.checkNotNull(replacementFnType);
+     callTarget.setJSType(replacementFnType);
+-    n.setJSType(replacementFnType.getReturnType());
++    if (n.isCall()) {
++        n.setJSType(replacementFnType.getReturnType());
++    }
+     return replacer.madeChanges;
+ }

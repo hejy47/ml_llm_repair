@@ -1,0 +1,12 @@
+--- org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
++++ org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
+@@ -7,8 +7,8 @@
+     int lastHold = start;
+     for (int i = pos.getIndex(); i < pattern.length(); i++) {
+         if (escapingOn && pattern.substring(i).startsWith(ESCAPED_QUOTE)) {
+-            appendTo.append(c, lastHold, pos.getIndex() - lastHold).append(QUOTE);
+             pos.setIndex(i + ESCAPED_QUOTE.length());
++            appendTo.append(c, lastHold, pos.getIndex() - lastHold - ESCAPED_QUOTE.length()).append(QUOTE);
+             lastHold = pos.getIndex();
+             continue;
+         }

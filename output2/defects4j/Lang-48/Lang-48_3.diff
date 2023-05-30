@@ -1,0 +1,16 @@
+--- org/apache/commons/lang/builder/EqualsBuilder.java@append
++++ org/apache/commons/lang/builder/EqualsBuilder.java@append
+@@ -10,11 +10,11 @@
+         this.setEquals(false);
+         return this;
+     }
+-    Class lhsClass = lhs.getClass();
++    Class<?> lhsClass = lhs.getClass();
+     if (!lhsClass.isArray()) {
+         // The simple case, not an array, just test the element
+         isEquals = lhs.equals(rhs);
+-    } else if (lhs.getClass() != rhs.getClass()) {
++    } else if (lhsClass != rhs.getClass()) {
+         // Here when we compare different dimensions, for example: a boolean[][] to a boolean[]
+         this.setEquals(false);
+     } else // 'Switch' on type of array, to dispatch to the correct handler

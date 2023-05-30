@@ -1,0 +1,37 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -41,16 +41,26 @@
+             f0 = f1;
+             inverted = !inverted;
+         } else {
++            if (f0 * fx < 0) {
++                f1 = fx;
++            } else {
++                f0 = fx;
++            }
+             switch(method) {
+                 case ILLINOIS:
+                     f0 *= 0.5;
++                    f1 *= 0.5;
+                     break;
+                 case PEGASUS:
+                     f0 *= f1 / (f1 + fx);
++                    f1 *= fx / (f1 + fx);
+                     break;
+                 case REGULA_FALSI:
+                     // Detect early that algorithm is stuck, instead of waiting
+                     // for the maximum number of iterations to be exceeded.
++                    if (f0 == f1) {
++                        return x1;
++                    }
+                     break;
+                 default:
+                     // Should never happen.
+@@ -59,7 +69,6 @@
+         }
+         // Update from [x0, x1] to [x0, x].
+         x1 = x;
+-        f1 = fx;
+         // If the function value of the last approximation is too small,
+         // given the function value accuracy, then we can't get closer to
+         // the root than we already are.

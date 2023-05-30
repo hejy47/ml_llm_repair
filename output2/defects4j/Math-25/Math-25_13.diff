@@ -1,0 +1,29 @@
+--- org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
++++ org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
+@@ -16,7 +16,7 @@
+         final double previousY = currentY;
+         currentX = observations[i].getX();
+         currentY = observations[i].getY();
+-        // update the integrals of f<sup>2</sup> and f'<sup>2</sup>
++        // update the integrals of f^2 and f'^2
+         // considering a linear model for f (and therefore constant f')
+         final double dx = currentX - previousX;
+         final double dy = currentY - previousY;
+@@ -35,7 +35,7 @@
+     double c1 = sy2 * sxz - sxy * syz;
+     double c2 = sxy * sxz - sx2 * syz;
+     double c3 = sx2 * sy2 - sxy * sxy;
+-    if ((c1 / c2 < 0) || (c2 / c3 < 0)) {
++    if ((c1 / c2 < 0) || (c2 / c3 < 0) || (c3 == 0)) { // fixed condition
+         final int last = observations.length - 1;
+         // Range of the observations, assuming that the
+         // observations are sorted.
+@@ -57,8 +57,6 @@
+         }
+         a = 0.5 * (yMax - yMin);
+     } else {
+-        // In some ill-conditioned cases (cf. MATH-844), the guesser
+-        // procedure cannot produce sensible results.
+         a = FastMath.sqrt(c1 / c2);
+         omega = FastMath.sqrt(c2 / c3);
+     }

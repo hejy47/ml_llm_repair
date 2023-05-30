@@ -1,0 +1,73 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -8,8 +8,48 @@
+         case Token.ASSIGN:
+         case Token.INC:
+         case Token.DEC:
++        case Token.REGEXP:
+             return true;
+         case Token.FUNCTION:
++        case Token.EQ:
++        case Token.NE:
++        case Token.LE:
++        case Token.LT:
++        case Token.GE:
++        case Token.GT:
++        case Token.INSTANCEOF:
++        case Token.IN:
++        case Token.OR:
++        case Token.AND:
++        case Token.CONDITIONAL:
++        case Token.HOOK:
++        case Token.NAME:
++        case Token.NUMBER:
++        case Token.STRING:
++        case Token.SWITCH:
++        case Token.CASE:
++        case Token.DEFAULT:
++        case Token.RETURN:
++        case Token.VOID:
++        case Token.NEW_WITH_ARGS:
++        case Token.DELPROP:
++        case Token.TYPEOF:
++        case Token.ADD:
++        case Token.SUB:
++        case Token.MUL:
++        case Token.MOD:
++        case Token.DIV:
++        case Token.BITNOT:
++        case Token.NOT:
++        case Token.POS:
++        case Token.NEG:
++        case Token.BITOR:
++        case Token.BITXOR:
++        case Token.BITAND:
++        case Token.LSH:
++        case Token.RSH:
++        case Token.URSH:
++        case Token.EMPTY:
+             return false;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -19,6 +19,7 @@
+     while (objType != null && objType.getImplicitPrototype() != objType) {
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
++            break;
+         }
+         objType = objType.getImplicitPrototype();
+     }
+@@ -27,5 +28,11 @@
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+     // so we have to double check.
++    if (foundType == null && type.getObjectType() != null) {
++        ObjectType obj = type.getObjectType().getGreatestSubtypeWithProperty(field);
++        if (obj != null && obj.hasOwnProperty(field)) {
++            foundType = obj;
++        }
++    }
+     return foundType;
+ }

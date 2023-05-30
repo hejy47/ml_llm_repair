@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -23,9 +23,11 @@
+                 return CanInlineResult.NO;
+             }
+             cArg = cArg.getNext();
++        } else if (NodeUtil.isFunctionObjectApply(callNode)) { // Changed condition
++            // Also check for ".apply" call, return NO
++            return CanInlineResult.NO;
+         } else {
+-            // ".apply" call should be filtered before this.
+-            Preconditions.checkState(!NodeUtil.isFunctionObjectApply(callNode));
++            Preconditions.checkState(false); // Added assertion
+         }
+     }
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]

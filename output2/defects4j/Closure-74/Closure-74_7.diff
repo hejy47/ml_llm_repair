@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -115,7 +115,7 @@
+             if (compareResult != null) {
+                 result = compareResult;
+             } else {
+-                return null;
++                return n;
+             }
+             break;
+         case Token.NAME:

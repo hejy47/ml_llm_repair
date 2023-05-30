@@ -1,0 +1,34 @@
+--- org/apache/commons/math/fraction/BigFraction.java@doubleValue
++++ org/apache/commons/math/fraction/BigFraction.java@doubleValue
+@@ -1,7 +1,11 @@
+ @Override
+ public double doubleValue() {
+     double result = numerator.doubleValue() / denominator.doubleValue();
+-    // Numerator and/or denominator must be out of range:
+-    // Calculate how far to shift them to put them in range.
++    if (Double.isInfinite(result) && ! Double.isNaN(result)) {
++        result = Double.POSITIVE_INFINITY;
++    }
++    if (Double.isNaN(result)) {
++        throw new ArithmeticException("Undefined");
++    }
+     return result;
+ }
+--- org/apache/commons/math/fraction/BigFraction.java@floatValue
++++ org/apache/commons/math/fraction/BigFraction.java@floatValue
+@@ -1,7 +1,11 @@
+ @Override
+-public float floatValue() {
+-    float result = numerator.floatValue() / denominator.floatValue();
+-    // Numerator and/or denominator must be out of range:
+-    // Calculate how far to shift them to put them in range.
++public double doubleValue() {
++    double result = numerator.doubleValue() / denominator.doubleValue();
++    if (Double.isInfinite(result) && ! Double.isNaN(result)) {
++        result = Double.POSITIVE_INFINITY;
++    }
++    if (Double.isNaN(result)) {
++        throw new ArithmeticException("Undefined");
++    }
+     return result;
+ }

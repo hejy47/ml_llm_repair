@@ -1,0 +1,1 @@
+There is no need for any fix in the Math project as no buggy function has been provided.

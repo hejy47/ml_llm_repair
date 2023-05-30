@@ -1,0 +1,68 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,6 +1,6 @@
+ public int compareTo(DurationField durationField) {
+-    if (durationField.isSupported()) {
+-        return 1;
++    if (durationField == null || !durationField.isSupported()) {
++        return -1;
+     }
+     return 0;
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -21,35 +21,33 @@
+             throw new IllegalArgumentException("Types array must not contain null: index " + i);
+         }
+     }
+-    DurationField lastUnitField = null;
++    DurationFieldType lastUnitType = null;
+     for (int i = 0; i < types.length; i++) {
+-        DateTimeFieldType loopType = types[i];
+-        DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
++        DateTimeFieldType fieldType = types[i];
++        DurationFieldType unitType = fieldType.getDurationType();
++        if (unitType == null) {
++            throw new IllegalArgumentException("Types array must not contain a field that has a null duration type: " + fieldType.getName());
++        }
+         if (i > 0) {
+-            int compare = lastUnitField.compareTo(loopUnitField);
+-            if (compare < 0) {
+-                throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
++            int compare = unitType.compareTo(lastUnitType);
++            if (compare > 0) {
++                throw new IllegalArgumentException("Types array must be in order largest-smallest: " + lastUnitType.getName() + " < " + unitType.getName());
+             } else if (compare == 0) {
+-                if (types[i - 1].getRangeDurationType() == null) {
+-                    if (loopType.getRangeDurationType() == null) {
+-                        throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + loopType.getName());
+-                    }
++                if (types[i - 1].getRangeDurationType() == null || fieldType.getRangeDurationType() == null) {
++                    throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + fieldType.getName());
+                 } else {
+-                    if (loopType.getRangeDurationType() == null) {
+-                        throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+-                    }
+-                    DurationField lastRangeField = types[i - 1].getRangeDurationType().getField(iChronology);
+-                    DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
+-                    if (lastRangeField.compareTo(loopRangeField) < 0) {
+-                        throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+-                    }
+-                    if (lastRangeField.compareTo(loopRangeField) == 0) {
+-                        throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + loopType.getName());
++                    DurationFieldType lastRangeType = types[i - 1].getRangeDurationType();
++                    DurationFieldType rangeType = fieldType.getRangeDurationType();
++                    int rangeCompare = rangeType.compareTo(lastRangeType);
++                    if (rangeCompare < 0) {
++                        throw new IllegalArgumentException("Types array must be in order largest-smallest: " + lastRangeType.getName() + " < " + rangeType.getName());
++                    } else if (rangeCompare == 0) {
++                        throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + fieldType.getName());
+                     }
+                 }
+             }
+         }
+-        lastUnitField = loopUnitField;
++        lastUnitType = unitType;
+     }
+     iTypes = (DateTimeFieldType[]) types.clone();
+     chronology.validate(this, values);

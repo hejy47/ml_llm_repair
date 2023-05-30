@@ -1,0 +1,23 @@
+## Fixed Function 1
+public Complex reciprocal() {
+    if (isNaN) {
+        return NaN;
+    }
+    if (real == 0.0 && imaginary == 0.0) {
+        // The reciprocal of 0 is undefined, so return infinite.
+        return INF;
+    }
+    if (isInfinite) {
+        // The reciprocal of infinity is 0.
+        return ZERO;
+    }
+    if (FastMath.abs(real) < FastMath.abs(imaginary)) {
+        double q = real / imaginary;
+        double scale = 1. / (real * q + imaginary);
+        return createComplex(scale * q, -scale);
+    } else {
+        double q = imaginary / real;
+        double scale = 1. / (imaginary * q + real);
+        return createComplex(scale, -scale * q);
+    }
+}

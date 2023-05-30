@@ -1,0 +1,19 @@
+--- org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
+@@ -55,7 +55,7 @@
+                     sum += b[l] * yDotK[l][j];
+                 }
+                 yTmp[j] = y[j] + stepSize * sum;
+-            }
++            }            
+             // discrete events handling
+             interpolator.storeTime(stepStart + stepSize);
+             if (manager.evaluateStep(interpolator)) {
+@@ -70,6 +70,7 @@
+                 } else {
+                     // reject the step to match exactly the next switch time
+                     stepSize = dt;
++                    break;
+                 }
+             } else {
+                 loop = false;

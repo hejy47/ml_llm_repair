@@ -1,0 +1,17 @@
+--- org/joda/time/DateTimeZone.java@getOffsetFromLocal
++++ org/joda/time/DateTimeZone.java@getOffsetFromLocal
+@@ -13,9 +13,11 @@
+             // back before the transition, whereas it should be
+             // on or after the transition
+             long nextLocal = nextTransition(instantAdjusted);
+-            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);
+-            if (nextLocal != nextAdjusted) {
+-                return offsetLocal;
++            if (nextLocal != instantLocal) {
++                long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);
++                if (nextLocal != nextAdjusted) {
++                    return offsetLocal;
++                }
+             }
+         }
+     } else if (offsetLocal > 0) {

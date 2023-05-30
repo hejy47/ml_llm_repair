@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
++++ com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
+@@ -11,7 +11,8 @@
+                     defineSlot(astParameter, functionNode, jsDocParameter.getJSType(), true);
+                     jsDocParameter = jsDocParameter.getNext();
+                 } else {
+-                    defineSlot(astParameter, functionNode, null, true);
++                    // Fixed: Pass in an empty type instead of null
++                    defineSlot(astParameter, functionNode, JSType.UNKNOWN, true);
+                 }
+             }
+         }

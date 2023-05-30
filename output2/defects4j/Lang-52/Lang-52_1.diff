@@ -1,0 +1,14 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -54,9 +54,9 @@
+                     }
+                     out.write('\'');
+                     break;
+-                case '"':
++                case '\"': // Fixed to correctly escape double quotes
+                     out.write('\\');
+-                    out.write('"');
++                    out.write('\"');
+                     break;
+                 case '\\':
+                     out.write('\\');

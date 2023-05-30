@@ -1,0 +1,14 @@
+--- org/joda/time/DateTimeZone.java@getOffsetFromLocal
++++ org/joda/time/DateTimeZone.java@getOffsetFromLocal
+@@ -15,7 +15,10 @@
+             long nextLocal = nextTransition(instantAdjusted);
+             long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);
+             if (nextLocal != nextAdjusted) {
+-                return offsetLocal;
++                int offsetNextAdjusted = getOffset(nextAdjusted);
++                if (offsetLocal != offsetNextAdjusted) {
++                    return offsetLocal;
++                }
+             }
+         }
+     } else if (offsetLocal > 0) {

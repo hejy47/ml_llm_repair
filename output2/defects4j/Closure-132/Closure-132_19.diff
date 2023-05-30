@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
+@@ -1,7 +1,7 @@
+ private Node tryMinimizeIf(Node n) {
+     Node parent = n.getParent();
+     Node cond = n.getFirstChild();
+-        if (NodeUtil.isLiteralValue(cond, true)) {
++    if (NodeUtil.isLiteralValue(cond, true)) {
+         return n;
+     }
+     Node thenBranch = cond.getNext();
+@@ -63,7 +63,7 @@
+         }
+         return n;
+     }
+-        tryRemoveRepeatedStatements(n);
++    tryRemoveRepeatedStatements(n);
+     // if(!x)foo();else bar(); -> if(x)bar();else foo();
+     // An additional set of curly braces isn't worth it.
+     if (cond.isNot() && !consumesDanglingElse(elseBranch)) {

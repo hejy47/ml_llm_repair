@@ -1,0 +1,21 @@
+--- org/joda/time/Period.java@normalizedStandard
++++ org/joda/time/Period.java@normalizedStandard
+@@ -2,12 +2,12 @@
+ public Period normalizedStandard(PeriodType type) {
+     type = DateTimeUtils.getPeriodType(type);
+     // no overflow can happen, even with Integer.MAX_VALUEs
+-    long millis = getMillis();
+-    millis += (((long) getSeconds()) * ((long) DateTimeConstants.MILLIS_PER_SECOND));
+-    millis += (((long) getMinutes()) * ((long) DateTimeConstants.MILLIS_PER_MINUTE));
+-    millis += (((long) getHours()) * ((long) DateTimeConstants.MILLIS_PER_HOUR));
+-    millis += (((long) getDays()) * ((long) DateTimeConstants.MILLIS_PER_DAY));
+-    millis += (((long) getWeeks()) * ((long) DateTimeConstants.MILLIS_PER_WEEK));
++    long millis = getMillis() +
++            ((long) getSeconds() * DateTimeConstants.MILLIS_PER_SECOND) +
++            ((long) getMinutes() * DateTimeConstants.MILLIS_PER_MINUTE) +
++            ((long) getHours() * DateTimeConstants.MILLIS_PER_HOUR) +
++            ((long) getDays() * DateTimeConstants.MILLIS_PER_DAY) +
++            ((long) getWeeks() * DateTimeConstants.MILLIS_PER_WEEK);
+     Period result = new Period(millis, type, ISOChronology.getInstanceUTC());
+     int years = getYears();
+     int months = getMonths();

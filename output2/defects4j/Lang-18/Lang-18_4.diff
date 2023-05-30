@@ -1,0 +1,137 @@
+--- org/apache/commons/lang3/time/FastDateFormat.java@parsePattern
++++ org/apache/commons/lang3/time/FastDateFormat.java@parsePattern
+@@ -19,23 +19,20 @@
+         if (tokenLen == 0) {
+             break;
+         }
+-        Rule rule;
++        Rule rule = null;
+         char c = token.charAt(0);
+-        switch(c) {
+-            case // era designator (text)
+-            'G':
++        switch (c) {
++            case 'G': // era designator (text)
+                 rule = new TextField(Calendar.ERA, ERAs);
+                 break;
+-            case // year (number)
+-            'y':
++            case 'y': // year (number)
+                 if (tokenLen >= 4) {
+                     rule = selectNumberRule(Calendar.YEAR, tokenLen);
+                 } else {
+                     rule = TwoDigitYearField.INSTANCE;
+                 }
+                 break;
+-            case // month in year (text and number)
+-            'M':
++            case 'M': // month in year (text and number)
+                 if (tokenLen >= 4) {
+                     rule = new TextField(Calendar.MONTH, months);
+                 } else if (tokenLen == 3) {
+@@ -46,85 +43,67 @@
+                     rule = UnpaddedMonthField.INSTANCE;
+                 }
+                 break;
+-            case // day in month (number)
+-            'd':
++            case 'd': // day in month (number)
+                 rule = selectNumberRule(Calendar.DAY_OF_MONTH, tokenLen);
+                 break;
+-            case // hour in am/pm (number, 1..12)
+-            'h':
++            case 'h': // hour in am/pm (number, 1..12)
+                 rule = new TwelveHourField(selectNumberRule(Calendar.HOUR, tokenLen));
+                 break;
+-            case // hour in day (number, 0..23)
+-            'H':
++            case 'H': // hour in day (number, 0..23)
+                 rule = selectNumberRule(Calendar.HOUR_OF_DAY, tokenLen);
+                 break;
+-            case // minute in hour (number)
+-            'm':
++            case 'm': // minute in hour (number)
+                 rule = selectNumberRule(Calendar.MINUTE, tokenLen);
+                 break;
+-            case // second in minute (number)
+-            's':
++            case 's': // second in minute (number)
+                 rule = selectNumberRule(Calendar.SECOND, tokenLen);
+                 break;
+-            case // millisecond (number)
+-            'S':
++            case 'S': // millisecond (number)
+                 rule = selectNumberRule(Calendar.MILLISECOND, tokenLen);
+                 break;
+-            case // day in week (text)
+-            'E':
++            case 'E': // day in week (text)
+                 rule = new TextField(Calendar.DAY_OF_WEEK, tokenLen < 4 ? shortWeekdays : weekdays);
+                 break;
+-            case // day in year (number)
+-            'D':
++            case 'D': // day in year (number)
+                 rule = selectNumberRule(Calendar.DAY_OF_YEAR, tokenLen);
+                 break;
+-            case // day of week in month (number)
+-            'F':
++            case 'F': // day of week in month (number)
+                 rule = selectNumberRule(Calendar.DAY_OF_WEEK_IN_MONTH, tokenLen);
+                 break;
+-            case // week in year (number)
+-            'w':
++            case 'w': // week in year (number)
+                 rule = selectNumberRule(Calendar.WEEK_OF_YEAR, tokenLen);
+                 break;
+-            case // week in month (number)
+-            'W':
++            case 'W': // week in month (number)
+                 rule = selectNumberRule(Calendar.WEEK_OF_MONTH, tokenLen);
+                 break;
+-            case // am/pm marker (text)
+-            'a':
++            case 'a': // am/pm marker (text)
+                 rule = new TextField(Calendar.AM_PM, AmPmStrings);
+                 break;
+-            case // hour in day (1..24)
+-            'k':
++            case 'k': // hour in day (1..24)
+                 rule = new TwentyFourHourField(selectNumberRule(Calendar.HOUR_OF_DAY, tokenLen));
+                 break;
+-            case // hour in am/pm (0..11)
+-            'K':
++            case 'K': // hour in am/pm (0..11)
+                 rule = selectNumberRule(Calendar.HOUR, tokenLen);
+                 break;
+-            case // time zone (text)
+-            'z':
++            case 'z': // time zone (text)
+                 if (tokenLen >= 4) {
+                     rule = new TimeZoneNameRule(mTimeZone, mLocale, TimeZone.LONG);
+                 } else {
+                     rule = new TimeZoneNameRule(mTimeZone, mLocale, TimeZone.SHORT);
+                 }
+                 break;
+-            case // time zone (value)
+-            'Z':
++            case 'Z': // time zone (value)
+                 if (tokenLen == 1) {
+                     rule = TimeZoneNumberRule.INSTANCE_NO_COLON;
+                 } else {
+                     rule = TimeZoneNumberRule.INSTANCE_COLON;
+                 }
+                 break;
+-            case // literal text
+-            '\'':
+-                String sub = token.substring(1);
+-                if (sub.length() == 1) {
+-                    rule = new CharacterLiteral(sub.charAt(0));
++            case '\'': // literal text
++                if (tokenLen > 2) {
++                    rule = new StringLiteral(token.substring(1, tokenLen - 1));
+                 } else {
+-                    rule = new StringLiteral(sub);
++                    rule = new CharacterLiteral(token.charAt(1));
+                 }
+                 break;
+             default:

@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -3,8 +3,8 @@
+         return;
+     }
+     Node arrayNode = left.getFirstChild();
+-    Node functionName = arrayNode.getNext();
+-    if ((arrayNode.getType() != Token.ARRAYLIT) || !functionName.getString().equals("join")) {
++    Node functionName = left.getSecondChild();
++    if ((left.getType() != Token.CALL) || (functionName == null) || !functionName.getString().equals("join")) {
+         return;
+     }
+     String joinString = NodeUtil.getStringValue(right);

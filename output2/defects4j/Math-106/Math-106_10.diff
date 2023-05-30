@@ -1,0 +1,36 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -27,7 +27,7 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
+-    // minus signs should be leading, invalid expression
++    
+     // parse '/'
+     int startIndex = pos.getIndex();
+     char c = parseNextCharacter(source, pos);
+@@ -37,6 +37,7 @@
+             // return num as a fraction
+             return new Fraction(num.intValue(), 1);
+         case '/':
++            parseAndIgnoreWhitespace(source, pos); //parse whitespace after '/'
+             // found '/', continue parsing denominator
+             break;
+         default:
+@@ -47,8 +48,6 @@
+             pos.setErrorIndex(startIndex);
+             return null;
+     }
+-    // parse whitespace
+-    parseAndIgnoreWhitespace(source, pos);
+     // parse denominator
+     Number den = getDenominatorFormat().parse(source, pos);
+     if (den == null) {
+@@ -58,6 +57,7 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
++    
+     // minus signs must be leading, invalid
+     int w = whole.intValue();
+     int n = num.intValue();

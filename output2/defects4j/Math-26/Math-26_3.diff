@@ -1,0 +1,23 @@
+--- org/apache/commons/math3/fraction/Fraction.java@Fraction
++++ org/apache/commons/math3/fraction/Fraction.java@Fraction
+@@ -16,8 +16,8 @@
+     long q0 = 0;
+     long p1 = a0;
+     long q1 = 1;
+-    long p2 = 0;
+-    long q2 = 1;
++    long p2;
++    long q2;
+     int n = 0;
+     boolean stop = false;
+     do {
+@@ -48,7 +48,8 @@
+         this.numerator = (int) p2;
+         this.denominator = (int) q2;
+     } else {
++        // Replaced q1 with q2
+         this.numerator = (int) p1;
+-        this.denominator = (int) q1;
++        this.denominator = (int) q2;
+     }
+ }

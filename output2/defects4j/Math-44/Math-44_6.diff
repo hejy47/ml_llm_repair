@@ -1,0 +1,47 @@
+--- org/apache/commons/math/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math/ode/AbstractIntegrator.java@acceptStep
+@@ -11,21 +11,29 @@
+     }
+     // search for next events that may occur during the step
+     final int orderingSign = interpolator.isForward() ? +1 : -1;
+-    SortedSet<EventState> occuringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
++    SortedSet<EventState> occurringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
+ 
+-                public int compare(EventState es0, EventState es1) {
+-            return orderingSign * Double.compare(es0.getEventTime(), es1.getEventTime());
++        public int compare(EventState es0, EventState es1) {
++            double diff = es0.getEventTime() - es1.getEventTime();
++            if (diff < 0) {
++                return -1;
++            } else if (diff > 0) {
++                return +1;
++            } else {
++                return 0;
++            }
+         }
++
+     });
+     for (final EventState state : eventsStates) {
+         if (state.evaluateStep(interpolator)) {
+             // the event occurs during the current step
+-            occuringEvents.add(state);
++            occurringEvents.add(state);
+         }
+     }
+-    while (!occuringEvents.isEmpty()) {
++    while (!occurringEvents.isEmpty()) {
+         // handle the chronologically first event
+-        final Iterator<EventState> iterator = occuringEvents.iterator();
++        final Iterator<EventState> iterator = occurringEvents.iterator();
+         final EventState currentEvent = iterator.next();
+         iterator.remove();
+         // restrict the interpolator to the first part of the step, up to the event
+@@ -61,7 +69,7 @@
+         // check if the same event occurs again in the remaining part of the step
+         if (currentEvent.evaluateStep(interpolator)) {
+             // the event occurs during the current step
+-            occuringEvents.add(currentEvent);
++            occurringEvents.add(currentEvent);
+         }
+     }
+     interpolator.setInterpolatedTime(currentT);

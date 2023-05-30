@@ -1,0 +1,54 @@
+--- org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
++++ org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
+@@ -38,4 +38,51 @@
+         }
+     }
+     // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly
++    if (Double.isNaN(result[resultOffset])) {
++        if (Double.isNaN(x[xOffset]) || Double.isNaN(y[yOffset])) {
++            result[resultOffset] = Double.NaN;
++        } else if (x[xOffset] == 0) {
++            if (y[yOffset] == 0) {
++                result[resultOffset] = 0d;
++            } else if (y[yOffset] > 0) {
++                result[resultOffset] = FastMath.PI / 2d;
++            } else {
++                result[resultOffset] = -FastMath.PI / 2d;
++            }
++        } else if (y[yOffset] == 0) {
++            if (x[xOffset] > 0) {
++                result[resultOffset] = 0d;
++            } else {
++                result[resultOffset] = FastMath.PI;
++            }
++        } else if (Double.isInfinite(y[yOffset])) {
++            if (y[yOffset] > 0) {
++                if (x[xOffset] > 0) {
++                    result[resultOffset] = 0d;
++                } else {
++                    result[resultOffset] = FastMath.PI;
++                }
++            } else {
++                if (x[xOffset] > 0) {
++                    result[resultOffset] = -0d;
++                } else {
++                    result[resultOffset] = -FastMath.PI;
++                }
++            }
++        } else if (Double.isInfinite(x[xOffset])) {
++            if (x[xOffset] > 0) {
++                if (y[yOffset] > 0) {
++                    result[resultOffset] = FastMath.PI / 2d;
++                } else {
++                    result[resultOffset] = -FastMath.PI / 2d;
++                }
++            } else {
++                if (y[yOffset] > 0) {
++                    result[resultOffset] = FastMath.PI / 2d;
++                } else {
++                    result[resultOffset] = -FastMath.PI / 2d;
++                }
++            }
++        }
++    }
+ }

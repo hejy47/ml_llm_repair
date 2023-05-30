@@ -1,0 +1,80 @@
+--- org/joda/time/chrono/GJChronology.java@getInstance
++++ org/joda/time/chrono/GJChronology.java@getInstance
+@@ -11,6 +11,8 @@
+         ArrayList<GJChronology> chronos = cCache.get(zone);
+         if (chronos == null) {
+             chronos = new ArrayList<GJChronology>(2);
++            chrono = new GJChronology(JulianChronology.getInstance(zone, minDaysInFirstWeek), GregorianChronology.getInstance(zone, minDaysInFirstWeek), cutoverInstant);
++            chronos.add(chrono);
+             cCache.put(zone, chronos);
+         } else {
+             for (int i = chronos.size(); --i >= 0; ) {
+@@ -19,14 +21,9 @@
+                     return chrono;
+                 }
+             }
++            chrono = new GJChronology(JulianChronology.getInstance(zone, minDaysInFirstWeek), GregorianChronology.getInstance(zone, minDaysInFirstWeek), cutoverInstant);
++            chronos.add(chrono);
+         }
+-        if (zone == DateTimeZone.UTC) {
+-            chrono = new GJChronology(JulianChronology.getInstance(zone, minDaysInFirstWeek), GregorianChronology.getInstance(zone, minDaysInFirstWeek), cutoverInstant);
+-        } else {
+-            chrono = getInstance(DateTimeZone.UTC, cutoverInstant, minDaysInFirstWeek);
+-            chrono = new GJChronology(ZonedChronology.getInstance(chrono, zone), chrono.iJulianChronology, chrono.iGregorianChronology, chrono.iCutoverInstant);
+-        }
+-        chronos.add(chrono);
+     }
+     return chrono;
+ }
+--- org/joda/time/chrono/GJChronology.java@add
++++ org/joda/time/chrono/GJChronology.java@add
+@@ -3,17 +3,18 @@
+         instant = iGregorianField.add(instant, value);
+         if (instant < iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
+-                instant = gregorianToJulian(instant);
++            if (instant + iGapDuration >= iCutover) {
++                // need to undo the addition + shift back (the addition was a negative value)
++                instant = iGregorianField.add(instant - iGapDuration, -1);
+             }
+         }
+     } else {
+         instant = iJulianField.add(instant, value);
+         if (instant >= iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
+-                // no special handling for year zero as cutover always after year zero
+-                instant = julianToGregorian(instant);
++            if (instant - iGapDuration < iCutover) {
++                // need to undo the addition + shift forward (the addition was a negative value)
++                instant = iJulianField.add(instant + iGapDuration, 1);
+             }
+         }
+     }
+--- org/joda/time/chrono/GJChronology.java@add2
++++ org/joda/time/chrono/GJChronology.java@add2
+@@ -3,17 +3,18 @@
+         instant = iGregorianField.add(instant, value);
+         if (instant < iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
+-                instant = gregorianToJulian(instant);
++            if (instant + iGapDuration >= iCutover) {
++                // need to undo the addition + shift back (the addition was a negative value)
++                instant = iGregorianField.add(instant - iGapDuration, -1);
+             }
+         }
+     } else {
+         instant = iJulianField.add(instant, value);
+         if (instant >= iCutover) {
+             // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
+-                // no special handling for year zero as cutover always after year zero
+-                instant = julianToGregorian(instant);
++            if (instant - iGapDuration < iCutover) {
++                // need to undo the addition + shift forward (the addition was a negative value)
++                instant = iJulianField.add(instant + iGapDuration, 1);
+             }
+         }
+     }

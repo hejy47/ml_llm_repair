@@ -1,0 +1,10 @@
+--- org/apache/commons/math/util/MathUtils.java@distance
++++ org/apache/commons/math/util/MathUtils.java@distance
+@@ -4,5 +4,6 @@
+         final int dp = p1[i] - p2[i];
+         sum += dp * dp;
+     }
+-    return Math.sqrt(sum);
++    return Math.sqrt((double)sum);
++    //Cast sum to a double to force floating point division instead of integer division
+ }

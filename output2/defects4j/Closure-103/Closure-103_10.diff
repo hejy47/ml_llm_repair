@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -10,6 +10,7 @@
+         case Token.DEC:
+             return true;
+         case Token.FUNCTION:
++        case Token.CATCH:
+             return false;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -16,16 +16,18 @@
+     // like references to the initial property, so they are renamed alike.
+     ObjectType foundType = null;
+     ObjectType objType = ObjectType.cast(type);
+-    while (objType != null && objType.getImplicitPrototype() != objType) {
++    while (objType != null && foundType == null && objType.getImplicitPrototype() != objType) {
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
+         }
+         objType = objType.getImplicitPrototype();
+     }
+-    // If the property does not exist on the referenced type but the original
+-    // type is an object type, see if any subtype has the property.
+-    // getGreatestSubtypeWithProperty does not guarantee that the property
+-    // is defined on the returned type, it just indicates that it might be,
+-    // so we have to double check.
++    if (foundType == null && objType instanceof FunctionType) {
++        // If the property does not exist on the referenced type but the original
++        // type is a function type, we try to infer the type of the parameter.
++        // For example, if the function type represents a jQuery plugin, we assume
++        // the first parameter is a DOM element and return the object type of that.
++        foundType = CTypeUtils.getFromFunction((FunctionType) objType, 0);
++    }
+     return foundType;
+ }

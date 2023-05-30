@@ -1,0 +1,35 @@
+--- org/apache/commons/lang/Entities.java@unescape
++++ org/apache/commons/lang/Entities.java@unescape
+@@ -3,7 +3,7 @@
+     if (firstAmp < 0) {
+         return str;
+     }
+-    StringBuffer buf = new StringBuffer(str.length());
++    StringBuilder buf = new StringBuilder(str.length()); // Use StringBuilder instead of StringBuffer
+     buf.append(str.substring(0, firstAmp));
+     for (int i = firstAmp; i < str.length(); ++i) {
+         char ch = str.charAt(i);
+--- org/apache/commons/lang/Entities.java@unescape1
++++ org/apache/commons/lang/Entities.java@unescape1
+@@ -13,6 +13,7 @@
+             int semiColonIdx = string.indexOf(';', nextIdx);
+             if (semiColonIdx == -1) {
+                 writer.write(c);
++                i++; // Increment i to avoid infinite loop in case of missing semi-colon
+                 continue;
+             }
+             int amphersandIdx = string.indexOf('&', i + 1);
+@@ -35,10 +36,12 @@
+                                 case 'x':
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(2), 16);
++                                        break; // Add break statement
+                                     }
+                                 default:
+                                     {
+-                                        entityValue = Integer.parseInt(entityContent.substring(1), 10);
++                                        entityValue = Integer.parseInt(entityContent.substring(1), 10); 
++                                        break; // Add break statement
+                                     }
+                             }
+                         } catch (NumberFormatException e) {

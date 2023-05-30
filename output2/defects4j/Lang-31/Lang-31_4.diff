@@ -1,0 +1,18 @@
+--- org/apache/commons/lang3/StringUtils.java@containsAny
++++ org/apache/commons/lang3/StringUtils.java@containsAny
+@@ -7,11 +7,12 @@
+     int csLength = cs.length();
+     int searchLength = searchChars.length;
+     for (int i = 0; i < csLength; i++) {
+-        char ch = cs.charAt(i);
++        int ch = Character.codePointAt(cs, i);
++        if (Character.isSupplementaryCodePoint(ch)) {
++            i++; //increment the index as supplementary characters use 2 chars
++        }
+         for (int j = 0; j < searchLength; j++) {
+             if (searchChars[j] == ch) {
+-                // ch is a supplementary character
+-                // ch is in the Basic Multilingual Plane
+                 return true;
+             }
+         }

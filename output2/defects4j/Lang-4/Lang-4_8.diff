@@ -1,0 +1,20 @@
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
+@@ -4,6 +4,7 @@
+     int _longest = 0;
+     if (lookup != null) {
+         for (final CharSequence[] seq : lookup) {
++            if(seq.length != 2) continue; // validate input and skip to next if invalid
+             this.lookupMap.put(seq[0], seq[1]);
+             final int sz = seq[0].length();
+             if (sz < _shortest) {
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
+@@ -6,6 +6,7 @@
+     }
+     // descend so as to get a greedy algorithm
+     for (int i = max; i >= shortest; i--) {
++        if(index + i > input.length()) continue; // skip if out of bounds
+         final CharSequence subSeq = input.subSequence(index, index + i);
+         final CharSequence result = lookupMap.get(subSeq);
+         if (result != null) {

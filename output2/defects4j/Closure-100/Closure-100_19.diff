@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -11,14 +11,15 @@
+         // var a = function() { }; // or
+         // function a() {} // or
+         // a.x = function() {};
++        return n.isFromExterns() || NodeUtil.getEnclosingType(n, Token.CLASS) != null;
+     }
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+         Node lhs = parent.getFirstChild();
+         Node rhs = lhs.getNext();
+         if (n == lhs) {
+-            // Always traverse the left side of the assignment. To handle
+-            // nested assignments properly (e.g., (a = this).property = c;),
+-            // assignLhsChild should not be overridden.
++            // Always traverse the left side of the assignment. To handle properly
++            // nested assignments (e.g., (a = this).property = c;), assignLhsChild should
++            // not be overridden.
+             if (assignLhsChild == null) {
+                 assignLhsChild = lhs;
+             }
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -4,5 +4,5 @@
+         return true;
+     }
+     // Also report a THIS with a property access.
+-    return false;
++    return parent != null && NodeUtil.isGet(parent) && parent.getFirstChild() == n;
+ }

@@ -1,0 +1,13 @@
+--- org/apache/commons/math/stat/inference/ChiSquareTestImpl.java@chiSquare
++++ org/apache/commons/math/stat/inference/ChiSquareTestImpl.java@chiSquare
+@@ -9,7 +9,9 @@
+     double dev = 0.0d;
+     for (int i = 0; i < observed.length; i++) {
+         dev = ((double) observed[i] - expected[i]);
+-        sumSq += dev * dev / expected[i];
++        if (expected[i] != 0) { // added a check for expected[i] not being zero
++            sumSq += dev * dev / expected[i];
++        }
+     }
+     return sumSq;
+ }

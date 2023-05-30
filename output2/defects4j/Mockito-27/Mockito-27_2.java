@@ -1,0 +1,7 @@
+## Fixed Function 1
+public <T> void resetMock(T mock) {
+    MockHandlerInterface<T> oldMockHandler = getMockHandler(mock);
+    MockHandler<T> newMockHandler = new MockHandler<T>(oldMockHandler);
+    MethodInterceptorFilter newFilter = new MethodInterceptorFilter(newMockHandler, (MockSettingsImpl) org.mockito.Mockito.withSettings().defaultAnswer(org.mockito.Mockito.RETURNS_SMART_NULLS())); // change RETURNS_DEFAULTS to RETURNS_SMART_NULLS
+    ((Factory) mock).setCallback(0, newFilter);
+}

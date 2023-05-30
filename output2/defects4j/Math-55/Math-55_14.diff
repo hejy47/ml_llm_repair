@@ -1,0 +1,38 @@
+--- org/apache/commons/math/geometry/Vector3D.java@crossProduct
++++ org/apache/commons/math/geometry/Vector3D.java@crossProduct
+@@ -1,12 +1,27 @@
+ public static Vector3D crossProduct(final Vector3D v1, final Vector3D v2) {
++    double v1Norm = v1.getNorm();
++    double v2Norm = v2.getNorm();
++
++    // if either vector has zero norm, cross product is zero
++    if (v1Norm == 0 || v2Norm == 0) {
++        return Vector3D.ZERO;
++    }
++
+     // rescale both vectors without losing precision,
+     // to ensure their norm are the same order of magnitude
+-    // we reduce cancellation errors by preconditioning,
+-    // we replace v1 by v3 = v1 - rho v2 with rho chosen in order to compute
+-    // v3 without loss of precision. See Kahan lecture
+-    // "Computing Cross-Products and Rotations in 2- and 3-Dimensional Euclidean Spaces"
+-    // available at http://www.cs.berkeley.edu/~wkahan/MathH110/Cross.pdf
+-    // compute rho as an 8 bits approximation of v1.v2 / v2.v2
+-    // compute cross product from v3 and v2 instead of v1 and v2
+-    return new Vector3D(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
++    double rescaleFactor = FastMath.sqrt(v1Norm * v2Norm);
++    Vector3D v1Scaled = v1.scalarMultiply(rescaleFactor / v1Norm);
++    Vector3D v2Scaled = v2.scalarMultiply(rescaleFactor / v2Norm);
++
++    // compute rho as an 8 bits approximation of v1Scaled.v2Scaled / v2Scaled.v2Scaled
++    double rho = FastMath.max(-128.0, FastMath.min(128.0, v1Scaled.dotProduct(v2Scaled) / v2Scaled.dotProduct(v2Scaled)));
++    rho = Math.rint(rho);
++
++    // compute v3 = v1Scaled - rho v2Scaled and cross product from v3 and v2Scaled
++    Vector3D v3 = v1Scaled.subtract(v2Scaled.scalarMultiply(rho));
++    return new Vector3D(
++        (v3.getY() * v2Scaled.getZ()) - (v3.getZ() * v2Scaled.getY()),
++        (v3.getZ() * v2Scaled.getX()) - (v3.getX() * v2Scaled.getZ()),
++        (v3.getX() * v2Scaled.getY()) - (v3.getY() * v2Scaled.getX())
++    );
+ }

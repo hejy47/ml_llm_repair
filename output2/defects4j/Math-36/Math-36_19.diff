@@ -1,0 +1,25 @@
+--- org/apache/commons/math/fraction/BigFraction.java@doubleValue
++++ org/apache/commons/math/fraction/BigFraction.java@doubleValue
+@@ -1,5 +1,8 @@
+ @Override
+ public double doubleValue() {
++    if (denominator.equals(BigDecimal.ZERO)) {
++        throw new ArithmeticException("Division by zero");
++    }
+     double result = numerator.doubleValue() / denominator.doubleValue();
+     // Numerator and/or denominator must be out of range:
+     // Calculate how far to shift them to put them in range.
+--- org/apache/commons/math/fraction/BigFraction.java@floatValue
++++ org/apache/commons/math/fraction/BigFraction.java@floatValue
+@@ -1,6 +1,9 @@
+ @Override
+-public float floatValue() {
+-    float result = numerator.floatValue() / denominator.floatValue();
++public double doubleValue() {
++    if (denominator.equals(BigDecimal.ZERO)) {
++        throw new ArithmeticException("Division by zero");
++    }
++    double result = numerator.doubleValue() / denominator.doubleValue();
+     // Numerator and/or denominator must be out of range:
+     // Calculate how far to shift them to put them in range.
+     return result;

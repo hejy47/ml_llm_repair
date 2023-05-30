@@ -1,0 +1,40 @@
+--- org/apache/commons/lang3/StringUtils.java@replaceEach
++++ org/apache/commons/lang3/StringUtils.java@replaceEach
+@@ -28,14 +28,15 @@
+         }
+         tempIndex = text.indexOf(searchList[i]);
+         // see if we need to keep searching for this
+-        if (tempIndex == -1) {
+-            noMoreMatchesForReplIndex[i] = true;
+-        } else {
++        while (tempIndex != -1) {
+             if (textIndex == -1 || tempIndex < textIndex) {
+                 textIndex = tempIndex;
+                 replaceIndex = i;
+             }
++            tempIndex = text.indexOf(searchList[i], tempIndex + 1);
+         }
++        if(textIndex > -1) break;
++        noMoreMatchesForReplIndex[i] = true;
+     }
+     // NOTE: logic mostly below END
+     // no search strings found, we are done
+@@ -73,14 +74,15 @@
+             }
+             tempIndex = text.indexOf(searchList[i], start);
+             // see if we need to keep searching for this
+-            if (tempIndex == -1) {
+-                noMoreMatchesForReplIndex[i] = true;
+-            } else {
++            while (tempIndex != -1) {
+                 if (textIndex == -1 || tempIndex < textIndex) {
+                     textIndex = tempIndex;
+                     replaceIndex = i;
+                 }
++                tempIndex = text.indexOf(searchList[i], tempIndex + 1);    
+             }
++            if(textIndex > -1) break;
++            noMoreMatchesForReplIndex[i] = true;
+         }
+         // NOTE: logic duplicated above END
+     }

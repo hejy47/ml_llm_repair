@@ -1,0 +1,70 @@
+--- org/apache/commons/lang3/StringUtils.java@indexOfAny
++++ org/apache/commons/lang3/StringUtils.java@indexOfAny
+@@ -11,7 +11,13 @@
+         for (int j = 0; j < searchLen; j++) {
+             if (searchChars[j] == ch) {
+                 // ch is a supplementary character
+-                return i;
++                if (Character.isHighSurrogate(ch)) {
++                    if (i < csLen - 1 && Character.isLowSurrogate(cs.charAt(i + 1))) {
++                        return i;
++                    }
++                } else {
++                    return i;
++                }
+             }
+         }
+     }
+--- org/apache/commons/lang3/StringUtils.java@containsAny
++++ org/apache/commons/lang3/StringUtils.java@containsAny
+@@ -12,9 +12,12 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLength; j++) {
+             if (searchChars[j] == ch) {
+-                if (i < csLast && j < searchLast && ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_HIGH_SURROGATE) {
+-                    // missing low surrogate, fine, like String.indexOf(String)
+-                    if (searchChars[j + 1] == cs.charAt(i + 1)) {
++                if (ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_LOW_SURROGATE) {
++                    if (j == searchLast) {
++                        // missing low surrogate, fine, like String.indexOf(String)
++                        return true;
++                    }
++                    if (i < csLast && searchChars[j + 1] == cs.charAt(i + 1)) {
+                         return true;
+                     }
+                 } else {
+--- org/apache/commons/lang3/StringUtils.java@indexOfAnyBut4
++++ org/apache/commons/lang3/StringUtils.java@indexOfAnyBut4
+@@ -6,6 +6,11 @@
+     for (int i = 0; i < strLen; i++) {
+         char ch = str.charAt(i);
+         if (searchChars.indexOf(ch) < 0) {
++            if (ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_HIGH_SURROGATE) {
++                if (i < strLen - 1 && Character.isLowSurrogate(str.charAt(i + 1))) {
++                    continue;
++                }
++            }
+             return i;
+         }
+     }
+--- org/apache/commons/lang3/StringUtils.java@containsNone
++++ org/apache/commons/lang3/StringUtils.java@containsNone
+@@ -6,12 +6,15 @@
+     }
+     int csLen = cs.length();
+     int searchLen = searchChars.length;
+-    for (int i = 0; i < csLen; i++) {
++    outer: for (int i = 0; i < csLen; i++) {
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLen; j++) {
+             if (searchChars[j] == ch) {
+-                // missing low surrogate, fine, like String.indexOf(String)
+-                // ch is in the Basic Multilingual Plane
++                if (ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_HIGH_SURROGATE) {
++                    if (i < csLen - 1 && Character.isLowSurrogate(cs.charAt(i + 1))) {
++                        continue outer;
++                    }
++                }
+                 return false;
+             }
+         }

@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -28,7 +28,12 @@
+             result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
+             break;
+         case Token.ADD:
+-            result = lval + rval;
++            // Handle adding Strings and concatenation
++            if(NodeUtil.isImmutableValue(left) && NodeUtil.isImmutableValue(right)) {
++                return Node.newString(left.getString() + right.getString());
++            } else {
++                result = lval + rval;
++            }
+             break;
+         case Token.SUB:
+             result = lval - rval;

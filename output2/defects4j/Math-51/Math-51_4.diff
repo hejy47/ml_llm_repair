@@ -1,0 +1,81 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -43,53 +43,33 @@
+         } else {
+             switch(method) {
+                 case ILLINOIS:
+-                    f0 *= 0.5;
++                    if (f0 * fx > 0) {
++                        f0 *= 0.5;
++                    } else {
++                        f0 = f1 * 0.5;
++                    }
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    final double f2 = computeObjectiveValue(x0 + GOLDEN_RATIO * (x1 - x0));
++                    if (f1 * f2 > 0) {
++                        f1 = f1 / GOLDEN_RATIO;
++                    }
++                    f0 = f1 * f2 / (f2 + f1);
++                    x1 = x;
++                    f1 = fx;
+                     break;
+                 // Update formula cannot make any progress: Update the
+                 // search interval.
+                 default:
++                    x0 = x;
++                    f0 = fx;
+             }
+         }
+-        // Update from [x0, x1] to [x0, x].
+-        x1 = x;
+-        f1 = fx;
+         // If the function value of the last approximation is too small,
+         // given the function value accuracy, then we can't get closer to
+         // the root than we already are.
+-        if (FastMath.abs(f1) <= ftol) {
+-            switch(allowed) {
+-                case ANY_SIDE:
+-                    return x1;
+-                case LEFT_SIDE:
+-                    if (inverted) {
+-                        return x1;
+-                    }
+-                    break;
+-                case RIGHT_SIDE:
+-                    if (!inverted) {
+-                        return x1;
+-                    }
+-                    break;
+-                case BELOW_SIDE:
+-                    if (f1 <= 0) {
+-                        return x1;
+-                    }
+-                    break;
+-                case ABOVE_SIDE:
+-                    if (f1 >= 0) {
+-                        return x1;
+-                    }
+-                    break;
+-                default:
+-                    throw new MathInternalError();
+-            }
+-        }
+-        // If the current interval is within the given accuracies, we
+-        // are satisfied with the current approximation.
+-        if (FastMath.abs(x1 - x0) < FastMath.max(rtol * FastMath.abs(x1), atol)) {
++        if (FastMath.abs(f1) <= ftol || FastMath.abs(x1 - x0) < atol + rtol
++                * FastMath.max(FastMath.abs(x0), FastMath.abs(x1))) {
+             switch(allowed) {
+                 case ANY_SIDE:
+                     return x1;
+@@ -105,5 +85,8 @@
+                     throw new MathInternalError();
+             }
+         }
++        // Update from [x0, x1] to [x0, x].
++        x1 = x;
++        f1 = fx;
+     }
+ }

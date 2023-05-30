@@ -1,0 +1,11 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -46,7 +46,7 @@
+                     f0 *= 0.5;
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    f0 = f1 * fx / (f1 + fx);
+                     break;
+                 case REGULA_FALSI:
+                     // Nothing.

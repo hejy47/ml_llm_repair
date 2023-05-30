@@ -1,0 +1,23 @@
+--- org/mockito/exceptions/Reporter.java@noMoreInteractionsWanted
++++ org/mockito/exceptions/Reporter.java@noMoreInteractionsWanted
+@@ -1,5 +1,5 @@
+ public void noMoreInteractionsWanted(Invocation undesired, List<VerificationAwareInvocation> invocations) {
+     ScenarioPrinter scenarioPrinter = new ScenarioPrinter();
+     String scenario = scenarioPrinter.print(invocations);
+-    throw new NoInteractionsWanted(join("No interactions wanted here:", new LocationImpl(), "But found this interaction on mock '" + undesired.getMock() + "':", undesired.getLocation(), scenario));
++    throw new NoInteractionsWanted(join("No interactions wanted here on mock '" + undesired.getMock() + "':", undesired.getLocation(), scenario));
+ }
+--- org/mockito/exceptions/Reporter.java@noMoreInteractionsWantedInOrder
++++ org/mockito/exceptions/Reporter.java@noMoreInteractionsWantedInOrder
+@@ -1,3 +1,3 @@
+ public void noMoreInteractionsWantedInOrder(Invocation undesired) {
+-    throw new VerificationInOrderFailure(join("No interactions wanted here:", new LocationImpl(), "But found this interaction on mock '" + undesired.getMock() + "':", undesired.getLocation()));
++    throw new VerificationInOrderFailure(join("No interactions wanted here on mock '" + undesired.getMock() + "':", undesired.getLocation()));
+ }
+--- org/mockito/exceptions/Reporter.java@cannotInjectDependency
++++ org/mockito/exceptions/Reporter.java@cannotInjectDependency
+@@ -1,3 +1,3 @@
+ public void cannotInjectDependency(Field field, Object matchingMock, Exception details) {
+-    throw new MockitoException(join("Mockito couldn't inject mock dependency '" + safelyGetMockName(matchingMock) + "' on field ", "'" + field + "'", "whose type '" + field.getDeclaringClass().getCanonicalName() + "' was annotated by @InjectMocks in your test.", "Also I failed because: " + exceptionCauseMessageIfAvailable(details), ""), details);
++    throw new MockitoException(join("Mockito couldn't inject mock dependency '" + safelyGetMockName(matchingMock) + "' on field ", "'" + field + "'", "whose type '" + field.getType().getCanonicalName() + "' was annotated by @InjectMocks in your test.", "Also I failed because: " + exceptionCauseMessageIfAvailable(details), ""), details);
+ }

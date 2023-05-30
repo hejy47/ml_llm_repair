@@ -1,0 +1,26 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -32,7 +32,6 @@
+         interpolator.setSoftPreviousTime(previousT);
+         interpolator.setSoftCurrentTime(eventT);
+         // get state at event time
+-        interpolator.setInterpolatedTime(eventT);
+         final double[] eventY = interpolator.getInterpolatedState().clone();
+         // advance all event states to current time
+         currentEvent.stepAccepted(eventT, eventY);
+@@ -73,7 +72,7 @@
+     }
+     // last part of the step, after the last event
+     interpolator.setInterpolatedTime(currentT);
+-    final double[] currentY = interpolator.getInterpolatedState();
++    final double[] currentY = interpolator.getInterpolatedState().clone(); // Fixed bug - cloned interpolated state
+     for (final EventState state : eventsStates) {
+         state.stepAccepted(currentT, currentY);
+         isLastStep = isLastStep || state.stop();
+@@ -83,5 +82,6 @@
+     for (StepHandler handler : stepHandlers) {
+         handler.handleStep(interpolator, isLastStep);
+     }
++    System.arraycopy(currentY, 0, y, 0, y.length); // Fixed bug - copied currentY to y
+     return currentT;
+ }

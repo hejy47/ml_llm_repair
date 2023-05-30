@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/type/ClosureReverseAbstractInterpreter.java@caseTopType
++++ com/google/javascript/jscomp/type/ClosureReverseAbstractInterpreter.java@caseTopType
+@@ -1,4 +1,7 @@
+ @Override
+ protected JSType caseTopType(JSType topType) {
++    if (topType.isUnknownType()) {
++        return JSType.BOTTOM;
++    }
+     return topType;
+ }

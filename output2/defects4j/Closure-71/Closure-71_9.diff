@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -21,7 +21,7 @@
+             // We couldn't find a visibility modifier; assume it's public.
+             return;
+         }
+-        boolean sameInput = t.getInput().getName().equals(docInfo.getSourceName());
++        boolean sameInput = t.getInput().getName().equals(docInfo.getSourceFileName());
+         Visibility visibility = docInfo.getVisibility();
+         JSType ownerType = normalizeClassType(objectType);
+         if (isOverride) {
+@@ -54,7 +54,7 @@
+                 // 2) Overriding the property in a subclass
+                 // 3) Accessing the property from inside a subclass
+                 // The first two have already been checked for.
+-                if (currentClass == null || !currentClass.isSubtype(ownerType)) {
++                if (!(currentClass != null && (currentClass.equals(ownerType) || currentClass.isSubclass(ownerType)))) {
+                     compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+                 }
+             }

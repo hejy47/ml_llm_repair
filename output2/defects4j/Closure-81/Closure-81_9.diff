@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -2,7 +2,7 @@
+ Node processFunctionNode(FunctionNode functionNode) {
+     Name name = functionNode.getFunctionName();
+     Boolean isUnnamedFunction = false;
+-    if (name == null) {
++    if (name == null || name.getLength() == 0) {
+         name = new Name();
+         name.setIdentifier("");
+         isUnnamedFunction = true;
+@@ -13,20 +13,11 @@
+         // Old Rhino tagged the empty name node with the line number of the
+         // declaration.
+         newName.setLineno(functionNode.getLineno());
+-        // TODO(bowdidge) Mark line number of paren correctly.
+-        // Same problem as below - the left paren might not be on the
+-        // same line as the function keyword.
+         int lpColumn = functionNode.getAbsolutePosition() + functionNode.getLp();
+         newName.setCharno(position2charno(lpColumn));
+     }
+     node.addChildToBack(newName);
+     Node lp = newNode(Token.LP);
+-    // The left paren's complicated because it's not represented by an
+-    // AstNode, so there's nothing that has the actual line number that it
+-    // appeared on.  We know the paren has to appear on the same line as the
+-    // function name (or else a semicolon will be inserted.)  If there's no
+-    // function name, assume the paren was on the same line as the function.
+-    // TODO(bowdidge): Mark line number of paren correctly.
+     Name fnName = functionNode.getFunctionName();
+     if (fnName != null) {
+         lp.setLineno(fnName.getLineno());

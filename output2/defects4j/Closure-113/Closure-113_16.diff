@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
+@@ -11,8 +11,12 @@
+             // This must be non-null, because there was an explicit provide.
+             Preconditions.checkNotNull(providedModule);
+             JSModule module = t.getModule();
+-            if (moduleGraph != null && module != providedModule && !moduleGraph.dependsOn(module, providedModule)) {
+-                compiler.report(t.makeError(n, XMODULE_REQUIRE_ERROR, ns, providedModule.getName(), module.getName()));
++            if (moduleGraph != null && module != providedModule) {
++                moduleGraph.addDependency(module, providedModule);
++                // Check the cyclic dependency
++                if (moduleGraph.dependsOn(providedModule, module)) {
++                    compiler.report(t.makeError(n, XMODULE_REQUIRE_CYCLIC_ERROR, ns, providedModule.getName(), module.getName()));
++                }
+             }
+         }
+         maybeAddToSymbolTable(left);

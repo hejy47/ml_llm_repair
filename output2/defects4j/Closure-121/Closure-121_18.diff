@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -8,7 +8,8 @@
+         // inline it if it's immutable and never defined before referenced.
+         Node value;
+         if (init != null) {
+-            value = init.getAssignedValue();
++            // fixed here: get the assigned value from the initialization reference, not the value.
++            value = init.getValue();
+         } else {
+             // Create a new node for variable that is never initialized.
+             Node srcLocation = declaration.getNode();
+@@ -29,7 +30,7 @@
+         if (isValidDeclaration(declaration) && isValidInitialization(init)) {
+             // The only reference is the initialization, remove the assignment and
+             // the variable declaration.
+-            Node value = init.getAssignedValue();
++            Node value = init.getValue(); // fixed here: get the assigned value from the initialization reference, not the value.
+             Preconditions.checkNotNull(value);
+             inlineWellDefinedVariable(v, value, referenceInfo.references);
+             staleVars.add(v);
+@@ -51,7 +52,7 @@
+                 if (!staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias)) {
+                     Reference aliasInit;
+                     aliasInit = candidate.refInfo.getInitializingReference();
+-                    Node value = aliasInit.getAssignedValue();
++                    Node value = aliasInit.getValue(); // fixed here: get the assigned value from the initialization reference, not the value.
+                     Preconditions.checkNotNull(value);
+                     inlineWellDefinedVariable(candidate.alias, value, candidate.refInfo.references);
+                     staleVars.add(candidate.alias);

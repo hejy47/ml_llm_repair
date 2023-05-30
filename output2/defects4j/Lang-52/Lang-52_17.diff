@@ -1,0 +1,17 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -10,11 +10,11 @@
+     for (int i = 0; i < sz; i++) {
+         char ch = str.charAt(i);
+         // handle unicode
+-        if (ch > 0xfff) {
++        if (ch >= 0x10000) {
+             out.write("\\u" + hex(ch));
+-        } else if (ch > 0xff) {
++        } else if (ch >= 0x1000) {
+             out.write("\\u0" + hex(ch));
+-        } else if (ch > 0x7f) {
++        } else if (ch >= 0x100) {
+             out.write("\\u00" + hex(ch));
+         } else if (ch < 32) {
+             switch(ch) {

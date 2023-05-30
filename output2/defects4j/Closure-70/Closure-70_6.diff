@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
++++ com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
+@@ -8,10 +8,10 @@
+             Node jsDocParameter = jsDocParameters.getFirstChild();
+             for (Node astParameter : astParameters.children()) {
+                 if (jsDocParameter != null) {
+-                    defineSlot(astParameter, functionNode, jsDocParameter.getJSType(), true);
++                    defineSlot(astParameter.getFirstChild(), functionNode, jsDocParameter.getJSType(), true);
+                     jsDocParameter = jsDocParameter.getNext();
+                 } else {
+-                    defineSlot(astParameter, functionNode, null, true);
++                    defineSlot(astParameter.getFirstChild(), functionNode, null, true);
+                 }
+             }
+         }

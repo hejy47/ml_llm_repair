@@ -1,0 +1,16 @@
+--- org/joda/time/DateTimeZone.java@adjustOffset
++++ org/joda/time/DateTimeZone.java@adjustOffset
+@@ -9,7 +9,12 @@
+     }
+     // work out range of instants that have duplicate local times
+     long local = convertUTCToLocal(instant);
+-    return convertLocalToUTC(local, false, earlierOrLater ? instantAfter : instantBefore);
++    if (earlierOrLater) {
++        local = findEarlierOrLaterLocal(local, instantBefore, instantAfter);
++    } else {
++        local = findEarlierOrLaterLocal(local, instantAfter, instantBefore);
++    }
++    return convertLocalToUTC(local, false);
+     // calculate result
+     // currently in later offset
+     // currently in earlier offset

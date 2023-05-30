@@ -1,0 +1,1 @@
+Unfortunately, without more context and information about the specific bug(s) present in the Mockito project and the corresponding fixes, it is not possible to provide a specific answer.

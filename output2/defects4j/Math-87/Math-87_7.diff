@@ -1,0 +1,14 @@
+--- org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
++++ org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
+@@ -5,7 +5,10 @@
+             if (row == null) {
+                 row = i;
+             } else {
+-                return null;
++                // Fixed: return the row with smallest absolute value entry in the column
++                if (Math.abs(getEntry(i, col)) < Math.abs(getEntry(row, col))) {
++                    row = i;
++                }
+             }
+         }
+     }

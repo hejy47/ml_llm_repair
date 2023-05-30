@@ -1,0 +1,8 @@
+--- org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
++++ org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
+@@ -32,4 +32,5 @@
+     }
+     this.tableau = new Array2DRowRealMatrix(matrix);
+     this.numArtificialVariables = 0;
++    this.numDecisionVariables -= columnsToDrop.size();
+ }

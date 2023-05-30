@@ -1,0 +1,15 @@
+--- org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
++++ org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
+@@ -32,9 +32,9 @@
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least
+     //     one is odd.
+-    int t = ((u & 1) == 1) ? v : -(u / 2);
+-    // t negative: u was odd, v may be even (t replaces v)
+-    // t positive: u was even, v is odd (t replaces u)
++    int t = ((u & 1) == 1) ? u : u / 2;
++    // t negative: u was odd, v may be even (t replaces u)
++    // t positive: u was even, v is odd (t replaces v)
+     do {
+                 // B4/B3: cast out twos from t.
+         while ((t & 1) == 0) {

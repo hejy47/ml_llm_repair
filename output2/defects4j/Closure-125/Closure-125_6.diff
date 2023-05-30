@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitNew
++++ com/google/javascript/jscomp/TypeCheck.java@visitNew
+@@ -4,7 +4,7 @@
+     if (type.isConstructor() || type.isEmptyType() || type.isUnknownType()) {
+         FunctionType fnType = type.toMaybeFunctionType();
+         if (fnType != null) {
+-            visitParameterList(t, n, fnType);
++            visitParameterList(t, constructor, fnType); //fixed the parameter for visitParameterList function
+             ensureTyped(t, n, fnType.getInstanceType());
+         } else {
+             ensureTyped(t, n);

@@ -1,0 +1,11 @@
+--- org/apache/commons/math/distribution/NormalDistributionImpl.java@cumulativeProbability
++++ org/apache/commons/math/distribution/NormalDistributionImpl.java@cumulativeProbability
+@@ -9,7 +9,7 @@
+         } else if (x > (mean + 20 * standardDeviation)) {
+             return 1;
+         } else {
+-            throw ex;
++            throw new MathInternalError(ex);
+         }
+     }
+ }

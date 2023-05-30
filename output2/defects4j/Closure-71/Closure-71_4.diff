@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -34,7 +34,7 @@
+             // visibility of the original property.
+             if (visibility == Visibility.PRIVATE && !sameInput) {
+                 compiler.report(t.makeError(getprop, PRIVATE_OVERRIDE, objectType.toString()));
+-            } else if (overridingVisibility != Visibility.INHERITED && overridingVisibility != visibility) {
++            } else if (overridingVisibility != Visibility.INHERITED && !overridingVisibility.equals(visibility)) {
+                 compiler.report(t.makeError(getprop, VISIBILITY_MISMATCH, visibility.name(), objectType.toString(), overridingVisibility.name()));
+             }
+         } else {
+@@ -47,7 +47,8 @@
+                 }
+                 // private access is not allowed outside the file from a different
+                 // enclosing class.
+-                compiler.report(t.makeError(getprop, BAD_PRIVATE_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
++                compiler.report(t.makeError(getprop, BAD_PRIVATE_PROPERTY_ACCESS, propertyName,
++                        validator.getReadableJSTypeName(getprop.getFirstChild(), true), objectType.toString()));
+             } else if (visibility == Visibility.PROTECTED) {
+                 // There are 3 types of legal accesses of a protected property:
+                 // 1) Accesses in the same file
+@@ -55,7 +56,8 @@
+                 // 3) Accessing the property from inside a subclass
+                 // The first two have already been checked for.
+                 if (currentClass == null || !currentClass.isSubtype(ownerType)) {
+-                    compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
++                    compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName,
++                            validator.getReadableJSTypeName(getprop.getFirstChild(), true), objectType.toString()));
+                 }
+             }
+         }

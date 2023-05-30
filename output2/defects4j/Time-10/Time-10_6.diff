@@ -1,0 +1,10 @@
+--- org/joda/time/base/BaseSingleFieldPeriod.java@between
++++ org/joda/time/base/BaseSingleFieldPeriod.java@between
+@@ -15,6 +15,6 @@
+         throw new IllegalArgumentException("ReadablePartial objects must be contiguous");
+     }
+     Chronology chrono = DateTimeUtils.getChronology(start.getChronology()).withUTC();
+-    int[] values = chrono.get(zeroInstance, chrono.set(start, 0L), chrono.set(end, 0L));
++    int[] values = chrono.get(zeroInstance, chrono.set(start.toDateTime(DateTimeUtils.getZone(end.getChronology())), 0L), chrono.set(end.toDateTime(DateTimeUtils.getZone(end.getChronology())), 0L));
+     return values[0];
+ }

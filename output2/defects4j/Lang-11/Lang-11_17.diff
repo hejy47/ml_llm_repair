@@ -1,0 +1,56 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -7,12 +7,15 @@
+     if (chars != null && chars.length == 0) {
+         throw new IllegalArgumentException("The chars array must not be empty");
+     }
++    if (start == end && start != 0 || start > end) {
++        throw new IllegalArgumentException("Invalid range");
++    }
+     if (start == 0 && end == 0) {
+         if (chars != null) {
+             end = chars.length;
+         } else {
+             if (!letters && !numbers) {
+-                end = Integer.MAX_VALUE;
++                end = Character.MAX_VALUE;
+             } else {
+                 end = 'z' + 1;
+                 start = ' ';
+@@ -26,30 +29,27 @@
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+         } else {
+-            ch = chars[random.nextInt(gap) + start];
++            ch = chars[random.nextInt(chars.length)];
+         }
+-        if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
+-            if (ch >= 56320 && ch <= 57343) {
++        if ((letters && Character.isLetter(ch)) || (numbers && Character.isDigit(ch)) || (!letters && !numbers)) {
++            if (ch >= 0xD800 && ch <= 0xDBFF) {
+                 if (count == 0) {
+                     count++;
+                 } else {
+                     // low surrogate, insert high surrogate after putting it in
+                     buffer[count] = ch;
+                     count--;
+-                    buffer[count] = (char) (55296 + random.nextInt(128));
++                    buffer[count] = (char) (0xDC00 + random.nextInt(0x400));
+                 }
+-            } else if (ch >= 55296 && ch <= 56191) {
++            } else if (ch >= 0xDC00 && ch <= 0xDFFF) {
+                 if (count == 0) {
+                     count++;
+                 } else {
+                     // high surrogate, insert low surrogate before putting it in
+-                    buffer[count] = (char) (56320 + random.nextInt(128));
++                    buffer[count] = (char) (0xD800 + random.nextInt(0x400));
+                     count--;
+                     buffer[count] = ch;
+                 }
+-            } else if (ch >= 56192 && ch <= 56319) {
+-                // private high surrogate, no effing clue, so skip it
+-                count++;
+             } else {
+                 buffer[count] = ch;
+             }

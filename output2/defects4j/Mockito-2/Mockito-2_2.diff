@@ -1,0 +1,7 @@
+--- org/mockito/internal/util/Timer.java@Timer
++++ org/mockito/internal/util/Timer.java@Timer
+@@ -1,3 +1,4 @@
+ public Timer(long durationMillis) {
+     this.durationMillis = durationMillis;
++    this.remainingTimeMillis = durationMillis;
+ }

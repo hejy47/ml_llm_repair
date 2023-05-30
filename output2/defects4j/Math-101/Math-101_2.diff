@@ -1,0 +1,21 @@
+--- org/apache/commons/math/complex/ComplexFormat.java@parse
++++ org/apache/commons/math/complex/ComplexFormat.java@parse
+@@ -14,7 +14,7 @@
+     // parse sign
+     int startIndex = pos.getIndex();
+     char c = parseNextCharacter(source, pos);
+-    int sign = 0;
++    int sign = 1; // default sign is positive
+     switch(c) {
+         case 0:
+             // no sign
+@@ -24,8 +24,7 @@
+             sign = -1;
+             break;
+         case '+':
+-            sign = 1;
+-            break;
++            break; // positive sign can be omitted
+         default:
+             // invalid sign
+             // set index back to initial, error index should be the last

@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
++++ com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
+@@ -13,6 +13,7 @@
+             if (n.hasChildren()) {
+                 break;
+             }
++            // fall through to Token.BREAK
+         case Token.BREAK:
+         case Token.CONTINUE:
+             // We are looking for a control flow changing statement that always
+@@ -28,5 +29,8 @@
+                     removeNode(n);
+                 }
+             }
++            break;
++        default:
++            break;
+     }
+ }

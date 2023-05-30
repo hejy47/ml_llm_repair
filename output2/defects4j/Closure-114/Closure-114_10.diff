@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
++++ com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
+@@ -13,10 +13,13 @@
+             //
+             // TODO(user) revisit the dependency scope calculation
+             // logic.
+-            if (parent.getFirstChild().getNext() != n) {
++            if (parent.getFirstChild() == n) {
++                // Move back up to the enclosing expression since that should be the reference
++                // that everything depends on for this "for" loop.
++                Node caller = parent.getParent();
++                recordDepScope(caller, ns);
++            } else {
+                 recordDepScope(recordNode, ns);
+-            } else {
+-                recordDepScope(nameNode, ns);
+             }
+         } else {
+             // The rhs of the assignment is the caller, so it's used by the

@@ -1,0 +1,21 @@
+--- org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
++++ org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
+@@ -9,7 +9,7 @@
+     // check the matrix before transformation
+     for (int i = 0; i < order; ++i) {
+         final double[] lI = lTData[i];
+-        if (lTData[i][i] < absolutePositivityThreshold) {
++        if (lTData[i][i] <= absolutePositivityThreshold) {  // change '<' to '<=' to include the threshold value
+             throw new NotPositiveDefiniteMatrixException();
+         }
+         // check off-diagonal elements (and reset them to 0)
+@@ -28,6 +28,9 @@
+     for (int i = 0; i < order; ++i) {
+         final double[] ltI = lTData[i];
+         // check diagonal element
++        if (ltI[i] <= 0) { // add check for non-zero diagonal element
++            throw new NotPositiveDefiniteMatrixException();
++        }
+         ltI[i] = Math.sqrt(ltI[i]);
+         final double inverse = 1.0 / ltI[i];
+         for (int q = order - 1; q > i; --q) {

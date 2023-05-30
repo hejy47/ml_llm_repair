@@ -1,0 +1,32 @@
+--- org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
++++ org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
+@@ -21,7 +21,7 @@
+         final double dx = currentX - previousX;
+         final double dy = currentY - previousY;
+         final double f2StepIntegral = dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;
+-        final double fPrime2StepIntegral = dy * dy / dx;
++        final double fPrime2StepIntegral = dx != 0 ? dy * dy / dx : 0;
+         final double x = currentX - startX;
+         f2Integral += f2StepIntegral;
+         fPrime2Integral += fPrime2StepIntegral;
+@@ -57,9 +57,16 @@
+         }
+         a = 0.5 * (yMax - yMin);
+     } else {
+-        // In some ill-conditioned cases (cf. MATH-844), the guesser
+-        // procedure cannot produce sensible results.
+-        a = FastMath.sqrt(c1 / c2);
+-        omega = FastMath.sqrt(c2 / c3);
++    
++        // Handle edge case where c3 falls within the tolerance range of 0
++        if (Precision.equals(c3, 0, 1)) {
++            a = FastMath.sqrt(c1 / c2);
++            omega = FastMath.sqrt(c2 / c3) * 10;
++        } else {
++            // In some ill-conditioned cases (cf. MATH-844), the guesser
++            // procedure cannot produce sensible results.
++            a = FastMath.sqrt(c1 / c2);
++            omega = FastMath.sqrt(c2 / c3);
++        }
+     }
+ }

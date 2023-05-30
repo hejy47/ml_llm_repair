@@ -1,0 +1,36 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -8,7 +8,6 @@
+         return writer.toString();
+     } catch (IOException ioe) {
+         // this should never ever happen while writing to a StringWriter
+-        ioe.printStackTrace();
+-        return null;
++        throw new RuntimeException(ioe);
+     }
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString5
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString5
+@@ -5,8 +5,7 @@
+     if (str == null) {
+         return;
+     }
+-    int sz;
+-    sz = str.length();
++    int sz = str.length();
+     for (int i = 0; i < sz; i++) {
+         char ch = str.charAt(i);
+         // handle unicode
+@@ -39,11 +38,7 @@
+                     out.write('r');
+                     break;
+                 default:
+-                    if (ch > 0xf) {
+-                        out.write("\\u00" + hex(ch));
+-                    } else {
+-                        out.write("\\u000" + hex(ch));
+-                    }
++                    out.write("\\u00" + hex(ch));
+                     break;
+             }
+         } else {

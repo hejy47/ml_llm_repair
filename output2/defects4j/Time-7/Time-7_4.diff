@@ -1,0 +1,25 @@
+--- org/joda/time/format/DateTimeFormatter.java@parseInto
++++ org/joda/time/format/DateTimeFormatter.java@parseInto
+@@ -6,12 +6,21 @@
+     }
+     long instantMillis = instant.getMillis();
+     Chronology chrono = instant.getChronology();
+-    long instantLocal = instantMillis + chrono.getZone().getOffset(instantMillis);
++    
++    // calculate instantLocal based on the input position
++    DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(parser).toFormatter();
++    ParsePosition parsePosition = new ParsePosition(position);
++    DateTime parsedDateTime = formatter.parseDateTime(text, parsePosition);
++    long instantLocal = parsedDateTime.getMillis();
++    
++    // calculate the actual instant millis
+     chrono = selectChronology(chrono);
+     int defaultYear = chrono.year().get(instantLocal);
+     DateTimeParserBucket bucket = new DateTimeParserBucket(instantLocal, chrono, iLocale, iPivotYear, defaultYear);
+     int newPos = parser.parseInto(bucket, text, position);
+     instant.setMillis(bucket.computeMillis(false, text));
++    
++    // handle parsed zone information
+     if (iOffsetParsed && bucket.getOffsetInteger() != null) {
+         int parsedOffset = bucket.getOffsetInteger();
+         DateTimeZone parsedZone = DateTimeZone.forOffsetMillis(parsedOffset);

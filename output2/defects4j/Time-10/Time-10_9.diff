@@ -1,0 +1,15 @@
+--- org/joda/time/base/BaseSingleFieldPeriod.java@between
++++ org/joda/time/base/BaseSingleFieldPeriod.java@between
+@@ -10,6 +10,12 @@
+         if (start.getFieldType(i) != end.getFieldType(i)) {
+             throw new IllegalArgumentException("ReadablePartial objects must have the same set of fields");
+         }
++        if (start.getValue(i) < start.getField(i).getMinimumValue() || start.getValue(i) > start.getField(i).getMaximumValue()) {
++            throw new IllegalArgumentException("Value of the field exceeds boundary limits");
++        }
++        if (end.getValue(i) < end.getField(i).getMinimumValue() || end.getValue(i) > end.getField(i).getMaximumValue()) {
++            throw new IllegalArgumentException("Value of the field exceeds boundary limits");
++        }
+     }
+     if (DateTimeUtils.isContiguous(start) == false) {
+         throw new IllegalArgumentException("ReadablePartial objects must be contiguous");

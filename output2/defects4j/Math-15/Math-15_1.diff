@@ -1,0 +1,76 @@
+--- org/apache/commons/math3/util/FastMath.java@pow
++++ org/apache/commons/math3/util/FastMath.java@pow
+@@ -102,29 +102,56 @@
+         ya = (tmp1 + tmp2 - tmp1) * HEX_40000000 * HEX_40000000;
+         yb = y - ya;
+     }
+-        final double lores = log(x, lns);
++    final double lores = log(x, lns);
+     if (Double.isInfinite(lores)) {
+         // don't allow this to be converted to NaN
+         return lores;
+     }
+     double lna = lns[0];
+     double lnb = lns[1];
++    double aa = lna * ya, ab = 0, ac = 0, ad = 0, ae = 0, af = 0, ag = 0, ah = 0, ak = 0;
++    if (x == 1) {
++        final double t1 = y * HEX_40000000;
++        double t2 = y + t1 - t1;
++        ab = t2 * lna;
++        ac = t2 * t2 * (0.5 * lna);
++        ad = (y - t2) * lna;
++    } else {
++        double z = lna * y;
+         double tmp1 = lna * HEX_40000000;
+-    double tmp2 = lna + tmp1 - tmp1;
+-    lnb += lna - tmp2;
+-    lna = tmp2;
+-    // y*ln(x) = (aa+ab)
+-    final double aa = lna * ya;
+-    final double ab = lna * yb + lnb * ya + lnb * yb;
+-    lna = aa + ab;
+-    lnb = -(lna - aa - ab);
+-    double z = 1.0 / 120.0;
+-    z = z * lnb + (1.0 / 24.0);
+-    z = z * lnb + (1.0 / 6.0);
+-    z = z * lnb + 0.5;
+-    z = z * lnb + 1.0;
+-    z = z * lnb;
+-    final double result = exp(lna, z, null);
+-    //result = result + result * z;
++        double tmp2 = lna + tmp1 - tmp1;
++        lnb += lna - tmp2;
++        lna = tmp2;
++        aa = lna * ya;
++        ab = lna * yb + lnb * ya;
++        double _aa = aa, _ab = ab;
++        ac = _aa * INV_LN_2_SQUARED + _ab * 4.969524976307135E-10;
++        ad = _aa * INV_LN_2 + _ab * 1.539172581798108E-12;
++        aa = aa * y + lna * ya * ya;
++        ab = ab * y + lnb * ya * ya;
++        _aa = aa, _ab = ab;
++        ac += _aa * 2.967721961301243E-10 + _ab * 1.332867188776738E-10;
++        ad += _aa * 0.6931471461993334 + _ab * 1.908214929270587E-10;
++        aa = aa * y + lna * ya * yb * 2.0;
++        ab = ab * y + lnb * ya * yb * 2.0;
++        _aa = aa, _ab = ab;
++        ac += _aa * 2.359208954715764E-10 + _ab * 2.222219860718627E-12;
++        ad += _aa * 5.00825446469529E-9 + _ab * 2.547046017719519E-10;
++        aa = aa * y + lna * yb * yb;
++        ab = ab * y + lnb * yb * yb;
++        _aa = aa, _ab = ab;
++        ac += _aa * 1.177830356722936E-9 + _ab * 2.111195911656856E-11;
++        ad += _aa * 0.08333333333343307 + ad * 0.6931471805599385;
++    }
++    ae = ya + yb;
++    af = 0.5 * ya + ae * 0.5;
++    double agI = af + ya * 0.5;
++    double agII = ae * INV_LN_2;
++    ah = agI + agII;
++    double akI = agI - ah;
++    double akII = agII - akI;
++    ak = ((ya - akI) + (yb - akII)) * INV_LN_2_SQUARED;
++    final double result = exp(lna, af, null)
++            * ((((ad + ac) + (ae + af) * ak) + (ah * y)) + exp(lna, ak, null) * exp(lna, ak, null) * 0.5);
+     return result;
+ }

@@ -1,0 +1,31 @@
+--- org/apache/commons/lang/time/DateUtils.java@modify
++++ org/apache/commons/lang/time/DateUtils.java@modify
+@@ -3,16 +3,6 @@
+     if (val.get(Calendar.YEAR) > 280000000) {
+         throw new ArithmeticException("Calendar value too large for accurate calculations");
+     }
+-    // ----------------- Fix for LANG-59 ---------------------- START ---------------
+-    // see http://issues.apache.org/jira/browse/LANG-59
+-    //
+-    // Manually truncate milliseconds, seconds and minutes, rather than using
+-    // Calendar methods.
+-    // truncate milliseconds
+-    // truncate seconds
+-    // truncate minutes
+-    // reset time
+-    // ----------------- Fix for LANG-59 ----------------------- END ----------------
+     boolean roundUp = false;
+     for (int i = 0; i < fields.length; i++) {
+         for (int j = 0; j < fields[i].length; j++) {
+@@ -79,9 +69,11 @@
+             offset = val.get(fields[i][0]) - min;
+             //Set roundUp if this is more than half way between the minimum and maximum
+             roundUp = offset > ((max - min) / 2);
++            offsetSet = true;
+         }
+         //We need to remove this field
+         val.set(fields[i][0], val.get(fields[i][0]) - offset);
+     }
++    // Managed to loop over all possible values without finding the field therefore it is not supported
+     throw new IllegalArgumentException("The field " + field + " is not supported");
+ }

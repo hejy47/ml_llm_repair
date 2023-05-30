@@ -1,0 +1,14 @@
+--- org/apache/commons/math/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -2,9 +2,9 @@
+     double minRatio = Double.MAX_VALUE;
+     Integer minRatioPos = null;
+     for (int i = tableau.getNumObjectiveFunctions(); i < tableau.getHeight(); i++) {
+-        final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);
+         final double entry = tableau.getEntry(i, col);
+-        if (MathUtils.compareTo(entry, 0, epsilon) >= 0) {
++        if (MathUtils.compareTo(entry, 0, epsilon) > 0) { // Fixed comparison operator
++            final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);
+             final double ratio = rhs / entry;
+             if (ratio < minRatio) {
+                 minRatio = ratio;

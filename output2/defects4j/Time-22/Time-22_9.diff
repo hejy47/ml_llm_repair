@@ -1,0 +1,11 @@
+--- org/joda/time/base/BasePeriod.java@BasePeriod
++++ org/joda/time/base/BasePeriod.java@BasePeriod
+@@ -1,4 +1,6 @@
+ protected BasePeriod(long duration) {
+-    this(duration, null, null);
+-    // bug [3264409]
++    super();
++    this.duration = duration;
++    this.events = new ArrayList<>();
++    this.captions = new ArrayList<>();
+ }

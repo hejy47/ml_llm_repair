@@ -1,0 +1,17 @@
+--- org/joda/time/format/DateTimeFormatter.java@parseInto
++++ org/joda/time/format/DateTimeFormatter.java@parseInto
+@@ -16,10 +16,13 @@
+         int parsedOffset = bucket.getOffsetInteger();
+         DateTimeZone parsedZone = DateTimeZone.forOffsetMillis(parsedOffset);
+         chrono = chrono.withZone(parsedZone);
++        instant.setChronology(chrono); // move the setChronology() call to the correct branch
+     } else if (bucket.getZone() != null) {
+         chrono = chrono.withZone(bucket.getZone());
++        instant.setChronology(chrono); // move the setChronology() call to the correct branch
++    } else {
++        instant.setChronology(chrono); // call setChronology() even if no zone or offset is parsed
+     }
+-    instant.setChronology(chrono);
+     if (iZone != null) {
+         instant.setZone(iZone);
+     }

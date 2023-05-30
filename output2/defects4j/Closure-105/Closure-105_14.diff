@@ -1,0 +1,44 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -20,14 +20,26 @@
+             }
+             sb.append(NodeUtil.getStringValue(elem));
+         } else {
++            boolean isFoldable = true;
++            if (elem.getType() == Token.NAME) {
++                Var variable = t.getScope().getVar(elem.getString());
++                if (variable != null && (variable.isGlobal() || variable.isExtern())) {
++                    isFoldable = false;
++                }
++            }
+             if (sb.length() > 0) {
+                 // + 2 for the quotes.
+                 foldedSize += sb.length() + 2;
+                 arrayFoldedChildren.add(Node.newString(sb.toString()));
+                 sb = new StringBuilder();
+             }
+-            foldedSize += InlineCostEstimator.getCost(elem);
+-            arrayFoldedChildren.add(elem);
++            if (isFoldable) {
++                foldedSize += InlineCostEstimator.getCost(elem);
++                arrayFoldedChildren.add(elem.cloneTree());
++            } else {
++                foldedSize += kNonFoldableNodeCost;
++                arrayFoldedChildren.add(null);
++            }
+         }
+         elem = elem.getNext();
+     }
+@@ -71,7 +83,11 @@
+             }
+             arrayNode.detachChildren();
+             for (Node node : arrayFoldedChildren) {
+-                arrayNode.addChildToBack(node);
++                if (node == null) {
++                    arrayNode.addChildToBack(NodeUtil.newUndefinedNode(parent));
++                } else {
++                    arrayNode.addChildToBack(node);
++                }
+             }
+             break;
+     }

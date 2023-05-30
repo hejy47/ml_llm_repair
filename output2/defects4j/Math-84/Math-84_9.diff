@@ -1,0 +1,44 @@
+--- org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
++++ org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
+@@ -9,20 +9,28 @@
+         final RealPointValuePair reflected = evaluateNewSimplex(original, 1.0, comparator);
+         if (comparator.compare(reflected, best) < 0) {
+             // compute the expanded simplex
+-            final RealPointValuePair[] reflectedSimplex = simplex;
+-            final RealPointValuePair expanded = evaluateNewSimplex(original, khi, comparator);
+-            if (comparator.compare(reflected, expanded) <= 0) {
+-                // accept the reflected simplex
+-                simplex = reflectedSimplex;
++            final RealPointValuePair[] reflectedSimplex = simplex.clone(); //clone the simplex
++            simplex = reflectedSimplex; //save the reflected simplex
++            final RealPointValuePair expanded = evaluateNewSimplex(reflectedSimplex, khi, comparator); //evaluate on reflected simplex
++            if (comparator.compare(expanded, reflected) < 0) { //compare with reflected, not original
++                simplex = expanded; //accept the expanded simplex
++            } else {
++                simplex = reflected; //reject the expanded simplex, save the reflected one
+             }
+-            return;
+-        }
+-        // compute the contracted simplex
+-        final RealPointValuePair contracted = evaluateNewSimplex(original, gamma, comparator);
+-        if (comparator.compare(contracted, best) < 0) {
+-            // accept the contracted simplex
+-            // check convergence
+-            return;
++        } else { //if reflected is not better than best
++            // perform a contraction step
++            final RealPointValuePair contracted = evaluateNewSimplex(original, delta, comparator);
++            if (comparator.compare(contracted, best) < 0) {
++                // accept the contracted simplex
++                simplex = contracted;
++            } else {
++                // perform a shrink step
++                final RealPointValuePair[] shrinkedSimplex = contractSimplex(original, shrink);
++                simplex = evaluateNewSimplex(shrinkedSimplex, 1.0, comparator);
++                if (comparator.compare(simplex, best) >= 0) { //if the new simplex is not better than the best
++                    return; //stop, we have converged
++                }
++            }
+         }
+     }
+ }

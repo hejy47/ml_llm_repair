@@ -1,0 +1,14 @@
+--- org/apache/commons/math3/genetics/ElitisticListPopulation.java@ElitisticListPopulation
++++ org/apache/commons/math3/genetics/ElitisticListPopulation.java@ElitisticListPopulation
+@@ -1,4 +1,10 @@
+ public ElitisticListPopulation(final List<Chromosome> chromosomes, final int populationLimit, final double elitismRate) {
+-    super(chromosomes, populationLimit);
++    super(populationLimit);
+     this.elitismRate = elitismRate;
++    if (chromosomes != null) {
++        Collections.sort(chromosomes);
++        int elitistIndex = (int) Math.ceil(populationLimit * elitismRate);
++        List<Chromosome> elite = new ArrayList<>(chromosomes.subList(0, elitistIndex));
++        setChromosomes(elite);
++    }
+ }

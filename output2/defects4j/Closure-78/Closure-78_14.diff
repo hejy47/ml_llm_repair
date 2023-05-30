@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -15,8 +15,8 @@
+     if (rValObj == null) {
+         return null;
+     }
+-    double lval = lValObj;
+-    double rval = rValObj;
++    double lval = lValObj.doubleValue(); // Explicit unboxing to double
++    double rval = rValObj.doubleValue(); // Explicit unboxing to double
+     switch(opType) {
+         case Token.BITAND:
+             result = ScriptRuntime.toInt32(lval) & ScriptRuntime.toInt32(rval);

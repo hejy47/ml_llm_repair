@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
+@@ -22,7 +22,9 @@
+         // the checks for broken requires turned off. In these cases, we
+         // allow broken requires to be preserved by the first run to
+         // let them be caught in the subsequent run.
+-        if (provided != null) {
++        if (provided == null || !provided.explicitModule.getType().equals("goog.provide")) {
++            // Detach the node from the parent if the provide is implicit or
++            // unknown to ensure that it won't be processed again.
+             parent.detachFromParent();
+             compiler.reportCodeChange();
+         }

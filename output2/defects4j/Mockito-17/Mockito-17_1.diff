@@ -1,0 +1,17 @@
+--- org/mockito/internal/util/MockUtil.java@createMock
++++ org/mockito/internal/util/MockUtil.java@createMock
+@@ -6,9 +6,12 @@
+     MockHandler<T> mockHandler = new MockHandler<T>(settings);
+     MethodInterceptorFilter filter = new MethodInterceptorFilter(mockHandler, settings);
+     Class<?>[] interfaces = settings.getExtraInterfaces();
+-    Class<?>[] ancillaryTypes;
+-    ancillaryTypes = interfaces == null ? new Class<?>[0] : interfaces;
++    Class<?>[] ancillaryTypes = interfaces == null ? new Class<?>[0] : interfaces;
+     Object spiedInstance = settings.getSpiedInstance();
++    if (spiedInstance != null && !classToMock.isInstance(spiedInstance)) {
++        throw new MockitoException("Cannot use doReturn() with null argument. If <T> is a primitive or a final class, " +
++                 "it cannot be mocked.");
++    }
+     T mock = ClassImposterizer.INSTANCE.imposterise(filter, classToMock, ancillaryTypes);
+     if (spiedInstance != null) {
+         new LenientCopyTool().copyToMock(spiedInstance, mock);

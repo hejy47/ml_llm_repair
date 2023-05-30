@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -39,6 +39,6 @@
+         // Don't show complex function names.
+         return "function";
+     } else {
+-        return type.toString();
++        return type.toAnnotationString();
+     }
+ }

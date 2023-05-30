@@ -1,0 +1,26 @@
+--- org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getU
++++ org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getU
+@@ -24,7 +24,9 @@
+             for (int i = p; i < m; ++i) {
+                 wData[i] = new double[p];
+             }
+-            cachedU = transformer.getU().multiply(MatrixUtils.createRealMatrix(wData));
++            RealMatrix wMatrix = MatrixUtils.createRealMatrix(wData);
++          
++            cachedU = transformer.getU().multiply(wMatrix);
+         } else {
+             // the tridiagonal matrix is B.Bt, where B is lower bidiagonal
+             final RealMatrix e = eigenDecomposition.getV().getSubMatrix(0, m - 1, 0, p - 1);
+--- org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getV
++++ org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getV
+@@ -28,7 +28,9 @@
+             for (int i = p; i < n; ++i) {
+                 wData[i] = new double[p];
+             }
+-            cachedV = transformer.getV().multiply(MatrixUtils.createRealMatrix(wData));
++            RealMatrix wMatrix = MatrixUtils.createRealMatrix(wData);
++            
++            cachedV = transformer.getV().multiply(wMatrix);
+         }
+     }
+     // return the cached matrix

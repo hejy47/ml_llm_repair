@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -33,7 +33,8 @@
+     } else {
+         lp.setLineno(functionNode.getLineno());
+     }
+-    int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
++    int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition() + 1;
++    // Fixed the indexing of the left parenthesis and added 1 to start after the parenthesis
+     lp.setCharno(position2charno(lparenCharno));
+     for (AstNode param : functionNode.getParams()) {
+         lp.addChildToBack(transform(param));

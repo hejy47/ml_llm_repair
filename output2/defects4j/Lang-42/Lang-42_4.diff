@@ -1,0 +1,8 @@
+--- org/apache/commons/lang/Entities.java@escape
++++ org/apache/commons/lang/Entities.java@escape
+@@ -17,4 +17,5 @@
+             writer.write(';');
+         }
+     }
++    writer.flush(); // Fixed issue where content would not be written to the stream until the close method is called.
+ }

@@ -1,0 +1,15 @@
+--- org/apache/commons/lang/text/StrBuilder.java@indexOf
++++ org/apache/commons/lang/text/StrBuilder.java@indexOf
+@@ -1,10 +1,10 @@
+ public int indexOf(char ch, int startIndex) {
+-    startIndex = (startIndex < 0 ? 0 : startIndex);
++    startIndex = Math.max(0, startIndex); //use Math.max instead of ternary expression
+     if (startIndex >= size) {
+         return -1;
+     }
+     char[] thisBuf = buffer;
+-    for (int i = startIndex; i < thisBuf.length; i++) {
++    for (int i = startIndex; i < size; i++) { //iterate to size, not length
+         if (thisBuf[i] == ch) {
+             return i;
+         }

@@ -1,0 +1,15 @@
+--- org/joda/time/Period.java@normalizedStandard
++++ org/joda/time/Period.java@normalizedStandard
+@@ -15,10 +15,10 @@
+         years = FieldUtils.safeAdd(years, months / 12);
+         months = months % 12;
+         if (years != 0) {
+-            result = result.withYears(years);
++            result = result.plusYears(years);
+         }
+         if (months != 0) {
+-            result = result.withMonths(months);
++            result = result.plusMonths(months);
+         }
+     }
+     return result;

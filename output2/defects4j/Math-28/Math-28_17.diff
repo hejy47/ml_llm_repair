@@ -1,0 +1,20 @@
+--- org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -19,7 +19,7 @@
+             }
+         }
+     }
+-    if (minRatioPositions.size() == 0) {
++    if (minRatioPositions.isEmpty()) {
+         return null;
+     } else if (minRatioPositions.size() > 1) {
+         // there's a degeneracy as indicated by a tie in the minimum ratio test
+@@ -43,7 +43,7 @@
+         //                       revert to the simple case of just returning the top-most row
+         // This heuristic is based on empirical data gathered while investigating MATH-828.
+         Integer minRow = null;
+-        int minIndex = tableau.getWidth();
++        int minIndex = tableau.getNumObjectiveFunctions();
+         for (Integer row : minRatioPositions) {
+             int i = tableau.getNumObjectiveFunctions();
+             for (; i < tableau.getWidth() - 1 && minRow != row; i++) {

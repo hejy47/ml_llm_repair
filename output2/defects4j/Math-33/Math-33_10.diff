@@ -1,0 +1,17 @@
+--- org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
++++ org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
+@@ -14,7 +14,13 @@
+     // non-basic artificial variables
+     for (int i = 0; i < getNumArtificialVariables(); i++) {
+         int col = i + getArtificialVariableOffset();
+-        if (getBasicRow(col) == null) {
++        if (getBasicRow(col) == null && tableau.getEntry(0, col) != 0) {
++             /*
++             * Zero out the non-basic artificial variable in the objective function,
++             * instead of dropping it
++             */
++            tableau.setEntry(0, col, 0);
++        } else if (getBasicRow(col) == null) {
+             columnsToDrop.add(col);
+         }
+     }

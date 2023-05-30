@@ -1,0 +1,20 @@
+--- org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
++++ org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
+@@ -12,12 +12,11 @@
+             lastHold = pos.getIndex();
+             continue;
+         }
+-        switch(c[pos.getIndex()]) {
+-            case QUOTE:
+-                next(pos);
+-                return appendTo == null ? null : appendTo.append(c, lastHold, pos.getIndex() - lastHold);
+-            default:
+-                next(pos);
++        if (c[pos.getIndex()] == QUOTE) {
++            next(pos);
++            return appendTo == null ? null : appendTo.append(c, lastHold, pos.getIndex() - lastHold);
++        } else {
++            next(pos);
+         }
+     }
+     throw new IllegalArgumentException("Unterminated quoted string at position " + start);

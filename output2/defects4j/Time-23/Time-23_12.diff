@@ -1,0 +1,84 @@
+--- org/joda/time/DateTimeZone.java@getConvertedId
++++ org/joda/time/DateTimeZone.java@getConvertedId
+@@ -1,45 +1,46 @@
+ //-----------------------------------------------------------------------
+-private static synchronized String getConvertedId(String id) {
++private static String getConvertedId(String id) {
+     Map<String, String> map = cZoneIdConversion;
+     if (map == null) {
+         // Backwards compatibility with TimeZone.
+-        map = new HashMap<String, String>();
+-        map.put("GMT", "UTC");
+-        map.put("MIT", "Pacific/Apia");
++        Map<String, String> newMap = new HashMap<String, String>();
++        newMap.put("GMT", "UTC");
++        newMap.put("MIT", "Pacific/Apia");
+         // JDK 1.1 compatible
+-        map.put("HST", "Pacific/Honolulu");
+-        map.put("AST", "America/Anchorage");
+-        map.put("PST", "America/Los_Angeles");
++        newMap.put("HST", "Pacific/Honolulu");
++        newMap.put("AST", "America/Anchorage");
++        newMap.put("PST", "America/Los_Angeles");
+         // JDK 1.1 compatible
+-        map.put("MST", "America/Denver");
+-        map.put("PNT", "America/Phoenix");
+-        map.put("CST", "America/Chicago");
++        newMap.put("MST", "America/Denver");
++        newMap.put("PNT", "America/Phoenix");
++        newMap.put("CST", "America/Chicago");
+         // JDK 1.1 compatible
+-        map.put("EST", "America/New_York");
+-        map.put("IET", "America/Indianapolis");
+-        map.put("PRT", "America/Puerto_Rico");
+-        map.put("CNT", "America/St_Johns");
+-        map.put("AGT", "America/Buenos_Aires");
+-        map.put("BET", "America/Sao_Paulo");
+-        map.put("WET", "Europe/London");
+-        map.put("ECT", "Europe/Paris");
+-        map.put("ART", "Africa/Cairo");
+-        map.put("CAT", "Africa/Harare");
+-        map.put("EET", "Europe/Bucharest");
+-        map.put("EAT", "Africa/Addis_Ababa");
+-        map.put("MET", "Asia/Tehran");
+-        map.put("NET", "Asia/Yerevan");
+-        map.put("PLT", "Asia/Karachi");
+-        map.put("IST", "Asia/Calcutta");
+-        map.put("BST", "Asia/Dhaka");
+-        map.put("VST", "Asia/Saigon");
+-        map.put("CTT", "Asia/Shanghai");
+-        map.put("JST", "Asia/Tokyo");
+-        map.put("ACT", "Australia/Darwin");
+-        map.put("AET", "Australia/Sydney");
+-        map.put("SST", "Pacific/Guadalcanal");
+-        map.put("NST", "Pacific/Auckland");
+-        cZoneIdConversion = map;
++        newMap.put("EST", "America/New_York");
++        newMap.put("IET", "America/Indianapolis");
++        newMap.put("PRT", "America/Puerto_Rico");
++        newMap.put("CNT", "America/St_Johns");
++        newMap.put("AGT", "America/Buenos_Aires");
++        newMap.put("BET", "America/Sao_Paulo");
++        newMap.put("WET", "Europe/London");
++        newMap.put("ECT", "Europe/Paris");
++        newMap.put("ART", "Africa/Cairo");
++        newMap.put("CAT", "Africa/Harare");
++        newMap.put("EET", "Europe/Bucharest");
++        newMap.put("EAT", "Africa/Addis_Ababa");
++        newMap.put("MET", "Asia/Tehran");
++        newMap.put("NET", "Asia/Yerevan");
++        newMap.put("PLT", "Asia/Karachi");
++        newMap.put("IST", "Asia/Calcutta");
++        newMap.put("BST", "Asia/Dhaka");
++        newMap.put("VST", "Asia/Saigon");
++        newMap.put("CTT", "Asia/Shanghai");
++        newMap.put("JST", "Asia/Tokyo");
++        newMap.put("ACT", "Australia/Darwin");
++        newMap.put("AET", "Australia/Sydney");
++        newMap.put("SST", "Pacific/Guadalcanal");
++        newMap.put("NST", "Pacific/Auckland");
++        cZoneIdConversion = newMap;
++        map = newMap;
+     }
+     return map.get(id);
+ }

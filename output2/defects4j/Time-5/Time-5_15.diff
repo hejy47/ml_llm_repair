@@ -1,0 +1,25 @@
+--- org/joda/time/Period.java@normalizedStandard
++++ org/joda/time/Period.java@normalizedStandard
+@@ -8,18 +8,12 @@
+     millis += (((long) getHours()) * ((long) DateTimeConstants.MILLIS_PER_HOUR));
+     millis += (((long) getDays()) * ((long) DateTimeConstants.MILLIS_PER_DAY));
+     millis += (((long) getWeeks()) * ((long) DateTimeConstants.MILLIS_PER_WEEK));
+-    Period result = new Period(millis, type, ISOChronology.getInstanceUTC());
+     int years = getYears();
+     int months = getMonths();
+     if (years != 0 || months != 0) {
+-        years = FieldUtils.safeAdd(years, months / 12);
+-        months = months % 12;
+-        if (years != 0) {
+-            result = result.withYears(years);
+-        }
+-        if (months != 0) {
+-            result = result.withMonths(months);
+-        }
++        int totalMonths = years * 12 + months;
++        millis += (((long) totalMonths) * ((long) DateTimeConstants.MILLIS_PER_MONTH));
+     }
+-    return result;
++    Period result = new Period(millis, type, ISOChronology.getInstanceUTC());
++    return result.normalizedStandard();
+ }

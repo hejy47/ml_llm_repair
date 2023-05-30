@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/PrepareAst.java@annotateCalls
++++ com/google/javascript/jscomp/PrepareAst.java@annotateCalls
+@@ -3,8 +3,8 @@
+     // Keep track of of the "this" context of a call.  A call without an
+     // explicit "this" is a free call.
+     Node first = n.getFirstChild();
+-    // ignore cast nodes.
+-    if (!NodeUtil.isGet(first)) {
++    // ignore cast nodes and empty nodes
++    if (!NodeUtil.isGet(first) && !first.isEmpty()) {
+         n.putBooleanProp(Node.FREE_CALL, true);
+     }
+     // Keep track of the context in which eval is called. It is important

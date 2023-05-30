@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
++++ com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
+@@ -19,6 +19,10 @@
+         case Token.NOT:
+             // delete operator returns a boolean.
+             return true;
++        // Added case for strict inequalities
++        case Token.STRICTNE:
++        case Token.STRICTEQ:  
++            return true;
+         default:
+             return false;
+     }
+--- com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
++++ com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
+@@ -40,6 +40,9 @@
+         case Token.IN:
+             // TODO(johnlenz): should IN operator be included in #isSimpleOperator?
+             return true;
++        // Added case for arrow function
++        case Token.ARROWFUNCTION:
++            return true;
+         default:
+             // Other op force a local value:
+             //  x = '' + g (x is now an local string)

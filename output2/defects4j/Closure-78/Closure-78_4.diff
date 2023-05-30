@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -2,7 +2,7 @@
+     // Unlike other operations, ADD operands are not always converted
+     // to Number.
+     if (opType == Token.ADD && (NodeUtil.mayBeString(left, false) || NodeUtil.mayBeString(right, false))) {
+-        return null;
++        return Node.newString(Token.STRING, "");
+     }
+     double result;
+     // TODO(johnlenz): Handle NaN with unknown value. BIT ops convert NaN
+@@ -28,7 +28,11 @@
+             result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
+             break;
+         case Token.ADD:
+-            result = lval + rval;
++            if (NodeUtil.isNullOrUndefined(left) || NodeUtil.isNullOrUndefined(right)) {
++                result = Double.NaN;
++            } else {
++                result = lval + rval;
++            }
+             break;
+         case Token.SUB:
+             result = lval - rval;

@@ -1,0 +1,9 @@
+--- org/apache/commons/math/stat/regression/SimpleRegression.java@getSumSquaredErrors
++++ org/apache/commons/math/stat/regression/SimpleRegression.java@getSumSquaredErrors
+@@ -1,3 +1,6 @@
+ public double getSumSquaredErrors() {
++    if (sumXX == 0) {
++        return 0;
++    }
+     return sumYY - sumXY * sumXY / sumXX;
+ }

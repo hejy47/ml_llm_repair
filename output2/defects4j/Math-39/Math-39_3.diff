@@ -1,0 +1,40 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -25,6 +25,7 @@
+         interpolator.shift();
+         // iterate over step size, ensuring local normalized error is smaller than 1
+         double error = 10;
++        double factor = 0;
+         while (error >= 1.0) {
+             if (firstTime || !fsal) {
+                 // first stage
+@@ -68,10 +69,15 @@
+             error = estimateError(yDotK, y, yTmp, stepSize);
+             if (error >= 1.0) {
+                 // reject the step and attempt to reduce error by stepsize control
+-                final double factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error, exp)));
++                if (firstTime || !fsal) {
++                    factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error, exp)));
++                } else {
++                    factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error / previousError, exp / (getOrder() - 1.0))));
++                }
+                 hNew = filterStep(stepSize * factor, forward, false);
+             }
+         }
++        previousError = error;
+         // local error is small enough: accept the step, trigger events and step handlers
+         interpolator.storeTime(stepStart + stepSize);
+         System.arraycopy(yTmp, 0, y, 0, y0.length);
+@@ -86,7 +92,11 @@
+                 System.arraycopy(yDotTmp, 0, yDotK[0], 0, y0.length);
+             }
+             // stepsize control for next step
+-            final double factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error, exp)));
++            if (firstTime || !fsal) {
++                factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error, exp)));
++            } else {
++                factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error / previousError, exp / (getOrder() - 1.0))));
++            }
+             final double scaledH = stepSize * factor;
+             final double nextT = stepStart + scaledH;
+             final boolean nextIsLast = forward ? (nextT >= t) : (nextT <= t);

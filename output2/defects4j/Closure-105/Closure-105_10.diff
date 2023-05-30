@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -27,6 +27,12 @@
+                 sb = new StringBuilder();
+             }
+             foldedSize += InlineCostEstimator.getCost(elem);
++            // In case a sub-expression has unsupported operators, convert it to a string.
++            Node replacement = NodeUtil.trySimplifyNode(elem);
++            if (replacement != null) {
++                elem = replacement;
++                foldedSize += InlineCostEstimator.getCost(elem);
++            }
+             arrayFoldedChildren.add(elem);
+         }
+         elem = elem.getNext();

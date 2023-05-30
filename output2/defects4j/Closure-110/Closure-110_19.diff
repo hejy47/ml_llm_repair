@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -36,12 +36,16 @@
+             // Add $jscomp.scope.name = EXPR;
+             // Make sure we copy over all the jsdoc and debug info.
+             if (value != null || v.getJSDocInfo() != null) {
+-                Node newDecl = NodeUtil.newQualifiedNameNodeDeclaration(compiler.getCodingConvention(), globalName, value, v.getJSDocInfo()).useSourceInfoIfMissingFromForTree(n);
++                Node qualName =  NodeUtil.newQName(compiler, globalName);
++                Node newDecl = NodeUtil.newVarNode(qualName.cloneTree(), value);
++                newDecl.setJSDocInfo(v.getJSDocInfo());
++                newDecl.useSourceInfoIfMissingFromForTree(n);
+                 NodeUtil.setDebugInformation(newDecl.getFirstChild().getFirstChild(), n, name);
+                 grandparent.addChildBefore(newDecl, varNode);
+             }
+             // Rewrite "var name = EXPR;" to "var name = $jscomp.scope.name;"
+-            v.getNameNode().addChildToFront(NodeUtil.newQualifiedNameNode(compiler.getCodingConvention(), globalName, n, name));
++            Node newQname = NodeUtil.newQName(compiler, globalName);
++            v.getNameNode().replaceChild(n, newQname.cloneTree());
+             recordAlias(v);
+         } else {
+             // Do not other kinds of local symbols, like catch params.
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -3,7 +3,7 @@
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
++    while (n != null && n.next != child) {
+         n = n.next;
+         if (n == null) {
+             throw new RuntimeException("node is not a child");

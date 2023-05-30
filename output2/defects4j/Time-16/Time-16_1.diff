@@ -1,0 +1,13 @@
+--- org/joda/time/format/DateTimeFormatter.java@parseInto
++++ org/joda/time/format/DateTimeFormatter.java@parseInto
+@@ -6,7 +6,9 @@
+     }
+     long instantMillis = instant.getMillis();
+     Chronology chrono = instant.getChronology();
+-    long instantLocal = instantMillis + chrono.getZone().getOffset(instantMillis);
++    // Subtract the offset from the instant local time, instead of adding it
++    long instantLocal = instantMillis - chrono.getZone().getOffset(instantMillis);
++    // Use the selected chronology
+     chrono = selectChronology(chrono);
+     DateTimeParserBucket bucket = new DateTimeParserBucket(instantLocal, chrono, iLocale, iPivotYear, iDefaultYear);
+     int newPos = parser.parseInto(bucket, text, position);

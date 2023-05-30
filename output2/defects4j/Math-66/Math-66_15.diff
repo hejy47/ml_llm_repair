@@ -1,0 +1,18 @@
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@localMin
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@localMin
+@@ -25,7 +25,7 @@
+     double fv = fx;
+     double fw = fx;
+     int count = 0;
+-    while (count < maximalIterationCount) {
++    while (count < getMaximalIterationCount()) {
+         double m = 0.5 * (a + b);
+         final double tol1 = eps * Math.abs(x) + t;
+         final double tol2 = 2 * tol1;
+@@ -128,5 +128,5 @@
+         }
+         ++count;
+     }
+-    throw new MaxIterationsExceededException(maximalIterationCount);
++    throw new MaxIterationsExceededException(getMaximalIterationCount());
+ }

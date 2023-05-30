@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -22,7 +22,7 @@
+     }
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]
+     Node fnParam = NodeUtil.getFunctionParameters(fnNode).getFirstChild();
+-    while (cArg != null || fnParam != null) {
++    while (cArg != null && fnParam != null) { // fix here, added cArg != null
+         // For each named parameter check if a mutable argument use more than one.
+         if (fnParam != null) {
+             if (cArg != null) {
+@@ -45,5 +45,5 @@
+             cArg = cArg.getNext();
+         }
+     }
+-    return CanInlineResult.YES;
++    return cArg == null && fnParam == null ? CanInlineResult.YES : CanInlineResult.NO; // fix here, added check for remaining arguments
+ }

@@ -1,0 +1,39 @@
+--- org/apache/commons/math/dfp/Dfp.java@toDouble
++++ org/apache/commons/math/dfp/Dfp.java@toDouble
+@@ -15,7 +15,7 @@
+         y = negate();
+         negate = true;
+     }
+-        int exponent = (int) (y.log10() * 3.32);
++    int exponent = (int) (y.log10() * 3.3219280948873626);
+     if (exponent < 0) {
+         exponent--;
+     }
+@@ -25,7 +25,8 @@
+         exponent++;
+     }
+     exponent--;
+-        y = y.divide(DfpMath.pow(getTwo(), exponent));
++
++    y = y.divide(DfpMath.pow(getTwo(), exponent));
+     if (exponent > -1023) {
+         y = y.subtract(getOne());
+     }
+@@ -35,7 +36,7 @@
+     if (exponent > 1023) {
+         return negate ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+     }
+-    y = y.multiply(newInstance(4503599627370496l)).rint();
++    y = y.multiply(DfpMath.pow(getTwo(), 52));
+     String str = y.toString();
+     str = str.substring(0, str.length() - 1);
+     long mantissa = Long.parseLong(str);
+@@ -44,7 +45,7 @@
+         mantissa = 0;
+         exponent++;
+     }
+-        if (exponent <= -1023) {
++    if (exponent <= -1023) {
+         exponent--;
+     }
+     while (exponent < -1023) {

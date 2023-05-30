@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
++++ com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
+@@ -24,7 +24,7 @@
+                 Preconditions.checkState(outEdges.get(0).getValue() == Branch.UNCOND);
+                 Node fallThrough = computeFollowing(n);
+                 Node nextCfgNode = outEdges.get(0).getDestination().getValue();
+-                if (nextCfgNode == fallThrough) {
++                if (fallThrough != null && nextCfgNode != null && nextCfgNode == fallThrough) {
+                     removeNode(n);
+                 }
+             }

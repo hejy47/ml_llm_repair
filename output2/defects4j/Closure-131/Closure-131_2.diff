@@ -1,0 +1,12 @@
+--- com/google/javascript/rhino/TokenStream.java@isJSIdentifier
++++ com/google/javascript/rhino/TokenStream.java@isJSIdentifier
+@@ -4,7 +4,8 @@
+         return false;
+     }
+     for (int i = 1; i < length; i++) {
+-        if (!Character.isJavaIdentifierPart(s.charAt(i))) {
++        char c = s.charAt(i);
++        if (!Character.isJavaIdentifierPart(c) && c != '-') {
+             return false;
+         }
+     }

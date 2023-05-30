@@ -1,0 +1,29 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -21,11 +21,15 @@
+     initIntegration(equations.getTime(), y0, t);
+     // main integration loop
+     isLastStep = false;
++    double error;
+     do {
+         interpolator.shift();
+         // iterate over step size, ensuring local normalized error is smaller than 1
+-        double error = 10;
++        error = 10;
+         while (error >= 1.0) {
++            double[][] yDotKbefore = yDotK.clone();
++            double[] ybefore = y.clone();
++            double hBefore = stepSize;
+             if (firstTime || !fsal) {
+                 // first stage
+                 computeDerivatives(stepStart, y, yDotK[0]);
+@@ -70,6 +74,9 @@
+                 // reject the step and attempt to reduce error by stepsize control
+                 final double factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error, exp)));
+                 hNew = filterStep(stepSize * factor, forward, false);
++                if(hNew==stepSize){
++                  error=0;
++                }
+             }
+         }
+         // local error is small enough: accept the step, trigger events and step handlers

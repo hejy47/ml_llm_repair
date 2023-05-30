@@ -1,0 +1,13 @@
+--- org/apache/commons/math/analysis/solvers/UnivariateRealSolverUtils.java@bracket
++++ org/apache/commons/math/analysis/solvers/UnivariateRealSolverUtils.java@bracket
+@@ -14,8 +14,8 @@
+     double fb;
+     int numIterations = 0;
+     do {
+-        a = Math.max(a - 1.0, lowerBound);
+-        b = Math.min(b + 1.0, upperBound);
++        a = Math.max(a - 1.0e-6, lowerBound);
++        b = Math.min(b + 1.0e-6, upperBound);
+         fa = function.value(a);
+         fb = function.value(b);
+         numIterations++;

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -19,7 +19,7 @@
+             isSet = true;
+             switch(n.getType()) {
+                 case Token.STRING_KEY:
+-                    type = getValueType(n.getFirstChild());
++                    type = getValueType(n.getLastChild());
+                     break;
+                 case Token.GETTER_DEF:
+                     type = Name.Type.GET;

@@ -1,0 +1,30 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
++++ org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
+@@ -21,21 +21,12 @@
+                     c = value.charAt(i);
+                 }
+                 break;
+-            case '?':
+-            case '[':
+-            case ']':
+-            case '(':
+-            case ')':
+-            case '{':
+-            case '}':
+-            case '\\':
+-            case '|':
+-            case '*':
+-            case '+':
+-            case '^':
+-            case '$':
+-            case '.':
+-                regex.append('\\');
++            default:
++                if (c == '?' || c == '[' || c == ']' || c == '(' || c == ')' ||
++                        c == '{' || c == '}' || c == '\\' || c == '|' || c == '*'||
++                        c == '+' || c == '^' || c == '$' || c == '.') {
++                    regex.append('\\');
++                }
+         }
+         regex.append(c);
+     }

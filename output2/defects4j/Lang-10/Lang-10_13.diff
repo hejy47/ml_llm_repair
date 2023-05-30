@@ -1,0 +1,21 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
++++ org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
+@@ -7,7 +7,7 @@
+         if (Character.isWhitespace(c)) {
+             if (!wasWhite) {
+                 wasWhite = true;
+-                regex.append("\\s*+");
++                regex.append("\\s+");
+             }
+             continue;
+         }
+@@ -36,6 +36,9 @@
+             case '$':
+             case '.':
+                 regex.append('\\');
++                break;
++            default:
++                break;
+         }
+         regex.append(c);
+     }

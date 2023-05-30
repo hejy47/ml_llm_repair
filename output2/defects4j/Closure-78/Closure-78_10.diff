@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -4,7 +4,7 @@
+     if (opType == Token.ADD && (NodeUtil.mayBeString(left, false) || NodeUtil.mayBeString(right, false))) {
+         return null;
+     }
+-    double result;
++    double result = 0;
+     // TODO(johnlenz): Handle NaN with unknown value. BIT ops convert NaN
+     // to zero so this is a little akward here.
+     Double lValObj = NodeUtil.getNumberValue(left);
+@@ -28,6 +28,10 @@
+             result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
+             break;
+         case Token.ADD:
++            //if either of operands is a string, convert both operands to string
++            if(NodeUtil.mayBeString(left) || NodeUtil.mayBeString(right)){
++                return NodeUtil.getStringConcatenation(left, right);
++            }
+             result = lval + rval;
+             break;
+         case Token.SUB:

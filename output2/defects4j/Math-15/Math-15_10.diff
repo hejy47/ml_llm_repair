@@ -1,0 +1,12 @@
+--- org/apache/commons/math3/util/FastMath.java@pow
++++ org/apache/commons/math3/util/FastMath.java@pow
+@@ -123,8 +123,7 @@
+     z = z * lnb + (1.0 / 6.0);
+     z = z * lnb + 0.5;
+     z = z * lnb + 1.0;
+-    z = z * lnb;
++    z = z * y;
+     final double result = exp(lna, z, null);
+-    //result = result + result * z;
+     return result;
+ }

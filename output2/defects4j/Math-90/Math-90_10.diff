@@ -1,0 +1,15 @@
+--- org/apache/commons/math/stat/Frequency.java@addValue
++++ org/apache/commons/math/stat/Frequency.java@addValue
+@@ -1,8 +1,11 @@
+ @Deprecated
+ public void addValue(Object v) {
+-        Object obj = v;
++    Object obj = v;
+     if (v instanceof Integer) {
+         obj = Long.valueOf(((Integer) v).longValue());
++    }
++    if (! (obj instanceof Comparable)) {
++        throw new IllegalArgumentException("Value not comparable to existing values.");
+     }
+     try {
+         Long count = (Long) freqTable.get(obj);

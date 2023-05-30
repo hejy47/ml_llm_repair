@@ -1,0 +1,11 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@init
++++ org/apache/commons/lang3/time/FastDateParser.java@init
+@@ -4,7 +4,7 @@
+     StringBuilder regex = new StringBuilder();
+     List<Strategy> collector = new ArrayList<Strategy>();
+     Matcher patternMatcher = formatPattern.matcher(pattern);
+-    if (!patternMatcher.lookingAt()) {
++    if (!patternMatcher.matches()) { // use matches() instead of lookingAt()
+         throw new IllegalArgumentException("Invalid pattern");
+     }
+     currentFormatField = patternMatcher.group();

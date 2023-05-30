@@ -1,0 +1,14 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -7,7 +7,10 @@
+     if (chars != null && chars.length == 0) {
+         throw new IllegalArgumentException("The chars array must not be empty");
+     }
+-    if (start == 0 && end == 0) {
++    if (start > end) {
++        throw new IllegalArgumentException("Start character cannot be greater than end character");
++    }
++    if (start == end) {
+         if (chars != null) {
+             end = chars.length;
+         } else {

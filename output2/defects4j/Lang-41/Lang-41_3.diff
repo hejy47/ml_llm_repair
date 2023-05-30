@@ -1,0 +1,18 @@
+--- org/apache/commons/lang/ClassUtils.java@getShortClassName
++++ org/apache/commons/lang/ClassUtils.java@getShortClassName
+@@ -13,5 +13,5 @@
+     if (innerIdx != -1) {
+         out = out.replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR);
+     }
+-    return out;
++    return out.isEmpty() ? StringUtils.EMPTY : out;
+ }
+--- org/apache/commons/lang/ClassUtils.java@getPackageName
++++ org/apache/commons/lang/ClassUtils.java@getPackageName
+@@ -8,5 +8,5 @@
+     if (i == -1) {
+         return StringUtils.EMPTY;
+     }
+-    return className.substring(0, i);
++    return className.substring(0, i).isEmpty() ? StringUtils.EMPTY : className.substring(0, i);
+ }

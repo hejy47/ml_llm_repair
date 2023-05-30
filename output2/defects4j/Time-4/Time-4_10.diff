@@ -1,0 +1,11 @@
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -16,7 +16,7 @@
+                 DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+                 if (loopUnitField.isSupported()) {
+                     int compare = unitField.compareTo(loopUnitField);
+-                    if (compare > 0) {
++                    if (compare < 0) {
+                         break;
+                     } else if (compare == 0) {
+                         DurationField rangeField = fieldType.getRangeDurationType().getField(iChronology);

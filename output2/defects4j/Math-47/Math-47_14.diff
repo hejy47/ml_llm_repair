@@ -1,0 +1,19 @@
+--- org/apache/commons/math/complex/Complex.java@Complex
++++ org/apache/commons/math/complex/Complex.java@Complex
+@@ -3,4 +3,7 @@
+     this.imaginary = imaginary;
+     isNaN = Double.isNaN(real) || Double.isNaN(imaginary);
+     isInfinite = !isNaN && (Double.isInfinite(real) || Double.isInfinite(imaginary));
++    if (Double.isNaN(real) || Double.isNaN(imaginary)) {
++        throw new IllegalArgumentException("Input cannot be NaN.");
++    }
+ }
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -1,5 +1,5 @@
+ public Complex divide(double divisor) {
+-    if (isNaN || Double.isNaN(divisor)) {
++    if (Double.isNaN(divisor)) {
+         return NaN;
+     }
+     if (divisor == 0d) {

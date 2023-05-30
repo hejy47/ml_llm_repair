@@ -1,0 +1,11 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
++++ org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
+@@ -21,6 +21,8 @@
+                     c = value.charAt(i);
+                 }
+                 break;
++            default:
++                break; // added break statement to avoid unnecessary switch-case fall-through
+             case '?':
+             case '[':
+             case ']':

@@ -1,0 +1,51 @@
+--- org/mockito/internal/MockHandler.java@handle
++++ org/mockito/internal/MockHandler.java@handle
+@@ -1,12 +1,12 @@
+ public Object handle(Invocation invocation) throws Throwable {
+     if (invocationContainerImpl.hasAnswersForStubbing()) {
+         // stubbing voids with stubVoid() or doAnswer() style
+-        InvocationMatcher invocationMatcher = matchersBinder.bindMatchers(mockingProgress.getArgumentMatcherStorage(), invocation);
++        InvocationMatcher invocationMatcher = matchersBinder.bindMatchers(invocation.getMatchers(), invocation);
+         invocationContainerImpl.setMethodForStubbing(invocationMatcher);
+         return null;
+     }
+     VerificationMode verificationMode = mockingProgress.pullVerificationMode();
+-    InvocationMatcher invocationMatcher = matchersBinder.bindMatchers(mockingProgress.getArgumentMatcherStorage(), invocation);
++    InvocationMatcher invocationMatcher = matchersBinder.bindMatchers(invocation.getMatchers(), invocation);
+     mockingProgress.validateState();
+     //if verificationMode is not null then someone is doing verify()
+     if (verificationMode != null) {
+@@ -17,14 +17,18 @@
+         return null;
+     }
+     invocationContainerImpl.setInvocationForPotentialStubbing(invocationMatcher);
+-    OngoingStubbingImpl<T> ongoingStubbing = new OngoingStubbingImpl<T>(invocationContainerImpl);
++    OngoingStubbingImpl<T> ongoingStubbing = new OngoingStubbingImpl<>(invocationContainerImpl);
+     mockingProgress.reportOngoingStubbing(ongoingStubbing);
+     StubbedInvocationMatcher stubbedInvocation = invocationContainerImpl.findAnswerFor(invocation);
+     if (stubbedInvocation != null) {
+         stubbedInvocation.captureArgumentsFrom(invocation);
+         return stubbedInvocation.answer(invocation);
+     } else {
+-        Object ret = mockSettings.getDefaultAnswer().answer(invocation);
++        Answer<?> answer = mockSettings.getDefaultAnswer();
++        if (answer instanceof ReturnsDeepStubs) {
++            answer = new DeeplyStubbingAnswer();
++        }
++        Object ret = answer.answer(invocation);
+         // redo setting invocation for potential stubbing in case of partial
+         // mocks / spies.
+         // Without it, the real method inside 'when' might have delegated
+--- org/mockito/internal/MockitoCore.java@verify
++++ org/mockito/internal/MockitoCore.java@verify
+@@ -1,8 +1,8 @@
+ public <T> T verify(T mock, VerificationMode mode) {
+     if (mock == null) {
+-        reporter.nullPassedToVerify();
++        throw new NullPointerException("Mock object cannot be null");
+     } else if (!mockUtil.isMock(mock)) {
+-        reporter.notAMockPassedToVerify();
++        throw new IllegalArgumentException("Object is not a mock");
+     }
+     mockingProgress.verificationStarted(mode);
+     return mock;

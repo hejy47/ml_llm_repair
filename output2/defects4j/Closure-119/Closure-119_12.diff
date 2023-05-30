@@ -1,0 +1,55 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -4,7 +4,8 @@
+     boolean isSet = false;
+     Name.Type type = Name.Type.OTHER;
+     boolean isPropAssign = false;
+-    switch(n.getType()) {
++
++    switch (n.getType()) {
+         case Token.GETTER_DEF:
+         case Token.SETTER_DEF:
+         case Token.STRING_KEY:
+@@ -17,7 +18,7 @@
+                 return;
+             }
+             isSet = true;
+-            switch(n.getType()) {
++            switch (n.getType()) {
+                 case Token.STRING_KEY:
+                     type = getValueType(n.getFirstChild());
+                     break;
+@@ -34,7 +35,7 @@
+         case Token.NAME:
+             // This may be a variable get or set.
+             if (parent != null) {
+-                switch(parent.getType()) {
++                switch (parent.getType()) {
+                     case Token.VAR:
+                         isSet = true;
+                         Node rvalue = n.getFirstChild();
+@@ -66,6 +67,7 @@
+                             isSet = true;
+                             type = Name.Type.OTHER;
+                         }
++                        break;
+                 }
+             }
+             name = n.getString();
+@@ -73,7 +75,7 @@
+         case Token.GETPROP:
+             // This may be a namespaced name get or set.
+             if (parent != null) {
+-                switch(parent.getType()) {
++                switch (parent.getType()) {
+                     case Token.ASSIGN:
+                         if (parent.getFirstChild() == n) {
+                             isSet = true;
+@@ -93,6 +95,7 @@
+                             isSet = true;
+                             type = Name.Type.OTHER;
+                         }
++                        break;
+                 }
+             }
+             name = n.getQualifiedName();

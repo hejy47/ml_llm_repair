@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -13,11 +13,11 @@
+         JSDocInfo docInfo = null;
+         for (; objectType != null; objectType = objectType.getImplicitPrototype()) {
+             docInfo = objectType.getOwnPropertyJSDocInfo(propertyName);
+-            if (docInfo != null && docInfo.getVisibility() != Visibility.INHERITED) {
++            if (docInfo != null && docInfo.getVisibility() != null && docInfo.getVisibility() != Visibility.INHERITED) {
+                 break;
+             }
+         }
+-        if (objectType == null) {
++        if (objectType == null || docInfo == null || docInfo.getVisibility() == null) {
+             // We couldn't find a visibility modifier; assume it's public.
+             return;
+         }

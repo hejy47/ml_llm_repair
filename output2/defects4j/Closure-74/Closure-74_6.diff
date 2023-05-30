@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -7,7 +7,7 @@
+         }
+     }
+     int op = n.getType();
+-    boolean result;
++    boolean result = false; //set default result to false
+     // TODO(johnlenz): Use the JSType to compare nodes of different types.
+     boolean rightLiteral = NodeUtil.isLiteralValue(right, false);
+     boolean undefinedRight = ((Token.NAME == right.getType() && right.getString().equals("undefined")) || (Token.VOID == right.getType() && NodeUtil.isLiteralValue(right.getFirstChild(), false)));

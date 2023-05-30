@@ -1,0 +1,30 @@
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
+@@ -1,11 +1,5 @@
+ public static synchronized FastDateFormat getDateInstance(int style, TimeZone timeZone, Locale locale) {
+-    Object key = new Integer(style);
+-    if (timeZone != null) {
+-        key = new Pair(key, timeZone);
+-    }
+-    if (locale != null) {
+-        key = new Pair(key, locale);
+-    }
++    Object key = new Object[]{style, timeZone, locale};
+     FastDateFormat format = (FastDateFormat) cDateInstanceCache.get(key);
+     if (format == null) {
+         if (locale == null) {
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
+@@ -1,11 +1,5 @@
+ public static synchronized FastDateFormat getDateTimeInstance(int dateStyle, int timeStyle, TimeZone timeZone, Locale locale) {
+-    Object key = new Pair(new Integer(dateStyle), new Integer(timeStyle));
+-    if (timeZone != null) {
+-        key = new Pair(key, timeZone);
+-    }
+-    if (locale != null) {
+-        key = new Pair(key, locale);
+-    }
++    Object key = new Object[]{dateStyle, timeStyle, timeZone, locale};
+     FastDateFormat format = (FastDateFormat) cDateTimeInstanceCache.get(key);
+     if (format == null) {
+         if (locale == null) {

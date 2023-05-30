@@ -1,0 +1,10 @@
+--- org/apache/commons/lang/enums/ValuedEnum.java@compareTo
++++ org/apache/commons/lang/enums/ValuedEnum.java@compareTo
+@@ -1,3 +1,6 @@
+ public int compareTo(Object other) {
+-    return iValue - ((ValuedEnum) other).iValue;
++    if (other instanceof ValuedEnum) {
++        return iValue - ((ValuedEnum) other).iValue;
++    }
++    throw new IllegalArgumentException("Object is not an instance of ValuedEnum");
+ }

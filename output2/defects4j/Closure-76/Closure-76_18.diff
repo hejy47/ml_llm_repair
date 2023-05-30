@@ -1,0 +1,41 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -4,7 +4,7 @@
+         switch(n.getParent().getType()) {
+             case Token.OR:
+             case Token.AND:
+-            // If the currently node is the first child of
++            // If the current node is the first child of
+             // AND/OR, be conservative only consider the READs
+             // of the second operand.
+             case Token.HOOK:
+@@ -26,5 +26,7 @@
+         }
+         n = n.getParent();
+     }
+-    return false;
++    // Check the root expression as well
++    VariableLiveness rootState = isVariableReadBeforeKill(exprRoot, variable);
++    return rootState == VariableLiveness.READ;
+ }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -5,7 +5,7 @@
+             // The expression to which the assignment is made is evaluated before
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.
+-            Node rhs = n.getNext();
++            Node rhs = n.getNext().getNext();
+             VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
+             if (state == VariableLiveness.READ) {
+                 return state;
+@@ -19,8 +19,7 @@
+         // Conditionals
+         case Token.OR:
+         case Token.AND:
+-        // With a AND/OR the first branch always runs, but the second is
+-        // may not.
++        // With an AND/OR the first branch always runs, but the second may not.
+         case Token.HOOK:
+             return checkHookBranchReadBeforeKill(n.getFirstChild().getNext(), n.getLastChild(), variable);
+         default:

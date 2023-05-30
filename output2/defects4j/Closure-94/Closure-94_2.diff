@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isValidDefineValue
++++ com/google/javascript/jscomp/NodeUtil.java@isValidDefineValue
+@@ -10,16 +10,27 @@
+         case Token.BITNOT:
+         case Token.BITOR:
+         case Token.BITXOR:
++            // Fixed: check both left and right children for validity
++            return isValidDefineValue(val.getFirstChild(), defines) && isValidDefineValue(val.getLastChild(), defines);
+         // Uniary operators are valid if the child is valid.
+         case Token.NOT:
+         case Token.NEG:
+             return isValidDefineValue(val.getFirstChild(), defines);
+         // Names are valid if and only if they are defines themselves.
+         case Token.NAME:
++            if (val.isName() && defines.contains(val.getString())) {
++                return true;
++            }
++            break;
+         case Token.GETPROP:
+-            if (val.isQualifiedName()) {
+-                return defines.contains(val.getQualifiedName());
++            if (val.isGetProp() && val.getLastChild().isString()) {
++                String propName = val.getLastChild().getString();
++                Node obj = val.getFirstChild();
++                if (obj.isName() && defines.contains(obj.getString() + "." + propName)) {
++                    return true;
++                }
+             }
++            break;
+     }
+     return false;
+ }

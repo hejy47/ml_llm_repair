@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/DisambiguateProperties.java@handleObjectLit
++++ com/google/javascript/jscomp/DisambiguateProperties.java@handleObjectLit
+@@ -10,6 +10,8 @@
+             // case right now.
+             if (propertiesToErrorFor.containsKey(name)) {
+                 compiler.report(JSError.make(t.getSourceName(), child, propertiesToErrorFor.get(name), Warnings.INVALIDATION, name, (type == null ? "null" : type.toString()), n.toString(), ""));
++            } else {
++                prop.setPermanentErrors(true);
+             }
+         }
+     }

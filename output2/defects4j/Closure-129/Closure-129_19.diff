@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/PrepareAst.java@annotateCalls
++++ com/google/javascript/jscomp/PrepareAst.java@annotateCalls
+@@ -10,6 +10,9 @@
+     // Keep track of the context in which eval is called. It is important
+     // to distinguish between "(0, eval)()" and "eval()".
+     if (first.isName() && "eval".equals(first.getString())) {
+-        first.putBooleanProp(Node.DIRECT_EVAL, true);
++        Node parent = n.getParent();
++        // check if eval is being called directly or indirectly
++        boolean isDirectEval = (parent.isExprResult() || parent.isSwitchCase() || parent.isReturn());
++        first.putBooleanProp(Node.DIRECT_EVAL, isDirectEval);
+     }
+ }

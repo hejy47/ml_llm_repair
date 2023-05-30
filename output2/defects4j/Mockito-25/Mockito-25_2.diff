@@ -1,0 +1,25 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
+@@ -2,7 +2,7 @@
+     GenericMetadataSupport returnTypeGenericMetadata = actualParameterizedType(invocation.getMock()).resolveGenericReturnType(invocation.getMethod());
+     Class<?> rawType = returnTypeGenericMetadata.rawType();
+     if (!new MockCreationValidator().isTypeMockable(rawType)) {
+-        return delegate.returnValueFor(rawType);
++        throw new org.mockito.exceptions.misusing.UnfinishedStubbingException();
+     }
+     return getMock(invocation);
+ }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@getMock
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@getMock
+@@ -1,9 +1,9 @@
+ private Object getMock(InvocationOnMock invocation) throws Throwable {
+     InternalMockHandler<Object> handler = new MockUtil().getMockHandler(invocation.getMock());
+-    InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
++    InvocationContainer container = handler.getInvocationContainer();
+     // matches invocation for verification
+     for (StubbedInvocationMatcher stubbedInvocationMatcher : container.getStubbedInvocations()) {
+-        if (container.getInvocationForStubbing().matches(stubbedInvocationMatcher.getInvocation())) {
++        if (stubbedInvocationMatcher.matches(invocation)) {
+             return stubbedInvocationMatcher.answer(invocation);
+         }
+     }

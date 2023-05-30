@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -9,7 +9,8 @@
+     // replace it with UNKNOWN.
+     TemplateTypeReplacer replacer = new TemplateTypeReplacer(registry, inferred);
+     Node callTarget = n.getFirstChild();
+-    FunctionType replacementFnType = fnType.visit(replacer).toMaybeFunctionType();
++    // Use the inferred map instead of the original template type map
++    FunctionType replacementFnType = fnType.visit(replacer.updateTemplateTypeMap(inferred)).toMaybeFunctionType();
+     Preconditions.checkNotNull(replacementFnType);
+     callTarget.setJSType(replacementFnType);
+     n.setJSType(replacementFnType.getReturnType());

@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -10,9 +10,13 @@
+             if (objectType.getConstructor() != null && objectType.getConstructor().isInterface()) {
+                 objectType = FunctionType.getTopDefiningInterface(objectType, propName);
+             } else {
+-                // classes
+-                while (objectType != null && !objectType.hasOwnProperty(propName)) {
++                // check if the property is defined on the object
++                if (!objectType.hasOwnProperty(propName) && objectType.getImplicitPrototype() != null) {
+                     objectType = objectType.getImplicitPrototype();
++                }
++                // check if the property is defined on the constructor
++                if (objectType.getConstructor() != null && !objectType.getConstructor().hasOwnProperty(propName)) {
++                    objectType = getSuperTypeConstructor(objectType.getConstructor());
+                 }
+             }
+             // Don't show complex function names or anonymous types.

@@ -1,0 +1,91 @@
+--- org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
++++ org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
+@@ -18,49 +18,51 @@
+     double alpha = coeffU - beta * coeffV;
+     v2 = new Vector3D(alpha, v1, beta, v2);
+     // preliminary computation
+-    Vector3D uRef = u1;
+-    Vector3D vRef = v1;
+-    Vector3D v1Su1 = v1.subtract(u1);
+-    Vector3D v2Su2 = v2.subtract(u2);
+-    Vector3D k = v1Su1.crossProduct(v2Su2);
+     Vector3D u3 = u1.crossProduct(u2);
+-    double c = k.dotProduct(u3);
+-    if (c == 0) {
+-        // the (q1, q2, q3) vector is close to the (u1, u2) plane
+-        // we try other vectors
+-        Vector3D v3 = Vector3D.crossProduct(v1, v2);
+-        Vector3D v3Su3 = v3.subtract(u3);
+-        k = v1Su1.crossProduct(v3Su3);
+-        Vector3D u2Prime = u1.crossProduct(u3);
+-        c = k.dotProduct(u2Prime);
+-        if (c == 0) {
+-            // the (q1, q2, q3) vector is also close to the (u1, u3) plane,
+-            // it is almost aligned with u1: we try (u2, u3) and (v2, v3)
+-            k = v2Su2.crossProduct(v3Su3);
+-            ;
+-            c = k.dotProduct(u2.crossProduct(u3));
+-            ;
+-            if (c == 0) {
+-                // the (q1, q2, q3) vector is aligned with everything
+-                // this is really the identity rotation
+-                q0 = 1.0;
+-                q1 = 0.0;
+-                q2 = 0.0;
+-                q3 = 0.0;
+-                return;
+-            }
+-            // we will have to use u2 and v2 to compute the scalar part
+-            uRef = u2;
+-            vRef = v2;
++    if (u3.getNorm() == 0) {
++        // the (u1, u2) vector is already aligned with u3, choose another vector
++        u3 = new Vector3D(u2.getY(), -u2.getX(), 0);
++        if (u3.getNorm() == 0) {
++            u3 = new Vector3D(u2.getZ(), 0, -u2.getX());
+         }
+     }
++    Vector3D v3 = v1.crossProduct(v2);
++    if (v3.getNorm() == 0) {
++        // the (v1, v2) vector is already aligned with v3, choose another vector
++        v3 = new Vector3D(v2.getY(), -v2.getX(), 0);
++        if (v3.getNorm() == 0) {
++            v3 = new Vector3D(v2.getZ(), 0, -v2.getX());
++        }
++    }
++    Vector3D k = u3.crossProduct(v3);
++    double normK = k.getNorm();
++    if (normK == 0) {
++        // the (u1, u2) plane is parallel to the (v1, v2) plane
++        // choose (u1, u3) to define the rotation and compute the angle
++        double c = u1.dotProduct(u3);
++        double s = u1.dotProduct(u2.crossProduct(u3));
++        if (s < 0) {
++            // ensure the angle is positive
++            c = -c;
++            s = -s;
++        }
++        double angle = FastMath.atan2(s, c);
++        q0 = FastMath.cos(0.5 * angle);
++        q1 = FastMath.sin(0.5 * angle) * u3.getX();
++        q2 = FastMath.sin(0.5 * angle) * u3.getY();
++        q3 = FastMath.sin(0.5 * angle) * u3.getZ();
++        return;
++    }
+     // compute the vectorial part
+-    c = FastMath.sqrt(c);
+-    double inv = 1.0 / (c + c);
++    double inv = 0.5 / normK;
+     q1 = inv * k.getX();
+     q2 = inv * k.getY();
+     q3 = inv * k.getZ();
+     // compute the scalar part
+-    k = new Vector3D(uRef.getY() * q3 - uRef.getZ() * q2, uRef.getZ() * q1 - uRef.getX() * q3, uRef.getX() * q2 - uRef.getY() * q1);
+-    q0 = vRef.dotProduct(k) / (2 * k.getNormSq());
++    double s = u3.dotProduct(v3) / normK;
++    double angle = FastMath.atan2(normK, s);
++    q0 = FastMath.cos(0.5 * angle);
++    q1 *= FastMath.sin(0.5 * angle);
++    q2 *= FastMath.sin(0.5 * angle);
++    q3 *= FastMath.sin(0.5 * angle);
+ }

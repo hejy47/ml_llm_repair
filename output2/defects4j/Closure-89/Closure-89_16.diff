@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -41,9 +41,9 @@
+         }
+         // Create a stub variable declaration right
+         // before the current statement.
+-        Node stubVar = new Node(Token.VAR, nameNode.cloneTree()).copyInformationFrom(nameNode);
++        Node stubVar = new Node(Token.VAR, nameNode.cloneNode()).copyInformationFrom(nameNode);
+         currentParent.addChildBefore(stubVar, current);
+-        parent.replaceChild(ref.node, nameNode);
++        parent.replaceChild(ref.node, new Node(Token.ASSIGN, nameNode, rvalue));
+     }
+     compiler.reportCodeChange();
+ }

@@ -1,0 +1,14 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -40,9 +40,9 @@
+                     break;
+                 default:
+                     if (ch > 0xf) {
+-                        out.write("\\u00" + hex(ch));
++                        out.write("\\u00" + Integer.toHexString(ch).toUpperCase());
+                     } else {
+-                        out.write("\\u000" + hex(ch));
++                        out.write("\\u000" + Integer.toHexString(ch).toUpperCase());
+                     }
+                     break;
+             }

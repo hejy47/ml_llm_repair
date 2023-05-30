@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -10,7 +10,11 @@
+             if (state == VariableLiveness.READ) {
+                 return state;
+             }
+-            return VariableLiveness.KILL;
++            // Fixed code below
++            if (state == VariableLiveness.KILL) {
++                return VariableLiveness.KILL;
++            }
++            // End of fixed code
+         } else {
+             return VariableLiveness.READ;
+         }

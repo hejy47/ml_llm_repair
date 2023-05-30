@@ -1,0 +1,9 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -13,5 +13,5 @@
+     Preconditions.checkNotNull(replacementFnType);
+     callTarget.setJSType(replacementFnType);
+     n.setJSType(replacementFnType.getReturnType());
+-    return replacer.madeChanges;
++    return replacer.hasMadeChanges();
+ }

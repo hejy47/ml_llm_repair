@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -5,6 +5,13 @@
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.
+             return VariableLiveness.KILL;
++        } else if (NodeUtil.isExpressionNode(n) && NodeUtil.isAssignmentOp(n.getParent())) {
++            // Check if the variable is read in the RHS of an assignment expression
++            Node rhsNode = NodeUtil.getRValueOfLValue(n);
++            VariableLiveness state = isVariableReadBeforeKill(rhsNode, variable);
++            if (state == VariableLiveness.READ) {
++                return VariableLiveness.READ_BEFORE_KILL;
++            }
+         } else {
+             return VariableLiveness.READ;
+         }

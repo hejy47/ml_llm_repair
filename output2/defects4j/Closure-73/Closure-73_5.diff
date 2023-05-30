@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/CodeGenerator.java@strEscape
++++ com/google/javascript/jscomp/CodeGenerator.java@strEscape
+@@ -25,8 +25,8 @@
+             case '\'':
+                 sb.append(singlequoteEscape);
+                 break;
+-            case // Break --> into --\> or ]]> into ]]\>
+-            '>':
++            case '>':
++                // convert > to \> if it follows -- or ]]
+                 if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']'))) {
+                     sb.append("\\>");
+                 } else {
+@@ -38,9 +38,8 @@
+                 final String END_SCRIPT = "/script";
+                 // Break <!-- into <\!--
+                 final String START_COMMENT = "!--";
+-                if (s.regionMatches(true, i + 1, END_SCRIPT, 0, END_SCRIPT.length())) {
+-                    sb.append("<\\");
+-                } else if (s.regionMatches(false, i + 1, START_COMMENT, 0, START_COMMENT.length())) {
++                // convert < to <\/ if it follows </script or <!--
++                if (s.regionMatches(true, i + 1, END_SCRIPT, 0, END_SCRIPT.length()) || s.regionMatches(false, i + 1, START_COMMENT, 0, START_COMMENT.length())) {
+                     sb.append("<\\");
+                 } else {
+                     sb.append(c);

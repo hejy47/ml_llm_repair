@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -43,7 +43,7 @@
+         // before the current statement.
+         Node stubVar = new Node(Token.VAR, nameNode.cloneTree()).copyInformationFrom(nameNode);
+         currentParent.addChildBefore(stubVar, current);
+-        parent.replaceChild(ref.node, nameNode);
++        parent.replaceChild(ref.node, new Node(Token.ASSIGN, nameNode, rvalue));
+     }
+     compiler.reportCodeChange();
+ }

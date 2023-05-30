@@ -1,0 +1,15 @@
+--- org/apache/commons/math/distribution/FDistributionImpl.java@getInitialDomain
++++ org/apache/commons/math/distribution/FDistributionImpl.java@getInitialDomain
+@@ -1,7 +1,9 @@
+ protected double getInitialDomain(double p) {
+-    double ret;
++    double ret = Double.NaN;
+     double d = getDenominatorDegreesOfFreedom();
+-    // use mean
+-    ret = d / (d - 2.0);
++    if (d > 2.0) {
++        // use mean
++        ret = d / (d - 2.0);
++    }
+     return ret;
+ }

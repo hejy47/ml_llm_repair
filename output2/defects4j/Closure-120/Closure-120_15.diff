@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
++++ com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
+@@ -11,5 +11,16 @@
+             return false;
+         }
+     }
++    // Make sure the reference is not reassigned afterwards in the same function.
++    for (BasicBlock block : ref.getBasicBlock().getParent().getBasicBlocks()) {
++        for (Instruction inst : block.getAllInstructions()) {
++            if (inst instanceof PutField || inst instanceof PutStatic) {
++                FieldReference fieldRef = ((FieldInstruction)inst).getField();
++                if (ref.getTarget().equals(fieldRef)) {
++                    return false;
++                }
++            }
++        }    
++    }
+     return true;
+ }

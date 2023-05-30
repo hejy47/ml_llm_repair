@@ -1,0 +1,37 @@
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -1,13 +1,13 @@
+ public Complex divide(Complex divisor) throws NullArgumentException {
+     MathUtils.checkNotNull(divisor);
+     if (isNaN || divisor.isNaN) {
+-        return NaN;
++        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+     }
+     if (divisor.getReal() == 0.0 && divisor.getImaginary() == 0.0) {
+-        return NaN;
++        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+     }
+     if (divisor.isInfinite() && !isInfinite()) {
+-        return ZERO;
++        return Complex.ZERO; //explicitly reference the static constant ZERO of the Complex class
+     }
+     final double c = divisor.getReal();
+     final double d = divisor.getImaginary();
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -1,12 +1,12 @@
+ public Complex divide(double divisor) {
+     if (isNaN || Double.isNaN(divisor)) {
+-        return NaN;
++        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+     }
+     if (divisor == 0d) {
+-        return NaN;
++        return Complex.NaN; //explicitly reference the static constant NaN of the Complex class
+     }
+     if (Double.isInfinite(divisor)) {
+-        return !isInfinite() ? ZERO : NaN;
++        return (!isInfinite()) ? Complex.ZERO : Complex.NaN; //explicitly reference the static constants ZERO and NaN of the Complex class
+     }
+     return createComplex(real / divisor, imaginary / divisor);
+ }

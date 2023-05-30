@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -61,6 +61,13 @@
+             if (falseBlock != null) {
+                 tryMinimizeIfBlockExits(falseBlock, trueBlock, ifTree, exitType, labelName);
+             }
++            // Check if the entire if statement can be removed
++            if (ifTree.getFirstChild().getBooleanProp(Node.SKIP_MINIMIZE)) {
++                NodeUtil.removeChild(n, ifTree);
++                // Restart at the beginning of the block, since there may be other conditionals that need to be processed
++                tryMinimizeExits(n, exitType, labelName);
++                return;
++            }
+         }
+         if (c == n.getLastChild()) {
+             break;

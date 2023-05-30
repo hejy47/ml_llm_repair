@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -6,9 +6,22 @@
+             // occurs after the RHS is evaluated.
+             return VariableLiveness.KILL;
+         } else {
+-            return VariableLiveness.READ;
++            // Check if variable is being read before being reassigned
++            Node parent = n.getParent();
++            boolean assigned = false;
++            while (parent != null) {
++                if (NodeUtil.isAssignmentOp(parent) && parent.getFirstChild() == n) {
++                    assigned = true;
++                    break;
++                }
++                parent = parent.getParent();
++            }
++            if (!assigned) {
++                return VariableLiveness.READ;
++            }
+         }
+     }
++
+     // Expressions are evaluated left-right, depth first.
+     for (Node child = n.getFirstChild(); child != null; child = child.getNext()) {
+         if (!ControlFlowGraph.isEnteringNewCfgNode(child)) {

@@ -1,0 +1,18 @@
+--- org/joda/time/format/DateTimeFormatterBuilder.java@parseInto
++++ org/joda/time/format/DateTimeFormatterBuilder.java@parseInto
+@@ -2,8 +2,13 @@
+     String str = text.substring(position);
+     for (String id : ALL_IDS) {
+         if (str.startsWith(id)) {
+-            bucket.setZone(DateTimeZone.forID(id));
+-            return position + id.length();
++            // Make sure the matched zone ID is a valid one
++            try {
++                bucket.setZone(DateTimeZone.forID(id));
++                return position + id.length();
++            } catch (IllegalArgumentException e) {
++                // Ignore invalid zone ID
++            }
+         }
+     }
+     return ~position;

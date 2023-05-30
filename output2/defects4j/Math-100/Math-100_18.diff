@@ -1,0 +1,24 @@
+--- org/apache/commons/math/estimation/AbstractEstimator.java@getCovariances
++++ org/apache/commons/math/estimation/AbstractEstimator.java@getCovariances
+@@ -18,8 +18,8 @@
+     }
+     try {
+         // compute the covariances matrix
+-        return new RealMatrixImpl(jTj).inverse().getData();
+-    } catch (InvalidMatrixException ime) {
++        return new LUDecompositionImpl(new Array2DRowRealMatrix(jTj)).getSolver().getInverse().getData();
++    } catch (SingularMatrixException sme) {
+         throw new EstimationException("unable to compute covariances: singular problem", new Object[0]);
+     }
+ }
+--- org/apache/commons/math/estimation/AbstractEstimator.java@guessParametersErrors
++++ org/apache/commons/math/estimation/AbstractEstimator.java@guessParametersErrors
+@@ -2,7 +2,7 @@
+     int m = problem.getMeasurements().length;
+     int p = problem.getAllParameters().length;
+     if (m <= p) {
+-        throw new EstimationException("no degrees of freedom ({0} measurements, {1} parameters)", new Object[] { new Integer(m), new Integer(p) });
++        throw new EstimationException("no degrees of freedom ({0} measurements, {1} parameters)", new Object[] { m, p });
+     }
+     double[] errors = new double[problem.getAllParameters().length];
+     final double c = Math.sqrt(getChiSquare(problem) / (m - p));

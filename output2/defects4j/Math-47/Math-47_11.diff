@@ -1,0 +1,19 @@
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -1,6 +1,6 @@
+ public Complex divide(Complex divisor) throws NullArgumentException {
+     MathUtils.checkNotNull(divisor);
+-    if (isNaN || divisor.isNaN) {
++    if (isNaN() || divisor.isNaN()) { // Use getter method instead of field access
+         return NaN;
+     }
+     if (divisor.getReal() == 0.0 && divisor.getImaginary() == 0.0) {
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -1,5 +1,5 @@
+ public Complex divide(double divisor) {
+-    if (isNaN || Double.isNaN(divisor)) {
++    if (isNaN() || Double.isNaN(divisor)) { // Use getter method instead of field access
+         return NaN;
+     }
+     if (divisor == 0d) {

@@ -1,0 +1,39 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -1,5 +1,8 @@
+ private void inlineNonConstants(Var v, ReferenceCollection referenceInfo, boolean maybeModifiedArguments) {
+     int refCount = referenceInfo.references.size();
++    if (refCount == 0) {
++        return;
++    }
+     Reference declaration = referenceInfo.references.get(0);
+     Reference init = referenceInfo.getInitializingReference();
+     int firstRefAfterInit = (declaration == init) ? 2 : 3;
+@@ -17,7 +20,7 @@
+         Preconditions.checkNotNull(value);
+         inlineWellDefinedVariable(v, value, referenceInfo.references);
+         staleVars.add(v);
+-    } else if (refCount == firstRefAfterInit) {
++    }else if (refCount >= firstRefAfterInit) {
+         // The variable likely only read once, try some more
+         // complex inlining heuristics.
+         Reference reference = referenceInfo.references.get(firstRefAfterInit - 1);
+@@ -44,11 +47,15 @@
+         // once is *NOT* correct. We relax the correctness requirement if
+         // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
+-            Node nameNode = refs.get(i).getNode();
++        for (int i = 1; i < refs.size(); i++) {
++            Reference ref = refs.get(i);
++            if (ref == null) {
++                continue;
++            }
++            Node nameNode = ref.getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);
+-                if (!staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias)) {
++                if (candidate != null && !staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias)) {
+                     Reference aliasInit;
+                     aliasInit = candidate.refInfo.getInitializingReference();
+                     Node value = aliasInit.getAssignedValue();

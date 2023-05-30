@@ -1,0 +1,38 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@createNumber
++++ org/apache/commons/lang3/math/NumberUtils.java@createNumber
+@@ -140,7 +140,7 @@
+             case 'D':
+                 try {
+                     final Double d = NumberUtils.createDouble(numeric);
+-                    if (!(d.isInfinite() || (d.floatValue() == 0.0D && !allZeros))) {
++                    if (!(d.isInfinite() || (d.doubleValue() == 0.0D && !allZeros))) {
+                         return d;
+                     }
+                 } catch (final NumberFormatException nfe) {
+@@ -180,7 +180,25 @@
+             // NOPMD
+             // ignore the bad number
+         }
+-        return createBigInteger(str);
++        try {
++            return createBigInteger(str);
++        } catch (final NumberFormatException nfe) {
++            // NOPMD
++            // ignore the bad number
++        }
++        try {
++            return createByte(str);
++        } catch (final NumberFormatException nfe) {
++            // NOPMD
++            // ignore the bad number
++        }
++        try {
++            return createShort(str);
++        } catch (final NumberFormatException nfe) {
++            // NOPMD
++            // ignore the bad number
++        }
++        return Float.valueOf(str);
+     }
+     //Must be a Float, Double, BigDecimal
+     final boolean allZeros = isAllZeros(mant) && isAllZeros(exp);

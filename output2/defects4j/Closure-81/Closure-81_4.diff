@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -13,10 +13,8 @@
+         // Old Rhino tagged the empty name node with the line number of the
+         // declaration.
+         newName.setLineno(functionNode.getLineno());
+-        // TODO(bowdidge) Mark line number of paren correctly.
+-        // Same problem as below - the left paren might not be on the
+-        // same line as the function keyword.
+-        int lpColumn = functionNode.getAbsolutePosition() + functionNode.getLp();
++        // Mark line number of paren correctly.
++        int lpColumn = functionNode.getAbsolutePosition() + functionNode.getParamShift();
+         newName.setCharno(position2charno(lpColumn));
+     }
+     node.addChildToBack(newName);

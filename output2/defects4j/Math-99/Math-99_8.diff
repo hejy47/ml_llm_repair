@@ -1,0 +1,28 @@
+--- org/apache/commons/math/util/MathUtils.java@gcd
++++ org/apache/commons/math/util/MathUtils.java@gcd
+@@ -36,10 +36,13 @@
+     // t positive: u was even, v is odd (t replaces u)
+     do {
+                 // B4/B3: cast out twos from t.
+-        while ((t & 1) == 0) {
++        while ((t & 1) == 0 && t != 0) { // Fix for infinite loop in case u and v are odd and k > 0
+             // while t is even..
+             // cast out twos
+             t /= 2;
++        }
++        if (t == 0) {
++            break;
+         }
+         // B5 [reset max(u,v)]
+         if (t > 0) {
+--- org/apache/commons/math/util/MathUtils.java@lcm
++++ org/apache/commons/math/util/MathUtils.java@lcm
+@@ -3,5 +3,8 @@
+         return 0;
+     }
+     int lcm = Math.abs(mulAndCheck(a / gcd(a, b), b));
++    if (lcm == Integer.MIN_VALUE) { // Fix to prevent integer overflow
++        throw MathRuntimeException.createArithmeticException("overflow: lcm({0}, {1}) is 2^31", new Object[] { a, b });
++    }
+     return lcm;
+ }

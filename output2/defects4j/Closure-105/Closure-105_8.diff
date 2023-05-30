@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -15,7 +15,7 @@
+     // Merges adjacent String nodes.
+     while (elem != null) {
+         if (NodeUtil.isImmutableValue(elem)) {
+-            if (sb.length() > 0) {
++            if (sb.length() > 0 && !joinString.isEmpty()) { // add a check if joinString is not empty 
+                 sb.append(joinString);
+             }
+             sb.append(NodeUtil.getStringValue(elem));
+@@ -39,7 +39,7 @@
+     // one for each comma.
+     foldedSize += arrayFoldedChildren.size() - 1;
+     int originalSize = InlineCostEstimator.getCost(n);
+-    switch(arrayFoldedChildren.size()) {
++        switch(arrayFoldedChildren.size()) {
+         case 0:
+             Node emptyStringNode = Node.newString("");
+             parent.replaceChild(n, emptyStringNode);
+@@ -73,6 +73,12 @@
+             for (Node node : arrayFoldedChildren) {
+                 arrayNode.addChildToBack(node);
+             }
++            if (joinString.isEmpty()) { // add a check to avoid adding a join() call if join string is empty
++                parent.replaceChild(n, left.getFirstChild());
++            } else {
++                Node joinedArrayNode = new Node(Token.CALL, left.cloneTree(), right.cloneTree());
++                parent.replaceChild(n, joinedArrayNode);
++            }
+             break;
+     }
+     t.getCompiler().reportCodeChange();

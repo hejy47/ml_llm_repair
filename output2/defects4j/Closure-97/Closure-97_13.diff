@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
+@@ -11,7 +11,7 @@
+         }
+         // only the lower 5 bits are used when shifting, so don't do anything
+         // if the shift amount is outside [0,32)
+-        if (!(rval >= 0 && rval < 32)) {
++        if (rval < 0 || rval >= 32) { // fix
+             error(SHIFT_AMOUNT_OUT_OF_BOUNDS, right);
+             return n;
+         }

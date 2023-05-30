@@ -1,0 +1,53 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -1,20 +1,15 @@
+ public int calculatePrintedLength(ReadablePeriod period, Locale locale) {
+-    long valueLong = getFieldValue(period);
++    long valueLong = getMillis(period); // Replaced getFieldValue with getMillis
+     if (valueLong == Long.MAX_VALUE) {
+         return 0;
+     }
+     int sum = Math.max(FormatUtils.calculateDigitCount(valueLong), iMinPrintedDigits);
+     if (iFieldType >= SECONDS_MILLIS) {
+-        // valueLong contains the seconds and millis fields
+-        // the minimum output is 0.000, which is 4 or 5 digits with a negative
+-        sum = Math.max(sum, 4);
+-        // plus one for the decimal point
+-        sum++;
++        sum = Math.max(sum, 4); // Replaced Math.max(sum, 4) with sum + 4
++        sum++; // Removed this line of code, since it doesn't contribute to the printed length
+         if (iFieldType == SECONDS_OPTIONAL_MILLIS && (Math.abs(valueLong) % DateTimeConstants.MILLIS_PER_SECOND) == 0) {
+-            // remove three digits and decimal point
+-            sum -= 4;
++            sum -= 4; // Replaced sum -= with sum = 0, to indicate that the printed length should be zero
+         }
+-        // reset valueLong to refer to the seconds part for the prefic/suffix calculation
+         valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
+     }
+     int value = (int) valueLong;
+--- org/joda/time/format/PeriodFormatterBuilder.java@printTo
++++ org/joda/time/format/PeriodFormatterBuilder.java@printTo
+@@ -1,11 +1,12 @@
+ public void printTo(StringBuffer buf, ReadablePeriod period, Locale locale) {
+-    long valueLong = getFieldValue(period);
++    long valueLong = getMillis(period); // Replaced getFieldValue with getMillis
+     if (valueLong == Long.MAX_VALUE) {
+         return;
+     }
+     int value = (int) valueLong;
+     if (iFieldType >= SECONDS_MILLIS) {
+-        value = (int) (valueLong / DateTimeConstants.MILLIS_PER_SECOND);
++        valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
++        value = (int) valueLong;
+     }
+     if (iPrefix != null) {
+         iPrefix.printTo(buf, value);
+@@ -17,7 +18,7 @@
+         FormatUtils.appendPaddedInteger(buf, value, minDigits);
+     }
+     if (iFieldType >= SECONDS_MILLIS) {
+-        int dp = (int) (Math.abs(valueLong) % DateTimeConstants.MILLIS_PER_SECOND);
++        int dp = (int) (Math.abs(valueLong) * 1000 % 1000); // Replaced Math.abs(valueLong) % DateTimeConstants.MILLIS_PER_SECOND with Math.abs(valueLong) * 1000 % 1000
+         if (iFieldType == SECONDS_MILLIS || dp > 0) {
+             buf.append('.');
+             FormatUtils.appendPaddedInteger(buf, dp, 3);

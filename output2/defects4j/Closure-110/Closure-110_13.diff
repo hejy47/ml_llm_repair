@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -15,7 +15,7 @@
+         } else if (isVar) {
+             Node grandparent = parent.getParent();
+             Node value = n.hasChildren() ? v.getInitialValue().detachFromParent() : null;
+-            Node varNode = parent;
++            Node varNode = parent.detachFromParent();
+             String name = n.getString();
+             int nameCount = scopedAliasNames.count(name);
+             scopedAliasNames.add(name);
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -3,8 +3,8 @@
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
+-        n = n.next;
++    while (n.getNext() != child) {
++        n = n.getNext();
+         if (n == null) {
+             throw new RuntimeException("node is not a child");
+         }

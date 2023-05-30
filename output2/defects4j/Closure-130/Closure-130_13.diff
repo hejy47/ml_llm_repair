@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
++++ com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
+@@ -8,6 +8,7 @@
+             continue;
+         }
+         if (name.globalSets == 1 && name.localSets == 0 && name.aliasingGets > 0) {
++            boolean hasInlined = false; // added to keep track of inlining status of any local alias
+             // {@code name} meets condition (b). Find all of its local aliases
+             // and try to inline them.
+             List<Ref> refs = Lists.newArrayList(name.getRefs());
+@@ -16,8 +17,14 @@
+                     // {@code name} meets condition (c). Try to inline it.
+                     if (inlineAliasIfPossible(ref, namespace)) {
+                         name.removeRef(ref);
++                        hasInlined = true; // set to true to indicate inlining occurred for this local alias
+                     }
+                 }
++            }
++            // if any local alias was inlined, add the name to workList to revisit its remaining local and global aliases
++            if(hasInlined){
++                workList.add(name);
++                continue;
+             }
+         }
+         // Check if {@code name} has any aliases left after the

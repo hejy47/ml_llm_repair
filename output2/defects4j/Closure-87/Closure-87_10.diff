@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@isFoldableExpressBlock
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@isFoldableExpressBlock
+@@ -10,6 +10,10 @@
+             // into other expressions.
+             // We only have to worry about methods with an implicit 'this'
+             // param, or this doesn't happen.
++            if (maybeExpr.isExprResult()) {
++                Node expr = maybeExpr.getFirstChild();
++                return expr == null || !expr.isName() || !expr.getString().equals("event");
++            }
+             return NodeUtil.isExpressionNode(maybeExpr);
+         }
+     }

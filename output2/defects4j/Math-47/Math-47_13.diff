@@ -1,0 +1,37 @@
+--- org/apache/commons/math/complex/Complex.java@Complex
++++ org/apache/commons/math/complex/Complex.java@Complex
+@@ -3,4 +3,11 @@
+     this.imaginary = imaginary;
+     isNaN = Double.isNaN(real) || Double.isNaN(imaginary);
+     isInfinite = !isNaN && (Double.isInfinite(real) || Double.isInfinite(imaginary));
++    // added check for negative zero
++    if (real == 0 && Double.doubleToLongBits(real) == Double.doubleToLongBits(-0.0)) {
++        this.real = 0.0;
++    }
++    if (imaginary == 0 && Double.doubleToLongBits(imaginary) == Double.doubleToLongBits(-0.0)) {
++        this.imaginary = 0.0;
++    }
+ }
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -14,7 +14,7 @@
+     if (FastMath.abs(c) < FastMath.abs(d)) {
+         double q = c / d;
+         double denominator = c * q + d;
+-        return createComplex((real * q + imaginary) / denominator, (imaginary * q - real) / denominator);
++        return createComplex((real * q + imaginary * q) / denominator, (imaginary * q - real) / denominator);
+     } else {
+         double q = d / c;
+         double denominator = d * q + c;
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -8,5 +8,9 @@
+     if (Double.isInfinite(divisor)) {
+         return !isInfinite() ? ZERO : NaN;
+     }
++    // added check for negative zero
++    if (divisor == 0 && Double.doubleToLongBits(divisor) == Double.doubleToLongBits(-0.0)) {
++        return createComplex(real / -0.0, imaginary / -0.0);
++    }
+     return createComplex(real / divisor, imaginary / divisor);
+ }

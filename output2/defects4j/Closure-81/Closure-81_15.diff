@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -31,7 +31,7 @@
+     if (fnName != null) {
+         lp.setLineno(fnName.getLineno());
+     } else {
+-        lp.setLineno(functionNode.getLineno());
++        lp.setLineno(functionNode.getBody().getLineno());
+     }
+     int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+     lp.setCharno(position2charno(lparenCharno));

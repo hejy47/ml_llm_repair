@@ -1,0 +1,51 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -30,27 +30,32 @@
+     }
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]
+     Node fnParam = NodeUtil.getFunctionParameters(fnNode).getFirstChild();
+-    while (cArg != null || fnParam != null) {
++    while (fnParam != null || cArg != null) {
+         // For each named parameter check if a mutable argument use more than one.
+         if (fnParam != null) {
+-            if (cArg != null) {
+-                if (hasSideEffects && NodeUtil.canBeSideEffected(cArg)) {
+-                    return CanInlineResult.NO;
++            if (cArg == null) {
++                if (fnParam.isDefaultValue()) {
++                    fnParam = fnParam.getNext();
++                    continue;
+                 }
+-                // Check for arguments that are evaluated more than once.
+-                // Note: Unlike block inlining, there it is not possible that a
+-                // parameter reference will be in a loop.
+-                if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+-                    return CanInlineResult.NO;
+-                }
++                return CanInlineResult.NO;
+             }
+-            // Move to the next name.
++            if (hasSideEffects && NodeUtil.canBeSideEffected(cArg)) {
++                return CanInlineResult.NO;
++            }
++            // Check for arguments that are evaluated more than once.
++            // Note: Unlike block inlining, there it is not possible that a
++            // parameter reference will be in a loop.
++            if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
++                return CanInlineResult.NO;
++            }
++            // Move to the next name and the next call argument.
+             fnParam = fnParam.getNext();
+-        }
+-        // For every call argument check for side-effects, even if there
+-        // isn't a named parameter to match.
+-        if (cArg != null) {
+-            if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++            cArg = cArg.getNext();
++        } else {
++            // For every call argument check for side-effects, even if there
++            // isn't a named parameter to match.
++            if (cArg != null && NodeUtil.mayHaveSideEffects(cArg, compiler)) {
+                 return CanInlineResult.NO;
+             }
+             cArg = cArg.getNext();

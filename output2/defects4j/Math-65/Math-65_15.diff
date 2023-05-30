@@ -1,0 +1,25 @@
+--- org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getRMS
++++ org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getRMS
+@@ -4,5 +4,8 @@
+         final double residual = residuals[i];
+         criterion += residual * residual * residualsWeights[i];
+     }
+-    return Math.sqrt(criterion / rows);
++    if(rows > 0) {
++        return Math.sqrt(criterion / rows);
++    }
++    return 0.0;
+ }
+--- org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getChiSquare
++++ org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getChiSquare
+@@ -2,7 +2,9 @@
+     double chiSquare = 0;
+     for (int i = 0; i < rows; ++i) {
+         final double residual = residuals[i];
+-        chiSquare += residual * residual / residualsWeights[i];
++        if(residualsWeights[i] > 0) {
++            chiSquare += residual * residual / residualsWeights[i];
++        }
+     }
+     return chiSquare;
+ }

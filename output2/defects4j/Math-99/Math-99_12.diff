@@ -1,0 +1,58 @@
+--- org/apache/commons/math/util/MathUtils.java@gcd
++++ org/apache/commons/math/util/MathUtils.java@gcd
+@@ -8,7 +8,7 @@
+     // -2^31, while positive numbers can only be as large as 2^31-1
+     // (i.e. we can't necessarily negate a negative number without
+     // overflow)
+-        if (u > 0) {
++    if (u > 0) {
+         u = -u;
+     }
+     // make u negative
+@@ -35,23 +35,26 @@
+     // t negative: u was odd, v may be even (t replaces v)
+     // t positive: u was even, v is odd (t replaces u)
+     do {
+-                // B4/B3: cast out twos from t.
++        // B3: cast out twos
+         while ((t & 1) == 0) {
+-            // while t is even..
+-            // cast out twos
+             t /= 2;
+         }
+-        // B5 [reset max(u,v)]
++        // B4: simplify t
+         if (t > 0) {
+             u = -t;
+         } else {
+             v = t;
+         }
+-        // B6/B3. at this point both u and v should be odd.
++        // B5. Both u and v are odd. If v > u then we need to swap
++        // u and v.
++        if (v > u) {
++            int swap = u;
++            u = v;
++            v = swap;
++        }
++        // B6. set v = v - u (which is even). Then cast out twos.
+         t = (v - u) / 2;
+-        // |u| larger: t positive (replace u)
+-        // |v| larger: t negative (replace v)
+     } while (t != 0);
+-    // gcd is u*2^k
++    // undo the previous negations
+     return -u * (1 << k);
+ }
+--- org/apache/commons/math/util/MathUtils.java@lcm
++++ org/apache/commons/math/util/MathUtils.java@lcm
+@@ -3,5 +3,9 @@
+         return 0;
+     }
+     int lcm = Math.abs(mulAndCheck(a / gcd(a, b), b));
++    // fix for potential integer overflow
++    if (lcm == Integer.MIN_VALUE) {
++        throw MathRuntimeException.createArithmeticException("overflow: lcm({0}, {1}) is 2^31", new Object[]{a, b});
++    }
+     return lcm;
+ }

@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -18,6 +18,9 @@
+         // same line as the function keyword.
+         int lpColumn = functionNode.getAbsolutePosition() + functionNode.getLp();
+         newName.setCharno(position2charno(lpColumn));
++    } else {
++        newName.setLineno(functionNode.getLineno());
++        newName.setCharno(position2charno(functionNode.getFunctionName().getAbsolutePosition()));
+     }
+     node.addChildToBack(newName);
+     Node lp = newNode(Token.LP);

@@ -1,0 +1,11 @@
+--- org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -5,7 +5,7 @@
+     for (int i = tableau.getNumObjectiveFunctions(); i < tableau.getHeight(); i++) {
+         final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);
+         final double entry = tableau.getEntry(i, col);
+-        if (Precision.compareTo(entry, 0d, maxUlps) > 0) {
++        if (entry > 0d && Precision.compareTo(entry, 0d, maxUlps) != 0) {
+             final double ratio = rhs / entry;
+             // check if the entry is strictly equal to the current min ratio
+             // do not use a ulp/epsilon check

@@ -1,0 +1,30 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,3 +1,14 @@
+ public int compareTo(DurationField durationField) {
+-    return 0;
++    if (durationField instanceof PreciseDurationField) {
++        PreciseDurationField other = (PreciseDurationField) durationField;
++        long diff = getUnitMillis() - other.getUnitMillis();
++        if (diff == 0) {
++            return 0;
++        } else if (diff < 0) {
++            return -1;
++        } else {
++            return 1;
++        }
++    }
++    return CompareToBuilder.reflectionCompare(this, durationField);
+ }
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -37,6 +37,9 @@
+         // use public constructor to ensure full validation
+         // this isn't overly efficient, but is safe
+         Partial newPartial = new Partial(newTypes, newValues, iChronology);
++        newPartial = newPartial.with(DateTimeFieldType.year(), 0);
++        newPartial = newPartial.with(DateTimeFieldType.monthOfYear(), 0);
++        newPartial = newPartial.with(DateTimeFieldType.dayOfMonth(), 0);
+         iChronology.validate(newPartial, newValues);
+         return newPartial;
+     }

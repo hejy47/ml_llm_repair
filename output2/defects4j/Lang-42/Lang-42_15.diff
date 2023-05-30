@@ -1,0 +1,11 @@
+--- org/apache/commons/lang/Entities.java@escape
++++ org/apache/commons/lang/Entities.java@escape
+@@ -9,7 +9,7 @@
+                 writer.write(Integer.toString(c, 10));
+                 writer.write(';');
+             } else {
+-                writer.write(c);
++                writer.write(Character.toString(c)); // use Character.toString() instead of directly writing char
+             }
+         } else {
+             writer.write('&');

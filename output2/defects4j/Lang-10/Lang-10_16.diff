@@ -1,0 +1,15 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
++++ org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
+@@ -35,9 +35,11 @@
+             case '^':
+             case '$':
+             case '.':
++                // Append a backslash before the character, instead of overwriting the character
+                 regex.append('\\');
++            default:
++                regex.append(c);
+         }
+-        regex.append(c);
+     }
+     return regex;
+ }

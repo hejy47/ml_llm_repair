@@ -1,0 +1,20 @@
+--- org/apache/commons/lang/math/Fraction.java@reduce
++++ org/apache/commons/lang/math/Fraction.java@reduce
+@@ -1,9 +1,15 @@
+ // Calculations
+ //-------------------------------------------------------------------
+ public Fraction reduce() {
+-    int gcd = greatestCommonDivisor(Math.abs(numerator), denominator);
++    int gcd = greatestCommonDivisor(Math.abs(numerator), Math.abs(denominator));
+     if (gcd == 1) {
+         return this;
+     }
+-    return Fraction.getFraction(numerator / gcd, denominator / gcd);
++    int newNumerator = numerator / gcd;
++    int newDenominator = denominator / gcd;
++    if (newDenominator < 0) {
++        newNumerator = -newNumerator;
++        newDenominator = -newDenominator;
++    }
++    return new Fraction(newNumerator, newDenominator);
+ }

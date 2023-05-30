@@ -1,0 +1,38 @@
+--- org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
++++ org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
+@@ -22,18 +22,30 @@
+             // 2 * atan(y / (r + x))
+             result[resultOffset + i] = 2 * tmp2[i];
+         }
+-    } else {
+-        // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))
++    } else if (y[yOffset] >= 0){
++        // compute atan2(y, x) = pi + 2 atan(y / (r - x))
+         // r - x
+         subtract(tmp1, 0, x, xOffset, tmp2, 0);
+         // y /(r - x)
+         divide(y, yOffset, tmp2, 0, tmp1, 0);
+         // atan(y / (r - x))
+         atan(tmp1, 0, tmp2, 0);
+-        result[resultOffset] = // +/-pi - 2 * atan(y / (r - x))
+-        ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0];
++        result[resultOffset] = FastMath.PI + 2 * tmp2[0];
+         for (int i = 1; i < tmp2.length; ++i) {
+-            // +/-pi - 2 * atan(y / (r - x))
++            // pi + 2 * atan(y / (r - x))
++            result[resultOffset + i] = 2 * tmp2[i];
++        }
++    } else {
++        // compute atan2(y, x) = -pi - 2 atan(y / (r - x))
++        // r - x
++        subtract(tmp1, 0, x, xOffset, tmp2, 0);
++        // y /(r - x)
++        divide(y, yOffset, tmp2, 0, tmp1, 0);
++        // atan(y / (r - x))
++        atan(tmp1, 0, tmp2, 0);
++        result[resultOffset] = -FastMath.PI - 2 * tmp2[0];
++        for (int i = 1; i < tmp2.length; ++i) {
++            // -pi - 2 * atan(y / (r - x))
+             result[resultOffset + i] = -2 * tmp2[i];
+         }
+     }

@@ -1,0 +1,20 @@
+--- org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
++++ org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
+@@ -14,7 +14,7 @@
+     double v1v2 = v1.dotProduct(v2);
+     double coeffU = u1u2 / u1u1;
+     double coeffV = v1v2 / u1u1;
+-    double beta = FastMath.sqrt((u2u2 - u1u2 * coeffU) / (v2v2 - v1v2 * coeffV));
++    double beta = FastMath.sqrt(Math.abs((u2u2 - u1u2 * coeffU) / (v2v2 - v1v2 * coeffV))); // fixing negative values
+     double alpha = coeffU - beta * coeffV;
+     v2 = new Vector3D(alpha, v1, beta, v2);
+     // preliminary computation
+@@ -55,7 +55,7 @@
+         }
+     }
+     // compute the vectorial part
+-    c = FastMath.sqrt(c);
++    c = FastMath.sqrt(Math.abs(c)); // fixing negative values
+     double inv = 1.0 / (c + c);
+     q1 = inv * k.getX();
+     q2 = inv * k.getY();

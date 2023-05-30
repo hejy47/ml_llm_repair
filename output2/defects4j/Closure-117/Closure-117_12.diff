@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -11,8 +11,14 @@
+                 objectType = FunctionType.getTopDefiningInterface(objectType, propName);
+             } else {
+                 // classes
+-                while (objectType != null && !objectType.hasOwnProperty(propName)) {
+-                    objectType = objectType.getImplicitPrototype();
++                ObjectType prototype = objectType.getImplicitPrototype();
++                while (prototype != null) {
++                    if (prototype.hasOwnProperty(propName)) {
++                        objectType = prototype;
++                        break;
++                    } else {
++                        prototype = prototype.getImplicitPrototype();
++                    }
+                 }
+             }
+             // Don't show complex function names or anonymous types.

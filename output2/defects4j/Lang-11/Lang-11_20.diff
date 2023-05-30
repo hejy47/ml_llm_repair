@@ -1,0 +1,31 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -7,12 +7,15 @@
+     if (chars != null && chars.length == 0) {
+         throw new IllegalArgumentException("The chars array must not be empty");
+     }
++    if (start >= end) {
++        throw new IllegalArgumentException("End should be greater than start");
++    }
+     if (start == 0 && end == 0) {
+         if (chars != null) {
+             end = chars.length;
+         } else {
+             if (!letters && !numbers) {
+-                end = Integer.MAX_VALUE;
++                end = Character.MAX_VALUE;
+             } else {
+                 end = 'z' + 1;
+                 start = ' ';
+@@ -26,9 +29,9 @@
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+         } else {
+-            ch = chars[random.nextInt(gap) + start];
++            ch = chars[random.nextInt(chars.length)];
+         }
+-        if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
++        if ((letters && Character.isLetter(ch)) || (numbers && Character.isDigit(ch)) || (!letters && !numbers)) {
+             if (ch >= 56320 && ch <= 57343) {
+                 if (count == 0) {
+                     count++;

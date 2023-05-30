@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
+@@ -16,7 +16,7 @@
+             }
+         }
+         maybeAddToSymbolTable(left);
+-        maybeAddStringNodeToSymbolTable(arg);
++        maybeAddToSymbolTable(arg); // fixed: arg should also be added to symbol table
+         // Requires should be removed before further processing.
+         // Some clients run closure pass multiple times, first with
+         // the checks for broken requires turned off. In these cases, we

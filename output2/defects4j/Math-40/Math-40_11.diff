@@ -1,0 +1,11 @@
+--- org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
+@@ -56,7 +56,7 @@
+         // check convergence of bracketing interval
+         final double xTol = getAbsoluteAccuracy() + getRelativeAccuracy() * FastMath.max(FastMath.abs(xA), FastMath.abs(xB));
+         if (((xB - xA) <= xTol) || (FastMath.max(absYA, absYB) < getFunctionValueAccuracy())) {
+-            switch(allowed) {
++            switch (getAllowedSolutions()) {
+                 case ANY_SIDE:
+                     return absYA < absYB ? xA : xB;
+                 case LEFT_SIDE:

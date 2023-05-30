@@ -1,0 +1,27 @@
+--- org/apache/commons/math/estimation/AbstractEstimator.java@getCovariances
++++ org/apache/commons/math/estimation/AbstractEstimator.java@getCovariances
+@@ -18,8 +18,8 @@
+     }
+     try {
+         // compute the covariances matrix
+-        return new RealMatrixImpl(jTj).inverse().getData();
+-    } catch (InvalidMatrixException ime) {
++        return new LUDecompositionImpl(new Array2DRowRealMatrix(jTj)).getSolver().getInverse().getData();
++    } catch (SingularMatrixException sme) {
+         throw new EstimationException("unable to compute covariances: singular problem", new Object[0]);
+     }
+ }
+--- org/apache/commons/math/estimation/AbstractEstimator.java@guessParametersErrors
++++ org/apache/commons/math/estimation/AbstractEstimator.java@guessParametersErrors
+@@ -6,9 +6,9 @@
+     }
+     double[] errors = new double[problem.getAllParameters().length];
+     final double c = Math.sqrt(getChiSquare(problem) / (m - p));
+-    double[][] covar = getCovariances(problem);
++    RealMatrix covarMatrix = new Array2DRowRealMatrix(getCovariances(problem));
+     for (int i = 0; i < errors.length; ++i) {
+-        errors[i] = Math.sqrt(covar[i][i]) * c;
++        errors[i] = Math.sqrt(covarMatrix.getEntry(i, i)) * c;
+     }
+     return errors;
+ }

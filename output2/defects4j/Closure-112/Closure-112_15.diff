@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -9,9 +9,15 @@
+     // replace it with UNKNOWN.
+     TemplateTypeReplacer replacer = new TemplateTypeReplacer(registry, inferred);
+     Node callTarget = n.getFirstChild();
++    if (callTarget.getJSType() == null) {
++      // If the call target hasn't been typed yet, we infer its type based on the replacement function type.
++      callTarget.setJSType(replacementFnType);
++    } else {
++      // If the call target has already been typed, we merge the inferred type with the existing type.
++      callTarget.setJSType(callTarget.getJSType().mergeWith(replacementFnType));
++    }
+     FunctionType replacementFnType = fnType.visit(replacer).toMaybeFunctionType();
+     Preconditions.checkNotNull(replacementFnType);
+-    callTarget.setJSType(replacementFnType);
+     n.setJSType(replacementFnType.getReturnType());
+     return replacer.madeChanges;
+ }

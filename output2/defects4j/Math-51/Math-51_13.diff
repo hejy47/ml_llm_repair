@@ -1,0 +1,29 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -43,14 +43,24 @@
+         } else {
+             switch(method) {
+                 case ILLINOIS:
+-                    f0 *= 0.5;
++                    // Fix the calculation error causing the loop to never terminate
++                    if (f0 * fx < 0) {
++                        f1 = fx;
++                    } else {
++                        f0 *= 0.5;
++                        f1 *= 0.5;
++                    }
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    f0 = f0 * f1 / (f1 + fx);
++                    f1 = fx;
+                     break;
+                 // Update formula cannot make any progress: Update the
+                 // search interval.
+                 default:
++                    x0 = x1;
++                    f0 = f1;
++                    break;
+             }
+         }
+         // Update from [x0, x1] to [x0, x].

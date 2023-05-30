@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -30,7 +30,7 @@
+     }
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]
+     Node fnParam = NodeUtil.getFunctionParameters(fnNode).getFirstChild();
+-    while (cArg != null || fnParam != null) {
++    while (cArg != null && fnParam != null) {//fixed while condition
+         // For each named parameter check if a mutable argument use more than one.
+         if (fnParam != null) {
+             if (cArg != null) {

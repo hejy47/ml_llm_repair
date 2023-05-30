@@ -1,0 +1,32 @@
+--- org/apache/commons/math/complex/ComplexFormat.java@parse
++++ org/apache/commons/math/complex/ComplexFormat.java@parse
+@@ -31,7 +31,7 @@
+             // set index back to initial, error index should be the last
+             // character examined.
+             pos.setIndex(initialIndex);
+-            pos.setErrorIndex(startIndex);
++            pos.setErrorIndex(startIndex-1);
+             return null;
+     }
+     // parse whitespace
+@@ -43,17 +43,18 @@
+         // set index back to initial, error index should already be set
+         // character examined.
+         pos.setIndex(initialIndex);
++        pos.setErrorIndex(startIndex-1);
+         return null;
+     }
+     // parse imaginary character
+     int n = getImaginaryCharacter().length();
+     startIndex = pos.getIndex();
+     int endIndex = startIndex + n;
+-    if (source.substring(startIndex, endIndex).compareTo(getImaginaryCharacter()) != 0) {
++    if (startIndex + n > source.length() || source.substring(startIndex, endIndex).compareTo(getImaginaryCharacter()) != 0) {
+         // set index back to initial, error index should be the start index
+         // character examined.
+         pos.setIndex(initialIndex);
+-        pos.setErrorIndex(startIndex);
++        pos.setErrorIndex(startIndex-1);
+         return null;
+     }
+     pos.setIndex(endIndex);

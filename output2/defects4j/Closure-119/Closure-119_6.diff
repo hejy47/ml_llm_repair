@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -114,6 +114,6 @@
+             handleSetFromLocal(module, scope, n, parent, name);
+         }
+     } else {
+-        handleGet(module, scope, n, parent, name);
++        handleGet(module, scope, n, parent, name, type);
+     }
+ }

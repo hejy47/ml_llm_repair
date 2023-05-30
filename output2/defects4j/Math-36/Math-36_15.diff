@@ -1,0 +1,39 @@
+--- org/apache/commons/math/fraction/BigFraction.java@doubleValue
++++ org/apache/commons/math/fraction/BigFraction.java@doubleValue
+@@ -1,7 +1,12 @@
+ @Override
+ public double doubleValue() {
+-    double result = numerator.doubleValue() / denominator.doubleValue();
+-    // Numerator and/or denominator must be out of range:
+-    // Calculate how far to shift them to put them in range.
+-    return result;
++    if (denominator.doubleValue() == 0) {
++        if (numerator.doubleValue() > 0)
++            return Double.POSITIVE_INFINITY;
++        else if (numerator.doubleValue() < 0)
++            return Double.NEGATIVE_INFINITY;
++        else
++            return Double.NaN;
++    }
++    return numerator.doubleValue() / denominator.doubleValue();
+ }
+--- org/apache/commons/math/fraction/BigFraction.java@floatValue
++++ org/apache/commons/math/fraction/BigFraction.java@floatValue
+@@ -1,7 +1,12 @@
+ @Override
+-public float floatValue() {
+-    float result = numerator.floatValue() / denominator.floatValue();
+-    // Numerator and/or denominator must be out of range:
+-    // Calculate how far to shift them to put them in range.
+-    return result;
++public double doubleValue() {
++    if (denominator.doubleValue() == 0) {
++        if (numerator.doubleValue() > 0)
++            return Double.POSITIVE_INFINITY;
++        else if (numerator.doubleValue() < 0)
++            return Double.NEGATIVE_INFINITY;
++        else
++            return Double.NaN;
++    }
++    return numerator.doubleValue() / denominator.doubleValue();
+ }

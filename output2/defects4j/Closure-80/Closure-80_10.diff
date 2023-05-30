@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
++++ com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
+@@ -19,6 +19,9 @@
+         case Token.NOT:
+             // delete operator returns a boolean.
+             return true;
++        case Token.TYPEOF:
++            // typeof operator returns a string but can return a boolean result in certain cases e.g. typeof something == 'undefined'
++            return n.getFirstChild().getType() != Token.NAME;
+         default:
+             return false;
+     }
+--- com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
++++ com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
+@@ -26,7 +26,10 @@
+         case Token.GETELEM:
+         case Token.GETPROP:
+             // There is no information about the locality of object properties.
+-            return locals.apply(value);
++            // If the object is a "this" reference, evaluate the property to a local value.
++            // Otherwise, only evaluate to a local if the property is a simple literal
++            // that is not a getter or setter.
++            return isThisReference(value.getFirstChild()) || isSimpleLiteral(value.getLastChild()) || (value.getLastChild().getType() == Token.STRING_KEY && "length".equals(value.getLastChild().getString()));
+         case Token.CALL:
+             return callHasLocalResult(value) || isToStringMethodCall(value) || locals.apply(value);
+         case Token.NEW:

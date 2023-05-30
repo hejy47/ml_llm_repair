@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
++++ com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
+@@ -3,8 +3,10 @@
+     Deque<Name> workList = new ArrayDeque<Name>(namespace.getNameForest());
+     while (!workList.isEmpty()) {
+         Name name = workList.pop();
+-        // Don't attempt to inline a getter or setter property as a variable.
+-        if (name.type == Name.Type.GET || name.type == Name.Type.SET) {
++        // Don't attempt to inline a getter or setter property as a variable
++        // or a property with constant value.
++        if (name.type == Name.Type.GET || name.type == Name.Type.SET ||
++            (name.props == null && name.value != null)) {
+             continue;
+         }
+         if (name.globalSets == 1 && name.localSets == 0 && name.aliasingGets > 0) {

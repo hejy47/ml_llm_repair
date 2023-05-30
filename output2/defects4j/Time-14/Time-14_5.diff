@@ -1,0 +1,12 @@
+--- org/joda/time/chrono/BasicMonthOfYearDateTimeField.java@add
++++ org/joda/time/chrono/BasicMonthOfYearDateTimeField.java@add
+@@ -13,6 +13,8 @@
+         instant = add(instant, valueToAdd);
+         return iChronology.get(partial, instant);
+     } else {
+-        return super.add(partial, fieldIndex, values, valueToAdd);
++        int[] newValues = Arrays.copyOf(values, values.length);
++        newValues[fieldIndex] += valueToAdd;
++        return iChronology.get(partial, iChronology.getDateTimeMillis(partial.with(fieldIndex, newValues)));
+     }
+ }

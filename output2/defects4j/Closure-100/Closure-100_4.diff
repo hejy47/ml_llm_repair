@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -20,7 +20,7 @@
+             // nested assignments properly (e.g., (a = this).property = c;),
+             // assignLhsChild should not be overridden.
+             if (assignLhsChild == null) {
+-                assignLhsChild = lhs;
++                assignLhsChild = lhs.getFirstChild();
+             }
+         } else {
+             // Only traverse the right side if it's not an assignment to a prototype
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -1,8 +1,8 @@
+ private boolean shouldReportThis(Node n, Node parent) {
+     if (assignLhsChild != null) {
+         // Always report a THIS on the left side of an assign.
+-        return true;
++        return n == assignLhsChild;
+     }
+     // Also report a THIS with a property access.
+-    return false;
++    return NodeUtil.isThis(n);
+ }

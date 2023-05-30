@@ -1,0 +1,16 @@
+Math-41_1:True
+Math-41_2:False
+Math-41_3:True
+Math-41_4:True
+Math-41_5:True
+Math-41_6:True
+Math-41_7:True
+Math-41_8:True
+Math-41_9:False
+Math-41_10:True
+Math-41_11:False
+Math-41_12:False
+Math-41_13:True
+Math-41_14:False
+Math-41_15:False
+Math-41_16:True

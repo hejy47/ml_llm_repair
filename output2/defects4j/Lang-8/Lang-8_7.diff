@@ -1,0 +1,33 @@
+--- org/apache/commons/lang3/time/FastDatePrinter.java@TimeZoneNameRule
++++ org/apache/commons/lang3/time/FastDatePrinter.java@TimeZoneNameRule
+@@ -2,6 +2,6 @@
+     mLocale = locale;
+     mStyle = style;
+     zone = timeZone;
+-    mStandard = getTimeZoneDisplay(timeZone, false, style, locale);
+-    mDaylight = getTimeZoneDisplay(timeZone, true, style, locale);
++    mStandard = getTimeZoneDisplayName(timeZone, false, style, locale);
++    mDaylight = getTimeZoneDisplayName(timeZone, true, style, locale);
+ }
+--- org/apache/commons/lang3/time/FastDatePrinter.java@appendTo
++++ org/apache/commons/lang3/time/FastDatePrinter.java@appendTo
+@@ -1,8 +1,16 @@
+ @Override
+-public void appendTo(StringBuffer buffer, Calendar calendar) {
++public void appendTo(Appendable buffer, Calendar calendar) {
+     if (zone.useDaylightTime() && calendar.get(Calendar.DST_OFFSET) != 0) {
+-        buffer.append(getTimeZoneDisplay(zone, true, mStyle, mLocale));
++        try {
++            buffer.append(getTimeZoneDisplayName(zone, true, mStyle, mLocale));
++        } catch (IOException e) {
++            // ignored
++        }
+     } else {
+-        buffer.append(getTimeZoneDisplay(zone, false, mStyle, mLocale));
++        try {
++            buffer.append(getTimeZoneDisplayName(zone, false, mStyle, mLocale));
++        } catch (IOException e) {
++            // ignored
++        }
+     }
+ }

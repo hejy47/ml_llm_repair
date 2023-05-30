@@ -1,0 +1,39 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -7,22 +7,27 @@
+     if (iFieldType >= SECONDS_MILLIS) {
+         // valueLong contains the seconds and millis fields
+         // the minimum output is 0.000, which is 4 or 5 digits with a negative
+-        sum = Math.max(sum, 4);
+-        // plus one for the decimal point
+-        sum++;
++        int decimalDigits = iMinPrintedDigits > 0 ? iMinPrintedDigits - 1 : 0;
+         if (iFieldType == SECONDS_OPTIONAL_MILLIS && (Math.abs(valueLong) % DateTimeConstants.MILLIS_PER_SECOND) == 0) {
+             // remove three digits and decimal point
+-            sum -= 4;
++            decimalDigits -= 3;
+         }
+-        // reset valueLong to refer to the seconds part for the prefic/suffix calculation
+-        valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
++        // plus one for the decimal point
++        decimalDigits++;
++        decimalDigits = Math.max(decimalDigits, 4);
++        if (valueLong < 0) {
++            decimalDigits++;
++        }
++        int wholeDigits = FormatUtils.calculateDigitCount(valueLong / DateTimeConstants.MILLIS_PER_SECOND);
++        sum = Math.max(wholeDigits + decimalDigits, sum);
++        // reset valueLong to refer to the seconds part for the prefix/suffix calculation
++        valueLong /= DateTimeConstants.MILLIS_PER_SECOND;
+     }
+-    int value = (int) valueLong;
+     if (iPrefix != null) {
+-        sum += iPrefix.calculatePrintedLength(value);
++        sum += iPrefix.calculatePrintedLength(valueLong);
+     }
+     if (iSuffix != null) {
+-        sum += iSuffix.calculatePrintedLength(value);
++        sum += iSuffix.calculatePrintedLength(valueLong);
+     }
+     return sum;
+ }

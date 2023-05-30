@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitCall
++++ com/google/javascript/jscomp/TypeCheck.java@visitCall
+@@ -1,19 +1,19 @@
+ private void visitCall(NodeTraversal t, Node n) {
+     Node child = n.getFirstChild();
+     JSType childType = getJSType(child).restrictByNotNullOrUndefined();
+-    if (!childType.canBeCalled()) {
++    if (!childType.isSubtypeOf(getNativeObjectType(FUNCTION_STRING))) {
+         report(t, n, NOT_CALLABLE, childType.toString());
+         ensureTyped(t, n);
+         return;
+     }
+     // A couple of types can be called as if they were functions.
+     // If it is a function type, then validate parameters.
+-    if (childType instanceof FunctionType) {
+-        FunctionType functionType = (FunctionType) childType;
++    FunctionType functionType = childType.toMaybeFunctionType();
++    if (functionType != null) {
+         boolean isExtern = false;
+         JSDocInfo functionJSDocInfo = functionType.getJSDocInfo();
+         if (functionJSDocInfo != null) {
+-            String sourceName = functionJSDocInfo.getSourceName();
++            String sourceName = functionJSDocInfo.getSourceFileName();
+             CompilerInput functionSource = compiler.getInput(sourceName);
+             isExtern = functionSource.isExtern();
+         }
+@@ -23,8 +23,8 @@
+         if (functionType.isConstructor() && !functionType.isNativeObjectType() && (functionType.getReturnType().isUnknownType() || functionType.getReturnType().isVoidType() || !isExtern)) {
+             report(t, n, CONSTRUCTOR_NOT_CALLABLE, childType.toString());
+         }
+-        // Functions with explcit 'this' types must be called in a GETPROP
+-        // or GETELEM.
++        // Functions with explicit 'this' types must be called in a GETPROP
++        // or GETELEM. Also disallow passing parameters when calling a getter.
+         visitParameterList(t, n, functionType);
+         ensureTyped(t, n, functionType.getReturnType());
+     } else {

@@ -1,0 +1,15 @@
+--- org/apache/commons/math/optimization/linear/SimplexTableau.java@getSolution
++++ org/apache/commons/math/optimization/linear/SimplexTableau.java@getSolution
+@@ -8,9 +8,11 @@
+         // then we choose the first and set the rest equal to 0
+         coefficients[i] = (basicRow == null ? 0 : getEntry(basicRow, getRhsOffset())) - (restrictToNonNegative ? 0 : mostNegative);
+         if (basicRow != null) {
+-            for (int j = getNumObjectiveFunctions(); j < getNumObjectiveFunctions() + i; j++) {
++            boolean found = false;
++            for (int j = getNumObjectiveFunctions(); j < getNumObjectiveFunctions() + i && !found; j++) {
+                 if (tableau.getEntry(basicRow, j) == 1) {
+                     coefficients[i] = 0;
++                    found = true;
+                 }
+             }
+         }

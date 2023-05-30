@@ -1,0 +1,85 @@
+--- org/apache/commons/lang3/StringUtils.java@indexOfAny
++++ org/apache/commons/lang3/StringUtils.java@indexOfAny
+@@ -11,7 +11,13 @@
+         for (int j = 0; j < searchLen; j++) {
+             if (searchChars[j] == ch) {
+                 // ch is a supplementary character
+-                return i;
++                if (Character.isHighSurrogate(ch)) {
++                    if (i < csLen - 1 && Character.isLowSurrogate(cs.charAt(i + 1))) {
++                        return i;
++                    }
++                } else {
++                    return i;
++                }
+             }
+         }
+     }
+--- org/apache/commons/lang3/StringUtils.java@containsAny
++++ org/apache/commons/lang3/StringUtils.java@containsAny
+@@ -12,13 +12,11 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLength; j++) {
+             if (searchChars[j] == ch) {
+-                if (i < csLast && j < searchLast && ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_HIGH_SURROGATE) {
+-                    // missing low surrogate, fine, like String.indexOf(String)
+-                    if (searchChars[j + 1] == cs.charAt(i + 1)) {
++                if (Character.isHighSurrogate(ch)) {
++                    if (i < csLast && j < searchLast && searchChars[j + 1] == cs.charAt(i + 1)) {
+                         return true;
+                     }
+                 } else {
+-                    // ch is in the Basic Multilingual Plane
+                     return true;
+                 }
+             }
+--- org/apache/commons/lang3/StringUtils.java@indexOfAnyBut
++++ org/apache/commons/lang3/StringUtils.java@indexOfAnyBut
+@@ -13,6 +13,11 @@
+                 continue outer;
+             }
+         }
++        if (Character.isHighSurrogate(ch)) {
++            if (i < csLen - 1 && Character.isLowSurrogate(cs.charAt(i + 1))) {
++                continue;
++            }
++        }
+         return i;
+     }
+     return INDEX_NOT_FOUND;
+--- org/apache/commons/lang3/StringUtils.java@indexOfAnyBut4
++++ org/apache/commons/lang3/StringUtils.java@indexOfAnyBut4
+@@ -6,6 +6,11 @@
+     for (int i = 0; i < strLen; i++) {
+         char ch = str.charAt(i);
+         if (searchChars.indexOf(ch) < 0) {
++            if (Character.isHighSurrogate(ch)) {
++                if (i < strLen - 1 && Character.isLowSurrogate(str.charAt(i + 1))) {
++                    continue;
++                }
++            }
+             return i;
+         }
+     }
+--- org/apache/commons/lang3/StringUtils.java@containsNone
++++ org/apache/commons/lang3/StringUtils.java@containsNone
+@@ -10,9 +10,16 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLen; j++) {
+             if (searchChars[j] == ch) {
+-                // missing low surrogate, fine, like String.indexOf(String)
+-                // ch is in the Basic Multilingual Plane
+-                return false;
++                // ch is a supplementary character
++                if (Character.isHighSurrogate(ch)) {
++                    if (i < csLen - 1 && Character.isLowSurrogate(cs.charAt(i + 1))) {
++                        j++;
++                    } else {
++                        return false;
++                    }
++                } else {
++                    return false;
++                }
+             }
+         }
+     }

@@ -1,0 +1,9 @@
+--- org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
++++ org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
+@@ -9,5 +9,5 @@
+             }
+         }
+     }
+-    return row;
++    return row != null ? row : -1;
+ }

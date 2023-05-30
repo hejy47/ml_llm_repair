@@ -1,0 +1,22 @@
+--- org/apache/commons/lang/text/StrBuilder.java@contains
++++ org/apache/commons/lang/text/StrBuilder.java@contains
+@@ -1,7 +1,7 @@
+ //-----------------------------------------------------------------------
+ public boolean contains(char ch) {
+     char[] thisBuf = buffer;
+-    for (int i = 0; i < thisBuf.length; i++) {
++    for (int i = 0; i < size; i++) { // changed length to size
+         if (thisBuf[i] == ch) {
+             return true;
+         }
+--- org/apache/commons/lang/text/StrBuilder.java@indexOf
++++ org/apache/commons/lang/text/StrBuilder.java@indexOf
+@@ -4,7 +4,7 @@
+         return -1;
+     }
+     char[] thisBuf = buffer;
+-    for (int i = startIndex; i < thisBuf.length; i++) {
++    for (int i = startIndex; i < size; i++) { // changed length to size
+         if (thisBuf[i] == ch) {
+             return i;
+         }

@@ -1,0 +1,24 @@
+--- org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
+@@ -1,5 +1,5 @@
+ @Override
+-protected double doSolve() {
++protected double doSolve() throws TooManyEvaluationsException, NumberIsTooLargeException, NoBracketingException {
+     // prepare arrays with the first points
+     final double[] x = new double[maximalOrder + 1];
+     final double[] y = new double[maximalOrder + 1];
+@@ -51,8 +51,14 @@
+     double yB = y[signChangeIndex];
+     double absYB = FastMath.abs(yB);
+     int agingB = 0;
++    // Count the number of evaluation performed
++    int i = 0;
+     // search loop
+     while (true) {
++        // check iteration count
++        if (++i > maximalEvaluations) {
++            throw new TooManyEvaluationsException(maximalEvaluations);
++        }
+         // check convergence of bracketing interval
+         final double xTol = getAbsoluteAccuracy() + getRelativeAccuracy() * FastMath.max(FastMath.abs(xA), FastMath.abs(xB));
+         if (((xB - xA) <= xTol) || (FastMath.max(absYA, absYB) < getFunctionValueAccuracy())) {

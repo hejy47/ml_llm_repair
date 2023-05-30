@@ -1,0 +1,26 @@
+--- org/apache/commons/math3/linear/RectangularCholeskyDecomposition.java@RectangularCholeskyDecomposition
++++ org/apache/commons/math3/linear/RectangularCholeskyDecomposition.java@RectangularCholeskyDecomposition
+@@ -11,10 +11,11 @@
+     for (boolean loop = true; loop; ) {
+         // find maximal diagonal element
+         swap[r] = r;
++        double max = c[index[r]][index[r]];
+         for (int i = r + 1; i < order; ++i) {
+-            int ii = index[i];
+-            int isi = index[swap[i]];
+-            if (c[ii][ii] > c[isi][isi]) {
++            double val = c[index[i]][index[i]];
++            if (val > max) {
++                max = val;
+                 swap[r] = i;
+             }
+         }
+@@ -26,7 +27,7 @@
+         }
+         // check diagonal element
+         int ir = index[r];
+-        if (c[ir][ir] < small) {
++        if (c[ir][ir] < 0.0) {
+             if (r == 0) {
+                 throw new NonPositiveDefiniteMatrixException(c[ir][ir], ir, small);
+             }

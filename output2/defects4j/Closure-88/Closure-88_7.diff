@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -5,7 +5,7 @@
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.
+             return VariableLiveness.KILL;
+-        } else {
++        } else if (NodeUtil.isNonLocalRead(n, variable)) {
+             return VariableLiveness.READ;
+         }
+     }

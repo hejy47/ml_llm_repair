@@ -1,0 +1,27 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJava1
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJava1
+@@ -1,3 +1,6 @@
+ public static void escapeJava(Writer out, String str) throws IOException {
++    if (str == null) {
++        return;
++    }
+     escapeJavaStyleString(out, str, false);
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript
+@@ -1,3 +1,6 @@
+ public static String escapeJavaScript(String str) {
++    if (str == null) {
++        return null;
++    }
+     return escapeJavaStyleString(str, true);
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript3
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript3
+@@ -1,3 +1,6 @@
+ public static void escapeJavaScript(Writer out, String str) throws IOException {
++    if (str == null) {
++        return;
++    }
+     escapeJavaStyleString(out, str, true);
+ }

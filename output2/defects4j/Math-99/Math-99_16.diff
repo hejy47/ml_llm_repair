@@ -1,0 +1,21 @@
+--- org/apache/commons/math/util/MathUtils.java@gcd
++++ org/apache/commons/math/util/MathUtils.java@gcd
+@@ -36,7 +36,7 @@
+     // t positive: u was even, v is odd (t replaces u)
+     do {
+                 // B4/B3: cast out twos from t.
+-        while ((t & 1) == 0) {
++        while ((t & 1) == 0 && t!=0) {
+             // while t is even..
+             // cast out twos
+             t /= 2;
+--- org/apache/commons/math/util/MathUtils.java@lcm
++++ org/apache/commons/math/util/MathUtils.java@lcm
+@@ -2,6 +2,6 @@
+     if (a == 0 || b == 0) {
+         return 0;
+     }
+-    int lcm = Math.abs(mulAndCheck(a / gcd(a, b), b));
++    int lcm = Math.abs((a / gcd(a, b)) * b);
+     return lcm;
+ }

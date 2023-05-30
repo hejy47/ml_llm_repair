@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -15,17 +15,17 @@
+     if (rValObj == null) {
+         return null;
+     }
+-    double lval = lValObj;
+-    double rval = rValObj;
++    double lval = lValObj.doubleValue(); //fixed here
++    double rval = rValObj.doubleValue(); //fixed here
+     switch(opType) {
+         case Token.BITAND:
+-            result = ScriptRuntime.toInt32(lval) & ScriptRuntime.toInt32(rval);
++            result = (double)(ScriptRuntime.toInt32(lval) & ScriptRuntime.toInt32(rval)); //fixed here
+             break;
+         case Token.BITOR:
+-            result = ScriptRuntime.toInt32(lval) | ScriptRuntime.toInt32(rval);
++            result = (double)(ScriptRuntime.toInt32(lval) | ScriptRuntime.toInt32(rval)); //fixed here
+             break;
+         case Token.BITXOR:
+-            result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
++            result = (double)(ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval)); //fixed here
+             break;
+         case Token.ADD:
+             result = lval + rval;

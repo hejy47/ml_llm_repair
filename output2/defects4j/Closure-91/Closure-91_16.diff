@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -12,12 +12,19 @@
+         // function a() {} // or
+         // a.x = function() {}; // or
+         // var a = {x: function() {}};
+-        int pType = parent.getType();
++        int pType = parent == null ? -1 : parent.getType(); // add null check for parent
+         if (!(pType == Token.BLOCK || pType == Token.SCRIPT || pType == Token.NAME || pType == Token.ASSIGN || // object literal keys
+         pType == Token.STRING || pType == Token.NUMBER)) {
+             return false;
+         }
+         // Don't traverse functions that are getting lent to a prototype.
++        if (NodeUtil.isLhsAssign(parent)) { // check if parent is an assignment operation
++            Node llhs = parent.getFirstChild();
++            Node lrhs = llhs.getNext();
++            if (llhs.getType() == Token.GETPROP && lrhs.getType() == Token.FUNCTION) { // check if assigning a function to a prototype property
++                return false;
++            }
++        }
+     }
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+         Node lhs = parent.getFirstChild();

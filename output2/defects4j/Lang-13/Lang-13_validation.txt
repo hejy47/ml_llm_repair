@@ -1,0 +1,16 @@
+Lang-13_1:False
+Lang-13_2:True
+Lang-13_3:False
+Lang-13_4:True
+Lang-13_5:False
+Lang-13_6:False
+Lang-13_7:False
+Lang-13_8:False
+Lang-13_9:False
+Lang-13_10:False
+Lang-13_11:False
+Lang-13_12:True
+Lang-13_13:False
+Lang-13_14:True
+Lang-13_15:False
+Lang-13_16:True

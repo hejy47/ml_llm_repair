@@ -1,0 +1,29 @@
+--- org/mockito/internal/verification/VerificationOverTimeImpl.java@verify
++++ org/mockito/internal/verification/VerificationOverTimeImpl.java@verify
+@@ -1,7 +1,7 @@
+ public void verify(VerificationData data) {
+     AssertionError error = null;
+     timer.start();
+-    while (timer.isCounting()) {
++    do {
+         try {
+             delegate.verify(data);
+             if (returnOnSuccess) {
+@@ -9,13 +9,11 @@
+             } else {
+                 error = null;
+             }
+-        } catch (MockitoAssertionError e) {
+-            error = handleVerifyException(e);
+-        } catch (org.mockito.exceptions.verification.junit.ArgumentsAreDifferent e) {
++        } catch (MockitoAssertionError | org.mockito.exceptions.verification.junit.ArgumentsAreDifferent e) {
+             error = handleVerifyException(e);
+         }
+-    }
+-    if (error != null) {
++     } while (timer.isCounting());
++     if (error != null) {
+         throw error;
+-    }
++     }
+ }

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -29,7 +29,7 @@
+             type = dereferenced;
+         }
+     }
+-    if (type.isFunctionPrototypeType() || (type.toObjectType() != null && type.toObjectType().getConstructor() != null)) {
++    if (type.isFunctionPrototypeType() || (type.toMaybeObjectType() != null && type.toMaybeObjectType().getConstructor() != null)) {
+         return type.toString();
+     }
+     String qualifiedName = n.getQualifiedName();

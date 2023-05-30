@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -8,6 +8,9 @@
+         return;
+     }
+     String joinString = NodeUtil.getStringValue(right);
++    if (joinString == null) {
++        return;
++    }
+     List<Node> arrayFoldedChildren = Lists.newLinkedList();
+     StringBuilder sb = new StringBuilder();
+     int foldedSize = 0;
+@@ -18,7 +21,12 @@
+             if (sb.length() > 0) {
+                 sb.append(joinString);
+             }
+-            sb.append(NodeUtil.getStringValue(elem));
++            String elemValue = NodeUtil.getStringValue(elem);
++            if (elemValue == null) {
++                // If the element is not a string literal, we cannot fold the join.
++                return;
++            }
++            sb.append(elemValue);
+         } else {
+             if (sb.length() > 0) {
+                 // + 2 for the quotes.
+@@ -32,7 +40,7 @@
+         elem = elem.getNext();
+     }
+     if (sb.length() > 0) {
+-        // + 2 for the quotes.
++        // +2 for the quotes.
+         foldedSize += sb.length() + 2;
+         arrayFoldedChildren.add(Node.newString(sb.toString()));
+     }

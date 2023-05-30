@@ -1,0 +1,11 @@
+--- org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
+@@ -58,7 +58,7 @@
+         if (((xB - xA) <= xTol) || (FastMath.max(absYA, absYB) < getFunctionValueAccuracy())) {
+             switch(allowed) {
+                 case ANY_SIDE:
+-                    return absYA < absYB ? xA : xB;
++                    return absYA <= absYB ? xA : xB;
+                 case LEFT_SIDE:
+                     return xA;
+                 case RIGHT_SIDE:

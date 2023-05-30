@@ -1,0 +1,11 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@toFormatter
++++ org/joda/time/format/PeriodFormatterBuilder.java@toFormatter
+@@ -5,7 +5,7 @@
+     int size = elementPairs.size();
+     if (size >= 2 && elementPairs.get(0) instanceof Separator) {
+         Separator sep = (Separator) elementPairs.get(0);
+-        PeriodFormatter f = toFormatter(elementPairs.subList(2, size), notPrinter, notParser);
++        PeriodFormatter f = toFormatter(elementPairs.subList(1, size), notPrinter, notParser); // Use sublist starting from index 1 instead of 2
+         sep = sep.finish(f.getPrinter(), f.getParser());
+         return new PeriodFormatter(sep, sep);
+     }

@@ -1,0 +1,36 @@
+--- org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@filterCandidate
++++ org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@filterCandidate
+@@ -5,7 +5,7 @@
+ 
+             public boolean thenInject() {
+                 try {
+-                    new FieldSetter(fieldInstance, field).set(matchingMock);
++                    new FieldSetter(fieldInstance.getClass().getDeclaredField(field.getName()), fieldInstance).set(matchingMock);
+                 } catch (Exception e) {
+                     throw new MockitoException("Problems injecting dependency in " + field.getName(), e);
+                 }
+--- org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@thenInject
++++ org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@thenInject
+@@ -1,8 +1,17 @@
+ public boolean thenInject() {
+-    try {
+-        new FieldSetter(fieldInstance, field).set(matchingMock);
+-    } catch (Exception e) {
+-        throw new MockitoException("Problems injecting dependency in " + field.getName(), e);
++                try {
++                    new FieldSetter(fieldInstance.getClass().getDeclaredField(field.getName()), fieldInstance).set(matchingMock);
++                } catch (Exception e) {
++                    throw new MockitoException("Problems injecting dependency in " + field.getName(), e);
++                }
++                return true;
++            }
++        };
+     }
+-    return true;
++    return new OngoingInjecter() {
++
++        public boolean thenInject() {
++            return false;
++        }
++    };
+ }

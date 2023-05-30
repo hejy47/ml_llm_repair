@@ -1,0 +1,13 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -51,8 +51,8 @@
+     parseAndIgnoreWhitespace(source, pos);
+     // parse denominator
+     Number den = getDenominatorFormat().parse(source, pos);
+-    if (den == null) {
+-        // invalid integer number
++    if (den == null || den.intValue() == 0) {
++        // invalid denominator
+         // set index back to initial, error index should already be set
+         // character examined.
+         pos.setIndex(initialIndex);

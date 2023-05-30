@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -26,7 +26,7 @@
+             Node catchCodeBlock = catchNode.getLastChild();
+             tryMinimizeExits(catchCodeBlock, exitType, labelName);
+         }
+-                if (NodeUtil.hasFinally(n)) {
++        if (NodeUtil.hasFinally(n)) {
+             Node finallyBlock = n.getLastChild();
+             tryMinimizeExits(finallyBlock, exitType, labelName);
+         }
+@@ -43,7 +43,7 @@
+     }
+     // Multiple if-exits can be converted in a single pass.
+     // Convert "if (blah) break;  if (blah2) break; other_stmt;" to
+-    // become "if (blah); else { if (blah2); else { other_stmt; } }"
++    // become "if (blah) {} else { if (blah2) {} else { other_stmt; } }"
+     // which will get converted to "if (!blah && !blah2) { other_stmt; }".
+     for (Node c : n.children()) {
+         // An 'if' block to process below.

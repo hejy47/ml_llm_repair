@@ -1,0 +1,11 @@
+--- org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getChiSquare
++++ org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java@getChiSquare
+@@ -2,7 +2,7 @@
+     double chiSquare = 0;
+     for (int i = 0; i < rows; ++i) {
+         final double residual = residuals[i];
+-        chiSquare += residual * residual / residualsWeights[i];
++        chiSquare += (residual * residual) / residualsWeights[i];
+     }
+     return chiSquare;
+ }

@@ -1,0 +1,39 @@
+--- org/apache/commons/lang3/SerializationUtils.java@ClassLoaderAwareObjectInputStream
++++ org/apache/commons/lang3/SerializationUtils.java@ClassLoaderAwareObjectInputStream
+@@ -1,4 +1,15 @@
+ public ClassLoaderAwareObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException {
+-    super(in);
+-    this.classLoader = classLoader;
++        super(in);
++        this.classLoader = classLoader;
++    }
++
++    @Override
++    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
++        String name = desc.getName();
++        try {
++            return Class.forName(name, false, classLoader);
++        } catch (ClassNotFoundException ex) {
++            return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
++        }
++    }
+ }
+--- org/apache/commons/lang3/SerializationUtils.java@resolveClass
++++ org/apache/commons/lang3/SerializationUtils.java@resolveClass
+@@ -1,9 +1,10 @@
+ @Override
+-protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+-    String name = desc.getName();
+-    try {
+-        return Class.forName(name, false, classLoader);
+-    } catch (ClassNotFoundException ex) {
+-        return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
++    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
++        String name = desc.getName();
++        try {
++            return Class.forName(name, false, classLoader);
++        } catch (ClassNotFoundException ex) {
++            return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
++        }
+     }
+ }

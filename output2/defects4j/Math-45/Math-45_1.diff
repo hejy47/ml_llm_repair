@@ -1,0 +1,9 @@
+--- org/apache/commons/math/linear/OpenMapRealMatrix.java@OpenMapRealMatrix
++++ org/apache/commons/math/linear/OpenMapRealMatrix.java@OpenMapRealMatrix
+@@ -2,5 +2,5 @@
+     super(rowDimension, columnDimension);
+     this.rows = rowDimension;
+     this.columns = columnDimension;
+-    this.entries = new OpenIntToDoubleHashMap(0.0);
++    this.entries = new OpenIntToDoubleHashMap();
+ }

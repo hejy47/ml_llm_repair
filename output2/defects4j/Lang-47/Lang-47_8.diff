@@ -1,0 +1,11 @@
+--- org/apache/commons/lang/text/StrBuilder.java@appendFixedWidthPadRight
++++ org/apache/commons/lang/text/StrBuilder.java@appendFixedWidthPadRight
+@@ -12,7 +12,7 @@
+                 buffer[size + strLen + i] = padChar;
+             }
+         }
+-        size += width;
++        size += width; // don't subtract padLen from size
+     }
+     return this;
+ }

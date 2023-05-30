@@ -1,0 +1,31 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,3 +1,15 @@
+ public int compareTo(DurationField durationField) {
+-    return 0;
++    if (durationField instanceof PreciseDurationField) {
++        PreciseDurationField other = (PreciseDurationField) durationField;
++        long otherUnitMillis = other.getUnitMillis();
++        long thisUnitMillis = getUnitMillis();
++        if (thisUnitMillis == otherUnitMillis) {
++            return 0;
++        } else if (thisUnitMillis < otherUnitMillis) {
++            return -1;
++        } else {
++            return 1;
++        }
++    }
++    return getUnitMillis() < durationField.getUnitMillis() ? -1 : 1;
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -51,7 +51,7 @@
+         }
+         lastUnitField = loopUnitField;
+     }
+-    iTypes = (DateTimeFieldType[]) types.clone();
++    iTypes = types.clone();
+     chronology.validate(this, values);
+-    iValues = (int[]) values.clone();
++    iValues = values.clone();
+ }

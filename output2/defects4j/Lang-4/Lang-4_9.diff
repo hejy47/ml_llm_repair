@@ -1,0 +1,52 @@
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@LookupTranslator
+@@ -1,16 +1,18 @@
+ public LookupTranslator(final CharSequence[]... lookup) {
+-    lookupMap = new HashMap<CharSequence, CharSequence>();
++    lookupMap = new HashMap<>();
+     int _shortest = Integer.MAX_VALUE;
+     int _longest = 0;
+     if (lookup != null) {
+         for (final CharSequence[] seq : lookup) {
+-            this.lookupMap.put(seq[0], seq[1]);
+-            final int sz = seq[0].length();
+-            if (sz < _shortest) {
+-                _shortest = sz;
+-            }
+-            if (sz > _longest) {
+-                _longest = sz;
++            if (seq.length == 2){ // Added check for length of seq
++                this.lookupMap.put(seq[0], seq[1]);
++                final int sz = seq[0].length();
++                if (sz < _shortest) {
++                    _shortest = sz;
++                }
++                if (sz > _longest) {
++                    _longest = sz;
++                }
+             }
+         }
+     }
+--- org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
++++ org/apache/commons/lang3/text/translate/LookupTranslator.java@translate
+@@ -4,13 +4,14 @@
+     if (index + longest > input.length()) {
+         max = input.length() - index;
+     }
+-    // descend so as to get a greedy algorithm
+     for (int i = max; i >= shortest; i--) {
+-        final CharSequence subSeq = input.subSequence(index, index + i);
+-        final CharSequence result = lookupMap.get(subSeq);
+-        if (result != null) {
+-            out.write(result.toString());
+-            return i;
++        if (index + i <= input.length()){ // Added check for index out of bounds
++            final CharSequence subSeq = input.subSequence(index, index + i);
++            final CharSequence result = lookupMap.get(subSeq);
++            if (result != null) {
++                out.write(result.toString());
++                return i;
++            }
+         }
+     }
+     return 0;

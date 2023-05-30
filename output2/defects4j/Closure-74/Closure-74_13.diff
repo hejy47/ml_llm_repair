@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -115,7 +115,7 @@
+             if (compareResult != null) {
+                 result = compareResult;
+             } else {
+-                return null;
++                return n;
+             }
+             break;
+         case Token.NAME:
+@@ -157,7 +157,7 @@
+             return n;
+     }
+     Node newNode = new Node(result ? Token.TRUE : Token.FALSE);
+-    n.getParent().replaceChild(n, newNode);
++    n.replaceWith(newNode);
+     reportCodeChange();
+     return newNode;
+ }

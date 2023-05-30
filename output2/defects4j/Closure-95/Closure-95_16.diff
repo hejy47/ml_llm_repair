@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@defineSlot
++++ com/google/javascript/jscomp/TypedScopeCreator.java@defineSlot
+@@ -13,7 +13,7 @@
+     // If n is a property, then we should really declare it in the
+     // scope where the root object appears. This helps out people
+     // who declare "global" names in an anonymous namespace.
+-    Scope scopeToDeclareIn = scope;
++    Scope scopeToDeclareIn = scope.getParentScope();
+     // don't try to declare in the global scope if there's
+     // already a symbol there with this name.
+     // declared in closest scope?
+@@ -41,7 +41,8 @@
+             FunctionType fnType = (FunctionType) type;
+             if (fnType.isConstructor() || fnType.isInterface()) {
+                 FunctionType superClassCtor = fnType.getSuperClassConstructor();
+-                scopeToDeclareIn.declare(variableName + ".prototype", n, fnType.getPrototype(), compiler.getInput(sourceName),                 superClassCtor == null || superClassCtor.getInstanceType().equals(getNativeType(OBJECT_TYPE)));
++                scopeToDeclareIn.declare(variableName + ".prototype", n, fnType.getPrototype(), compiler.getInput(sourceName), /* declared iff there's an explicit supertype */
++                superClassCtor == null || superClassCtor.getInstanceType().equals(getNativeType(OBJECT_TYPE)));
+             }
+         }
+     }

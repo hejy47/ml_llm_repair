@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -26,5 +26,7 @@
+         }
+         n = n.getParent();
+     }
+-    return false;
++    // Check the variable at the expression root node
++    VariableLiveness state = isVariableReadBeforeKill(n, variable);
++    return state == VariableLiveness.READ;
+ }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -1,7 +1,6 @@
+ private VariableLiveness isVariableReadBeforeKill(Node n, String variable) {
+     if (NodeUtil.isName(n) && variable.equals(n.getString())) {
+-        if (NodeUtil.isLhs(n, n.getParent())) {
+-            Preconditions.checkState(n.getParent().getType() == Token.ASSIGN);
++        if (NodeUtil.isLhs(n, n.getParent()) && n.getParent().getType() == Token.ASSIGN) {
+             // The expression to which the assignment is made is evaluated before
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.

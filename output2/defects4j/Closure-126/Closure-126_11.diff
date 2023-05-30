@@ -1,0 +1,69 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -5,6 +5,7 @@
+         compiler.reportCodeChange();
+         return;
+     }
++
+     // Just an 'if'.
+     if (n.isIf()) {
+         Node ifBlock = n.getFirstChild().getNext();
+@@ -15,6 +16,7 @@
+         }
+         return;
+     }
++
+     // Just a 'try/catch/finally'.
+     if (n.isTry()) {
+         Node tryBlock = n.getFirstChild();
+@@ -26,21 +28,28 @@
+             Node catchCodeBlock = catchNode.getLastChild();
+             tryMinimizeExits(catchCodeBlock, exitType, labelName);
+         }
+-                if (NodeUtil.hasFinally(n)) {
++        
++        if (NodeUtil.hasFinally(n)) {
+             Node finallyBlock = n.getLastChild();
+             tryMinimizeExits(finallyBlock, exitType, labelName);
+         }
++        return;
+     }
++
+     // Just a 'label'.
+     if (n.isLabel()) {
+         Node labelBlock = n.getLastChild();
+         tryMinimizeExits(labelBlock, exitType, labelName);
++        return;
+     }
+-    // TODO(johnlenz): The last case of SWITCH statement?
++
+     // The rest assumes a block with at least one child, bail on anything else.
+     if (!n.isBlock() || n.getLastChild() == null) {
+         return;
+     }
++
++    // TODO(johnlenz): The last case of SWITCH statement?
++
+     // Multiple if-exits can be converted in a single pass.
+     // Convert "if (blah) break;  if (blah2) break; other_stmt;" to
+     // become "if (blah); else { if (blah2); else { other_stmt; } }"
+@@ -54,6 +63,7 @@
+             trueBlock = ifTree.getFirstChild().getNext();
+             falseBlock = trueBlock.getNext();
+             tryMinimizeIfBlockExits(trueBlock, falseBlock, ifTree, exitType, labelName);
++
+             // Now the else block.
+             // The if blocks may have changed, get them again.
+             trueBlock = ifTree.getFirstChild().getNext();
+@@ -62,10 +72,8 @@
+                 tryMinimizeIfBlockExits(falseBlock, trueBlock, ifTree, exitType, labelName);
+             }
+         }
+-        if (c == n.getLastChild()) {
+-            break;
+-        }
+     }
++
+     // Now try to minimize the exits of the last child, if it is removed
+     // look at what has become the last child.
+     for (Node c = n.getLastChild(); c != null; c = n.getLastChild()) {

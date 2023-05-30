@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getStringNumberValue
++++ com/google/javascript/jscomp/NodeUtil.java@getStringNumberValue
+@@ -15,12 +15,12 @@
+     }
+     if (s.length() > 3 && (s.charAt(0) == '-' || s.charAt(0) == '+') && s.charAt(1) == '0' && (s.charAt(2) == 'x' || s.charAt(2) == 'X')) {
+         // hex numbers with explicit signs vary between browsers.
+-        return null;
++        return Double.NaN; // Return NaN instead of null
+     }
+     // FireFox and IE treat the "Infinity" differently. FireFox is case
+     // insensitive, but IE treats "infinity" as NaN.  So leave it alone.
+     if (s.equals("infinity") || s.equals("-infinity") || s.equals("+infinity")) {
+-        return null;
++        return Double.POSITIVE_INFINITY; // Return positive or negative infinity instead of null
+     }
+     try {
+         return Double.parseDouble(s);
+--- com/google/javascript/jscomp/NodeUtil.java@isStrWhiteSpaceChar
++++ com/google/javascript/jscomp/NodeUtil.java@isStrWhiteSpaceChar
+@@ -23,6 +23,9 @@
+         '\uFEFF':
+             return TernaryValue.TRUE;
+         default:
+-            return (Character.getType(c) == Character.SPACE_SEPARATOR) ? TernaryValue.TRUE : TernaryValue.FALSE;
++            return (Character.getType(c) == Character.SPACE_SEPARATOR
++                    || Character.getType(c) == Character.LINE_SEPARATOR // Include LINE_SEPARATOR as whitespace character
++                    || Character.getType(c) == Character.PARAGRAPH_SEPARATOR) // Include PARAGRAPH_SEPARATOR as white space character
++                    ? TernaryValue.TRUE : TernaryValue.FALSE;
+     }
+ }

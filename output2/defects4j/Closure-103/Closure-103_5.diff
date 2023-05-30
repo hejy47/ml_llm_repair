@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -10,6 +10,7 @@
+         case Token.DEC:
+             return true;
+         case Token.FUNCTION:
++        case Token.FUNCTION_EXPRESSION:
+             return false;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -19,6 +19,7 @@
+     while (objType != null && objType.getImplicitPrototype() != objType) {
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
++            break; // Stop the loop once the property is found
+         }
+         objType = objType.getImplicitPrototype();
+     }
+@@ -27,5 +28,12 @@
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+     // so we have to double check.
++    if (foundType == null && type instanceof ObjectType) {
++        ObjectType objectType = (ObjectType) type;
++        foundType = objectType.getGreatestSubtypeWithProperty(field);
++        if (foundType != null && !foundType.hasOwnProperty(field)) {
++            foundType = null;
++        }
++    }
+     return foundType;
+ }

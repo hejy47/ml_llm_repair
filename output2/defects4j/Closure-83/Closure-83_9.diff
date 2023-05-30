@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@parseArguments
++++ com/google/javascript/jscomp/CommandLineRunner.java@parseArguments
+@@ -1,18 +1,16 @@
+ @Override
+ public int parseArguments(Parameters params) throws CmdLineException {
+-    String param = params.getParameter(0);
+-    if (param == null) {
++    if (params.size() == 0) {
+         setter.addValue(true);
+         return 0;
+     } else {
+-        String lowerParam = param.toLowerCase();
+-        if (TRUES.contains(lowerParam)) {
++        String param = params.getParameter(0).toLowerCase();
++        if (TRUES.contains(param)) {
+             setter.addValue(true);
+-        } else if (FALSES.contains(lowerParam)) {
++        } else if (FALSES.contains(param)) {
+             setter.addValue(false);
+         } else {
+-            setter.addValue(true);
+-            return 0;
++            throw new CmdLineException(owner, new LocalizableError(Messages.ILLEGAL_BOOLEAN_ARGUMENT, param));
+         }
+         return 1;
+     }

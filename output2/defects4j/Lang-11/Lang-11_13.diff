@@ -1,0 +1,11 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -20,7 +20,7 @@
+         }
+     }
+     char[] buffer = new char[count];
+-    int gap = end - start;
++    int gap = end - start + 1;  // Fix: add +1 to gap to include the end value
+     while (count-- != 0) {
+         char ch;
+         if (chars == null) {

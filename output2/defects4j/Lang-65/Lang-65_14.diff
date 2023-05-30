@@ -1,0 +1,37 @@
+--- org/apache/commons/lang/time/DateUtils.java@modify
++++ org/apache/commons/lang/time/DateUtils.java@modify
+@@ -3,16 +3,6 @@
+     if (val.get(Calendar.YEAR) > 280000000) {
+         throw new ArithmeticException("Calendar value too large for accurate calculations");
+     }
+-    // ----------------- Fix for LANG-59 ---------------------- START ---------------
+-    // see http://issues.apache.org/jira/browse/LANG-59
+-    //
+-    // Manually truncate milliseconds, seconds and minutes, rather than using
+-    // Calendar methods.
+-    // truncate milliseconds
+-    // truncate seconds
+-    // truncate minutes
+-    // reset time
+-    // ----------------- Fix for LANG-59 ----------------------- END ----------------
+     boolean roundUp = false;
+     for (int i = 0; i < fields.length; i++) {
+         for (int j = 0; j < fields[i].length; j++) {
+@@ -44,7 +34,7 @@
+         //These are special types of fields that require different rounding rules
+         switch(field) {
+             case DateUtils.SEMI_MONTH:
+-                if (fields[i][0] == Calendar.DATE) {
++                if (fields[i][0] == Calendar.DATE && round) {
+                     //If we're going to drop the DATE field's value,
+                     //  we want to do this our own way.
+                     //We need to subtrace 1 since the date has a minimum of 1
+@@ -60,7 +50,7 @@
+                 }
+                 break;
+             case Calendar.AM_PM:
+-                if (fields[i][0] == Calendar.HOUR_OF_DAY) {
++                if (fields[i][0] == Calendar.HOUR_OF_DAY && round) {
+                     //If we're going to drop the HOUR field's value,
+                     //  we want to do this our own way.
+                     offset = val.get(Calendar.HOUR_OF_DAY);

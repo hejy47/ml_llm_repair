@@ -1,0 +1,17 @@
+Lang-60_1:True
+Lang-60_2:True
+Lang-60_3:False
+Lang-60_4:False
+Lang-60_5:True
+Lang-60_6:False
+Lang-60_7:False
+Lang-60_8:True
+Lang-60_9:True
+Lang-60_10:True
+Lang-60_11:True
+Lang-60_12:True
+Lang-60_13:True
+Lang-60_14:False
+Lang-60_15:False
+Lang-60_16:False
+Lang-60_17:True

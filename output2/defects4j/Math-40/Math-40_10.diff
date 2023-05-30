@@ -1,0 +1,51 @@
+--- org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
+@@ -88,26 +88,35 @@
+         double nextX;
+         int start = 0;
+         int end = nbPoints;
++        boolean forceBisect = false; // Fix: add a flag to force bisection
+         do {
+-            // guess a value for current target, using inverse polynomial interpolation
+-            System.arraycopy(x, start, tmpX, start, end - start);
+-            nextX = guessX(targetY, tmpX, y, start, end);
++            if (forceBisect) { // Fix: if flag is set, perform bisection
++                nextX = xA + 0.5 * (xB - xA);
++            } else { // Fix: perform normal guess
++                // guess a value for current target, using inverse polynomial interpolation
++                System.arraycopy(x, start, tmpX, start, end - start);
++                nextX = guessX(targetY, tmpX, y, start, end);
++            }
+             if (!((nextX > xA) && (nextX < xB))) {
+                 // the guessed root is not strictly inside of the tightest bracketing interval
+                 // the guessed root is either not strictly inside the interval or it
+                 // is a NaN (which occurs when some sampling points share the same y)
+-                // we try again with a lower interpolation order
+-                if (signChangeIndex - start >= end - signChangeIndex) {
+-                    // we have more points before the sign change, drop the lowest point
+-                    ++start;
+-                } else {
+-                    // we have more points after sign change, drop the highest point
+-                    --end;
++                if (end - start == 2) { // Fix: if there is 1 point on each side of the bracket, force bisect
++                    forceBisect = true;
++                } else { // Fix: perform lower order interpolation
++                    if (signChangeIndex - start >= end - signChangeIndex) {
++                        // we have more points before the sign change, drop the lowest point
++                        ++start;
++                    } else {
++                        // we have more points after sign change, drop the highest point
++                        --end;
++                    }
++                    forceBisect = false; // Fix: reset bisection flag
+                 }
+-                // we need to do one more attempt
+-                nextX = Double.NaN;
++            } else {
++                forceBisect = false; // Fix: reset bisection flag
+             }
+-        } while (Double.isNaN(nextX) && (end - start > 1));
++        } while (forceBisect || Double.isNaN(nextX) && (end - start > 1));
+         if (Double.isNaN(nextX)) {
+             // fall back to bisection
+             nextX = xA + 0.5 * (xB - xA);

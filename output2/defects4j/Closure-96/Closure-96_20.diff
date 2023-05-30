@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitParameterList
++++ com/google/javascript/jscomp/TypeCheck.java@visitParameterList
+@@ -14,10 +14,13 @@
+         ordinal++;
+         validator.expectArgumentMatchesParameter(t, argument, getJSType(argument), getJSType(parameter), call, ordinal);
+     }
++    // Check if there are more arguments than expected.
+     int numArgs = call.getChildCount() - 1;
+     int minArgs = functionType.getMinArguments();
+     int maxArgs = functionType.getMaxArguments();
+-    if (minArgs > numArgs || maxArgs < numArgs) {
++    if (numArgs < minArgs) {
++        report(t, call, WRONG_ARGUMENT_COUNT, validator.getReadableJSTypeName(call.getFirstChild(), false), String.valueOf(numArgs), String.valueOf(minArgs), maxArgs != Integer.MAX_VALUE ? " and no more than " + maxArgs + " argument(s)" : "");
++    } else if (numArgs > maxArgs) {
+         report(t, call, WRONG_ARGUMENT_COUNT, validator.getReadableJSTypeName(call.getFirstChild(), false), String.valueOf(numArgs), String.valueOf(minArgs), maxArgs != Integer.MAX_VALUE ? " and no more than " + maxArgs + " argument(s)" : "");
+     }
+ }

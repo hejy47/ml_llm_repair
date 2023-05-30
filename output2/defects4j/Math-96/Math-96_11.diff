@@ -1,0 +1,11 @@
+--- org/apache/commons/math/complex/Complex.java@equals
++++ org/apache/commons/math/complex/Complex.java@equals
+@@ -2,7 +2,7 @@
+     boolean ret;
+     if (this == other) {
+         ret = true;
+-    } else if (other == null) {
++    } else if (other == null || getClass() != other.getClass()) { // check for null and class equality
+         ret = false;
+     } else {
+         try {

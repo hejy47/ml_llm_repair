@@ -1,0 +1,13 @@
+--- org/mockito/internal/stubbing/answers/CallsRealMethods.java@answer
++++ org/mockito/internal/stubbing/answers/CallsRealMethods.java@answer
+@@ -1,3 +1,9 @@
+ public Object answer(InvocationOnMock invocation) throws Throwable {
+-    return invocation.callRealMethod();
++    Object result = null;
++    try {
++        result = invocation.callRealMethod();
++    } catch (Throwable e) {
++        // handle and log the exception
++    }
++    return result;
+ }

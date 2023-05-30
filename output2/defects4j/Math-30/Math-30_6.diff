@@ -1,0 +1,12 @@
+--- org/apache/commons/math3/stat/inference/MannWhitneyUTest.java@calculateAsymptoticPValue
++++ org/apache/commons/math3/stat/inference/MannWhitneyUTest.java@calculateAsymptoticPValue
+@@ -3,7 +3,8 @@
+     // http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U#Normal_approximation
+     final double EU = n1n2prod / 2.0;
+     final double VarU = n1n2prod * (n1 + n2 + 1) / 12.0;
+-    final double z = (Umin - EU) / FastMath.sqrt(VarU);
++    // Fix for edge case when VarU is too small to compute the square root
++    final double z = (VarU < 1e-10) ? 0.0 : (Umin - EU) / FastMath.sqrt(VarU);
+     final NormalDistribution standardNormal = new NormalDistribution(0, 1);
+     return 2 * standardNormal.cumulativeProbability(z);
+ }

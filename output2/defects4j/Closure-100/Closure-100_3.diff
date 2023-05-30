@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -25,14 +25,13 @@
+         } else {
+             // Only traverse the right side if it's not an assignment to a prototype
+             // property or subproperty.
+-            if (lhs.getType() == Token.GETPROP) {
+-                if (lhs.getLastChild().getString().equals("prototype")) {
+-                    return false;
+-                }
+-                String leftName = lhs.getQualifiedName();
+-                if (leftName != null && leftName.contains(".prototype.")) {
+-                    return false;
+-                }
++            if (lhs.getType() == Token.GETPROP && lhs.getLastChild().getString().equals("prototype")) {
++                // Don't traverse assignments to prototype properties
++                return false;
++            }
++            String leftName = lhs.getQualifiedName();
++            if (leftName != null && leftName.contains(".prototype.")) {
++                return false;
+             }
+         }
+     }
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -1,8 +1,8 @@
+ private boolean shouldReportThis(Node n, Node parent) {
+-    if (assignLhsChild != null) {
++    if (assignLhsChild != null && NodeUtil.isThis(n)) {
+         // Always report a THIS on the left side of an assign.
+         return true;
+     }
+     // Also report a THIS with a property access.
+-    return false;
++    return NodeUtil.isGet(parent);
+ }

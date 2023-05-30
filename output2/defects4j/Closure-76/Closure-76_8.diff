@@ -1,0 +1,34 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -26,5 +26,8 @@
+         }
+         n = n.getParent();
+     }
+-    return false;
++    // Add an additional check if the variable is read in the root expression
++    // as it is not checked in the loop above.
++    VariableLiveness state = isVariableReadBeforeKill(exprRoot, variable);
++    return state == VariableLiveness.READ;
+ }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -6,11 +6,15 @@
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.
+             Node rhs = n.getNext();
+-            VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
+-            if (state == VariableLiveness.READ) {
+-                return state;
++            // Fix: Check if there is a RHS to evaluate.
++            if (rhs != null) {
++                VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
++                if (state == VariableLiveness.READ) {
++                    return state;
++                }
++                return VariableLiveness.KILL;
+             }
+-            return VariableLiveness.KILL;
++            return VariableLiveness.MAYBE_LIVE; // No RHS to evaluate, variable is still live.
+         } else {
+             return VariableLiveness.READ;
+         }

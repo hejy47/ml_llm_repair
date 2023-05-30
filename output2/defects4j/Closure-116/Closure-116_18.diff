@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -32,17 +32,20 @@
+                 if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+                     return CanInlineResult.NO;
+                 }
++            } else {  // Fix 1: added else clause to handle when cArg is null and there are still parameters remaining
++                return CanInlineResult.NO;
+             }
+             // Move to the next name.
+             fnParam = fnParam.getNext();
+-        }
+-        // For every call argument check for side-effects, even if there
+-        // isn't a named parameter to match.
+-        if (cArg != null) {
+-            if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
+-                return CanInlineResult.NO;
++        } else {  // Fix 2: added else clause to handle when fnParam is null and there are still arguments remaining
++            if (cArg != null) {
++                if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++                    return CanInlineResult.NO;
++                }
++                cArg = cArg.getNext();
++            } else {
++                break; // all arguments and parameters have been processed
+             }
+-            cArg = cArg.getNext();
+         }
+     }
+     return CanInlineResult.YES;

@@ -1,0 +1,15 @@
+Lang-35_1:False
+Lang-35_2:False
+Lang-35_3:False
+Lang-35_4:False
+Lang-35_5:False
+Lang-35_6:True
+Lang-35_7:False
+Lang-35_8:True
+Lang-35_9:False
+Lang-35_10:False
+Lang-35_11:False
+Lang-35_12:False
+Lang-35_13:True
+Lang-35_14:False
+Lang-35_15:False

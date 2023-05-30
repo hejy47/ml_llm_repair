@@ -1,0 +1,18 @@
+## Fixed Function 1
+private Integer getBasicRow(final int col) {
+    Integer row = null;
+    for (int i = getNumObjectiveFunctions(); i < getHeight(); i++) {
+        if (!MathUtils.equals(getEntry(i, col), 0.0, epsilon)) {
+            if (row == null) {
+                row = i;
+            } else {
+                return null;
+            }
+        }
+    }
+    return row != null ? row : -1;
+} 
+
+Changes Made: 
+1. Added "? row : -1" for returning row. 
+2. Declared row as null initially.

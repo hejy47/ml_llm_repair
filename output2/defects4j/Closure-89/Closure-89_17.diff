@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -43,7 +43,13 @@
+         // before the current statement.
+         Node stubVar = new Node(Token.VAR, nameNode.cloneTree()).copyInformationFrom(nameNode);
+         currentParent.addChildBefore(stubVar, current);
+-        parent.replaceChild(ref.node, nameNode);
++        // Replace the ref's node with the new nameNode.
++        if (ref.isLvalue()) {
++            Node assignNode = new Node(Token.ASSIGN, nameNode, ref.node.getLastChild().detachFromParent());
++            ref.node.replaceWith(assignNode);
++        } else {
++            parent.replaceChild(ref.node, nameNode);
++        }
+     }
+     compiler.reportCodeChange();
+ }

@@ -1,0 +1,11 @@
+--- org/apache/commons/math3/linear/RectangularCholeskyDecomposition.java@RectangularCholeskyDecomposition
++++ org/apache/commons/math3/linear/RectangularCholeskyDecomposition.java@RectangularCholeskyDecomposition
+@@ -13,7 +13,7 @@
+         swap[r] = r;
+         for (int i = r + 1; i < order; ++i) {
+             int ii = index[i];
+-            int isi = index[swap[i]];
++            int isi = index[swap[r]];
+             if (c[ii][ii] > c[isi][isi]) {
+                 swap[r] = i;
+             }

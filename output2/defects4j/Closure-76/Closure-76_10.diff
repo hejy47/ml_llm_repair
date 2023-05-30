@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -20,6 +20,10 @@
+                             return true;
+                         } else if (state == VariableLiveness.KILL) {
+                             return false;
++                        } else if (state == VariableLiveness.MAYBE_LIVE) {
++                            // if state is MAYBE_LIVE then we update state and continue the loop
++                            // until we find a KILL or a READ
++                            continue;
+                         }
+                     }
+                 }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -6,9 +6,14 @@
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.
+             Node rhs = n.getNext();
+-            VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
+-            if (state == VariableLiveness.READ) {
+-                return state;
++            //Fixed: adding a null check for rhs
++            if (rhs != null) {
++                VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
++                if (state == VariableLiveness.READ) {
++                    return state;
++                } else if(state == VariableLiveness.KILL) {
++                    return state;
++                }
+             }
+             return VariableLiveness.KILL;
+         } else {

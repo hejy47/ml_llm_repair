@@ -1,0 +1,11 @@
+--- org/joda/time/chrono/BasicMonthOfYearDateTimeField.java@add
++++ org/joda/time/chrono/BasicMonthOfYearDateTimeField.java@add
+@@ -2,7 +2,7 @@
+     // overridden as superclass algorithm can't handle
+     // 2004-02-29 + 48 months -> 2008-02-29 type dates
+     if (valueToAdd == 0) {
+-        return values;
++        return values.clone(); // changed from returning reference to original array
+     }
+     // month is largest field and being added to, such as month-day
+     if (DateTimeUtils.isContiguous(partial)) {

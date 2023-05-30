@@ -1,0 +1,23 @@
+--- org/apache/commons/math3/genetics/ElitisticListPopulation.java@ElitisticListPopulation
++++ org/apache/commons/math3/genetics/ElitisticListPopulation.java@ElitisticListPopulation
+@@ -1,4 +1,11 @@
+ public ElitisticListPopulation(final List<Chromosome> chromosomes, final int populationLimit, final double elitismRate) {
+-    super(chromosomes, populationLimit);
++    super(populationLimit);
+     this.elitismRate = elitismRate;
++    if (chromosomes.size() > populationLimit) {
++        this.chromosomes = PopulationUtils.getSortedElites(
++            populationLimit, elitismRate, chromosomes
++        );
++    } else {
++        this.chromosomes = new ArrayList<>(chromosomes);
++    }
+ }
+--- org/apache/commons/math3/genetics/ElitisticListPopulation.java@ElitisticListPopulation1
++++ org/apache/commons/math3/genetics/ElitisticListPopulation.java@ElitisticListPopulation1
+@@ -1,4 +1,5 @@
+ public ElitisticListPopulation(final int populationLimit, final double elitismRate) {
+     super(populationLimit);
+     this.elitismRate = elitismRate;
++    this.chromosomes = new ArrayList<>(populationLimit);
+ }

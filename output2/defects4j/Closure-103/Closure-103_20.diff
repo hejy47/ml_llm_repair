@@ -1,0 +1,50 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -11,11 +11,12 @@
+             return true;
+         case Token.FUNCTION:
+             return false;
++        default:
++            for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
++                if (!ControlFlowGraph.isEnteringNewCfgNode(c) && mayThrowException(c)) {
++                    return true;
++                }
++            }
++            return false;
+     }
+-    for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+-        if (!ControlFlowGraph.isEnteringNewCfgNode(c) && mayThrowException(c)) {
+-            return true;
+-        }
+-    }
+-    return false;
+ }
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -16,10 +16,8 @@
+     // like references to the initial property, so they are renamed alike.
+     ObjectType foundType = null;
+     ObjectType objType = ObjectType.cast(type);
+-    while (objType != null && objType.getImplicitPrototype() != objType) {
+-        if (objType.hasOwnProperty(field)) {
+-            foundType = objType;
+-        }
++    while (objType != null && objType.hasProperty(field)) { // fixed loop condition
++        foundType = objType;
+         objType = objType.getImplicitPrototype();
+     }
+     // If the property does not exist on the referenced type but the original
+@@ -27,5 +25,12 @@
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+     // so we have to double check.
+-    return foundType;
++    if (foundType == null) {
++        foundType = ObjectType.getGreatestSubtypeWithProperty(ObjectType.cast(type), field);
++    }
++    if (foundType != null && foundType.hasOwnProperty(field)) { // double check property existence
++        return foundType;
++    } else {
++        return null;
++    }
+ }

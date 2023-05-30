@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
++++ com/google/javascript/jscomp/UnreachableCodeElimination.java@tryRemoveUnconditionalBranching
+@@ -1,6 +1,15 @@
+ @SuppressWarnings("fallthrough")
+ private Node tryRemoveUnconditionalBranching(Node n) {
+-        // If n is null the target is the end of the function, nothing to do.
++    /*
++     * For each of the unconditional branching control flow node, check to see
++     * if the ControlFlowAnalysis.computeFollowNode of that node is same as
++     * the branching target. If it is, the branch node is safe to be removed.
++     *
++     * This is not as clever as MinimizeExitPoints because it doesn't do any
++     * if-else conversion but it handles more complicated switch statements
++     * much nicer.
++     */
++    // If n is null the target is the end of the function, nothing to do.
+     if (n == null) {
+         return n;
+     }
+@@ -12,6 +21,8 @@
+         List<DiGraphEdge<Node, Branch>> outEdges = gNode.getOutEdges();
+         if (outEdges.size() == 1) {
+             return tryRemoveUnconditionalBranching(outEdges.get(0).getDestination().getValue());
++        } else {
++            return n;
+         }
+     }
+     switch(n.getType()) {
+@@ -33,7 +44,7 @@
+             // branches to that same node. It is safe to remove it.
+             List<DiGraphEdge<Node, Branch>> outEdges = gNode.getOutEdges();
+             if (outEdges.size() == 1 && // If there is a next node, there is no chance this jump is useless.
+-            (n.getNext() == null || n.getNext().getType() == Token.FUNCTION)) {
++                (n.getNext() == null || n.getNext().getType() == Token.FUNCTION)) {
+                 Preconditions.checkState(outEdges.get(0).getValue() == Branch.UNCOND);
+                 Node fallThrough = tryRemoveUnconditionalBranching(computeFollowing(n));
+                 Node nextCfgNode = outEdges.get(0).getDestination().getValue();

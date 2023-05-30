@@ -1,0 +1,11 @@
+--- org/mockito/internal/util/MockUtil.java@createMock
++++ org/mockito/internal/util/MockUtil.java@createMock
+@@ -1,4 +1,8 @@
+ public <T> T createMock(Class<T> classToMock, MockSettingsImpl settings) {
++    // Add null checks before the validations
++    Objects.requireNonNull(classToMock, "Class to mock cannot be null");
++    Objects.requireNonNull(settings, "Mock settings cannot be null");
++    
+     creationValidator.validateType(classToMock);
+     creationValidator.validateExtraInterfaces(classToMock, settings.getExtraInterfaces());
+     creationValidator.validateMockedType(classToMock, settings.getSpiedInstance());

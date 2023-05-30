@@ -1,0 +1,17 @@
+--- org/mockito/exceptions/Reporter.java@smartNullPointerException
++++ org/mockito/exceptions/Reporter.java@smartNullPointerException
+@@ -1,3 +1,3 @@
+ public void smartNullPointerException(Location location) {
+-    throw new SmartNullPointerException(join("You have a NullPointerException here:", new Location(), "Because this method was *not* stubbed correctly:", location, ""));
++    throw new SmartNullPointerException(join("You have a NullPointerException here:", location, "Because this method was *not* stubbed correctly."));
+ }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNulls.java@intercept
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNulls.java@intercept
+@@ -2,6 +2,6 @@
+     if (new ObjectMethodsGuru().isToString(method)) {
+         return "SmartNull returned by unstubbed " + formatMethodCall() + " method on mock";
+     }
+-    new Reporter().smartNullPointerException(location);
++    new Reporter().smartNullPointerException(new Location());
+     return null;
+ }

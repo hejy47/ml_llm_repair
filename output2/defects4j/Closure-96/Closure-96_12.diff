@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitParameterList
++++ com/google/javascript/jscomp/TypeCheck.java@visitParameterList
+@@ -19,5 +19,9 @@
+     int maxArgs = functionType.getMaxArguments();
+     if (minArgs > numArgs || maxArgs < numArgs) {
+         report(t, call, WRONG_ARGUMENT_COUNT, validator.getReadableJSTypeName(call.getFirstChild(), false), String.valueOf(numArgs), String.valueOf(minArgs), maxArgs != Integer.MAX_VALUE ? " and no more than " + maxArgs + " argument(s)" : "");
++    } else if (maxArgs == Integer.MAX_VALUE && numArgs > minArgs && !functionType.isVarArgs()) {
++        // if there is no maximum argument count and the number of arguments exceeds the minimum count and the function is not var_args
++        Node traversalTarget = argument != null ? argument : call.getFirstChild();
++        validator.expectExactlyNArguments(t, functionType, numArgs, traversalTarget);
+     }
+ }

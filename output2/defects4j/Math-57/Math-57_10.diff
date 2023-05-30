@@ -1,0 +1,19 @@
+--- org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
++++ org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
+@@ -8,13 +8,13 @@
+     while (resultSet.size() < k) {
+         // For each data point x, compute D(x), the distance between x and
+         // the nearest center that has already been chosen.
+-        int sum = 0;
++        double sum = 0; // Change here to fix the sum calculation
+         for (int i = 0; i < pointSet.size(); i++) {
+             final T p = pointSet.get(i);
+             final Cluster<T> nearest = getNearestCluster(resultSet, p);
+             final double d = p.distanceFrom(nearest.getCenter());
+-            sum += d * d;
+-            dx2[i] = sum;
++            dx2[i] = d * d;
++            sum += dx2[i]; // Change here to fix the sum calculation
+         }
+         // Add one new data point as a center. Each point x is chosen with
+         // probability proportional to D(x)2

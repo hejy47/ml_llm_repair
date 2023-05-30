@@ -1,0 +1,30 @@
+--- org/apache/commons/math/analysis/solvers/BrentSolver.java@solve
++++ org/apache/commons/math/analysis/solvers/BrentSolver.java@solve
+@@ -1,6 +1,6 @@
+ public double solve(final UnivariateRealFunction f, final double min, final double max, final double initial) throws MaxIterationsExceededException, FunctionEvaluationException {
+     clearResult();
+-    verifySequence(min, initial, max);
++    verifyInterval(min, max);
+     // return the initial guess if it is good enough
+     double yInitial = f.value(initial);
+     if (Math.abs(yInitial) <= functionValueAccuracy) {
+@@ -15,7 +15,7 @@
+     }
+     // reduce interval if min and initial bracket the root
+     if (yInitial * yMin < 0) {
+-        return solve(f, min, yMin, initial, yInitial, min, yMin);
++        return solve(f, min, initial, yMin, yInitial);
+     }
+     // return the second endpoint if it is good enough
+     double yMax = f.value(max);
+@@ -25,8 +25,8 @@
+     }
+     // reduce interval if initial and max bracket the root
+     if (yInitial * yMax < 0) {
+-        return solve(f, initial, yInitial, max, yMax, initial, yInitial);
++        return solve(f, initial, max, yInitial, yMax);
+     }
+     // full Brent algorithm starting with provided initial guess
+-    return solve(f, min, yMin, max, yMax, initial, yInitial);
++    return solve(f, min, max, initial, yInitial, min, yMin, max, yMax);
+ }

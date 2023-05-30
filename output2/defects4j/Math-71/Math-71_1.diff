@@ -1,0 +1,66 @@
+--- org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
+@@ -25,7 +25,7 @@
+     interpolator.storeTime(t0);
+     // set up integration control objects
+     stepStart = t0;
+-    stepSize = forward ? step : -step;
++    double hNew = forward ? step : -step;
+     for (StepHandler handler : stepHandlers) {
+         handler.reset();
+     }
+@@ -44,9 +44,9 @@
+                     for (int l = 1; l < k; ++l) {
+                         sum += a[k - 1][l] * yDotK[l][j];
+                     }
+-                    yTmp[j] = y[j] + stepSize * sum;
++                    yTmp[j] = y[j] + hNew * sum;
+                 }
+-                computeDerivatives(stepStart + c[k - 1] * stepSize, yTmp, yDotK[k]);
++                computeDerivatives(stepStart + c[k - 1] * hNew, yTmp, yDotK[k]);
+             }
+             // estimate the state at the end of the step
+             for (int j = 0; j < y0.length; ++j) {
+@@ -54,10 +54,10 @@
+                 for (int l = 1; l < stages; ++l) {
+                     sum += b[l] * yDotK[l][j];
+                 }
+-                yTmp[j] = y[j] + stepSize * sum;
++                yTmp[j] = y[j] + hNew * sum;
+             }
+             // discrete events handling
+-            interpolator.storeTime(stepStart + stepSize);
++            interpolator.storeTime(stepStart + hNew);
+             if (manager.evaluateStep(interpolator)) {
+                 final double dt = manager.getEventTime() - stepStart;
+                 if (Math.abs(dt) <= Math.ulp(stepStart)) {
+@@ -69,14 +69,14 @@
+                     loop = false;
+                 } else {
+                     // reject the step to match exactly the next switch time
+-                    stepSize = dt;
++                    hNew = dt;
+                 }
+             } else {
+                 loop = false;
+             }
+         }
+         // the step has been accepted
+-        final double nextStep = stepStart + stepSize;
++        final double nextStep = stepStart + hNew;
+         System.arraycopy(yTmp, 0, y, 0, y0.length);
+         manager.stepAccepted(nextStep, y);
+         lastStep = manager.stop();
+@@ -92,10 +92,10 @@
+             computeDerivatives(stepStart, y, yDotK[0]);
+         }
+         // make sure step size is set to default before next step
+-        stepSize = forward ? step : -step;
++        hNew = forward ? step : -step;
+     }
+     final double stopTime = stepStart;
+     stepStart = Double.NaN;
+-    stepSize = Double.NaN;
++    hNew = Double.NaN;
+     return stopTime;
+ }

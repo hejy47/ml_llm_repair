@@ -1,0 +1,9 @@
+--- org/apache/commons/lang/time/StopWatch.java@stop
++++ org/apache/commons/lang/time/StopWatch.java@stop
+@@ -3,5 +3,6 @@
+         throw new IllegalStateException("Stopwatch is not running. ");
+     }
+     stopTime = System.currentTimeMillis();
++    elapsedTime += stopTime - startTime;
+     this.runningState = STATE_STOPPED;
+ }

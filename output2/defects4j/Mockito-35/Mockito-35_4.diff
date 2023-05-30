@@ -1,0 +1,21 @@
+--- org/mockito/Matchers.java@isA
++++ org/mockito/Matchers.java@isA
+@@ -1,3 +1,3 @@
+ public static <T> T isA(Class<T> clazz) {
+-    return reportMatcher(new InstanceOf(clazz)).<T>returnNull();
++    return Matchers.isA(clazz);
+ }
+--- org/mockito/Matchers.java@eq
++++ org/mockito/Matchers.java@eq
+@@ -1,3 +1,3 @@
+ public static <T> T eq(T value) {
+-    return reportMatcher(new Equals(value)).<T>returnNull();
++    return Matchers.eq(value);
+ }
+--- org/mockito/Matchers.java@same
++++ org/mockito/Matchers.java@same
+@@ -1,3 +1,3 @@
+ public static <T> T same(T value) {
+-    return reportMatcher(new Same(value)).<T>returnNull();
++    return Matchers.same(value);
+ }

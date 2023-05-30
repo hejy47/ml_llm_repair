@@ -1,0 +1,11 @@
+--- org/joda/time/DateTimeZone.java@getConvertedId
++++ org/joda/time/DateTimeZone.java@getConvertedId
+@@ -30,7 +30,7 @@
+         map.put("MET", "Asia/Tehran");
+         map.put("NET", "Asia/Yerevan");
+         map.put("PLT", "Asia/Karachi");
+-        map.put("IST", "Asia/Calcutta");
++        map.put("IST", "Asia/Kolkata"); //Changed IST to Kolkata
+         map.put("BST", "Asia/Dhaka");
+         map.put("VST", "Asia/Saigon");
+         map.put("CTT", "Asia/Shanghai");

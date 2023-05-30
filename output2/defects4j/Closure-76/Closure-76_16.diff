@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -26,5 +26,14 @@
+         }
+         n = n.getParent();
+     }
+-    return false;
++    // If current node is the first child of
++    // AND/OR, be conservative only consider the READs
++    // of the second operand.
++    if (n.getParent() != null && n.getParent().getType() == Token.AND) {
++        Node firstChild = n.getParent().getFirstChild();
++        if (firstChild.getType() != Token.NAME || !firstChild.getString().equals(variable)) {
++            state = VariableLiveness.KILL;
++        }
++    }
++    return state == VariableLiveness.READ;
+ }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -23,6 +23,14 @@
+         // may not.
+         case Token.HOOK:
+             return checkHookBranchReadBeforeKill(n.getFirstChild().getNext(), n.getLastChild(), variable);
++        // Special case for VAR statements
++        case Token.VAR:
++            for (Node child = n.getFirstChild(); child != null; child = child.getNext()) {
++                if (child.hasChildren() && child.getFirstChild().getType() == Token.NAME && child.getFirstChild().getString().equals(variable)) {
++                    return VariableLiveness.DECLARE_AND_READ;
++                }
++            }
++            return VariableLiveness.MAYBE_LIVE;
+         default:
+             // Expressions are evaluated left-right, depth first.
+             for (Node child = n.getFirstChild(); child != null; child = child.getNext()) {

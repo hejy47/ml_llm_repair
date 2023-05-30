@@ -1,0 +1,36 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -44,22 +44,29 @@
+             switch(method) {
+                 case ILLINOIS:
+                     f0 *= 0.5;
++                    f1 *= 0.5;
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    final double dx = x - x1;
++                    f0 = f1;
++                    f1 = fx;
++                    x0 = x1;
++                    x1 = x;
++                    // Update f0 to the directional derivative at x1.
++                    f0 = (f1 - f0) / dx;
+                     break;
+                 case REGULA_FALSI:
+                     // Detect early that algorithm is stuck, instead of waiting
+                     // for the maximum number of iterations to be exceeded.
++                    if (x == x1) { // Regula Falsi really got stuck.
++                        return x;
++                    }
+                     break;
+                 default:
+                     // Should never happen.
+                     throw new MathInternalError();
+             }
+         }
+-        // Update from [x0, x1] to [x0, x].
+-        x1 = x;
+-        f1 = fx;
+         // If the function value of the last approximation is too small,
+         // given the function value accuracy, then we can't get closer to
+         // the root than we already are.

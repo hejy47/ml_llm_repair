@@ -1,0 +1,17 @@
+--- org/apache/commons/lang3/SerializationUtils.java@resolveClass
++++ org/apache/commons/lang3/SerializationUtils.java@resolveClass
+@@ -2,8 +2,12 @@
+ protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+     String name = desc.getName();
+     try {
+-        return Class.forName(name, false, classLoader);
++        Class<?> clazz = Class.forName(name, false, classLoader);
++        if (clazz != null) {
++            return clazz;
++        }
+     } catch (ClassNotFoundException ex) {
+-        return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
++        // ignore and fallback to default behavior
+     }
++    return super.resolveClass(desc);
+ }

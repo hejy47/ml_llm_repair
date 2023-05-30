@@ -1,0 +1,13 @@
+--- org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
++++ org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
+@@ -21,7 +21,9 @@
+         final double dx = currentX - previousX;
+         final double dy = currentY - previousY;
+         final double f2StepIntegral = dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;
+-        final double fPrime2StepIntegral = dy * dy / dx;
++        double fPrime2StepIntegral = 0;
++        if(dx!=0)
++            fPrime2StepIntegral = dy * dy / dx;
+         final double x = currentX - startX;
+         f2Integral += f2StepIntegral;
+         fPrime2Integral += fPrime2StepIntegral;

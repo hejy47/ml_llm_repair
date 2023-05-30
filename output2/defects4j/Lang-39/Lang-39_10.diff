@@ -1,0 +1,49 @@
+--- org/apache/commons/lang3/StringUtils.java@replaceEach
++++ org/apache/commons/lang3/StringUtils.java@replaceEach
+@@ -43,7 +43,7 @@
+         return text;
+     }
+     int start = 0;
+-    // get a good guess on the size of the result buffer so it doesnt have to double if it goes over a bit
++    // get a good guess on the size of the result buffer so it doesn't have to double if it goes over a bit
+     int increase = 0;
+     // count the replacement text elements that are larger than their corresponding text being replaced
+     for (int i = 0; i < searchList.length; i++) {
+@@ -56,7 +56,10 @@
+     // have upper-bound at 20% increase, then let Java take over
+     increase = Math.min(increase, text.length() / 5);
+     StringBuilder buf = new StringBuilder(text.length() + increase);
+-    while (textIndex != -1) {
++    while (true) {
++        if (start > text.length()) {
++            break;
++        }
+         for (int i = start; i < textIndex; i++) {
+             buf.append(text.charAt(i));
+         }
+@@ -82,15 +85,20 @@
+                 }
+             }
+         }
++        if (textIndex == -1) {
++            for (int i = start; i < text.length(); i++) {
++                buf.append(text.charAt(i));
++            }
++            break;
++        }
+         // NOTE: logic duplicated above END
+-    }
+-    int textLength = text.length();
+-    for (int i = start; i < textLength; i++) {
+-        buf.append(text.charAt(i));
++        if (timeToLive-- == 0) {
++            throw new IllegalStateException("TimeToLive of " + timeToLive + " has been exhausted: " + text);           
++        }
+     }
+     String result = buf.toString();
+     if (!repeat) {
+         return result;
+     }
+-    return replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
++    return replaceEach(result, searchList, replacementList, repeat, timeToLive);
+ }

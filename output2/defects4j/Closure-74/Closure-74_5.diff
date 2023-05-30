@@ -1,0 +1,90 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -17,10 +17,11 @@
+         case Token.VOID:
+             if (!NodeUtil.isLiteralValue(left.getFirstChild(), false)) {
+                 return n;
+-            } else if (!rightLiteral) {
+-                return n;
++            }
++            if (!rightLiteral) {
++                result = compareToUndefined(right, op);
+             } else {
+-                result = compareToUndefined(right, op);
++                result = compareToUndefined(left, op);
+             }
+             break;
+         case Token.NULL:
+@@ -28,34 +29,11 @@
+         case Token.FALSE:
+             if (undefinedRight) {
+                 result = compareToUndefined(left, op);
+-                break;
+-            }
+-            if (rhType != Token.TRUE && rhType != Token.FALSE && rhType != Token.NULL) {
++            } else if (rhType != Token.TRUE && rhType != Token.FALSE && rhType != Token.NULL) {
+                 return n;
+             }
+-            switch(op) {
+-                case Token.SHEQ:
+-                case Token.EQ:
+-                    result = lhType == rhType;
+-                    break;
+-                case Token.SHNE:
+-                case Token.NE:
+-                    result = lhType != rhType;
+-                    break;
+-                case Token.GE:
+-                case Token.LE:
+-                case Token.GT:
+-                case Token.LT:
+-                    Boolean compareResult = compareAsNumbers(op, left, right);
+-                    if (compareResult != null) {
+-                        result = compareResult;
+-                    } else {
+-                        return n;
+-                    }
+-                    break;
+-                default:
+-                    // we only handle == and != here
+-                    return n;
++            else{
++                result = compareLiteral(op, left, right);
+             }
+             break;
+         case Token.THIS:
+@@ -80,12 +58,7 @@
+             }
+             break;
+         case Token.STRING:
+-            if (undefinedRight) {
+-                result = compareToUndefined(left, op);
+-                break;
+-            }
+-            if (Token.STRING != right.getType()) {
+-                // Only eval if they are the same type
++            if (!rightLiteral || Token.STRING != right.getType()) {
+                 return n;
+             }
+             switch(op) {
+@@ -105,17 +78,12 @@
+         case Token.NUMBER:
+             if (undefinedRight) {
+                 result = compareToUndefined(left, op);
+-                break;
+-            }
+-            if (Token.NUMBER != right.getType()) {
++            } else if (Token.NUMBER != right.getType()) {
+                 // Only eval if they are the same type
+                 return n;
+             }
+-            Boolean compareResult = compareAsNumbers(op, left, right);
+-            if (compareResult != null) {
+-                result = compareResult;
+-            } else {
+-                return null;
++            else{
++                result = compareLiteral(op, left, right);
+             }
+             break;
+         case Token.NAME:

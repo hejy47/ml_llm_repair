@@ -1,0 +1,41 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -1,7 +1,8 @@
+ public static String random(int count, int start, int end, boolean letters, boolean numbers, char[] chars, Random random) {
+-    if (count == 0) {
++    if (count <= 0) { // changed to include count = 0
+         return "";
+-    } else if (count < 0) {
++    }
++    if (count < 0) {
+         throw new IllegalArgumentException("Requested random string length " + count + " is less than 0.");
+     }
+     if (chars != null && chars.length == 0) {
+@@ -21,14 +22,15 @@
+     }
+     char[] buffer = new char[count];
+     int gap = end - start;
+-    while (count-- != 0) {
++    while (count > 0) { // changed to use count > 0 instead of count-- != 0
++        count--; // moved count decrement to beginning of while loop
+         char ch;
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+         } else {
+-            ch = chars[random.nextInt(gap) + start];
++            ch = chars[random.nextInt(chars.length)]; // fixed to use chars.length instead of gap
+         }
+-        if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
++        if ((letters && Character.isLetter(ch)) || (numbers && Character.isDigit(ch)) || (!letters && !numbers)) {
+             if (ch >= 56320 && ch <= 57343) {
+                 if (count == 0) {
+                     count++;
+@@ -54,7 +56,7 @@
+                 buffer[count] = ch;
+             }
+         } else {
+-            count++;
++            count++; // moved count increment to end of while loop
+         }
+     }
+     return new String(buffer);

@@ -1,0 +1,16 @@
+Lang-12_1:False
+Lang-12_2:False
+Lang-12_3:False
+Lang-12_4:False
+Lang-12_5:True
+Lang-12_6:False
+Lang-12_7:False
+Lang-12_8:False
+Lang-12_9:False
+Lang-12_10:False
+Lang-12_11:False
+Lang-12_12:False
+Lang-12_13:False
+Lang-12_14:False
+Lang-12_15:True
+Lang-12_16:True

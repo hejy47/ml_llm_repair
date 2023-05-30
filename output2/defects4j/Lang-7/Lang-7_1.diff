@@ -1,0 +1,77 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
++++ org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
+@@ -6,9 +6,69 @@
+     if (StringUtils.isBlank(str)) {
+         throw new NumberFormatException("A blank string is not a valid number");
+     }
+-    // this is protection for poorness in java.lang.BigDecimal.
+-    // it accepts this as a legal value, but it does not appear
+-    // to be in specification of class. OS X Java parses it to
+-    // a wrong value.
+-    return new BigDecimal(str);
++    str = StringUtils.trim(str); // trim before checking for signs
++    if (str.charAt(0) == '+') {
++        str = str.substring(1);
++    }
++    // handle possible leading sign
++    boolean isNegative = false;
++    if (str.charAt(0) == '-') {
++        isNegative = true;
++        str = str.substring(1);
++    }
++    if (str.equals("NaN")) {
++        return BigDecimal.valueOf(Double.NaN);
++    } else if (str.equals("Infinity") || str.equals("+Infinity")) {
++        return BigDecimal.valueOf(Double.POSITIVE_INFINITY);
++    } else if (str.equals("-Infinity")) {
++        return BigDecimal.valueOf(Double.NEGATIVE_INFINITY);
++    }
++    try {
++        Long.parseLong(str); //for input validation of longs
++    } catch (NumberFormatException nfe) {
++        // NOPMD
++    }
++    // everything after this is optional.
++    int decPos = str.indexOf('.');
++    String intString;
++    String fractionString;
++    if (decPos > -1) {
++        intString = str.substring(0, decPos);
++        fractionString = str.substring(decPos + 1);
++    } else {
++        intString = str;
++        fractionString = null;
++    }
++    if (isScale(str)) {
++        int scale = Integer.parseInt(str.substring(str.indexOf('e') + 1));
++        if (fractionString == null) {
++            intString = intString + zeros(scale);
++        } else if (fractionString.length() > scale) {
++            intString = intString + fractionString.substring(0, scale);
++            fractionString = fractionString.substring(scale);
++        } else {
++            fractionString = zeros(scale - fractionString.length()) + fractionString;
++        }
++    }
++    if (intString.length() > 16) {
++        // if parseLong throws an exception, lets not caught it and fall into the catch (NumberFormatException) below
++        if (!allZeros(intString) && !allNonzeros(intString)) {
++            BigDecimal value = isNegative ? BigDecimal.valueOf(-1) : BigDecimal.valueOf(1);
++            BigInteger intVal = new BigInteger(intString);
++            BigInteger fractionVal = fractionString == null ? BigInteger.ZERO : new BigInteger(fractionString);
++            return value.multiply(new BigDecimal(intVal)).add(new BigDecimal(fractionVal, fractionString == null ? 0 : fractionString.length()));
++        }
++    }
++    try {
++        double value = Double.parseDouble(str); //for input validation of doubles
++        //noinspection FloatingPointEquality
++        if (value == 0 && isNegative) {
++            return BigDecimal.valueOf(-0.0);
++        }
++        return BigDecimal.valueOf(value);
++    } catch (NumberFormatException nfe) {
++        NumberFormatException newNfe = new NumberFormatException("Failed to convert value '" + str + "' to a BigDecimal");
++        newNfe.initCause(nfe);
++        throw newNfe;
++    }
+ }

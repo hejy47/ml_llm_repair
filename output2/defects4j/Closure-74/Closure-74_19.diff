@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -115,7 +115,7 @@
+             if (compareResult != null) {
+                 result = compareResult;
+             } else {
+-                return null;
++                return n;
+             }
+             break;
+         case Token.NAME:
+@@ -129,6 +129,15 @@
+                     result = compareToUndefined(right, op);
+                     break;
+                 }
++            } else {
++                boolean leftLiteral = NodeUtil.isLiteralValue(left, false);
++                if (leftLiteral) {
++                    boolean undefinedRight = (right.getString().equals("undefined"));
++                    if (undefinedRight) {
++                        result = compareToUndefined(left, op);
++                        break;
++                     }
++                } 
+             }
+             if (Token.NAME != right.getType()) {
+                 // Only eval if they are the same type

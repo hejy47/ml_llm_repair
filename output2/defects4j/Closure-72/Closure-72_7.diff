@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
++++ com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
+@@ -3,4 +3,5 @@
+     // Make variable names unique to this instance.
+     NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop)));
+     // Make label names unique to this instance.
++    NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new LabelNameRenamer(idSupplier)));
+ }
+--- com/google/javascript/jscomp/RenameLabels.java@visitLabel
++++ com/google/javascript/jscomp/RenameLabels.java@visitLabel
+@@ -10,17 +10,18 @@
+             // ... and it is used, give it the short name.
+             nameNode.setString(newName);
+             compiler.reportCodeChange();
++            // Update the label info with the new name
++            li.name = newName;
+         }
+     } else {
+         // ... and it is not referenced, just remove it.
+         Node newChild = node.getLastChild();
+-        node.removeChild(newChild);
+         parent.replaceChild(node, newChild);
+         if (newChild.getType() == Token.BLOCK) {
+             NodeUtil.tryMergeBlock(newChild);
+         }
+         compiler.reportCodeChange();
++        // Remove the label info from the map
++        namespaceStack.peek().renameMap.remove(name);
+     }
+-    // Remove the label from the current stack of labels.
+-    namespaceStack.peek().renameMap.remove(name);
+ }

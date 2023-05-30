@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -10,8 +10,11 @@
+     TemplateTypeReplacer replacer = new TemplateTypeReplacer(registry, inferred);
+     Node callTarget = n.getFirstChild();
+     FunctionType replacementFnType = fnType.visit(replacer).toMaybeFunctionType();
+-    Preconditions.checkNotNull(replacementFnType);
+-    callTarget.setJSType(replacementFnType);
+-    n.setJSType(replacementFnType.getReturnType());
+-    return replacer.madeChanges;
++    n.setJSType(replacementFnType != null ? replacementFnType.getReturnType() : unknownType);
++    if (replacementFnType != null) {
++        callTarget.setJSType(replacementFnType);
++        return replacer.madeChanges;
++    } else {
++        return false;
++    }
+ }

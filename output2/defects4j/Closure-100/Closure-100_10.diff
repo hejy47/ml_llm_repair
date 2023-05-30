@@ -1,0 +1,36 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -11,6 +11,17 @@
+         // var a = function() { }; // or
+         // function a() {} // or
+         // a.x = function() {};
++        if (!NodeUtil.isGetOrSetKey(n)) {
++            return false;
++        }
++        Node parentOfParent = parent.getParent();
++        if (parentOfParent == null) {
++            return false;
++        }
++        if (parentOfParent.getType() != Token.OBJECTLIT) {
++            return false;
++        }
++        return !parentOfParent.isFromExterns();
+     }
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+         Node lhs = parent.getFirstChild();
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -1,8 +1,12 @@
+ private boolean shouldReportThis(Node n, Node parent) {
+     if (assignLhsChild != null) {
+         // Always report a THIS on the left side of an assign.
+-        return true;
++        return n.isThis() || NodeUtil.isObjectLitKey(n);
+     }
+     // Also report a THIS with a property access.
++    if (n.isGetProp()) {
++        Node obj = n.getFirstChild();
++        return obj.isThis() && !NodeUtil.isObjectLitKey(n);
++    }
+     return false;
+ }

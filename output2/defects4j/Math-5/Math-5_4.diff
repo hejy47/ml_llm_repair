@@ -1,0 +1,25 @@
+--- org/apache/commons/math3/complex/Complex.java@reciprocal
++++ org/apache/commons/math3/complex/Complex.java@reciprocal
+@@ -8,13 +8,16 @@
+     if (isInfinite) {
+         return ZERO;
+     }
+-    if (FastMath.abs(real) < FastMath.abs(imaginary)) {
++    double scale;
++    double absReal = FastMath.abs(real);
++    double absImag = FastMath.abs(imaginary);
++    if (absReal >= absImag) {
++        double q = imaginary / real;
++        scale = 1.0 / (real + q * imaginary);
++        return createComplex(scale, -scale * q);
++    } else {
+         double q = real / imaginary;
+-        double scale = 1. / (real * q + imaginary);
++        scale = 1.0 / (q * real + imaginary);
+         return createComplex(scale * q, -scale);
+-    } else {
+-        double q = imaginary / real;
+-        double scale = 1. / (imaginary * q + real);
+-        return createComplex(scale, -scale * q);
+     }
+ }

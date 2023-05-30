@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -23,7 +23,8 @@
+             // Always traverse the left side of the assignment. To handle
+             // nested assignments properly (e.g., (a = this).property = c;),
+             // assignLhsChild should not be overridden.
+-            if (assignLhsChild == null) {
++            // Check if lhs is a NAME node before assigning it to assignLhsChild
++            if(lhs.getType() == Token.NAME) {
+                 assignLhsChild = lhs;
+             }
+         } else {

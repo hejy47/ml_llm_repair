@@ -1,0 +1,12 @@
+--- org/apache/commons/math/util/MultidimensionalCounter.java@getCounts
++++ org/apache/commons/math/util/MultidimensionalCounter.java@getCounts
+@@ -10,6 +10,9 @@
+         while (count <= index) {
+             count += offset;
+             ++idx;
++            if (count > index) {
++                break;
++            }
+         }
+         --idx;
+         count -= offset;

@@ -1,0 +1,46 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -15,7 +15,7 @@
+     // Merges adjacent String nodes.
+     while (elem != null) {
+         if (NodeUtil.isImmutableValue(elem)) {
+-            if (sb.length() > 0) {
++            if (sb.length() > 0 && !joinString.isEmpty()) {  // Check joinString is not empty before appending
+                 sb.append(joinString);
+             }
+             sb.append(NodeUtil.getStringValue(elem));
+@@ -36,8 +36,10 @@
+         foldedSize += sb.length() + 2;
+         arrayFoldedChildren.add(Node.newString(sb.toString()));
+     }
+-    // one for each comma.
+-    foldedSize += arrayFoldedChildren.size() - 1;
++    // one for each comma if arrayFoldedChildren is not empty.
++    if (!arrayFoldedChildren.isEmpty()) {
++        foldedSize += arrayFoldedChildren.size() - 1;
++    }
+     int originalSize = InlineCostEstimator.getCost(n);
+     switch(arrayFoldedChildren.size()) {
+         case 0:
+@@ -64,6 +66,9 @@
+                 return;
+             }
+             int kJoinOverhead = "[].join()".length();
++            if (!joinString.isEmpty()) {  // Check joinString is not empty before calculating kJoinOverhead
++                kJoinOverhead += joinString.length() - 1;
++            }
+             foldedSize += kJoinOverhead;
+             foldedSize += InlineCostEstimator.getCost(right);
+             if (foldedSize > originalSize) {
+@@ -73,6 +78,11 @@
+             for (Node node : arrayFoldedChildren) {
+                 arrayNode.addChildToBack(node);
+             }
++            // add the join string as a new child to the array
++            if (!joinString.isEmpty()) {
++                Node joinStringNode = Node.newString(joinString);
++                arrayNode.addChildToBack(joinStringNode);
++            }
+             break;
+     }
+     t.getCompiler().reportCodeChange();

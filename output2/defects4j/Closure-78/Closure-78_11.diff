@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -28,6 +28,9 @@
+             result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
+             break;
+         case Token.ADD:
++            if (NodeUtil.isNullOrUndefined(left) || NodeUtil.isNullOrUndefined(right)) {
++                return new Node(Token.STRING, "");
++            }
+             result = lval + rval;
+             break;
+         case Token.SUB:

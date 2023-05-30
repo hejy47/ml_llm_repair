@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@canCollapseUnannotatedChildNames
++++ com/google/javascript/jscomp/GlobalNamespace.java@canCollapseUnannotatedChildNames
+@@ -1,5 +1,5 @@
+ boolean canCollapseUnannotatedChildNames() {
+-    if (type == Type.OTHER || globalSets != 1 || localSets != 0) {
++    if (type != Type.PROPERTY || globalSets != 1 || localSets != 0) {
+         return false;
+     }
+     // Don't try to collapse if the one global set is a twin reference.
+--- com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
++++ com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
+@@ -1,6 +1,6 @@
+ public boolean recordBlockDescription(String description) {
+     if (parseDocumentation) {
+-        populated = true;
++        return currentInfo.documentBlock(description); // Return the result of currentInfo.documentBlock
+     }
+-    return currentInfo.documentBlock(description);
++    return false; // Return false if parseDocumentation is false
+ }

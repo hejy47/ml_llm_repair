@@ -1,0 +1,16 @@
+--- org/apache/commons/lang3/ArrayUtils.java@addAll
++++ org/apache/commons/lang3/ArrayUtils.java@addAll
+@@ -9,6 +9,12 @@
+     T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
+     System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+     System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+-    // Check if problem is incompatible types
++    // Fix: Cast the array2 argument to the same component type as array1
++    if (array2.getClass().getComponentType().isAssignableFrom(type1)) {
++        T[] tempArray = (T[]) array2;
++        for (int i = array1.length; i < joinedArray.length; i++) {
++            joinedArray[i] = tempArray[i - array1.length];
++        }
++    }
+     return joinedArray;
+ }

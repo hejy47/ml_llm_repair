@@ -1,0 +1,33 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -28,24 +28,13 @@
+         return null;
+     }
+     // minus signs should be leading, invalid expression
+-    // parse '/'
+-    int startIndex = pos.getIndex();
+     char c = parseNextCharacter(source, pos);
+-    switch(c) {
+-        case 0:
+-            // no '/'
+-            // return num as a fraction
+-            return new Fraction(num.intValue(), 1);
+-        case '/':
+-            // found '/', continue parsing denominator
+-            break;
+-        default:
+-            // invalid '/'
+-            // set index back to initial, error index should be the last
+-            // character examined.
+-            pos.setIndex(initialIndex);
+-            pos.setErrorIndex(startIndex);
+-            return null;
++    if (c != '/') {
++        // no '/', set index back to initial, error index should be the last
++        // character examined.
++        pos.setIndex(initialIndex);
++        pos.setErrorIndex(pos.getIndex() - 1);
++        return null;
+     }
+     // parse whitespace
+     parseAndIgnoreWhitespace(source, pos);

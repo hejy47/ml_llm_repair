@@ -1,0 +1,11 @@
+--- com/google/javascript/rhino/jstype/UnionType.java@meet
++++ com/google/javascript/rhino/jstype/UnionType.java@meet
+@@ -14,7 +14,7 @@
+     } else if (that.isSubtype(this)) {
+         builder.addAlternate(that);
+     }
+-    JSType result = builder.build();
++    JSType result = builder.buildUnionType(); // Use buildUnionType() instead of build()
+     if (result != null) {
+         return result;
+     } else if (this.isObject() && that.isObject()) {

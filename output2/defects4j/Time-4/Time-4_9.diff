@@ -1,0 +1,19 @@
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -11,7 +11,7 @@
+         int i = 0;
+         DurationField unitField = fieldType.getDurationType().getField(iChronology);
+         if (unitField.isSupported()) {
+-            for (; i < iTypes.length; i++) {
++            while (i < iTypes.length) {
+                 DateTimeFieldType loopType = iTypes[i];
+                 DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+                 if (loopUnitField.isSupported()) {
+@@ -26,6 +26,7 @@
+                         }
+                     }
+                 }
++                i++;
+             }
+         }
+         System.arraycopy(iTypes, 0, newTypes, 0, i);

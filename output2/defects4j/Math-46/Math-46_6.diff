@@ -1,0 +1,31 @@
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -4,7 +4,6 @@
+         return NaN;
+     }
+     if (divisor.isZero) {
+-        // return isZero ? NaN : INF; // See MATH-657
+         return isZero ? NaN : INF;
+     }
+     if (divisor.isInfinite() && !isInfinite()) {
+@@ -12,7 +11,7 @@
+     }
+     final double c = divisor.getReal();
+     final double d = divisor.getImaginary();
+-    if (FastMath.abs(c) < FastMath.abs(d)) {
++    if (FastMath.abs(c) < FastMath.abs(d) && !doublyEquals(d, 0.0)) {
+         double q = c / d;
+         double denominator = c * q + d;
+         return createComplex((real * q + imaginary) / denominator, (imaginary * q - real) / denominator);
+--- org/apache/commons/math/complex/Complex.java@divide1
++++ org/apache/commons/math/complex/Complex.java@divide1
+@@ -2,8 +2,7 @@
+     if (isNaN || Double.isNaN(divisor)) {
+         return NaN;
+     }
+-    if (divisor == 0d) {
+-        // return isZero ? NaN : INF; // See MATH-657
++    if (doublyEquals(divisor, 0.0)) {
+         return isZero ? NaN : INF;
+     }
+     if (Double.isInfinite(divisor)) {

@@ -1,0 +1,51 @@
+--- org/apache/commons/math/ode/events/EventState.java@evaluateStep
++++ org/apache/commons/math/ode/events/EventState.java@evaluateStep
+@@ -7,6 +7,7 @@
+         double ta = t0;
+         double ga = g0;
+         double tb = t0 + (interpolator.isForward() ? convergence : -convergence);
++        boolean g0Positive = (ga >= 0);
+         for (int i = 0; i < n; ++i) {
+             // evaluate handler value at the end of the substep
+             tb += h;
+@@ -23,8 +24,6 @@
+                 // shift ta to make sure ga and gb get opposite signs and the solver won't complain
+                 // about bracketing
+                 // this should never happen
+-                // variation direction, with respect to the integration direction
+-                increasing = gb >= ga;
+                 final UnivariateRealFunction f = new UnivariateRealFunction() {
+ 
+                     public double value(final double t) throws FunctionEvaluationException {
+@@ -42,11 +41,8 @@
+                 solver.setAbsoluteAccuracy(convergence);
+                 solver.setMaximalIterationCount(maxIterationCount);
+                 final double root = (ta <= tb) ? solver.solve(f, ta, tb) : solver.solve(f, tb, ta);
+-                if ((Math.abs(root - ta) <= convergence) && (Math.abs(root - previousEventTime) <= convergence)) {
+-                    // we have either found nothing or found (again ?) a past event, we simply ignore it
+-                    ta = tb;
+-                    ga = gb;
+-                } else if (Double.isNaN(previousEventTime) || (Math.abs(previousEventTime - root) > convergence)) {
++                if ((Math.abs(root - ta) <= convergence) && (Math.abs(root - previousEventTime) > convergence)) {
++                    // we have found a new event
+                     pendingEventTime = root;
+                     if (pendingEvent && (Math.abs(t1 - pendingEventTime) <= convergence)) {
+                         // we were already waiting for this event which was
+@@ -59,11 +55,17 @@
+                     // moved in such a way the step cannot be accepted
+                     pendingEvent = true;
+                     return true;
++                } else {
++                    // we have either found nothing or found (again ?) a past event, we simply ignore it
++                    ta = tb;
++                    ga = gb;
++                    g0Positive = (ga >= 0);
+                 }
+             } else {
+                 // no sign change: there is no event for now
+                 ta = tb;
+                 ga = gb;
++                g0Positive = (ga >= 0);
+             }
+         }
+         // no event during the whole step

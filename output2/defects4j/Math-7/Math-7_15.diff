@@ -1,0 +1,59 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -10,7 +10,7 @@
+     }
+     // search for next events that may occur during the step
+     final int orderingSign = interpolator.isForward() ? +1 : -1;
+-    SortedSet<EventState> occuringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
++    SortedSet<EventState> occurringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
+ 
+                 public int compare(EventState es0, EventState es1) {
+             return orderingSign * Double.compare(es0.getEventTime(), es1.getEventTime());
+@@ -19,12 +19,12 @@
+     for (final EventState state : eventsStates) {
+         if (state.evaluateStep(interpolator)) {
+             // the event occurs during the current step
+-            occuringEvents.add(state);
++            occurringEvents.add(state);
+         }
+     }
+-    while (!occuringEvents.isEmpty()) {
++    while (!occurringEvents.isEmpty()) {
+         // handle the chronologically first event
+-        final Iterator<EventState> iterator = occuringEvents.iterator();
++        final Iterator<EventState> iterator = occurringEvents.iterator();
+         final EventState currentEvent = iterator.next();
+         iterator.remove();
+         // restrict the interpolator to the first part of the step, up to the event
+@@ -44,19 +44,19 @@
+         if (isLastStep) {
+             // the event asked to stop integration
+             System.arraycopy(eventY, 0, y, 0, y.length);
+-            for (final EventState remaining : occuringEvents) {
++            for (final EventState remaining : occurringEvents) {
+                 remaining.stepAccepted(eventT, eventY);
+             }
+             return eventT;
+         }
+-        boolean needReset = currentEvent.reset(eventT, eventY);
++        boolean needReset = currentEvent.reset(eventT, eventY, interpolator.isForward());
+         if (needReset) {
+             // some event handler has triggered changes that
+             // invalidate the derivatives, we need to recompute them
+             System.arraycopy(eventY, 0, y, 0, y.length);
+             computeDerivatives(eventT, y, yDot);
+             resetOccurred = true;
+-            for (final EventState remaining : occuringEvents) {
++            for (final EventState remaining : occurringEvents) {
+                 remaining.stepAccepted(eventT, eventY);
+             }
+             return eventT;
+@@ -68,7 +68,7 @@
+         // check if the same event occurs again in the remaining part of the step
+         if (currentEvent.evaluateStep(interpolator)) {
+             // the event occurs during the current step
+-            occuringEvents.add(currentEvent);
++            occurringEvents.add(currentEvent);
+         }
+     }
+     // last part of the step, after the last event

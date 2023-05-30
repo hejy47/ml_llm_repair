@@ -1,0 +1,17 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -39,12 +39,8 @@
+                     out.write('r');
+                     break;
+                 default:
+-                    if (ch > 0xf) {
+-                        out.write("\\u00" + hex(ch));
+-                    } else {
+-                        out.write("\\u000" + hex(ch));
+-                    }
+-                    break;
++                    out.write("\\u" + hex(ch));
++                    break; // Fixed: always print unicode escape for control characters
+             }
+         } else {
+             switch(ch) {

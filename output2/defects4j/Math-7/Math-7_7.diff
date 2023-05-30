@@ -1,0 +1,19 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -54,7 +54,7 @@
+             // some event handler has triggered changes that
+             // invalidate the derivatives, we need to recompute them
+             System.arraycopy(eventY, 0, y, 0, y.length);
+-            computeDerivatives(eventT, y, yDot);
++            yDot = computeDerivatives(eventT, y);
+             resetOccurred = true;
+             for (final EventState remaining : occuringEvents) {
+                 remaining.stepAccepted(eventT, eventY);
+@@ -83,5 +83,7 @@
+     for (StepHandler handler : stepHandlers) {
+         handler.handleStep(interpolator, isLastStep);
+     }
++    // compute new derivates
++    yDot = computeDerivatives(currentT, currentY);
+     return currentT;
+ }

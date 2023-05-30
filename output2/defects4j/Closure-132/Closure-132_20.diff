@@ -1,0 +1,46 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
+@@ -1,7 +1,7 @@
+ private Node tryMinimizeIf(Node n) {
+     Node parent = n.getParent();
+     Node cond = n.getFirstChild();
+-        if (NodeUtil.isLiteralValue(cond, true)) {
++    if (NodeUtil.isLiteralValue(cond, true)) {
+         return n;
+     }
+     Node thenBranch = cond.getNext();
+@@ -30,7 +30,7 @@
+             // if(x)foo(); -> x&&foo();
+             if (isLowerPrecedenceInExpression(cond, AND_PRECEDENCE) && isLowerPrecedenceInExpression(expr.getFirstChild(), AND_PRECEDENCE)) {
+                 // One additional set of parentheses is worth the change even if
+-                // there is no immediate code size win. However, two extra pair of
++                // there is no immediate code size win. However, two extra pairs of
+                 // {}, we would have to think twice. (unless we know for sure the
+                 // we can further optimize its parent.
+                 return n;
+@@ -63,13 +63,13 @@
+         }
+         return n;
+     }
+-        tryRemoveRepeatedStatements(n);
++    tryRemoveRepeatedStatements(n);
+     // if(!x)foo();else bar(); -> if(x)bar();else foo();
+     // An additional set of curly braces isn't worth it.
+     if (cond.isNot() && !consumesDanglingElse(elseBranch)) {
+         n.replaceChild(cond, cond.removeFirstChild());
+         n.removeChild(thenBranch);
+-        n.addChildToBack(thenBranch);
++        n.addChildToBack(elseBranch.detachFromParent());
+         reportCodeChange();
+         return n;
+     }
+@@ -105,8 +105,7 @@
+                     n.removeChild(cond);
+                     Node assignName = thenOp.removeFirstChild();
+                     Node thenExpr = thenOp.removeFirstChild();
+-                    Node elseExpr = elseOp.getLastChild();
+-                    elseOp.removeChild(elseExpr);
++                    Node elseExpr = elseOp.getLastChild().detachFromParent();
+                     Node hookNode = IR.hook(cond, thenExpr, elseExpr).srcref(n);
+                     Node assign = new Node(thenOp.getType(), assignName, hookNode).srcref(thenOp);
+                     Node expr = NodeUtil.newExpr(assign);

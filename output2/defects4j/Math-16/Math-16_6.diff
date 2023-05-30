@@ -1,0 +1,167 @@
+--- org/apache/commons/math3/util/FastMath.java@cosh
++++ org/apache/commons/math3/util/FastMath.java@cosh
+@@ -1,23 +1,25 @@
+ public static double cosh(double x) {
+-    if (x != x) {
+-        return x;
++    if (Double.isNaN(x)) {
++        return Double.NaN;
+     }
+     // cosh[z] = (exp(z) + exp(-z))/2
+     // for numbers with magnitude 20 or so,
+     // exp(-z) can be ignored in comparison with exp(z)
+     if (x > 20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(x);
++        return 0.5 * Math.exp(x);
+     }
+     if (x < -20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(-x);
++        return 0.5 * Math.exp(-x);
+     }
+     final double[] hiPrec = new double[2];
++    boolean negate = false;
+     if (x < 0.0) {
+         x = -x;
++        negate = true;
+     }
+-    exp(x, 0.0, hiPrec);
++    Math.exp(x, 0.0, hiPrec);
+     double ya = hiPrec[0] + hiPrec[1];
+     double yb = -(ya - hiPrec[0] - hiPrec[1]);
+     double temp = ya * HEX_40000000;
+@@ -41,5 +43,5 @@
+     ya = temp;
+     double result = ya + yb;
+     result *= 0.5;
+-    return result;
++    return negate ? -result : result;
+ }
+--- org/apache/commons/math3/util/FastMath.java@sinh
++++ org/apache/commons/math3/util/FastMath.java@sinh
+@@ -1,61 +1,73 @@
+ public static double sinh(double x) {
++    if (Double.isNaN(x)) {
++        return Double.NaN;
++    }
+     boolean negate = false;
+-    if (x != x) {
+-        return x;
+-    }
+     // sinh[z] = (exp(z) - exp(-z) / 2
+     // for values of z larger than about 20,
+     // exp(-z) can be ignored in comparison with exp(z)
+     if (x > 20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(x);
++        return 0.5 * Math.exp(x);
+     }
+     if (x < -20) {
+         // Avoid overflow (MATH-905).
+-        return -0.5 * exp(-x);
++        return -0.5 * Math.exp(-x);
+     }
+     if (x == 0) {
+         return x;
+     }
+-    if (x < 0.0) {
++    double result;
++    if (x < 0) {
+         x = -x;
+         negate = true;
+     }
+-    double result;
++
+     if (x > 0.25) {
++        // Use exp(x) - exp(-x) instead of (exp(x) - exp(-x)) / 2 to avoid cancellation issues
++        // sinh(x) = (exp(x) - exp(-x)) / 2
++        // Coth(x) = (exp(x) + exp(-x)) / (exp(x) - exp(-x)) = 1 / Tanh(x)
++        // Therefore, Tanh(x) = (exp(x) - exp(-x)) / (exp(x) + exp(-x))
++        // Note: This uses high precision calculation for exp, ln and division
+         double[] hiPrec = new double[2];
+-        exp(x, 0.0, hiPrec);
++        Math.exp(x, 0.0, hiPrec);
+         double ya = hiPrec[0] + hiPrec[1];
+-        double yb = -(ya - hiPrec[0] - hiPrec[1]);
+-        double temp = ya * HEX_40000000;
+-        double yaa = ya + temp - temp;
+-        double yab = ya - yaa;
+-        // recip = 1/y
+-        double recip = 1.0 / ya;
+-        temp = recip * HEX_40000000;
+-        double recipa = recip + temp - temp;
+-        double recipb = recip - recipa;
++        Math.exp(-x, 0.0, hiPrec);
++        double yb = -(hiPrec[0] + hiPrec[1] - 1.0);
++        double na = ya - yb;
++        double nb = yb - (na - ya);
++        yb = 1d / ya;
++        double temp = yb * HEX_40000000;
++        double yba = yb + temp - temp;
++        double ybb = yb - yba;
+         // Correct for rounding in division
+-        recipb += (1.0 - yaa * recipa - yaa * recipb - yab * recipa - yab * recipb) * recip;
+-        // Account for yb
+-        recipb += -yb * recip * recip;
+-        recipa = -recipa;
+-        recipb = -recipb;
++        ybb += (1.0 - na * yba - na * ybb - nb * yba - nb * ybb) * yb;
++        // Account for nb
++        ybb += nb * yb * yb;
++
+         // y = y + 1/y
+-        temp = ya + recipa;
+-        yb += -(temp - ya - recipa);
+-        ya = temp;
+-        temp = ya + recipb;
+-        yb += -(temp - ya - recipb);
+-        ya = temp;
+-        result = ya + yb;
+-        result *= 0.5;
++        temp = yb + yba;
++        ybb += -(temp - yb - yba);
++        yb = temp;
++        temp = yb + ybb;
++        ybb += -(temp - yb - ybb);
++        yb = temp;
++
++        result = -na - nb;
++        temp = result + yb;
++        ybb += -(temp - result - yb);
++        result = temp;
++        result += ybb;
++        // Result is -expm1(-2x)/(expm1(-2x)+2)
++        result = (result + 1d) / (ya + result);
++        result = -(result + ya);
++
+     } else {
+         double[] hiPrec = new double[2];
+         expm1(x, hiPrec);
+         double ya = hiPrec[0] + hiPrec[1];
+         double yb = -(ya - hiPrec[0] - hiPrec[1]);
+-                double denom = 1.0 + ya;
++        double denom = 1.0 + ya;
+         double denomr = 1.0 / denom;
+         double denomb = -(denom - 1.0 - ya) + yb;
+         double ratio = ya * denomr;
+@@ -71,7 +83,6 @@
+         rb += yb * denomr;
+         // denominator
+         rb += -ya * denomb * denomr * denomr;
+-        // y = y - 1/y
+         temp = ya + ra;
+         yb += -(temp - ya - ra);
+         ya = temp;
+@@ -79,10 +90,6 @@
+         yb += -(temp - ya - rb);
+         ya = temp;
+         result = ya + yb;
+-        result *= 0.5;
+     }
+-    if (negate) {
+-        result = -result;
+-    }
+-    return result;
++    return negate ? -result : result;
+ }

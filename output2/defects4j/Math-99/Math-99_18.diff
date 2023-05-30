@@ -1,0 +1,106 @@
+--- org/apache/commons/math/util/MathUtils.java@gcd
++++ org/apache/commons/math/util/MathUtils.java@gcd
+@@ -8,7 +8,7 @@
+     // -2^31, while positive numbers can only be as large as 2^31-1
+     // (i.e. we can't necessarily negate a negative number without
+     // overflow)
+-        if (u > 0) {
++    if (u > 0) {
+         u = -u;
+     }
+     // make u negative
+@@ -18,7 +18,7 @@
+     // make v negative
+     // B1. [Find power of 2]
+     int k = 0;
+-    while ((u & 1) == 0 && (v & 1) == 0 && k < 31) {
++    while ((u & 1) == 0 && (v & 1) == 0 && k < 30) {
+         // while u and v are
+         // both even...
+         u /= 2;
+@@ -26,32 +26,51 @@
+         // cast out twos.
+         k++;
+     }
+-    if (k == 31) {
+-        throw MathRuntimeException.createArithmeticException("overflow: gcd({0}, {1}) is 2^31", new Object[] { p, q });
++
++    if (k == 30) {
++        throw MathRuntimeException.createArithmeticException(
++            "overflow: gcd({0}, {1}) is 2^31", new Object[] {p, q});
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least
+     // one is odd.
+-    int t = ((u & 1) == 1) ? v : -(u / 2);
+-    // t negative: u was odd, v may be even (t replaces v)
+-    // t positive: u was even, v is odd (t replaces u)
+-    do {
+-                // B4/B3: cast out twos from t.
+-        while ((t & 1) == 0) {
+-            // while t is even..
+-            // cast out twos
+-            t /= 2;
++    int t;
++    while (u != 0) {
++        // u is odd
++        if ((u & 1) == 1) {
++
++            // so we can assume v is odd.
++            // If not, we could change roles of u and v.
++            if (v > 0) {
++                u = -u;
++            }
++            // We know that u and v are both odd.
++            // Use u to store the difference of the two, which must be
++            // even. Half this difference (arithmetically a right shift)
++            // to get v/2. Note that u is negative so we need to be careful
++            // when dividing.
++            t = (v - u) / 2;
++
++            // t will be negative when u is greater than v;
++            // in this case, restore u to its original value.
++            u = (u + v) / 2;
++
++            v = t;
++        } else {
++            // u is even
++            if (v > 0) {
++                u /= 2;
++            }
++
++            // either u or v is even, or both
++            if (v < 0) {
++                v += -u;
++            }
++
++            if (u > 0) {
++                u /= 2;
++            }
++            k++;
+         }
+-        // B5 [reset max(u,v)]
+-        if (t > 0) {
+-            u = -t;
+-        } else {
+-            v = t;
+-        }
+-        // B6/B3. at this point both u and v should be odd.
+-        t = (v - u) / 2;
+-        // |u| larger: t positive (replace u)
+-        // |v| larger: t negative (replace v)
+-    } while (t != 0);
+-    // gcd is u*2^k
+-    return -u * (1 << k);
++    }
++    return -v * (1 << k);
+ }
+--- org/apache/commons/math/util/MathUtils.java@lcm
++++ org/apache/commons/math/util/MathUtils.java@lcm
+@@ -2,6 +2,6 @@
+     if (a == 0 || b == 0) {
+         return 0;
+     }
+-    int lcm = Math.abs(mulAndCheck(a / gcd(a, b), b));
++    int lcm = Math.abs(Math.multiplyExact(a / gcd(a, b), b));
+     return lcm;
+ }

@@ -1,0 +1,11 @@
+--- org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -47,7 +47,7 @@
+         for (Integer row : minRatioPositions) {
+             int i = tableau.getNumObjectiveFunctions();
+             for (; i < tableau.getWidth() - 1 && minRow != row; i++) {
+-                if (row == tableau.getBasicRow(i)) {
++                if (tableau.getBasicRow(i) != null && row == tableau.getBasicRow(i)) {
+                     if (i < minIndex) {
+                         minIndex = i;
+                         minRow = row;

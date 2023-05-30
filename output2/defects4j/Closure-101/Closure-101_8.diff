@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -13,7 +13,7 @@
+         formattingOption.applyToOptions(options);
+     }
+     if (flags.process_closure_primitives) {
+-        options.closurePass = true;
++        options.setProcessClosurePrimitives(true); // Fixed
+     }
+     initOptionsFromFlags(options);
+     return options;

@@ -1,0 +1,24 @@
+--- org/joda/time/DateTimeZone.java@getOffsetFromLocal
++++ org/joda/time/DateTimeZone.java@getOffsetFromLocal
+@@ -13,10 +13,20 @@
+             // back before the transition, whereas it should be
+             // on or after the transition
+             long nextLocal = nextTransition(instantAdjusted);
+-            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);
++            long nextAdjusted = nextTransition(instantLocal - offsetLocal + 1);
+             if (nextLocal != nextAdjusted) {
+                 return offsetLocal;
+             }
++        } else {
++            // offsetLocal > offsetAdjusted
++            // we need to ensure that time is always before the DST overlap
++            // this happens naturally for negative offsets, but not for positive
++            // the check below does the latter
++            // long prevLocal = previousTransition(instantAdjusted);
++            // long prevAdjusted = previousTransition(instantLocal-offsetLocal+1);
++            // if (prevLocal != prevAdjusted) {
++            //     return offsetLocal;
++            // }
+         }
+     } else if (offsetLocal > 0) {
+         long prev = previousTransition(instantAdjusted);

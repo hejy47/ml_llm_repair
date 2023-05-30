@@ -1,0 +1,11 @@
+--- org/apache/commons/lang/builder/EqualsBuilder.java@append
++++ org/apache/commons/lang/builder/EqualsBuilder.java@append
+@@ -10,7 +10,7 @@
+         this.setEquals(false);
+         return this;
+     }
+-    Class lhsClass = lhs.getClass();
++    Class<?> lhsClass = lhs.getClass(); // Added type parameter to Class
+     if (!lhsClass.isArray()) {
+         // The simple case, not an array, just test the element
+         isEquals = lhs.equals(rhs);

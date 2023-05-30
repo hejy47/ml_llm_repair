@@ -1,0 +1,41 @@
+--- org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
++++ org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
+@@ -10,7 +10,7 @@
+     add(tmp1, 0, tmp2, 0, tmp2, 0);
+     // r = sqrt(x^2 + y^2)
+     rootN(tmp2, 0, 2, tmp1, 0);
+-    if (x[xOffset] >= 0) {
++    if (x[xOffset] > 0) {
+         // compute atan2(y, x) = 2 atan(y / (r + x))
+         // r + x
+         add(tmp1, 0, x, xOffset, tmp2, 0);
+@@ -22,7 +22,7 @@
+             // 2 * atan(y / (r + x))
+             result[resultOffset + i] = 2 * tmp2[i];
+         }
+-    } else {
++    } else if (x[xOffset] < 0) {
+         // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))
+         // r - x
+         subtract(tmp1, 0, x, xOffset, tmp2, 0);
+@@ -31,11 +31,19 @@
+         // atan(y / (r - x))
+         atan(tmp1, 0, tmp2, 0);
+         result[resultOffset] = // +/-pi - 2 * atan(y / (r - x))
+-        ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0];
++            ((y[yOffset] >= 0) ? FastMath.PI : -FastMath.PI) - 2 * tmp2[0];
+         for (int i = 1; i < tmp2.length; ++i) {
+             // +/-pi - 2 * atan(y / (r - x))
+             result[resultOffset + i] = -2 * tmp2[i];
+         }
++    } else {
++        if(y[yOffset] > 0){
++            result[resultOffset] = FastMath.PI/2;
++        } else if(y[yOffset] < 0){
++            result[resultOffset] = -FastMath.PI/2;
++        } else {
++            result[resultOffset] = Double.NaN;
++        }
+     }
+     // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly
+ }

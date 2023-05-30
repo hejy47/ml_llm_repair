@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -28,7 +28,17 @@
+             result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
+             break;
+         case Token.ADD:
+-            result = lval + rval;
++            // Check if the operands are strings or if one operand is a string and the other is not a number.
++            if (NodeUtil.mayBeString(left, false) || NodeUtil.mayBeString(right, false) || 
++                Double.isNaN(lval) || Double.isNaN(rval) ||
++                Double.isInfinite(lval) || Double.isInfinite(rval)) {
++                
++                String lString = NodeUtil.getStringValue(left);
++                String rString = NodeUtil.getStringValue(right);
++                return Node.newString(lString + rString);
++            } else {
++                result = lval + rval;
++            }
+             break;
+         case Token.SUB:
+             result = lval - rval;

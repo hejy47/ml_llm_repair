@@ -1,0 +1,18 @@
+--- org/apache/commons/math3/dfp/Dfp.java@multiply
++++ org/apache/commons/math3/dfp/Dfp.java@multiply
+@@ -1,3 +1,14 @@
+ public Dfp multiply(final int x) {
+-    return multiplyFast(x);
++    Dfp num = new Dfp(this);
++
++    // Handle zero multiplication
++    if (num.sign == DfpConstants.INFINITE && num.isNaN()) {
++        return num;
++    }
++
++    num.sign *= x;
++    num.exp += 1;
++    num = num.round();
++
++    return num;
+ }

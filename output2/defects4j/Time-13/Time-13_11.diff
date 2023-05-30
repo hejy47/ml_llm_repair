@@ -1,0 +1,32 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -7,14 +7,14 @@
+     if (iFieldType >= SECONDS_MILLIS) {
+         // valueLong contains the seconds and millis fields
+         // the minimum output is 0.000, which is 4 or 5 digits with a negative
+-        sum = Math.max(sum, 4);
++        sum = Math.max(sum, 5); // fix - minimum output should be 0.0000 which is 5 digits with a negative sign
+         // plus one for the decimal point
+         sum++;
+         if (iFieldType == SECONDS_OPTIONAL_MILLIS && (Math.abs(valueLong) % DateTimeConstants.MILLIS_PER_SECOND) == 0) {
+             // remove three digits and decimal point
+             sum -= 4;
+         }
+-        // reset valueLong to refer to the seconds part for the prefic/suffix calculation
++        // reset valueLong to refer to the seconds part for the prefix/suffix calculation
+         valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
+     }
+     int value = (int) valueLong;
+--- org/joda/time/format/PeriodFormatterBuilder.java@printTo
++++ org/joda/time/format/PeriodFormatterBuilder.java@printTo
+@@ -22,6 +22,10 @@
+             buf.append('.');
+             FormatUtils.appendPaddedInteger(buf, dp, 3);
+         }
++        // fix - add negative sign if valueLong is negative
++        if (valueLong < 0) {
++            buf.insert(0, '-');
++        }
+     }
+     if (iSuffix != null) {
+         iSuffix.printTo(buf, value);

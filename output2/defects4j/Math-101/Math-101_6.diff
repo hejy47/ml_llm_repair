@@ -1,0 +1,11 @@
+--- org/apache/commons/math/complex/ComplexFormat.java@parse
++++ org/apache/commons/math/complex/ComplexFormat.java@parse
+@@ -49,7 +49,7 @@
+     int n = getImaginaryCharacter().length();
+     startIndex = pos.getIndex();
+     int endIndex = startIndex + n;
+-    if (source.substring(startIndex, endIndex).compareTo(getImaginaryCharacter()) != 0) {
++    if (source.length() < endIndex || !source.substring(startIndex, endIndex).equals(getImaginaryCharacter())) {
+         // set index back to initial, error index should be the start index
+         // character examined.
+         pos.setIndex(initialIndex);

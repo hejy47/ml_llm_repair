@@ -1,0 +1,66 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
++++ org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
+@@ -6,9 +6,58 @@
+     if (StringUtils.isBlank(str)) {
+         throw new NumberFormatException("A blank string is not a valid number");
+     }
+-    // this is protection for poorness in java.lang.BigDecimal.
+-    // it accepts this as a legal value, but it does not appear
+-    // to be in specification of class. OS X Java parses it to
+-    // a wrong value.
+-    return new BigDecimal(str);
++    try {
++        return new BigDecimal(str);
++    } catch (NumberFormatException e) {
++        // handle non-standard representations by falling back to parsing manually
++        char[] carr = str.toCharArray();
++        int len = carr.length;
++        boolean hasExpChar = false;
++        boolean hasDecimalPoint = false;
++        int expCharIndex = -1;
++        int decimalPointIndex = -1;
++        int i = 0;
++        if (len > 1 && (carr[i] == '-' || carr[i] == '+') || len > 0 && carr[i] == '.') {
++            i++;
++        }
++        for (; i < len; i++) {
++            char c = carr[i];
++            if (c == 'e' || c == 'E') {
++                if (hasExpChar) {
++                    throw new NumberFormatException(str + " is not a valid number.");
++                }
++                hasExpChar = true;
++                expCharIndex = i;
++            } else if (c == '.') {
++                if (hasDecimalPoint) {
++                    throw new NumberFormatException(str + " is not a valid number.");
++                }
++                hasDecimalPoint = true;
++                decimalPointIndex = i;
++            } else if (Character.isDigit(c) || c == '+' || c == '-') {
++                // ok
++            } else {
++                throw new NumberFormatException(str + " is not a valid number.");
++            }
++        }
++        if (hasExpChar && expCharIndex == len - 1) {
++            throw new NumberFormatException(str + " is not a valid number.");
++        }
++        if (hasDecimalPoint && decimalPointIndex == len - 1 && !hasExpChar) {
++            throw new NumberFormatException(str + " is not a valid number.");
++        }
++        if (expCharIndex == decimalPointIndex + 1) {
++            if (expCharIndex == len - 1) {
++                throw new NumberFormatException(str + " is not a valid number.");
++            }
++        }
++        try {
++            return new BigDecimal(str);
++        } catch (NumberFormatException ne) {
++            if (decimalPointIndex == -1 && !hasExpChar) {
++                throw new NumberFormatException(str + " is not a valid number.");
++            }
++            return createBigDecimal(new String(carr, 0, len-1));
++        }
++    }
+ }

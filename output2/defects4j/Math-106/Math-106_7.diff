@@ -1,0 +1,11 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -44,7 +44,7 @@
+             // set index back to initial, error index should be the last
+             // character examined.
+             pos.setIndex(initialIndex);
+-            pos.setErrorIndex(startIndex);
++            pos.setErrorIndex(startIndex-1);
+             return null;
+     }
+     // parse whitespace

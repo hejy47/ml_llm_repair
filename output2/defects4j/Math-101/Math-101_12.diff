@@ -1,0 +1,11 @@
+--- org/apache/commons/math/complex/ComplexFormat.java@parse
++++ org/apache/commons/math/complex/ComplexFormat.java@parse
+@@ -37,7 +37,7 @@
+     // parse whitespace
+     parseAndIgnoreWhitespace(source, pos);
+     // parse imaginary
+-    Number im = parseNumber(source, getRealFormat(), pos);
++    Number im = parseNumber(source, getImaginaryFormat(), pos);
+     if (im == null) {
+         // invalid imaginary number
+         // set index back to initial, error index should already be set

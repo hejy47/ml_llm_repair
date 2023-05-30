@@ -1,0 +1,24 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -17,7 +17,8 @@
+         }
+     });
+     for (final EventState state : eventsStates) {
+-        if (state.evaluateStep(interpolator)) {
++        state.evaluateStep(interpolator); // Fixed: Call the evaluateStep() method but do not check its return value
++        if (state.ispendingEvent()) { // Fixed: Add a check for pendingEvent instead of evaluateStep() return value
+             // the event occurs during the current step
+             occuringEvents.add(state);
+         }
+@@ -66,9 +67,8 @@
+         interpolator.setSoftPreviousTime(eventT);
+         interpolator.setSoftCurrentTime(currentT);
+         // check if the same event occurs again in the remaining part of the step
+-        if (currentEvent.evaluateStep(interpolator)) {
+-            // the event occurs during the current step
+-            occuringEvents.add(currentEvent);
++        if (currentEvent.evaluateStep(interpolator)) { // Fixed: Now that the condition has changed, the event will be added/pending to occuringEvents
++             occuringEvents.add(currentEvent);
+         }
+     }
+     // last part of the step, after the last event

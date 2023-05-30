@@ -1,0 +1,21 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -46,7 +46,8 @@
+                     f0 *= 0.5;
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    var temp = f1 - fx;
++                    f0 = temp != 0.0 ? f1 * fx / temp : f1 * fx;
+                     break;
+                 case REGULA_FALSI:
+                     // Nothing.
+@@ -96,7 +97,7 @@
+         }
+         // If the current interval is within the given accuracies, we
+         // are satisfied with the current approximation.
+-        if (FastMath.abs(x1 - x0) < FastMath.max(rtol * FastMath.abs(x1), atol)) {
++        if (FastMath.abs(x1 - x0) < FastMath.max(rtol * FastMath.max(x1, x0), atol)) {
+             switch(allowed) {
+                 case ANY_SIDE:
+                     return x1;

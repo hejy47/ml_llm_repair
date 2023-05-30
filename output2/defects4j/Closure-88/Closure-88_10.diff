@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -12,7 +12,11 @@
+     // Expressions are evaluated left-right, depth first.
+     for (Node child = n.getFirstChild(); child != null; child = child.getNext()) {
+         if (!ControlFlowGraph.isEnteringNewCfgNode(child)) {
+-            // Not a FUNCTION
++            // Not a FUNCTION or a BLOCK NODE
++            if (child.isBlock() || child.isFunction()) {
++                // Ignore FUNCTION and BLOCK nodes
++                continue;
++            }
+             VariableLiveness state = isVariableReadBeforeKill(child, variable);
+             if (state != VariableLiveness.MAYBE_LIVE) {
+                 return state;

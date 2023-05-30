@@ -1,0 +1,40 @@
+--- org/apache/commons/math/ode/events/EventState.java@evaluateStep
++++ org/apache/commons/math/ode/events/EventState.java@evaluateStep
+@@ -7,6 +7,7 @@
+         double ta = t0;
+         double ga = g0;
+         double tb = t0 + (interpolator.isForward() ? convergence : -convergence);
++        double previousEventTimeCopy = previousEventTime; // new variable to hold previousEventTime to fix floating point equality issues
+         for (int i = 0; i < n; ++i) {
+             // evaluate handler value at the end of the substep
+             tb += h;
+@@ -42,11 +43,11 @@
+                 solver.setAbsoluteAccuracy(convergence);
+                 solver.setMaximalIterationCount(maxIterationCount);
+                 final double root = (ta <= tb) ? solver.solve(f, ta, tb) : solver.solve(f, tb, ta);
+-                if ((Math.abs(root - ta) <= convergence) && (Math.abs(root - previousEventTime) <= convergence)) {
++                if ((Math.abs(root - ta) <= convergence) && (Math.abs(root - previousEventTimeCopy) <= convergence)) {
+                     // we have either found nothing or found (again ?) a past event, we simply ignore it
+                     ta = tb;
+                     ga = gb;
+-                } else if (Double.isNaN(previousEventTime) || (Math.abs(previousEventTime - root) > convergence)) {
++                } else if (Double.isNaN(previousEventTimeCopy) || (Math.abs(previousEventTimeCopy - root) > convergence)) {
+                     pendingEventTime = root;
+                     if (pendingEvent && (Math.abs(t1 - pendingEventTime) <= convergence)) {
+                         // we were already waiting for this event which was
+@@ -66,10 +67,11 @@
+                 ga = gb;
+             }
+         }
+-        // no event during the whole step
+-        pendingEvent = false;
+-        pendingEventTime = Double.NaN;
+-        return false;
++       // no event during the whole step
++       pendingEvent = false; 
++       pendingEventTime = Double.NaN;
++       previousEventTime = previousEventTimeCopy; // update previousEventTime to the new value
++       return false;
+     } catch (FunctionEvaluationException e) {
+         final Throwable cause = e.getCause();
+         if ((cause != null) && (cause instanceof DerivativeException)) {

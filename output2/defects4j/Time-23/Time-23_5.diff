@@ -1,0 +1,21 @@
+--- org/joda/time/DateTimeZone.java@getConvertedId
++++ org/joda/time/DateTimeZone.java@getConvertedId
+@@ -1,5 +1,5 @@
+ //-----------------------------------------------------------------------
+-private static synchronized String getConvertedId(String id) {
++private static String getConvertedId(String id) {
+     Map<String, String> map = cZoneIdConversion;
+     if (map == null) {
+         // Backwards compatibility with TimeZone.
+@@ -30,9 +30,9 @@
+         map.put("MET", "Asia/Tehran");
+         map.put("NET", "Asia/Yerevan");
+         map.put("PLT", "Asia/Karachi");
+-        map.put("IST", "Asia/Calcutta");
++        map.put("IST", "Asia/Kolkata");
+         map.put("BST", "Asia/Dhaka");
+-        map.put("VST", "Asia/Saigon");
++        map.put("VST", "Asia/Ho_Chi_Minh");
+         map.put("CTT", "Asia/Shanghai");
+         map.put("JST", "Asia/Tokyo");
+         map.put("ACT", "Australia/Darwin");

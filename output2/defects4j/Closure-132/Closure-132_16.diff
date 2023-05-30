@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
+@@ -60,8 +60,8 @@
+                     }
+                 }
+             }
++            return n;
+         }
+-        return n;
+     }
+         tryRemoveRepeatedStatements(n);
+     // if(!x)foo();else bar(); -> if(x)bar();else foo();
+@@ -69,7 +69,7 @@
+     if (cond.isNot() && !consumesDanglingElse(elseBranch)) {
+         n.replaceChild(cond, cond.removeFirstChild());
+         n.removeChild(thenBranch);
+-        n.addChildToBack(thenBranch);
++        n.addChildToBack(elseBranch.detachFromParent());
+         reportCodeChange();
+         return n;
+     }

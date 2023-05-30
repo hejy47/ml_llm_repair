@@ -1,0 +1,35 @@
+--- org/apache/commons/lang/ClassUtils.java@getShortClassName
++++ org/apache/commons/lang/ClassUtils.java@getShortClassName
+@@ -1,17 +1,16 @@
+ public static String getShortClassName(String className) {
+-    if (className == null) {
+-        return StringUtils.EMPTY;
+-    }
+-    if (className.length() == 0) {
++    if (className == null || className.isEmpty()) {
+         return StringUtils.EMPTY;
+     }
+     // Handle array encoding
+     // Strip Object type encoding
+     int lastDotIdx = className.lastIndexOf(PACKAGE_SEPARATOR_CHAR);
+     int innerIdx = className.indexOf(INNER_CLASS_SEPARATOR_CHAR, lastDotIdx == -1 ? 0 : lastDotIdx + 1);
+-    String out = className.substring(lastDotIdx + 1);
++    String out;
+     if (innerIdx != -1) {
+-        out = out.replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR);
+-    }
++        out = className.substring(lastDotIdx + 1, innerIdx).replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR);
++    } else {
++        out = className.substring(lastDotIdx + 1);
++    }   
+     return out;
+ }
+--- org/apache/commons/lang/ClassUtils.java@getPackageName
++++ org/apache/commons/lang/ClassUtils.java@getPackageName
+@@ -1,5 +1,5 @@
+ public static String getPackageName(String className) {
+-    if (className == null) {
++    if (className == null || className.isEmpty()) {
+         return StringUtils.EMPTY;
+     }
+     // Strip array encoding

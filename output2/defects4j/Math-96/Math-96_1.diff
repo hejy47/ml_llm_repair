@@ -1,0 +1,11 @@
+--- org/apache/commons/math/complex/Complex.java@equals
++++ org/apache/commons/math/complex/Complex.java@equals
+@@ -3,6 +3,8 @@
+     if (this == other) {
+         ret = true;
+     } else if (other == null) {
++        ret = false;
++    } else if (this.getClass() != other.getClass()) {
+         ret = false;
+     } else {
+         try {

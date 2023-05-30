@@ -1,0 +1,70 @@
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateInstance
+@@ -1,24 +1,16 @@
+ public static synchronized FastDateFormat getDateInstance(int style, TimeZone timeZone, Locale locale) {
+-    Object key = new Integer(style);
+-    if (timeZone != null) {
+-        key = new Pair(key, timeZone);
+-    }
+-    if (locale != null) {
+-        key = new Pair(key, locale);
+-    }
++    Object key = new Pair(style, timeZone != null ? timeZone.getID() : null, locale != null ? locale.toString() : null);
+     FastDateFormat format = (FastDateFormat) cDateInstanceCache.get(key);
+     if (format == null) {
+         if (locale == null) {
+             locale = Locale.getDefault();
+         }
+-        try {
+-            SimpleDateFormat formatter = (SimpleDateFormat) DateFormat.getDateInstance(style, locale);
+-            String pattern = formatter.toPattern();
+-            format = getInstance(pattern, timeZone, locale);
+-            cDateInstanceCache.put(key, format);
+-        } catch (ClassCastException ex) {
+-            throw new IllegalArgumentException("No date pattern for locale: " + locale);
++        DateFormat formatter = DateFormat.getDateInstance(style, locale);
++        if (timeZone != null) {
++            formatter.setTimeZone(timeZone);
+         }
++        format = new FastDateFormat(formatter);
++        cDateInstanceCache.put(key, format);
+     }
+     return format;
+ }
+--- org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
++++ org/apache/commons/lang/time/FastDateFormat.java@getDateTimeInstance
+@@ -1,24 +1,20 @@
+ public static synchronized FastDateFormat getDateTimeInstance(int dateStyle, int timeStyle, TimeZone timeZone, Locale locale) {
+-    Object key = new Pair(new Integer(dateStyle), new Integer(timeStyle));
+-    if (timeZone != null) {
+-        key = new Pair(key, timeZone);
+-    }
+-    if (locale != null) {
+-        key = new Pair(key, locale);
+-    }
++    Object key = new Triple(dateStyle, timeStyle, 
++                            timeZone != null ? timeZone.getID() : null,
++                            locale != null ? locale.toString() : null);
+     FastDateFormat format = (FastDateFormat) cDateTimeInstanceCache.get(key);
+     if (format == null) {
+         if (locale == null) {
+             locale = Locale.getDefault();
+         }
+-        try {
+-            SimpleDateFormat formatter = (SimpleDateFormat) DateFormat.getDateTimeInstance(dateStyle, timeStyle, locale);
+-            String pattern = formatter.toPattern();
+-            format = getInstance(pattern, timeZone, locale);
+-            cDateTimeInstanceCache.put(key, format);
+-        } catch (ClassCastException ex) {
+-            throw new IllegalArgumentException("No date time pattern for locale: " + locale);
++        DateFormat dateFormat = DateFormat.getDateInstance(dateStyle, locale);
++        DateFormat timeFormat = DateFormat.getTimeInstance(timeStyle, locale);
++        if (timeZone != null) {
++            dateFormat.setTimeZone(timeZone);
++            timeFormat.setTimeZone(timeZone);
+         }
++        format = new FastDateFormat(new CompositeFormat(dateFormat, timeFormat));
++        cDateTimeInstanceCache.put(key, format);
+     }
+     return format;
+ }

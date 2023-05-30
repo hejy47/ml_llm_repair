@@ -1,0 +1,10 @@
+--- org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
+@@ -70,6 +70,7 @@
+                 } else {
+                     // reject the step to match exactly the next switch time
+                     stepSize = dt;
++                    loop = false;
+                 }
+             } else {
+                 loop = false;

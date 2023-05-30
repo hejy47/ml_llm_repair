@@ -1,0 +1,51 @@
+--- com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
++++ com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
+@@ -1,6 +1,19 @@
+ private void makeLocalNamesUnique(Node fnNode, boolean isCallInLoop) {
+     Supplier<String> idSupplier = compiler.getUniqueNameIdSupplier();
+     // Make variable names unique to this instance.
+-    NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop)));
++    MakeDeclaredNamesUnique renamer1 = new MakeDeclaredNamesUnique(idSupplier);
++    InlineRenamer renamer2 = new InlineRenamer(idSupplier, "inline_", isCallInLoop);
++    NodeTraversal.traverse(compiler, fnNode, new NodeTraversal.AbstractPostOrderCallback() {
++        @Override
++        public void visit(NodeTraversal t, Node n, Node parent) {
++            if (n.isParamList()) {
++                // Do not rename parameters.
++                return;
++            }
++            renamer1.visit(n, parent);
++            renamer2.visit(n, parent);
++        }
++    });
+     // Make label names unique to this instance.
++    new LabelNameAnnotator().process(compiler, fnNode);
+ }
+--- com/google/javascript/jscomp/RenameLabels.java@visitLabel
++++ com/google/javascript/jscomp/RenameLabels.java@visitLabel
+@@ -9,18 +9,17 @@
+         if (!name.equals(newName)) {
+             // ... and it is used, give it the short name.
+             nameNode.setString(newName);
+-            compiler.reportCodeChange();
++            // Recompute the label info, as it depends on label names.
++            computeLabelInfo();
+         }
+     } else {
+         // ... and it is not referenced, just remove it.
+-        Node newChild = node.getLastChild();
+-        node.removeChild(newChild);
+-        parent.replaceChild(node, newChild);
+-        if (newChild.getType() == Token.BLOCK) {
+-            NodeUtil.tryMergeBlock(newChild);
+-        }
++        NodeUtil.removeChild(parent, node);
+         compiler.reportCodeChange();
++        // Recompute the label info, as it depends on label names.
++        computeLabelInfo();
+     }
+     // Remove the label from the current stack of labels.
+-    namespaceStack.peek().renameMap.remove(name);
++    LabelInfo removed = namespaceStack.peek().labels.remove(name);
++    Preconditions.checkState(removed != null);
+ }

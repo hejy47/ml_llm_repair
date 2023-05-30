@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -38,6 +38,12 @@
+     } else if (type.isFunctionType()) {
+         // Don't show complex function names.
+         return "function";
++    } else if (type.isEnumType()) { // added fix
++        return "enum";
++    } else if (type.isUnionType()) { // added fix
++        return "union";
++    } else if (type.isRecordType()) { // added fix
++        return "record";
+     } else {
+         return type.toString();
+     }

@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -11,6 +11,8 @@
+             return true;
+         case Token.FUNCTION:
+             return false;
++        default:
++            break;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+         if (!ControlFlowGraph.isEnteringNewCfgNode(c) && mayThrowException(c)) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -16,9 +16,11 @@
+     // like references to the initial property, so they are renamed alike.
+     ObjectType foundType = null;
+     ObjectType objType = ObjectType.cast(type);
+-    while (objType != null && objType.getImplicitPrototype() != objType) {
++    while (objType != null) {
++      //Updated the condition to check if property exists on type
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
++            break; //stop search if property found
+         }
+         objType = objType.getImplicitPrototype();
+     }

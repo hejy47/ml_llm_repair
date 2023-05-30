@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
++++ com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
+@@ -14,6 +14,11 @@
+                     defineSlot(astParameter, functionNode, null, true);
+                 }
+             }
++            // fixed code: handle any remaining jsDocParameters
++            while (jsDocParameter != null) {
++                defineSlot(null, functionNode, jsDocParameter.getJSType(), true);
++                jsDocParameter = jsDocParameter.getNext();
++            }
+         }
+     }
+ }

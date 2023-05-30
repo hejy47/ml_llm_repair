@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -30,17 +30,17 @@
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (rhType != Token.TRUE && rhType != Token.FALSE && rhType != Token.NULL) {
++            if (rhType != lhType && (rhType != Token.NULL || lhType == Token.TRUE || op != Token.EQ && op != Token.SHEQ)) {
+                 return n;
+             }
+             switch(op) {
+                 case Token.SHEQ:
+                 case Token.EQ:
+-                    result = lhType == rhType;
++                    result = left.getBoolean() == right.getBoolean();
+                     break;
+                 case Token.SHNE:
+                 case Token.NE:
+-                    result = lhType != rhType;
++                    result = left.getBoolean() != right.getBoolean();
+                     break;
+                 case Token.GE:
+                 case Token.LE:

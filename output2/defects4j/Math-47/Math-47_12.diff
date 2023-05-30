@@ -1,0 +1,33 @@
+--- org/apache/commons/math/complex/Complex.java@Complex
++++ org/apache/commons/math/complex/Complex.java@Complex
+@@ -1,6 +1,7 @@
+ public Complex(double real, double imaginary) {
+     this.real = real;
+     this.imaginary = imaginary;
+-    isNaN = Double.isNaN(real) || Double.isNaN(imaginary);
++    // Corrected the typo, changed '||' to '&&'
++    isNaN = Double.isNaN(real) && Double.isNaN(imaginary);
+     isInfinite = !isNaN && (Double.isInfinite(real) || Double.isInfinite(imaginary));
+ }
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -6,7 +6,7 @@
+     if (divisor.getReal() == 0.0 && divisor.getImaginary() == 0.0) {
+         return NaN;
+     }
+-    if (divisor.isInfinite() && !isInfinite()) {
++    if (!isInfinite() && divisor.isInfinite()) {
+         return ZERO;
+     }
+     final double c = divisor.getReal();
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -6,7 +6,7 @@
+         return NaN;
+     }
+     if (Double.isInfinite(divisor)) {
+-        return !isInfinite() ? ZERO : NaN;
++        return isInfinite() ? NaN : ZERO;
+     }
+     return createComplex(real / divisor, imaginary / divisor);
+ }

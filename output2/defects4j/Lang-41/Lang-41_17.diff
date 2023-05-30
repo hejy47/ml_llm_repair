@@ -1,0 +1,21 @@
+--- org/apache/commons/lang/ClassUtils.java@getShortClassName
++++ org/apache/commons/lang/ClassUtils.java@getShortClassName
+@@ -1,8 +1,5 @@
+ public static String getShortClassName(String className) {
+-    if (className == null) {
+-        return StringUtils.EMPTY;
+-    }
+-    if (className.length() == 0) {
++    if (StringUtils.isEmpty(className)) {
+         return StringUtils.EMPTY;
+     }
+     // Handle array encoding
+--- org/apache/commons/lang/ClassUtils.java@getPackageName
++++ org/apache/commons/lang/ClassUtils.java@getPackageName
+@@ -1,5 +1,5 @@
+ public static String getPackageName(String className) {
+-    if (className == null) {
++    if (StringUtils.isEmpty(className)) {
+         return StringUtils.EMPTY;
+     }
+     // Strip array encoding

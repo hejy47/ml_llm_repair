@@ -1,0 +1,43 @@
+--- org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -5,7 +5,7 @@
+     for (int i = tableau.getNumObjectiveFunctions(); i < tableau.getHeight(); i++) {
+         final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);
+         final double entry = tableau.getEntry(i, col);
+-        if (Precision.compareTo(entry, 0d, maxUlps) > 0) {
++        if (Precision.compareTo(Math.abs(entry), 0d, maxUlps) > 0) {
+             final double ratio = rhs / entry;
+             // check if the entry is strictly equal to the current min ratio
+             // do not use a ulp/epsilon check
+@@ -19,19 +19,28 @@
+             }
+         }
+     }
+-    if (minRatioPositions.size() == 0) {
++    if (minRatioPositions.isEmpty()) {
+         return null;
+     } else if (minRatioPositions.size() > 1) {
+         // there's a degeneracy as indicated by a tie in the minimum ratio test
+         // 1. check if there's an artificial variable that can be forced out of the basis
++        Integer pivotRow = null;
+         for (Integer row : minRatioPositions) {
+             for (int i = 0; i < tableau.getNumArtificialVariables(); i++) {
+                 int column = i + tableau.getArtificialVariableOffset();
+                 final double entry = tableau.getEntry(row, column);
+-                if (Precision.equals(entry, 1d, maxUlps) && row.equals(tableau.getBasicRow(column))) {
+-                    return row;
++                if (Precision.equals(Math.abs(entry), 1d, maxUlps)
++                        && row.equals(tableau.getBasicRow(column))) {
++                    pivotRow = row;
++                    break;
+                 }
+             }
++            if (pivotRow != null) {
++                break;
++            }
++        }
++        if (pivotRow != null) {
++            return pivotRow;
+         }
+         // 2. apply Bland's rule to prevent cycling:
+         //    take the row for which the corresponding basic variable has the smallest index

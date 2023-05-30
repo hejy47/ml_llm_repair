@@ -1,0 +1,23 @@
+--- org/apache/commons/math/complex/ComplexFormat.java@parse
++++ org/apache/commons/math/complex/ComplexFormat.java@parse
+@@ -14,7 +14,7 @@
+     // parse sign
+     int startIndex = pos.getIndex();
+     char c = parseNextCharacter(source, pos);
+-    int sign = 0;
++    int sign = 1; // set default sign to positive
+     switch(c) {
+         case 0:
+             // no sign
+@@ -22,9 +22,10 @@
+             return new Complex(re.doubleValue(), 0.0);
+         case '-':
+             sign = -1;
++            c = parseNextCharacter(source, pos); // move on to next character after sign
+             break;
+         case '+':
+-            sign = 1;
++            c = parseNextCharacter(source, pos); // move on to next character after sign
+             break;
+         default:
+             // invalid sign

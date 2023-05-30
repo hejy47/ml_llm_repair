@@ -1,0 +1,19 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
++++ org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
+@@ -10,5 +10,15 @@
+     // it accepts this as a legal value, but it does not appear
+     // to be in specification of class. OS X Java parses it to
+     // a wrong value.
+-    return new BigDecimal(str);
++    try {
++        return new BigDecimal(str);
++    } catch (NumberFormatException e) {
++        // the input string might contain a locale specific character (eg. comma separator)
++        // try to remove it and parse again
++        String cleanedStr = str.replaceAll("\\p{Blank}", "")
++                .replaceAll("\\p{Space}", "")
++                .replaceAll("\\,", "")
++                .replaceAll("\\;", "");
++        return new BigDecimal(cleanedStr);
++    }
+ }

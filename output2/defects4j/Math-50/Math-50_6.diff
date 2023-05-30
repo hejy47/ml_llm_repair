@@ -1,0 +1,15 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -25,7 +25,11 @@
+     // Keep finding better approximations.
+     while (true) {
+         // Calculate the next approximation.
+-        final double x = x1 - ((f1 * (x1 - x0)) / (f1 - f0));
++        final double denominator = f1 - f0;
++        if (denominator == 0) {
++            throw new MathIllegalStateException(MathIllegalStateException.NO_SOLUTION_FOUND);
++        }
++        final double x = x1 - ((f1 * (x1 - x0)) / denominator);
+         final double fx = computeObjectiveValue(x);
+         // If the new approximation is the exact root, return it. Since
+         // this is not an under-approximation or an over-approximation,

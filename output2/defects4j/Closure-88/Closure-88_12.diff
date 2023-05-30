@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -14,7 +14,7 @@
+         if (!ControlFlowGraph.isEnteringNewCfgNode(child)) {
+             // Not a FUNCTION
+             VariableLiveness state = isVariableReadBeforeKill(child, variable);
+-            if (state != VariableLiveness.MAYBE_LIVE) {
++            if (state == VariableLiveness.READ) {
+                 return state;
+             }
+         }

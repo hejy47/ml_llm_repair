@@ -1,0 +1,14 @@
+--- org/apache/commons/math/stat/inference/ChiSquareTestImpl.java@chiSquare
++++ org/apache/commons/math/stat/inference/ChiSquareTestImpl.java@chiSquare
+@@ -1,9 +1,9 @@
+ public double chiSquare(double[] expected, long[] observed) throws IllegalArgumentException {
+-    if ((expected.length < 2) || (expected.length != observed.length)) {
++    if ((expected.length < 1) || (expected.length != observed.length)) {
+         throw new IllegalArgumentException("observed, expected array lengths incorrect");
+     }
+     if (!isPositive(expected) || !isNonNegative(observed)) {
+-        throw new IllegalArgumentException("observed counts must be non-negative and expected counts must be postive");
++        throw new IllegalArgumentException("observed counts must be non-negative and expected counts must be positive");
+     }
+     double sumSq = 0.0d;
+     double dev = 0.0d;

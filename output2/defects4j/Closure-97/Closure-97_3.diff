@@ -1,0 +1,17 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
+@@ -17,12 +17,12 @@
+         }
+         // Convert the numbers to ints
+         int lvalInt = (int) lval;
+-        if (lvalInt != lval) {
++        if (lvalInt != lval || Double.isNaN(lval)) { // Fixed fractional error and added NaN check
+             error(FRACTIONAL_BITWISE_OPERAND, left);
+             return n;
+         }
+         int rvalInt = (int) rval;
+-        if (rvalInt != rval) {
++        if (rvalInt != rval || Double.isNaN(rval)) { // Fixed fractional error and added NaN check
+             error(FRACTIONAL_BITWISE_OPERAND, right);
+             return n;
+         }

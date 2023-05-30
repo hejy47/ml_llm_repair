@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -12,7 +12,7 @@
+         } else {
+             // Create a new node for variable that is never initialized.
+             Node srcLocation = declaration.getNode();
+-            value = NodeUtil.newUndefinedNode(srcLocation);
++            value = IR.name(v.name).srcrefTree(srcLocation);
+         }
+         Preconditions.checkNotNull(value);
+         inlineWellDefinedVariable(v, value, referenceInfo.references);
+@@ -44,13 +44,17 @@
+         // once is *NOT* correct. We relax the correctness requirement if
+         // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
++        for (int i = 1; i < refs.size(); i++) {
+             Node nameNode = refs.get(i).getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);
+                 if (!staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias)) {
+                     Reference aliasInit;
+-                    aliasInit = candidate.refInfo.getInitializingReference();
++                    if (candidate.refInfo.getInitializingReference().getScope() == declaration.getScope()) {
++                        aliasInit = candidate.refInfo.getInitializingReference();
++                    } else {
++                        aliasInit = declaration;
++                    }
+                     Node value = aliasInit.getAssignedValue();
+                     Preconditions.checkNotNull(value);
+                     inlineWellDefinedVariable(candidate.alias, value, candidate.refInfo.references);

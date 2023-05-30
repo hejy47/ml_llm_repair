@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -38,7 +38,9 @@
+     } else if (type.isFunctionType()) {
+         // Don't show complex function names.
+         return "function";
+-    } else {
++    } else if (n.isString()) { //New line added here
++        return "'" + n.getString() + "'"; //New line added here
++    } else { //New line added here
+         return type.toString();
+     }
+ }

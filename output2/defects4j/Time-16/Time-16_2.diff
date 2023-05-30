@@ -1,0 +1,33 @@
+--- org/joda/time/format/DateTimeFormatter.java@parseInto
++++ org/joda/time/format/DateTimeFormatter.java@parseInto
+@@ -4,11 +4,17 @@
+     if (instant == null) {
+         throw new IllegalArgumentException("Instant must not be null");
+     }
+-    long instantMillis = instant.getMillis();
+     Chronology chrono = instant.getChronology();
+-    long instantLocal = instantMillis + chrono.getZone().getOffset(instantMillis);
+-    chrono = selectChronology(chrono);
+-    DateTimeParserBucket bucket = new DateTimeParserBucket(instantLocal, chrono, iLocale, iPivotYear, iDefaultYear);
++    DateTimeParserBucket bucket;
++    if (iZone != null) {
++        chrono = chrono.withZone(iZone);
++        bucket = new DateTimeParserBucket(instant.getMillis(), chrono, iLocale, iPivotYear, iDefaultYear);
++    } else {
++        long instantMillis = instant.getMillis();
++        long instantLocal = instantMillis + chrono.getZone().getOffset(instantMillis);
++        chrono = selectChronology(chrono);
++        bucket = new DateTimeParserBucket(instantLocal, chrono, iLocale, iPivotYear, iDefaultYear);
++    }
+     int newPos = parser.parseInto(bucket, text, position);
+     instant.setMillis(bucket.computeMillis(false, text));
+     if (iOffsetParsed && bucket.getOffsetInteger() != null) {
+@@ -19,8 +25,5 @@
+         chrono = chrono.withZone(bucket.getZone());
+     }
+     instant.setChronology(chrono);
+-    if (iZone != null) {
+-        instant.setZone(iZone);
+-    }
+     return newPos;
+ }

@@ -1,0 +1,12 @@
+--- org/apache/commons/math3/complex/Complex.java@reciprocal
++++ org/apache/commons/math3/complex/Complex.java@reciprocal
+@@ -1,8 +1,5 @@
+ public Complex reciprocal() {
+-    if (isNaN) {
+-        return NaN;
+-    }
+-    if (real == 0.0 && imaginary == 0.0) {
++    if (isNaN || (real == 0.0 && imaginary == 0.0)) {
+         return NaN;
+     }
+     if (isInfinite) {

@@ -1,0 +1,69 @@
+--- org/apache/commons/math/dfp/Dfp.java@Dfp
++++ org/apache/commons/math/dfp/Dfp.java@Dfp
+@@ -12,6 +12,7 @@
+         // Zero or sub-normal
+         if (x == 0) {
+             // make sure 0 has the right sign
++            sign = (byte) Math.copySign(1.0, x);
+             return;
+         }
+         exponent++;
+@@ -27,11 +28,8 @@
+         if (x != x) {
+             sign = (byte) 1;
+             nans = QNAN;
+-        } else if (x < 0) {
+-            sign = (byte) -1;
+-            nans = INFINITE;
+         } else {
+-            sign = (byte) 1;
++            sign = (byte) Math.copySign(1.0, x);
+             nans = INFINITE;
+         }
+         return;
+--- org/apache/commons/math/dfp/Dfp.java@toDouble
++++ org/apache/commons/math/dfp/Dfp.java@toDouble
+@@ -15,7 +15,7 @@
+         y = negate();
+         negate = true;
+     }
+-        int exponent = (int) (y.log10() * 3.32);
++    int exponent = (int) (y.log10() * 3.321928094887362);
+     if (exponent < 0) {
+         exponent--;
+     }
+@@ -25,7 +25,7 @@
+         exponent++;
+     }
+     exponent--;
+-        y = y.divide(DfpMath.pow(getTwo(), exponent));
++    y = y.divide(DfpMath.pow(getTwo(), exponent));
+     if (exponent > -1023) {
+         y = y.subtract(getOne());
+     }
+@@ -35,7 +35,7 @@
+     if (exponent > 1023) {
+         return negate ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+     }
+-    y = y.multiply(newInstance(4503599627370496l)).rint();
++    y = y.multiply(newInstance(4503599627370496L)).rint();
+     String str = y.toString();
+     str = str.substring(0, str.length() - 1);
+     long mantissa = Long.parseLong(str);
+@@ -44,14 +44,14 @@
+         mantissa = 0;
+         exponent++;
+     }
+-        if (exponent <= -1023) {
++    if (exponent <= -1023) {
+         exponent--;
+     }
+     while (exponent < -1023) {
+         exponent++;
+         mantissa >>>= 1;
+     }
+-    long bits = mantissa | ((exponent + 1023L) << 52);
++    long bits = mantissa | ((long) (exponent + 1023) << 52);
+     double x = Double.longBitsToDouble(bits);
+     if (negate) {
+         x = -x;

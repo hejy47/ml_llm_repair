@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/Normalize.java@process
++++ com/google/javascript/jscomp/Normalize.java@process
+@@ -6,6 +6,6 @@
+         NodeTraversal t = new NodeTraversal(compiler, renamer);
+         t.traverseRoots(externs, root);
+     }
+-    removeDuplicateDeclarations(root);
++    removeDuplicateDeclarations(root, compiler);
+     new PropogateConstantAnnotations(compiler, assertOnChange).process(externs, root);
+ }

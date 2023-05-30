@@ -1,0 +1,22 @@
+--- org/joda/time/DateTimeZone.java@adjustOffset
++++ org/joda/time/DateTimeZone.java@adjustOffset
+@@ -7,10 +7,13 @@
+         // not an overlap (less than is a gap, equal is normal case)
+         return instant;
+     }
+-    // work out range of instants that have duplicate local times
+-    long local = convertUTCToLocal(instant);
+-    return convertLocalToUTC(local, false, earlierOrLater ? instantAfter : instantBefore);
+-    // calculate result
+-    // currently in later offset
+-    // currently in earlier offset
++    if (earlierOrLater) {
++        // currently in later offset
++        long local = convertUTCToLocal(instantAfter - 1);
++        return convertLocalToUTC(local, false, instantAfter);
++    } else {
++        // currently in earlier offset
++        long local = convertUTCToLocal(instantBefore - 1);
++        return convertLocalToUTC(local, false, instantBefore);
++    }
+ }

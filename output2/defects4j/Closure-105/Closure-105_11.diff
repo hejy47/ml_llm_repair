@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -19,6 +19,10 @@
+                 sb.append(joinString);
+             }
+             sb.append(NodeUtil.getStringValue(elem));
++            if(elem.getNext() != null && NodeUtil.isImmutableValue(elem.getNext()) && !joinString.isEmpty()) {
++                sb.append(joinString);
++                elem = elem.getNext();
++            }
+         } else {
+             if (sb.length() > 0) {
+                 // + 2 for the quotes.

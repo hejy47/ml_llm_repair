@@ -1,0 +1,45 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
+@@ -1,12 +1,31 @@
+ private Node tryMinimizeIf(Node n) {
+     Node parent = n.getParent();
+     Node cond = n.getFirstChild();
+-        if (NodeUtil.isLiteralValue(cond, true)) {
+-        return n;
++    if (NodeUtil.isLiteralValue(cond, true)) {
++        // If condition is always true, return the then branch
++        Node thenBranch = cond.getNext();
++        parent.replaceChild(n, thenBranch.detachFromParent());
++        reportCodeChange();
++        return thenBranch;
++    } else if (NodeUtil.isLiteralValue(cond, false)) {
++        // If condition is always false, return the else branch (if it exists)
++        Node elseBranch = cond.getNext().getNext();
++        if (elseBranch != null) {
++            parent.replaceChild(n, elseBranch.detachFromParent());
++            reportCodeChange();
++            return elseBranch;
++        } else {
++            // If there is no else branch, return undefined
++            Node undefined = NodeUtil.newUndefinedNode(n);
++            parent.replaceChild(n, undefined);
++            reportCodeChange();
++            return undefined;
++        }
+     }
+     Node thenBranch = cond.getNext();
+     Node elseBranch = thenBranch.getNext();
+     if (elseBranch == null) {
++        // The if statement has no else branch
+         if (isFoldableExpressBlock(thenBranch)) {
+             Node expr = getBlockExpression(thenBranch);
+             if (!late && isPropertyAssignmentInExpression(expr)) {
+@@ -63,7 +82,7 @@
+         }
+         return n;
+     }
+-        tryRemoveRepeatedStatements(n);
++    tryRemoveRepeatedStatements(n);
+     // if(!x)foo();else bar(); -> if(x)bar();else foo();
+     // An additional set of curly braces isn't worth it.
+     if (cond.isNot() && !consumesDanglingElse(elseBranch)) {

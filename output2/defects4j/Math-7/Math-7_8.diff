@@ -1,0 +1,50 @@
+--- org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math3/ode/AbstractIntegrator.java@acceptStep
+@@ -12,16 +12,18 @@
+     final int orderingSign = interpolator.isForward() ? +1 : -1;
+     SortedSet<EventState> occuringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
+ 
+-                public int compare(EventState es0, EventState es1) {
++        public int compare(EventState es0, EventState es1) {
+             return orderingSign * Double.compare(es0.getEventTime(), es1.getEventTime());
+         }
+     });
++
+     for (final EventState state : eventsStates) {
+         if (state.evaluateStep(interpolator)) {
+             // the event occurs during the current step
+             occuringEvents.add(state);
+         }
+     }
++
+     while (!occuringEvents.isEmpty()) {
+         // handle the chronologically first event
+         final Iterator<EventState> iterator = occuringEvents.iterator();
+@@ -49,10 +51,11 @@
+             }
+             return eventT;
+         }
+-        boolean needReset = currentEvent.reset(eventT, eventY);
++        boolean needReset = currentEvent.reset(eventT, eventY, interpolator.isForward());
+         if (needReset) {
+             // some event handler has triggered changes that
+             // invalidate the derivatives, we need to recompute them
++            interpolator.reinitializeBegin(eventT, eventY, yDot);
+             System.arraycopy(eventY, 0, y, 0, y.length);
+             computeDerivatives(eventT, y, yDot);
+             resetOccurred = true;
+@@ -72,10 +75,12 @@
+         }
+     }
+     // last part of the step, after the last event
++    interpolator.setSoftPreviousTime(previousT);
++    interpolator.setSoftCurrentTime(currentT);
+     interpolator.setInterpolatedTime(currentT);
+-    final double[] currentY = interpolator.getInterpolatedState();
++    System.arraycopy(interpolator.getInterpolatedState(), 0, y, 0, y.length);
+     for (final EventState state : eventsStates) {
+-        state.stepAccepted(currentT, currentY);
++        state.stepAccepted(currentT, interpolator.getInterpolatedState());
+         isLastStep = isLastStep || state.stop();
+     }
+     isLastStep = isLastStep || Precision.equals(currentT, tEnd, 1);

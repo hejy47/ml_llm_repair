@@ -1,0 +1,129 @@
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@doOptimize
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@doOptimize
+@@ -1,3 +1,3 @@
+ protected double doOptimize() throws MaxIterationsExceededException, FunctionEvaluationException {
+-    throw new UnsupportedOperationException();
++    throw new MathUnsupportedOperationException(LocalizedFormats.NOT_OVERRIDEN);
+ }
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@optimize
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@optimize
+@@ -1,4 +1,22 @@
+ public double optimize(final UnivariateRealFunction f, final GoalType goalType, final double min, final double max, final double startValue) throws MaxIterationsExceededException, FunctionEvaluationException {
++    if (goalType == null) {
++        throw new NullArgumentException(LocalizedFormats.GOAL_TYPE);
++    }
+     clearResult();
+-    return localMin(getGoalType() == GoalType.MINIMIZE, f, goalType, min, startValue, max, getRelativeAccuracy(), getAbsoluteAccuracy());
++    if (f == null) {
++        throw new NullArgumentException(LocalizedFormats.FUNCTION);
++    }
++    if (min >= max) {
++        throw new NumberIsTooLargeException(min, max, false);
++    }
++    if (startValue < min || startValue > max) {
++        throw new NumberIsTooLargeException(startValue, min, true);
++    }
++    double target = goalType == GoalType.MINIMIZE ?
++            findMinimum(f, min, max, startValue) :
++            findMaximum(f, min, max, startValue);
++
++    setResult(target, f.value(target), getMaximalIterationCount());
++
++    return target;
+ }
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@optimize3
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@optimize3
+@@ -1,3 +1,24 @@
+ public double optimize(final UnivariateRealFunction f, final GoalType goalType, final double min, final double max) throws MaxIterationsExceededException, FunctionEvaluationException {
+-    return optimize(f, goalType, min, max, min + GOLDEN_SECTION * (max - min));
++    if (goalType == null) {
++        throw new NullArgumentException(LocalizedFormats.GOAL_TYPE);
++    }
++    clearResult();
++    if (f == null) {
++        throw new NullArgumentException(LocalizedFormats.FUNCTION);
++    }
++    if (min >= max) {
++        throw new NumberIsTooLargeException(min, max, false);
++    }
++    final double initial = min + GOLD * (max - min);
++    double target;
++    try {
++        target = goalType == GoalType.MINIMIZE ?
++                findMinimum(f, min, max, initial) :
++                findMaximum(f, min, max, initial);
++        setResult(target, f.value(target), getMaximalIterationCount());
++    } catch (TooManyEvaluationsException ex) {
++        setResult(Double.NaN, Double.NaN, 0);
++        throw ex;
++    }
++    return target;
+ }
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@localMin
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@localMin
+@@ -1,9 +1,9 @@
+ private double localMin(boolean isMinim, UnivariateRealFunction f, GoalType goalType, double lo, double mid, double hi, double eps, double t) throws MaxIterationsExceededException, FunctionEvaluationException {
+     if (eps <= 0) {
+-        throw new NotStrictlyPositiveException(eps);
++        throw new NotStrictlyPositiveException(LocalizedFormats.EPSILON, eps);
+     }
+     if (t <= 0) {
+-        throw new NotStrictlyPositiveException(t);
++        throw new NotStrictlyPositiveException(LocalizedFormats.TOLERANCE, t);
+     }
+     double a, b;
+     if (lo < hi) {
+@@ -25,7 +25,7 @@
+     double fv = fx;
+     double fw = fx;
+     int count = 0;
+-    while (count < maximalIterationCount) {
++    while (count < getMaximalIterationCount()) {
+         double m = 0.5 * (a + b);
+         final double tol1 = eps * Math.abs(x) + t;
+         final double tol2 = 2 * tol1;
+@@ -54,7 +54,8 @@
+                     u = x + d;
+                     // f must not be evaluated too close to a or b.
+                     if (u - a < tol2 || b - u < tol2) {
+-                        if (x <= m) {
++                        double xm = 0.5 * (a + b);
++                        if (x <= xm) {
+                             d = tol1;
+                         } else {
+                             d = -tol1;
+@@ -62,21 +63,23 @@
+                     }
+                 } else {
+                     // Golden section step.
+-                    if (x < m) {
++                    double xm = 0.5 * (a + b);
++                    if (x < xm) {
+                         e = b - x;
+                     } else {
+                         e = a - x;
+                     }
+-                    d = GOLDEN_SECTION * e;
++                    d = GOLD * e;
+                 }
+             } else {
+                 // Golden section step.
+-                if (x < m) {
++                double xm = 0.5 * (a + b);
++                if (x < xm) {
+                     e = b - x;
+                 } else {
+                     e = a - x;
+                 }
+-                d = GOLDEN_SECTION * e;
++                d = GOLD * e;
+             }
+             // Update by at least "tol1".
+             if (Math.abs(d) < tol1) {
+@@ -128,5 +131,5 @@
+         }
+         ++count;
+     }
+-    throw new MaxIterationsExceededException(maximalIterationCount);
++    throw new MaxIterationsExceededException(getMaximalIterationCount());
+ }

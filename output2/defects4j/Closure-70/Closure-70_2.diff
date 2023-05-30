@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
++++ com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
+@@ -8,7 +8,15 @@
+             Node jsDocParameter = jsDocParameters.getFirstChild();
+             for (Node astParameter : astParameters.children()) {
+                 if (jsDocParameter != null) {
+-                    defineSlot(astParameter, functionNode, jsDocParameter.getJSType(), true);
++                    JSType jsType = jsDocParameter.getJSType(); 
++                    
++                    // If the parameter has a @param tag, use that type as the declared type
++                    if (jsType != null && jsType.isNoType() && jsDocParameter.hasOneChild() &&
++                            jsDocParameter.getFirstChild().getType() == Token.STRING) {
++                        jsType = getDeclaredTypeFromString(jsDocParameter.getFirstChild().getString());
++                    }
++                    
++                    defineSlot(astParameter, functionNode, jsType, true);
+                     jsDocParameter = jsDocParameter.getNext();
+                 } else {
+                     defineSlot(astParameter, functionNode, null, true);

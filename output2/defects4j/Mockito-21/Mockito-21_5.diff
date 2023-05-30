@@ -1,0 +1,32 @@
+--- org/mockito/internal/creation/instance/ConstructorInstantiator.java@newInstance
++++ org/mockito/internal/creation/instance/ConstructorInstantiator.java@newInstance
+@@ -1,6 +1,12 @@
+ public <T> T newInstance(Class<T> cls) {
+-    if (outerClassInstance == null) {
+-        return noArgConstructor(cls);
++    try {
++        if (outerClassInstance == null) {
++            return cls.newInstance();
++        } else {
++            Constructor<T> c = cls.getDeclaredConstructor(outerClassInstance.getClass());
++            return c.newInstance(outerClassInstance);
++        }
++    } catch (Exception e) {
++        throw new InstantiationException("Unable to create mock instance of '" + cls.getSimpleName() + "'.\nPlease ensure that the outer instance has correct type and that the target class has parameter-less constructor.", e);
+     }
+-    return withOuterClass(cls);
+ }
+--- org/mockito/internal/creation/instance/ConstructorInstantiator.java@withOuterClass
++++ org/mockito/internal/creation/instance/ConstructorInstantiator.java@withOuterClass
+@@ -1,10 +1,8 @@
+ private <T> T withOuterClass(Class<T> cls) {
+     try {
+-        //this is kind of overengineered because we don't need to support more params
+-        //however, I know we will be needing it :)
+         Constructor<T> c = cls.getDeclaredConstructor(outerClassInstance.getClass());
+         return c.newInstance(outerClassInstance);
+     } catch (Exception e) {
+-        throw paramsException(cls, e);
++        throw new InstantiationException("Unable to create mock instance of '" + cls.getSimpleName() + "'.\nPlease ensure that the outer instance has correct type and that the target class has parameter-less constructor.", e);
+     }
+ }

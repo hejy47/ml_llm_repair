@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -4,11 +4,13 @@
+         replacementNode = candidateDefinition;
+         return;
+     }
++
+     // Handle the case where there is a duplicate definition for an explicitly
+     // provided symbol.
+     if (candidateDefinition != null && explicitNode != null) {
+         explicitNode.detachFromParent();
+         compiler.reportCodeChange();
++
+         // Does this need a VAR keyword?
+         replacementNode = candidateDefinition;
+         if (NodeUtil.isExpressionNode(candidateDefinition)) {
+@@ -26,6 +28,7 @@
+                 candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
+                 nameNode.setJSDocInfo(assignNode.getJSDocInfo());
+                 compiler.reportCodeChange();
++                candidateDefinition = varNode; // Added line to update candidateDefinition
+                 replacementNode = varNode;
+             }
+         }

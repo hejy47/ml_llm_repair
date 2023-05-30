@@ -1,0 +1,12 @@
+--- org/joda/time/format/DateTimeFormatter.java@parseInto
++++ org/joda/time/format/DateTimeFormatter.java@parseInto
+@@ -10,6 +10,9 @@
+     chrono = selectChronology(chrono);
+     DateTimeParserBucket bucket = new DateTimeParserBucket(instantLocal, chrono, iLocale, iPivotYear, iDefaultYear);
+     int newPos = parser.parseInto(bucket, text, position);
++    if (bucket.computeMillis(false, text) == instant.getLocalMillis()) {
++        throw new IllegalArgumentException("Invalid instant due to daylight saving time transition");
++    }
+     instant.setMillis(bucket.computeMillis(false, text));
+     if (iOffsetParsed && bucket.getOffsetInteger() != null) {
+         int parsedOffset = bucket.getOffsetInteger();

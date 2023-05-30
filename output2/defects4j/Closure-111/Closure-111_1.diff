@@ -1,0 +1,8 @@
+--- com/google/javascript/jscomp/type/ClosureReverseAbstractInterpreter.java@caseTopType
++++ com/google/javascript/jscomp/type/ClosureReverseAbstractInterpreter.java@caseTopType
+@@ -1,4 +1,4 @@
+ @Override
+ protected JSType caseTopType(JSType topType) {
+-    return topType;
++    return getNativeType(UNKNOWN_TYPE);
+ }

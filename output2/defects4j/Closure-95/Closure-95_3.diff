@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@defineSlot
++++ com/google/javascript/jscomp/TypedScopeCreator.java@defineSlot
+@@ -9,7 +9,7 @@
+         Preconditions.checkArgument(n.getType() == Token.GETPROP && (parent.getType() == Token.ASSIGN || parent.getType() == Token.EXPR_RESULT));
+     }
+     String variableName = n.getQualifiedName();
+-    Preconditions.checkArgument(!variableName.isEmpty());
++    Preconditions.checkArgument(variableName != null && !variableName.isEmpty());
+     // If n is a property, then we should really declare it in the
+     // scope where the root object appears. This helps out people
+     // who declare "global" names in an anonymous namespace.
+@@ -29,10 +29,11 @@
+         if (shouldDeclareOnGlobalThis) {
+             ObjectType globalThis = typeRegistry.getNativeObjectType(JSTypeNative.GLOBAL_THIS);
+             boolean isExtern = input.isExtern();
++            JSType declaredType = (type == null) ? getNativeType(JSTypeNative.NO_TYPE) : type;
+             if (inferred) {
+-                globalThis.defineInferredProperty(variableName, type == null ? getNativeType(JSTypeNative.NO_TYPE) : type, isExtern);
++                globalThis.defineInferredProperty(variableName, declaredType, isExtern);
+             } else {
+-                globalThis.defineDeclaredProperty(variableName, type, isExtern);
++                globalThis.defineDeclaredProperty(variableName, declaredType, isExtern);
+             }
+         }
+         // If we're in the global scope, also declare var.prototype
+@@ -41,7 +42,8 @@
+             FunctionType fnType = (FunctionType) type;
+             if (fnType.isConstructor() || fnType.isInterface()) {
+                 FunctionType superClassCtor = fnType.getSuperClassConstructor();
+-                scopeToDeclareIn.declare(variableName + ".prototype", n, fnType.getPrototype(), compiler.getInput(sourceName),                 superClassCtor == null || superClassCtor.getInstanceType().equals(getNativeType(OBJECT_TYPE)));
++                boolean declared = superClassCtor == null || superClassCtor.getInstanceType().equals(getNativeType(OBJECT_TYPE));
++                scopeToDeclareIn.declare(variableName + ".prototype", n, fnType.getPrototype(), input, declared);
+             }
+         }
+     }

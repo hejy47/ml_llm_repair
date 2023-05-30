@@ -1,0 +1,37 @@
+--- org/apache/commons/lang/Entities.java@unescape
++++ org/apache/commons/lang/Entities.java@unescape
+@@ -3,7 +3,7 @@
+     if (firstAmp < 0) {
+         return str;
+     }
+-    StringBuffer buf = new StringBuffer(str.length());
++    StringBuilder buf = new StringBuilder(str.length());
+     buf.append(str.substring(0, firstAmp));
+     for (int i = firstAmp; i < str.length(); ++i) {
+         char ch = str.charAt(i);
+--- org/apache/commons/lang/Entities.java@unescape1
++++ org/apache/commons/lang/Entities.java@unescape1
+@@ -15,8 +15,8 @@
+                 writer.write(c);
+                 continue;
+             }
+-            int amphersandIdx = string.indexOf('&', i + 1);
+-            if (amphersandIdx != -1 && amphersandIdx < semiColonIdx) {
++            int ampersandIdx = string.indexOf('&', i + 1);
++            if (ampersandIdx != -1 && ampersandIdx < semiColonIdx) {
+                 // Then the text looks like &...&...;
+                 writer.write(c);
+                 continue;
+@@ -35,10 +35,12 @@
+                                 case 'x':
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(2), 16);
++                                        break;
+                                     }
+                                 default:
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(1), 10);
++                                        break;
+                                     }
+                             }
+                         } catch (NumberFormatException e) {

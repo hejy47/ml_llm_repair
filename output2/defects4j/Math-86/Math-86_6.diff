@@ -1,0 +1,16 @@
+--- org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
++++ org/apache/commons/math/linear/CholeskyDecompositionImpl.java@CholeskyDecompositionImpl
+@@ -3,7 +3,12 @@
+         throw new NonSquareMatrixException(matrix.getRowDimension(), matrix.getColumnDimension());
+     }
+     final int order = matrix.getRowDimension();
+-    lTData = matrix.getData();
++    lTData = new double[order][order];
++    for(int i = 0; i < order; i++) {
++        for(int j = 0; j < order; j++) {
++            lTData[i][j] = matrix.getEntry(i, j);
++        }
++    }
+     cachedL = null;
+     cachedLT = null;
+     // check the matrix before transformation

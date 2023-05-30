@@ -1,0 +1,22 @@
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -7,7 +7,7 @@
+         return NaN;
+     }
+     if (divisor.isInfinite() && !isInfinite()) {
+-        return ZERO;
++        return NaN;
+     }
+     final double c = divisor.getReal();
+     final double d = divisor.getImaginary();
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -6,7 +6,7 @@
+         return NaN;
+     }
+     if (Double.isInfinite(divisor)) {
+-        return !isInfinite() ? ZERO : NaN;
++        return isInfinite() ? NaN : ZERO;
+     }
+     return createComplex(real / divisor, imaginary / divisor);
+ }

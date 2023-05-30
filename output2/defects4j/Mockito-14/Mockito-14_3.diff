@@ -1,0 +1,24 @@
+--- org/mockito/internal/MockHandler.java@handle
++++ org/mockito/internal/MockHandler.java@handle
+@@ -19,7 +19,7 @@
+     invocationContainerImpl.setInvocationForPotentialStubbing(invocationMatcher);
+     OngoingStubbingImpl<T> ongoingStubbing = new OngoingStubbingImpl<T>(invocationContainerImpl);
+     mockingProgress.reportOngoingStubbing(ongoingStubbing);
+-    StubbedInvocationMatcher stubbedInvocation = invocationContainerImpl.findAnswerFor(invocation);
++    StubbedInvocationMatcher stubbedInvocation = invocationContainerImpl.findAnswerFor(invocationMatcher);
+     if (stubbedInvocation != null) {
+         stubbedInvocation.captureArgumentsFrom(invocation);
+         return stubbedInvocation.answer(invocation);
+--- org/mockito/internal/MockitoCore.java@verify
++++ org/mockito/internal/MockitoCore.java@verify
+@@ -1,8 +1,10 @@
+ public <T> T verify(T mock, VerificationMode mode) {
+     if (mock == null) {
+         reporter.nullPassedToVerify();
++        throw new NullPointerException("Mock object cannot be null"); // added fix
+     } else if (!mockUtil.isMock(mock)) {
+         reporter.notAMockPassedToVerify();
++        throw new IllegalArgumentException("Object passed to verify() is not a mock"); // added fix
+     }
+     mockingProgress.verificationStarted(mode);
+     return mock;

@@ -1,0 +1,18 @@
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@BrentOptimizer
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@BrentOptimizer
+@@ -1,6 +1,6 @@
+ public BrentOptimizer() {
+     setMaxEvaluations(Integer.MAX_VALUE);
+     setMaximalIterationCount(100);
+-    setAbsoluteAccuracy(1E-10);
+-    setRelativeAccuracy(1.0e-14);
++    setRelativeThreshold(1.0e-14);
++    setAbsoluteThreshold(1E-10);
+ }
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@doOptimize
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@doOptimize
+@@ -1,3 +1,3 @@
+ protected double doOptimize() throws MaxIterationsExceededException, FunctionEvaluationException {
+-    throw new UnsupportedOperationException();
++    throw new MathUnsupportedOperationException();
+ }

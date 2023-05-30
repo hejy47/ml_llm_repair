@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -96,7 +96,7 @@
+                 }
+             }
+             name = n.getQualifiedName();
+-            if (name == null) {
++            if (name == null || name.isEmpty()) {  // Fix 1: Handle empty qualified name
+                 return;
+             }
+             break;

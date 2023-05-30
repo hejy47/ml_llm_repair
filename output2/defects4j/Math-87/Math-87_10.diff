@@ -1,0 +1,16 @@
+--- org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
++++ org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
+@@ -2,10 +2,10 @@
+     Integer row = null;
+     for (int i = getNumObjectiveFunctions(); i < getHeight(); i++) {
+         if (!MathUtils.equals(getEntry(i, col), 0.0, epsilon)) {
+-            if (row == null) {
++            if (row != null) {  // fixed condition
++                return null;
++            } else {
+                 row = i;
+-            } else {
+-                return null;
+             }
+         }
+     }

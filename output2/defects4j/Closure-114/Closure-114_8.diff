@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
++++ com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
+@@ -13,7 +13,7 @@
+             //
+             // TODO(user) revisit the dependency scope calculation
+             // logic.
+-            if (parent.getFirstChild().getNext() != n) {
++            if (parent.getFirstChild() != n) { // Change made here
+                 recordDepScope(recordNode, ns);
+             } else {
+                 recordDepScope(nameNode, ns);

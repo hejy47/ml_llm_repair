@@ -1,0 +1,11 @@
+--- org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java@integrate
+@@ -95,7 +95,6 @@
+         stepSize = forward ? step : -step;
+     }
+     final double stopTime = stepStart;
+-    stepStart = Double.NaN;
+-    stepSize = Double.NaN;
++    resetInternalState();
+     return stopTime;
+ }

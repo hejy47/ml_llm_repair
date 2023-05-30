@@ -1,0 +1,11 @@
+--- org/joda/time/DateTimeZone.java@forOffsetHoursMinutes
++++ org/joda/time/DateTimeZone.java@forOffsetHoursMinutes
+@@ -11,7 +11,7 @@
+         if (hoursInMinutes < 0) {
+             minutesOffset = FieldUtils.safeAdd(hoursInMinutes, -minutesOffset);
+         } else {
+-            minutesOffset = FieldUtils.safeAdd(hoursInMinutes, minutesOffset);
++            minutesOffset = FieldUtils.safeAdd(minutesOffset, hoursInMinutes); //fix
+         }
+         offset = FieldUtils.safeMultiply(minutesOffset, DateTimeConstants.MILLIS_PER_MINUTE);
+     } catch (ArithmeticException ex) {

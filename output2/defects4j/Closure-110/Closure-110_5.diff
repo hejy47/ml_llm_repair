@@ -1,0 +1,38 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -1,5 +1,6 @@
+ private void findAliases(NodeTraversal t) {
+     Scope scope = t.getScope();
++    List<Var> bleedingFunctions = new ArrayList<>();
+     for (Var v : scope.getVarIterable()) {
+         Node n = v.getNode();
+         Node parent = n.getParent();
+@@ -7,6 +8,7 @@
+         if (isVar && n.getFirstChild() != null && n.getFirstChild().isQualifiedName()) {
+             recordAlias(v);
+         } else if (v.isBleedingFunction()) {
++            bleedingFunctions.add(v);
+             // Bleeding functions already get a BAD_PARAMETERS error, so just
+             // do nothing.
+         } else if (parent.getType() == Token.LP) {
+@@ -48,4 +50,9 @@
+             report(t, n, GOOG_SCOPE_NON_ALIAS_LOCAL, n.getString());
+         }
+     }
++    for (Var bleedingFunction : bleedingFunctions) {
++        // Record bleeding functions after processing all other symbols.
++        // Bleeding functions may reference newly introduced alias symbols.
++        recordAlias(bleedingFunction);
++    }
+ }
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -4,7 +4,7 @@
+     }
+     Node n = first;
+     while (n.next != child) {
+-        n = n.next;
++        n = n.getNext();
+         if (n == null) {
+             throw new RuntimeException("node is not a child");
+         }

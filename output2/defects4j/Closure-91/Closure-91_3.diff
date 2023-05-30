@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -12,7 +12,7 @@
+         // function a() {} // or
+         // a.x = function() {}; // or
+         // var a = {x: function() {}};
+-        int pType = parent.getType();
++        int pType = parent == null ? -1 : parent.getType(); // check if parent is null
+         if (!(pType == Token.BLOCK || pType == Token.SCRIPT || pType == Token.NAME || pType == Token.ASSIGN || // object literal keys
+         pType == Token.STRING || pType == Token.NUMBER)) {
+             return false;

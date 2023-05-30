@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
++++ com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
+@@ -25,7 +25,11 @@
+             // caller expression, but it could be nested deeper in the caller and
+             // we would still get a bug.
+             // See testAssignWithCall2 for an example of this.
+-            recordDepScope(recordNode, ns);
++            if (recordNode.isCall() && recordNode.getParent().isExprResult()) {
++                recordDepScope(nameNode, ns);
++            } else {
++                recordDepScope(recordNode, ns);
++            }
+         }
+     }
+ }

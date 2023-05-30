@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
+@@ -23,6 +23,7 @@
+         // allow broken requires to be preserved by the first run to
+         // let them be caught in the subsequent run.
+         if (provided != null) {
++            // Only detach if all checks have passed
+             parent.detachFromParent();
+             compiler.reportCodeChange();
+         }

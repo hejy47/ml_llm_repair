@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/CodeGenerator.java@strEscape
++++ com/google/javascript/jscomp/CodeGenerator.java@strEscape
+@@ -22,8 +22,7 @@
+             case '\'':
+                 sb.append(singlequoteEscape);
+                 break;
+-            case // Break --> into --\> or ]]> into ]]\>
+-            '>':
++            case '>':
+                 if (i >= 2 && ((s.charAt(i - 1) == '-' && s.charAt(i - 2) == '-') || (s.charAt(i - 1) == ']' && s.charAt(i - 2) == ']'))) {
+                     sb.append("\\>");
+                 } else {
+@@ -36,9 +35,9 @@
+                 // Break <!-- into <\!--
+                 final String START_COMMENT = "!--";
+                 if (s.regionMatches(true, i + 1, END_SCRIPT, 0, END_SCRIPT.length())) {
+-                    sb.append("<\\");
++                    sb.append("<\\\\/");
+                 } else if (s.regionMatches(false, i + 1, START_COMMENT, 0, START_COMMENT.length())) {
+-                    sb.append("<\\");
++                    sb.append("<\\\\");
+                 } else {
+                     sb.append(c);
+                 }

@@ -1,0 +1,18 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -26,6 +26,7 @@
+         nameNode.addChildToFront(rvalue);
+         Node varNode = new Node(Token.VAR, nameNode);
+         greatGramps.replaceChild(gramps, varNode);
++        compiler.reportCodeChange();
+     } else {
+         // This must be a complex assignment.
+         Preconditions.checkNotNull(ref.getTwin());
+@@ -44,6 +45,6 @@
+         Node stubVar = new Node(Token.VAR, nameNode.cloneTree()).copyInformationFrom(nameNode);
+         currentParent.addChildBefore(stubVar, current);
+         parent.replaceChild(ref.node, nameNode);
++        compiler.reportCodeChange();
+     }
+-    compiler.reportCodeChange();
+ }

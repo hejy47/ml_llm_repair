@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
++++ com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
+@@ -1,6 +1,7 @@
+ private void makeLocalNamesUnique(Node fnNode, boolean isCallInLoop) {
+     Supplier<String> idSupplier = compiler.getUniqueNameIdSupplier();
+     // Make variable names unique to this instance.
+-    NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop)));
++    MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop));
++    renamer.process(null, fnNode);
+     // Make label names unique to this instance.
+ }
+--- com/google/javascript/jscomp/RenameLabels.java@visitLabel
++++ com/google/javascript/jscomp/RenameLabels.java@visitLabel
+@@ -13,13 +13,17 @@
+         }
+     } else {
+         // ... and it is not referenced, just remove it.
+-        Node newChild = node.getLastChild();
+-        node.removeChild(newChild);
+-        parent.replaceChild(node, newChild);
+-        if (newChild.getType() == Token.BLOCK) {
+-            NodeUtil.tryMergeBlock(newChild);
++        if (node.hasChildren()) {
++            Node newChild = node.removeFirstChild();
++            parent.replaceChild(node, newChild);
++            if (newChild.getType() == Token.BLOCK) {
++                NodeUtil.tryMergeBlock(newChild);
++            }
++            compiler.reportCodeChange();
++        } else {
++            parent.removeChild(node);
++            compiler.reportCodeChange();
+         }
+-        compiler.reportCodeChange();
+     }
+     // Remove the label from the current stack of labels.
+     namespaceStack.peek().renameMap.remove(name);

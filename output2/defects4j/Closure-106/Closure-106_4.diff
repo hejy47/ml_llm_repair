@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@canCollapseUnannotatedChildNames
++++ com/google/javascript/jscomp/GlobalNamespace.java@canCollapseUnannotatedChildNames
+@@ -8,5 +8,12 @@
+     if (isClassOrEnum) {
+         return true;
+     }
+-    return (type == Type.FUNCTION || aliasingGets == 0) && (parent == null || parent.canCollapseUnannotatedChildNames());
++    if (type == Type.FUNCTION || aliasingGets == 0) {
++        if (parent == null) {
++            return true;
++        } else {
++            return parent.canCollapseUnannotatedChildNames();
++        }
++    }
++    return false;
+ }
+--- com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
++++ com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
+@@ -1,6 +1,7 @@
+ public boolean recordBlockDescription(String description) {
+     if (parseDocumentation) {
+         populated = true;
++        return currentInfo.documentBlock(description);
+     }
+-    return currentInfo.documentBlock(description);
++    return false;
+ }

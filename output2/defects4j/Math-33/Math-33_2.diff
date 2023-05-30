@@ -1,0 +1,32 @@
+--- org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
++++ org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
+@@ -18,18 +18,20 @@
+             columnsToDrop.add(col);
+         }
+     }
+-    double[][] matrix = new double[getHeight() - 1][getWidth() - columnsToDrop.size()];
+-    for (int i = 1; i < getHeight(); i++) {
+-        int col = 0;
+-        for (int j = 0; j < getWidth(); j++) {
+-            if (!columnsToDrop.contains(j)) {
+-                matrix[i - 1][col++] = tableau.getEntry(i, j);
++    int newNumColumns = getWidth() - columnsToDrop.size();
++    double[][] matrix = new double[getHeight() - 1][newNumColumns];
++    int col = 0;
++    for (int j = 0; j < getWidth(); j++) {
++        if (!columnsToDrop.contains(j)) {
++            for (int i = 1; i < getHeight(); i++) {
++                matrix[i - 1][col] = tableau.getEntry(i, j);
+             }
++            columnLabels.set(col, columnLabels.get(j));
++            col++;
+         }
+-    }
+-    for (int i = columnsToDrop.size() - 1; i >= 0; i--) {
+-        columnLabels.remove((int) columnsToDrop.get(i));
+     }
+     this.tableau = new Array2DRowRealMatrix(matrix);
+     this.numArtificialVariables = 0;
++    this.numSlackVariables = newNumColumns - getNumObjectiveFunctions();
++    this.artificialVariableOffset = newNumColumns - getNumArtificialVariables();
+ }

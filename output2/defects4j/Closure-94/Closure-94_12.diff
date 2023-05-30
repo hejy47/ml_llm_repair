@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isValidDefineValue
++++ com/google/javascript/jscomp/NodeUtil.java@isValidDefineValue
+@@ -18,7 +18,9 @@
+         case Token.NAME:
+         case Token.GETPROP:
+             if (val.isQualifiedName()) {
+-                return defines.contains(val.getQualifiedName());
++                String name = val.getQualifiedName();
++                // check if it is a define or a property of a define
++                return defines.contains(name) || (name.contains(".") && defines.contains(name.substring(0, name.indexOf("."))));
+             }
+     }
+     return false;

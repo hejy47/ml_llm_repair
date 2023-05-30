@@ -1,0 +1,12 @@
+--- org/apache/commons/math/stat/Frequency.java@getPct
++++ org/apache/commons/math/stat/Frequency.java@getPct
+@@ -1,5 +1,8 @@
+ //-------------------------------------------------------------
+ @Deprecated
+ public double getPct(Object v) {
+-    return getCumPct((Comparable<?>) v);
++    if (v instanceof Comparable) {
++        return getCumPct((Comparable<?>) v);
++    }
++    throw new IllegalArgumentException("Object must implement Comparable");
+ }

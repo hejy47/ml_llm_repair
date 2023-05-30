@@ -1,0 +1,41 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -35,15 +35,33 @@
+         // AFTER:
+         // var x$y;
+         // ... (x$y = 3);
++        // Fix #1: Check for unreachable parents and exit if found
++        Node currentParent = gramps.getParent();
++        while(currentParent != null && 
++              (currentParent.getType() != Token.SCRIPT && currentParent.getType() != Token.BLOCK)) {
++            currentParent = currentParent.getParent();
++        }
++        if (currentParent == null) {
++            return;
++        }
+         Node current = gramps;
+-        Node currentParent = gramps.getParent();
++        // Fix #2: Avoid adding the same stubVar node twice
++        Node firstStubVar = null;
+         for (; currentParent.getType() != Token.SCRIPT && currentParent.getType() != Token.BLOCK; current = currentParent, currentParent = currentParent.getParent()) {
++            Node stubVar = new Node(Token.VAR, nameNode.cloneTree()).copyInformationFrom(nameNode);
++            currentParent.addChildBefore(stubVar, current);
++            // Save the first stubVar node added
++            if (firstStubVar == null) {
++                firstStubVar = stubVar;
++            }
+         }
+-        // Create a stub variable declaration right
+-        // before the current statement.
+-        Node stubVar = new Node(Token.VAR, nameNode.cloneTree()).copyInformationFrom(nameNode);
+-        currentParent.addChildBefore(stubVar, current);
++        // Replace the original ref node with the new alias node
+         parent.replaceChild(ref.node, nameNode);
++        // Fix #3: Remove the original ref node from its parent
++        ref.node.detach();
++        // Fix #4: Add a new expression statement for the original ref node
++        Node exprStmt = new Node(Token.EXPR_RESULT, ref.node).copyInformationFrom(ref.node);
++        currentParent.addChildBefore(exprStmt, firstStubVar);
+     }
+     compiler.reportCodeChange();
+ }

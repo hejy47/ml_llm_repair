@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -23,7 +23,7 @@
+         //       NODE
+         // Remove the rvalue (NODE).
+         parent.removeChild(rvalue);
+-        nameNode.addChildToFront(rvalue);
++        nameNode.addChildToBack(rvalue); // fix: addChildToFront -> addChildToBack
+         Node varNode = new Node(Token.VAR, nameNode);
+         greatGramps.replaceChild(gramps, varNode);
+     } else {

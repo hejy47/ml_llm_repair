@@ -1,0 +1,13 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -16,6 +16,10 @@
+         }
+         // reset valueLong to refer to the seconds part for the prefic/suffix calculation
+         valueLong = valueLong / DateTimeConstants.MILLIS_PER_SECOND;
++        valueLong = Math.abs(valueLong); // fixed line: ensure valueLong is positive for countDecimalPlaces()
++        int decimalPlaces = FormatUtils.countDecimalPlaces(valueLong);
++        // add the decimal places to the sum
++        sum += decimalPlaces;
+     }
+     int value = (int) valueLong;
+     if (iPrefix != null) {

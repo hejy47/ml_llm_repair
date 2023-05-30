@@ -1,0 +1,54 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@isNumber
++++ org/apache/commons/lang3/math/NumberUtils.java@isNumber
+@@ -9,12 +9,16 @@
+     boolean allowSigns = false;
+     boolean foundDigit = false;
+     // deal with any possible sign up front
+-    int start = (chars[0] == '-') ? 1 : 0;
++    int start = 0;
++    if (sz > 1 && (chars[0] == '+' || chars[0] == '-')) {
++        start = 1;
++        allowSigns = true;
++    }
+     if (sz > start + 1) {
+-        if (chars[start] == '0' && chars[start + 1] == 'x') {
++        if (chars[start] == '0' && (chars[start + 1] == 'x' || chars[start + 1] == 'X')) {
+             int i = start + 2;
+             if (i == sz) {
+-                // str == "0x"
++                // str == "0x" or "0X"
+                 return false;
+             }
+             // checking hex (it can't be anything else)
+@@ -26,7 +30,7 @@
+             return true;
+         }
+     }
+-    // don't want to loop to the last char, check it afterwords
++    // don't want to loop to the last char, check it afterwards
+     sz--;
+     // for type qualifiers
+     int i = start;
+@@ -53,12 +57,8 @@
+             }
+             hasExp = true;
+             allowSigns = true;
+-        } else if (chars[i] == '+' || chars[i] == '-') {
+-            if (!allowSigns) {
+-                return false;
+-            }
++        } else if (allowSigns && (chars[i] == '+' || chars[i] == '-')) {
+             allowSigns = false;
+-            // we need a digit after the E
+             foundDigit = false;
+         } else {
+             return false;
+@@ -87,7 +87,7 @@
+         }
+         if (chars[i] == 'l' || chars[i] == 'L') {
+             // not allowing L with an exponent or decimal point
+-            return foundDigit && !hasExp;
++            return foundDigit && !hasExp && !hasDecPoint;
+         }
+         // last character is illegal
+         return false;

@@ -1,0 +1,52 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,3 +1,6 @@
+ public int compareTo(DurationField durationField) {
+-    return 0;
++    if (this == durationField) {
++        return 0;
++    }
++    return 1;
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -24,22 +24,31 @@
+     DurationField lastUnitField = null;
+     for (int i = 0; i < types.length; i++) {
+         DateTimeFieldType loopType = types[i];
+-        DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
++        DurationFieldType durationType = loopType.getDurationType();
++        if (durationType == null) {
++            throw new IllegalArgumentException("Field '" + loopType.getName() + "' does not have a duration type");
++        }
++        DurationField loopUnitField = durationType.getField(iChronology);
++        if (loopUnitField == null) {
++            throw new IllegalArgumentException("The field '" + loopType.getName() + "' is not supported by the chronology '" + iChronology.getName() + "'");
++        }
+         if (i > 0) {
+             int compare = lastUnitField.compareTo(loopUnitField);
+-            if (compare < 0 || (compare != 0 && loopUnitField.isSupported() == false)) {
++            if (compare < 0 || (compare != 0 && !loopUnitField.isSupported())) {
+                 throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+             } else if (compare == 0) {
+-                if (types[i - 1].getRangeDurationType() == null) {
+-                    if (loopType.getRangeDurationType() == null) {
++                DurationFieldType lastRangeType = types[i - 1].getRangeDurationType();
++                DurationFieldType rangeType = loopType.getRangeDurationType();
++                if (lastRangeType == null) {
++                    if (rangeType == null) {
+                         throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + loopType.getName());
+                     }
+                 } else {
+-                    if (loopType.getRangeDurationType() == null) {
+-                        throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
++                    if (rangeType == null) {
++                        throw new IllegalArgumentException("The field '" + loopType.getName() + "' does not have a range duration field but the field '" + types[i - 1].getName() + "' does");
+                     }
+-                    DurationField lastRangeField = types[i - 1].getRangeDurationType().getField(iChronology);
+-                    DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
++                    DurationField lastRangeField = lastRangeType.getField(iChronology);
++                    DurationField loopRangeField = rangeType.getField(iChronology);
+                     if (lastRangeField.compareTo(loopRangeField) < 0) {
+                         throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+                     }

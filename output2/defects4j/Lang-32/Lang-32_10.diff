@@ -1,0 +1,8 @@
+--- org/apache/commons/lang3/builder/HashCodeBuilder.java@initialValue
++++ org/apache/commons/lang3/builder/HashCodeBuilder.java@initialValue
+@@ -1,4 +1,4 @@
+ @Override
+ protected Set<IDKey> initialValue() {
+-    return new HashSet<IDKey>();
++    return Collections.synchronizedSet(new HashSet<IDKey>());
+ }

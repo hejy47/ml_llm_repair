@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -24,7 +24,7 @@
+                 Node varNode = new Node(Token.VAR, nameNode);
+                 varNode.copyInformationFrom(candidateDefinition);
+                 candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
+-                nameNode.setJSDocInfo(assignNode.getJSDocInfo());
++                varNode.setJSDocInfo(assignNode.getJSDocInfo());
+                 compiler.reportCodeChange();
+                 replacementNode = varNode;
+             }
+@@ -33,7 +33,8 @@
+         // Handle the case where there's not a duplicate definition.
+         replacementNode = createDeclarationNode();
+         if (firstModule == minimumModule) {
+-            firstNode.getParent().addChildBefore(replacementNode, firstNode);
++            Node parent = firstNode.getParent();
++            parent.addChildBefore(replacementNode, firstNode);
+         } else {
+             // In this case, the name was implicitly provided by two independent
+             // modules. We need to move this code up to a common module.

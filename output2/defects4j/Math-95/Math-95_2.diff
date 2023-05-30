@@ -1,0 +1,16 @@
+--- org/apache/commons/math/distribution/FDistributionImpl.java@getInitialDomain
++++ org/apache/commons/math/distribution/FDistributionImpl.java@getInitialDomain
+@@ -1,7 +1,11 @@
+ protected double getInitialDomain(double p) {
+     double ret;
+     double d = getDenominatorDegreesOfFreedom();
+-    // use mean
+-    ret = d / (d - 2.0);
++    if (d > 2.0) {
++        ret = d / (d - 2.0);
++    } else {
++        ret = Double.NaN;
++        System.err.println("Error: The degrees of freedom should be greater than 2.");
++    }
+     return ret;
+ }

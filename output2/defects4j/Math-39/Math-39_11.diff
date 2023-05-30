@@ -1,0 +1,11 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -70,6 +70,8 @@
+                 // reject the step and attempt to reduce error by stepsize control
+                 final double factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error, exp)));
+                 hNew = filterStep(stepSize * factor, forward, false);
++            } else {
++                hNew = stepSize;
+             }
+         }
+         // local error is small enough: accept the step, trigger events and step handlers

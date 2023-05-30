@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
++++ com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
+@@ -4,11 +4,14 @@
+         return false;
+     }
+     // Make sure this assignment is not in a loop.
+-    for (BasicBlock block = ref.getBasicBlock(); block != null; block = block.getParent()) {
+-        if (block.isFunction) {
++    BasicBlock block = ref.getBasicBlock();
++    while (block != null) {
++        if (block.isLoop) {
++            return false;
++        } else if (block.isFunction) {
+             break;
+-        } else if (block.isLoop) {
+-            return false;
++        } else {
++            block = block.getParent();
+         }
+     }
+     return true;

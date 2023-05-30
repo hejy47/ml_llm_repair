@@ -1,0 +1,45 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,6 +1,6 @@
+ public int compareTo(DurationField durationField) {
+-    if (durationField.isSupported()) {
+-        return 1;
++    if (durationField == null || !durationField.isSupported()) { // Adding check for null and unsupported fields
++        return -1; // Changing return value to indicate less than
+     }
+-    return 0;
++    return 1;
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -1,7 +1,5 @@
+ public Partial(DateTimeFieldType[] types, int[] values, Chronology chronology) {
+     super();
+-    chronology = DateTimeUtils.getChronology(chronology).withUTC();
+-    iChronology = chronology;
+     if (types == null) {
+         throw new IllegalArgumentException("Types array must not be null");
+     }
+@@ -14,6 +12,8 @@
+     if (types.length == 0) {
+         iTypes = types;
+         iValues = values;
++        chronology = DateTimeUtils.getChronology(chronology).withUTC(); // Moving chronology initialization after input validation
++        iChronology = chronology;
+         return;
+     }
+     for (int i = 0; i < types.length; i++) {
+@@ -22,6 +22,7 @@
+         }
+     }
+     DurationField lastUnitField = null;
++    chronology = DateTimeUtils.getChronology(chronology).withUTC(); // Moving chronology initialization after input validation
+     for (int i = 0; i < types.length; i++) {
+         DateTimeFieldType loopType = types[i];
+         DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+@@ -54,4 +55,5 @@
+     iTypes = (DateTimeFieldType[]) types.clone();
+     chronology.validate(this, values);
+     iValues = (int[]) values.clone();
++    iChronology = chronology; // Setting field after input validation and field initialization
+ }

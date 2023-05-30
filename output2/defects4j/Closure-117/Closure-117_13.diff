@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -33,7 +33,7 @@
+         return type.toString();
+     }
+     String qualifiedName = n.getQualifiedName();
+-    if (qualifiedName != null) {
++    if (qualifiedName != null && !qualifiedName.isEmpty()) { // added null check and empty check
+         return qualifiedName;
+     } else if (type.isFunctionType()) {
+         // Don't show complex function names.

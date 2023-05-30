@@ -1,0 +1,38 @@
+--- org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
++++ org/apache/commons/lang3/math/Fraction.java@greatestCommonDivisor
+@@ -1,6 +1,6 @@
+ private static int greatestCommonDivisor(int u, int v) {
+     // From Commons Math:
+-    //if either operand is abs 1, return 1:
++    // if either operand is abs 1, return 1:
+     if (Math.abs(u) <= 1 || Math.abs(v) <= 1) {
+         return 1;
+     }
+@@ -31,13 +31,13 @@
+         throw new ArithmeticException("overflow: gcd is 2^31");
+     }
+     // B2. Initialize: u and v have been divided by 2^k and at least
+-    //     one is odd.
++    // one is odd.
+     int t = ((u & 1) == 1) ? v : -(u / 2);
+     // t negative: u was odd, v may be even (t replaces v)
+     // t positive: u was even, v is odd (t replaces u)
+     do {
+-                // B4/B3: cast out twos from t.
+-        while ((t & 1) == 0) {
++        // B3/B4: cast out twos from t.
++        while ((t & 1) == 0 && t != 0) {
+             // while t is even..
+             // cast out twos
+             t /= 2;
+@@ -45,8 +45,8 @@
+         // B5 [reset max(u,v)]
+         if (t > 0) {
+             u = -t;
+-        } else {
+-            v = t;
++        } else if (t < 0) {
++            v = -t;
+         }
+         // B6/B3. at this point both u and v should be odd.
+         t = (v - u) / 2;

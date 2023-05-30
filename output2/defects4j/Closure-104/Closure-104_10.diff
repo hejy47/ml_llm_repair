@@ -1,0 +1,11 @@
+--- com/google/javascript/rhino/jstype/UnionType.java@meet
++++ com/google/javascript/rhino/jstype/UnionType.java@meet
+@@ -7,7 +7,7 @@
+     }
+     if (that instanceof UnionType) {
+         for (JSType otherAlternate : ((UnionType) that).alternates) {
+-            if (otherAlternate.isSubtype(this)) {
++            if (isSubtype(otherAlternate)) { // <-- Fix: Change "otherAlternate.isSubtype(this)" to "isSubtype(otherAlternate)"
+                 builder.addAlternate(otherAlternate);
+             }
+         }

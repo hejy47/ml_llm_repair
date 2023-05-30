@@ -1,0 +1,21 @@
+--- org/apache/commons/math/dfp/Dfp.java@Dfp
++++ org/apache/commons/math/dfp/Dfp.java@Dfp
+@@ -12,6 +12,7 @@
+         // Zero or sub-normal
+         if (x == 0) {
+             // make sure 0 has the right sign
++            sign = 0;
+             return;
+         }
+         exponent++;
+--- org/apache/commons/math/dfp/Dfp.java@toDouble
++++ org/apache/commons/math/dfp/Dfp.java@toDouble
+@@ -15,7 +15,7 @@
+         y = negate();
+         negate = true;
+     }
+-        int exponent = (int) (y.log10() * 3.32);
++        int exponent = (int) (y.log10() * 3.321928094887362); // changed from 3.32 to more accurate value
+     if (exponent < 0) {
+         exponent--;
+     }

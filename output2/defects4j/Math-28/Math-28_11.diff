@@ -1,0 +1,19 @@
+--- org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
++++ org/apache/commons/math3/optimization/linear/SimplexSolver.java@getPivotRow
+@@ -44,6 +44,7 @@
+         // This heuristic is based on empirical data gathered while investigating MATH-828.
+         Integer minRow = null;
+         int minIndex = tableau.getWidth();
++        outerloop:
+         for (Integer row : minRatioPositions) {
+             int i = tableau.getNumObjectiveFunctions();
+             for (; i < tableau.getWidth() - 1 && minRow != row; i++) {
+@@ -51,6 +52,8 @@
+                     if (i < minIndex) {
+                         minIndex = i;
+                         minRow = row;
++                        // Leave the outer loop if we found an index that satisfies the condition
++                        break outerloop;
+                     }
+                 }
+             }

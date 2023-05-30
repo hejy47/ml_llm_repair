@@ -1,0 +1,39 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -111,11 +111,11 @@
+                 // Only eval if they are the same type
+                 return n;
+             }
+-            Boolean compareResult = compareAsNumbers(op, left, right);
+-            if (compareResult != null) {
+-                result = compareResult;
++            Boolean compareResult1 = compareAsNumbers(op, left, right);
++            if (compareResult1 != null) {
++                result = compareResult1;
+             } else {
+-                return null;
++                return n;
+             }
+             break;
+         case Token.NAME:
+@@ -141,10 +141,16 @@
+                 return n;
+             }
+             switch(op) {
+-                // If we knew the named value wouldn't be NaN, it would be nice
+-                // to handle EQ,NE,LE,GE,SHEQ, and SHNE.
+-                case Token.LT:
+-                case Token.GT:
++                // We can only handle == and != here.
++                // In case of the named constant being NaN, the results can be different.
++                // This depends on how the constant will be converted to number which can be either NaN or 0.
++                // Therefore, for safety we should not handle the other comparisons except for EQ and NE.
++                case Token.SHEQ:
++                case Token.EQ:
++                    result = true;
++                    break;
++                case Token.SHNE:
++                case Token.NE:
+                     result = false;
+                     break;
+                 default:

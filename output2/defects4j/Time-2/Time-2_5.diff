@@ -1,0 +1,38 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,3 +1,7 @@
+ public int compareTo(DurationField durationField) {
+-    return 0;
++    if (durationField instanceof ZeroDurationField) {
++        return 0;
++    }
++    return getUnitMillis() == durationField.getUnitMillis() ? 0 :
++            (getUnitMillis() < durationField.getUnitMillis() ? -1 : 1);
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -27,7 +27,7 @@
+         DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+         if (i > 0) {
+             int compare = lastUnitField.compareTo(loopUnitField);
+-            if (compare < 0 || (compare != 0 && loopUnitField.isSupported() == false)) {
++            if (compare < 0 || (compare != 0 && !loopUnitField.isPrecise())) {
+                 throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+             } else if (compare == 0) {
+                 if (types[i - 1].getRangeDurationType() == null) {
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -10,11 +10,11 @@
+         // find correct insertion point to keep largest-smallest order
+         int i = 0;
+         DurationField unitField = fieldType.getDurationType().getField(iChronology);
+-        if (unitField.isSupported()) {
++        if (unitField.isPrecise()) {
+             for (; i < iTypes.length; i++) {
+                 DateTimeFieldType loopType = iTypes[i];
+                 DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+-                if (loopUnitField.isSupported()) {
++                if (loopUnitField.isPrecise()) {
+                     int compare = unitField.compareTo(loopUnitField);
+                     if (compare > 0) {
+                         break;

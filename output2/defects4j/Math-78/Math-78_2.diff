@@ -1,0 +1,16 @@
+--- org/apache/commons/math/ode/events/EventState.java@evaluateStep
++++ org/apache/commons/math/ode/events/EventState.java@evaluateStep
+@@ -6,7 +6,12 @@
+         final double h = (t1 - t0) / n;
+         double ta = t0;
+         double ga = g0;
+-        double tb = t0 + (interpolator.isForward() ? convergence : -convergence);
++        double tb;
++        if (interpolator.isForward()) {
++            tb = t0 + convergence;
++        } else {
++            tb = t0 - convergence;
++        }
+         for (int i = 0; i < n; ++i) {
+             // evaluate handler value at the end of the substep
+             tb += h;

@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -10,6 +10,7 @@
+         case Token.DEC:
+             return true;
+         case Token.FUNCTION:
++        case Token.TRY:
+             return false;
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -16,9 +16,10 @@
+     // like references to the initial property, so they are renamed alike.
+     ObjectType foundType = null;
+     ObjectType objType = ObjectType.cast(type);
+-    while (objType != null && objType.getImplicitPrototype() != objType) {
++    while (objType != null) {
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
++            break;
+         }
+         objType = objType.getImplicitPrototype();
+     }

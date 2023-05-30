@@ -1,0 +1,106 @@
+--- org/apache/commons/lang/Entities.java@unescape
++++ org/apache/commons/lang/Entities.java@unescape
+@@ -3,8 +3,8 @@
+     if (firstAmp < 0) {
+         return str;
+     }
+-    StringBuffer buf = new StringBuffer(str.length());
+-    buf.append(str.substring(0, firstAmp));
++    StringBuilder buf = new StringBuilder(str.length());
++    buf.append(str, 0, firstAmp);
+     for (int i = firstAmp; i < str.length(); ++i) {
+         char ch = str.charAt(i);
+         if (ch == '&') {
+@@ -20,33 +20,32 @@
+                 continue;
+             }
+             String entityName = str.substring(i + 1, semi);
+-            int entityValue;
+-            if (entityName.length() == 0) {
+-                entityValue = -1;
+-            } else if (entityName.charAt(0) == '#') {
+-                if (entityName.length() == 1) {
+-                    entityValue = -1;
+-                } else {
+-                    char charAt1 = entityName.charAt(1);
+-                    try {
+-                        if (charAt1 == 'x' || charAt1 == 'X') {
+-                            entityValue = Integer.valueOf(entityName.substring(2), 16).intValue();
+-                        } else {
+-                            entityValue = Integer.parseInt(entityName.substring(1));
+-                        }
+-                    } catch (NumberFormatException ex) {
+-                        entityValue = -1;
++            int entityValue = -1;
++
++            if (entityName.length() > 1 && entityName.charAt(0) == '#') {
++                // Handle numerical character references
++                try {
++                    if (entityName.charAt(1) == 'x' || entityName.charAt(1) == 'X') {
++                        entityValue = Integer.parseInt(entityName.substring(2), 16);
++                    } else {
++                        entityValue = Integer.parseInt(entityName.substring(1), 10);
+                     }
++                    buf.append((char) entityValue);
++                } catch (NumberFormatException ex) {
++                    buf.append('&');
++                    buf.append(entityName);
++                    buf.append(';');
+                 }
+             } else {
++                // Handle named character references
+                 entityValue = this.entityValue(entityName);
+-            }
+-            if (entityValue == -1) {
+-                buf.append('&');
+-                buf.append(entityName);
+-                buf.append(';');
+-            } else {
+-                buf.append((char) (entityValue));
++                if (entityValue == -1) {
++                    buf.append('&');
++                    buf.append(entityName);
++                    buf.append(';');
++                } else {
++                    buf.append((char) entityValue);
++                }
+             }
+             i = semi;
+         } else {
+--- org/apache/commons/lang/Entities.java@unescape1
++++ org/apache/commons/lang/Entities.java@unescape1
+@@ -26,20 +26,14 @@
+             int entityContentLen = entityContent.length();
+             if (entityContentLen > 0) {
+                 if (entityContent.charAt(0) == '#') {
+-                    //escaped value content is an integer (decimal or hexidecimal)
++                    //escaped value content is an integer (decimal or hexadecimal)
+                     if (entityContentLen > 1) {
+                         char isHexChar = entityContent.charAt(1);
+                         try {
+-                            switch(isHexChar) {
+-                                case 'X':
+-                                case 'x':
+-                                    {
+-                                        entityValue = Integer.parseInt(entityContent.substring(2), 16);
+-                                    }
+-                                default:
+-                                    {
+-                                        entityValue = Integer.parseInt(entityContent.substring(1), 10);
+-                                    }
++                            if (isHexChar == 'X' || isHexChar == 'x') {
++                                entityValue = Integer.parseInt(entityContent.substring(2), 16);
++                            } else {
++                                entityValue = Integer.parseInt(entityContent.substring(1));
+                             }
+                         } catch (NumberFormatException e) {
+                         }
+@@ -56,7 +50,7 @@
+             } else {
+                 writer.write(entityValue);
+             }
+-            //move index up to the semi-colon
++            // Move index up to the semi-colon
+             i = semiColonIdx;
+         } else {
+             writer.write(c);

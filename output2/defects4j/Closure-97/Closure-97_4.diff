@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
+@@ -28,7 +28,7 @@
+         }
+         switch(n.getType()) {
+             case Token.LSH:
+-                result = lvalInt << rvalInt;
++                result = (long) lvalInt << rvalInt; // Cast to long to avoid losing bits during shift
+                 break;
+             case Token.RSH:
+                 result = lvalInt >> rvalInt;
+@@ -36,7 +36,7 @@
+             case Token.URSH:
+                 // JavaScript handles zero shifts on signed numbers differently than
+                 // Java as an Java int can not represent the unsigned 32-bit number
+-                // where JavaScript can so use a long here.
++                // where JavaScript can so use a long here. 
+                 result = lvalInt >>> rvalInt;
+                 break;
+             default:

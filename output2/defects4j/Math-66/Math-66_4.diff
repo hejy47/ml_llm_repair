@@ -1,0 +1,32 @@
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@doOptimize
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@doOptimize
+@@ -1,3 +1,3 @@
+ protected double doOptimize() throws MaxIterationsExceededException, FunctionEvaluationException {
+-    throw new UnsupportedOperationException();
++    throw new UnsupportedOperationException("Not supported yet.");
+ }
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@optimize3
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@optimize3
+@@ -1,3 +1,3 @@
+ public double optimize(final UnivariateRealFunction f, final GoalType goalType, final double min, final double max) throws MaxIterationsExceededException, FunctionEvaluationException {
+-    return optimize(f, goalType, min, max, min + GOLDEN_SECTION * (max - min));
++    return optimize(f, goalType, min, max, 0.5 * (min + max));
+ }
+--- org/apache/commons/math/optimization/univariate/BrentOptimizer.java@localMin
++++ org/apache/commons/math/optimization/univariate/BrentOptimizer.java@localMin
+@@ -25,7 +25,7 @@
+     double fv = fx;
+     double fw = fx;
+     int count = 0;
+-    while (count < maximalIterationCount) {
++    while (count < getMaximalIterationCount()) {
+         double m = 0.5 * (a + b);
+         final double tol1 = eps * Math.abs(x) + t;
+         final double tol2 = 2 * tol1;
+@@ -128,5 +128,5 @@
+         }
+         ++count;
+     }
+-    throw new MaxIterationsExceededException(maximalIterationCount);
++    throw new MaxIterationsExceededException(getMaximalIterationCount());
+ }

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
++++ com/google/javascript/jscomp/TypeInference.java@inferTemplatedTypesForCall
+@@ -9,7 +9,7 @@
+     // replace it with UNKNOWN.
+     TemplateTypeReplacer replacer = new TemplateTypeReplacer(registry, inferred);
+     Node callTarget = n.getFirstChild();
+-    FunctionType replacementFnType = fnType.visit(replacer).toMaybeFunctionType();
++    FunctionType replacementFnType = fnType.visit(replacer).toObjectType().autobox().toMaybeFunctionType(); // Add autobox() to avoid issues with passing in primitive types
+     Preconditions.checkNotNull(replacementFnType);
+     callTarget.setJSType(replacementFnType);
+     n.setJSType(replacementFnType.getReturnType());

@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
++++ com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
+@@ -13,9 +13,18 @@
+             List<Ref> refs = Lists.newArrayList(name.getRefs());
+             for (Ref ref : refs) {
+                 if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {
+-                    // {@code name} meets condition (c). Try to inline it.
+-                    if (inlineAliasIfPossible(ref, namespace)) {
+-                        name.removeRef(ref);
++                    // Check if {@code ref}'s parent is a valid candidate for
++                    // local-alias inlining.
++                    if (ref.node.getParent().getType() == Token.OBJECTLIT ||
++                        ref.node.getParent().getType() == Token.FUNCTION) {
++                        if (((Name)ref.node.getParent().getProp(Node.NAME)).aliasingGets == 0) {
++                            // {@code name} meets condition (c) and its parent
++                            // is a valid candidate for local-alias inlining.
++                            // Try to inline it.
++                            if (inlineAliasIfPossible(ref, namespace)) {
++                                name.removeRef(ref);
++                            }
++                        }
+                     }
+                 }
+             }

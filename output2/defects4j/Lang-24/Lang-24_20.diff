@@ -1,0 +1,15 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@isNumber
++++ org/apache/commons/lang3/math/NumberUtils.java@isNumber
+@@ -6,10 +6,10 @@
+     int sz = chars.length;
+     boolean hasExp = false;
+     boolean hasDecPoint = false;
+-    boolean allowSigns = false;
++    boolean allowSigns = true; // fix: allow signs at the start
+     boolean foundDigit = false;
+     // deal with any possible sign up front
+-    int start = (chars[0] == '-') ? 1 : 0;
++    int start = 0; // fix: remove check for '-' sign
+     if (sz > start + 1) {
+         if (chars[start] == '0' && chars[start + 1] == 'x') {
+             int i = start + 2;

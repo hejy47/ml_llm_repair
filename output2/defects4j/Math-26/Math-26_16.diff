@@ -1,0 +1,11 @@
+--- org/apache/commons/math3/fraction/Fraction.java@Fraction
++++ org/apache/commons/math3/fraction/Fraction.java@Fraction
+@@ -27,7 +27,7 @@
+         p2 = (a1 * p1) + p0;
+         q2 = (a1 * q1) + q0;
+         if ((p2 > overflow) || (q2 > overflow)) {
+-            throw new FractionConversionException(value, p2, q2);
++            throw new FractionConversionException(value, a1, 1l);
+         }
+         double convergent = (double) p2 / (double) q2;
+         if (n < maxIterations && FastMath.abs(convergent - value) > epsilon && q2 < maxDenominator) {

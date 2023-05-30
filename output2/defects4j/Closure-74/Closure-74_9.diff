@@ -1,0 +1,29 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -107,7 +107,7 @@
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (Token.NUMBER != right.getType()) {
++            if (Token.NUMBER != right.getType() && Token.NAME != right.getType()) {
+                 // Only eval if they are the same type
+                 return n;
+             }
+@@ -115,7 +115,7 @@
+             if (compareResult != null) {
+                 result = compareResult;
+             } else {
+-                return null;
++                return n;
+             }
+             break;
+         case Token.NAME:
+@@ -130,7 +130,7 @@
+                     break;
+                 }
+             }
+-            if (Token.NAME != right.getType()) {
++            if (Token.NAME != right.getType() && Token.NUMBER != right.getType()) {
+                 // Only eval if they are the same type
+                 return n;
+             }

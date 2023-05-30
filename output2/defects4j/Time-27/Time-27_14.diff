@@ -1,0 +1,15 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@toFormatter
++++ org/joda/time/format/PeriodFormatterBuilder.java@toFormatter
+@@ -3,9 +3,10 @@
+         throw new IllegalStateException("Builder has created neither a printer nor a parser");
+     }
+     int size = elementPairs.size();
+-    if (size >= 2 && elementPairs.get(0) instanceof Separator) {
++    if (size >= 3 && elementPairs.get(0) instanceof Separator) {
+         Separator sep = (Separator) elementPairs.get(0);
+-        PeriodFormatter f = toFormatter(elementPairs.subList(2, size), notPrinter, notParser);
++        List<Object> remainingPairs = elementPairs.subList(2, size);
++        PeriodFormatter f = toFormatter(remainingPairs, notPrinter, notParser);
+         sep = sep.finish(f.getPrinter(), f.getParser());
+         return new PeriodFormatter(sep, sep);
+     }

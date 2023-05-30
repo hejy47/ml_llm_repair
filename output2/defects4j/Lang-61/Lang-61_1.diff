@@ -1,0 +1,18 @@
+--- org/apache/commons/lang/text/StrBuilder.java@indexOf
++++ org/apache/commons/lang/text/StrBuilder.java@indexOf
+@@ -1,5 +1,5 @@
+ public int indexOf(String str, int startIndex) {
+-    startIndex = (startIndex < 0 ? 0 : startIndex);
++    startIndex = Math.max(startIndex, 0);
+     if (str == null || startIndex >= size) {
+         return -1;
+     }
+@@ -15,7 +15,7 @@
+     }
+     char[] thisBuf = buffer;
+     int len = thisBuf.length - strLen;
+-    outer: for (int i = startIndex; i < len; i++) {
++    outer: for (int i = startIndex; i <= len; i++) {
+         for (int j = 0; j < strLen; j++) {
+             if (str.charAt(j) != thisBuf[i + j]) {
+                 continue outer;

@@ -1,0 +1,131 @@
+--- org/joda/time/chrono/GJChronology.java@getInstance
++++ org/joda/time/chrono/GJChronology.java@getInstance
+@@ -8,13 +8,14 @@
+     }
+     GJChronology chrono;
+     synchronized (cCache) {
+-        ArrayList<GJChronology> chronos = cCache.get(zone);
++        // changed from ArrayList to LinkedList for more efficient removal
++        LinkedList<GJChronology> chronos = cCache.get(zone);
+         if (chronos == null) {
+-            chronos = new ArrayList<GJChronology>(2);
++            chronos = new LinkedList<GJChronology>();
+             cCache.put(zone, chronos);
+         } else {
+-            for (int i = chronos.size(); --i >= 0; ) {
+-                chrono = chronos.get(i);
++            for (Iterator<GJChronology> it = chronos.iterator(); it.hasNext();) {
++                chrono = it.next();
+                 if (minDaysInFirstWeek == chrono.getMinimumDaysInFirstWeek() && cutoverInstant.equals(chrono.getGregorianCutover())) {
+                     return chrono;
+                 }
+@@ -26,7 +27,7 @@
+             chrono = getInstance(DateTimeZone.UTC, cutoverInstant, minDaysInFirstWeek);
+             chrono = new GJChronology(ZonedChronology.getInstance(chrono, zone), chrono.iJulianChronology, chrono.iGregorianChronology, chrono.iCutoverInstant);
+         }
+-        chronos.add(chrono);
++        chronos.addLast(chrono);
+     }
+     return chrono;
+ }
+--- org/joda/time/chrono/GJChronology.java@add
++++ org/joda/time/chrono/GJChronology.java@add
+@@ -1,20 +1,36 @@
+ public long add(long instant, int value) {
+-    if (instant >= iCutover) {
++    if (instant >= iCutover + iGapDuration) {
++        // fixed condition to check for entire gap duration
+         instant = iGregorianField.add(instant, value);
+-        if (instant < iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
+-                instant = gregorianToJulian(instant);
+-            }
++        if (instant < iCutover + iGapDuration && instant >= iCutover) {
++            instant += iGapDuration;
++        }
++    } else if (instant < iCutover - iGapDuration) {
++        // fixed condition to check for entire gap duration
++        instant = iJulianField.add(instant, value);
++        if (instant >= iCutover - iGapDuration && instant < iCutover) {
++            instant -= iGapDuration;
+         }
+     } else {
+-        instant = iJulianField.add(instant, value);
+-        if (instant >= iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
+-                // no special handling for year zero as cutover always after year zero
+-                instant = julianToGregorian(instant);
++        // inside the gap
++        Chronology chrono = (instant >= iCutover ? iGregorianChronology : iJulianChronology);
++        instant = chrono.add(instant, value);
++        // if still in gap, adjust again
++        if (isInGap(instant)) {
++            long end = getGapDurationAfter(instant);
++            int years = chrono.year().get(instant + end);
++            int newYears = years + value;
++            int gapYears = getGregorianYear(iCutover - 1) - 1;  // years in 1st year of gap
++            if (newYears <= gapYears) {
++                newYears = gapYears + 1;
+             }
++            int days = chrono.dayOfYear().get(instant + end);
++            int newDays = days;
++            int maxDays = chrono.daysOfYear(newYears, leapYear(newYears));
++            if (newDays > maxDays) {
++                newDays = maxDays;
++            }
++            instant = chrono.year().set(chrono.dayOfYear().set(instant + end, newDays), newYears);
+         }
+     }
+     return instant;
+--- org/joda/time/chrono/GJChronology.java@add2
++++ org/joda/time/chrono/GJChronology.java@add2
+@@ -1,19 +1,35 @@
+ public long add(long instant, long value) {
+-    if (instant >= iCutover) {
++    if (instant >= iCutover + iGapDuration) {
++        // fixed condition to check for entire gap duration
+         instant = iGregorianField.add(instant, value);
+-        if (instant < iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
+-                instant = gregorianToJulian(instant);
+-            }
++        if (instant < iCutover + iGapDuration && instant >= iCutover) {
++            instant += iGapDuration;
++        }
++    } else if (instant < iCutover - iGapDuration) {
++        // fixed condition to check for entire gap duration
++        instant = iJulianField.add(instant, value);
++        if (instant >= iCutover - iGapDuration && instant < iCutover) {
++            instant -= iGapDuration;
+         }
+     } else {
+-        instant = iJulianField.add(instant, value);
+-        if (instant >= iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
+-                // no special handling for year zero as cutover always after year zero
+-                instant = julianToGregorian(instant);
++        // inside the gap
++        Chronology chrono = (instant >= iCutover ? iGregorianChronology : iJulianChronology);
++        instant = chrono.add(instant, value);
++        // if still in gap, adjust again
++        if (isInGap(instant)) {
++            long end = getGapDurationAfter(instant);
++            int years = chrono.year().get(instant + end);
++            int newYears = years + (int) (value / (long) DateTimeConstants.MILLIS_PER_YEAR);
++            int gapYears = getGregorianYear(iCutover - 1) - 1;  // years in 1st year of gap
++            if (newYears <= gapYears) {
++                newYears = gapYears + 1;
++            }
++            long durationYears = (newYears - years) * (long) DateTimeConstants.MILLIS_PER_YEAR;
++            instant = chrono.add(instant, durationYears + end - instant);
++            int days = chrono.dayOfYear().get(instant);
++            int maxDays = chrono.daysOfYear(newYears, leapYear(newYears));
++            if (days > maxDays) {
++                instant = instant - (days - maxDays) * (long) DateTimeConstants.MILLIS_PER_DAY;
+             }
+         }
+     }

@@ -1,0 +1,76 @@
+--- com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
++++ com/google/javascript/jscomp/FunctionToBlockMutator.java@makeLocalNamesUnique
+@@ -2,5 +2,41 @@
+     Supplier<String> idSupplier = compiler.getUniqueNameIdSupplier();
+     // Make variable names unique to this instance.
+     NodeTraversal.traverse(compiler, fnNode, new MakeDeclaredNamesUnique(new InlineRenamer(idSupplier, "inline_", isCallInLoop)));
+-    // Make label names unique to this instance.
++
++    // Get all declared names in this function.
++    Set<String> declaredNames = new HashSet<>();
++    NodeTraversal.traverse(compiler, fnNode, new NodeTraversal.AbstractPostOrderCallback() {
++        @Override
++        public void visit(NodeTraversal t, Node n, Node parent) {
++            if (n.isName()) {
++                declaredNames.add(n.getString());
++            }
++        }
++    });
++
++    // Make label names unique to this instance, skipping names that conflict with declared names.
++    NodeTraversal.traverse(compiler, fnNode, new NodeTraversal.Callback() {
++        @Override
++        public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
++            return !n.isFunction();
++        }
++
++        @Override
++        public void visit(NodeTraversal t, Node n, Node parent) {
++            if (n.isLabel()) {
++                String labelName = n.getFirstChild().getString();
++                LabelInfo li = getLabelInfo(labelName);
++                if (li.referenced) {
++                    String newName = getNameForId(li.id);
++                    if (!labelName.equals(newName) && !declaredNames.contains(newName)) {
++                        n.getFirstChild().setString(newName);
++                        compiler.reportCodeChange();
++                    }
++                } else {
++                    n.detach();
++                    compiler.reportCodeChange();
++                }
++            }
++        }
++    });
+ }
+--- com/google/javascript/jscomp/RenameLabels.java@visitLabel
++++ com/google/javascript/jscomp/RenameLabels.java@visitLabel
+@@ -7,9 +7,25 @@
+     if (li.referenced) {
+         String newName = getNameForId(li.id);
+         if (!name.equals(newName)) {
+-            // ... and it is used, give it the short name.
+-            nameNode.setString(newName);
+-            compiler.reportCodeChange();
++            // ... and it is used, give it the short name, unless it conflicts with a declared name.
++            Set<String> declaredNames = new HashSet<>();
++            NodeTraversal.traverse(compiler.getRoot(), new NodeTraversal.Callback() {
++                @Override
++                public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
++                    return !n.isFunction();
++                }
++
++                @Override
++                public void visit(NodeTraversal t, Node n, Node parent) {
++                    if (n.isName()) {
++                        declaredNames.add(n.getString());
++                    }
++                }
++            });
++            if (!declaredNames.contains(newName)) {
++                nameNode.setString(newName);
++                compiler.reportCodeChange();
++            }
+         }
+     } else {
+         // ... and it is not referenced, just remove it.

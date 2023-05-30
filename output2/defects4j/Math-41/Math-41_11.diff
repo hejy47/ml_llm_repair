@@ -1,0 +1,16 @@
+--- org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
++++ org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
+@@ -17,9 +17,11 @@
+                 sumWts += weights[i];
+             }
+             if (isBiasCorrected) {
+-                var = (accum - (accum2 * accum2 / sumWts)) / (sumWts - 1.0);
++                double correctionFactor = (sumWts / (sumWts - 1));
++                var = (accum - ((accum2 * accum2) / sumWts)) / (sumWts - 1.0);
++                var *= correctionFactor;
+             } else {
+-                var = (accum - (accum2 * accum2 / sumWts)) / sumWts;
++                var = (accum - ((accum2 * accum2) / sumWts)) / sumWts;
+             }
+         }
+     }

@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -45,8 +45,10 @@
+                 if (docInfo.isConstructor() && isValidPrivateConstructorAccess(parent)) {
+                     return;
+                 }
+-                // private access is not allowed outside the file from a different
+-                // enclosing class.
++                // private access is not allowed outside the file from the same enclosing class or its subclass.
++                if (ownerType.isSubtype(currentClass)) {
++                    return;
++                }
+                 compiler.report(t.makeError(getprop, BAD_PRIVATE_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+             } else if (visibility == Visibility.PROTECTED) {
+                 // There are 3 types of legal accesses of a protected property:

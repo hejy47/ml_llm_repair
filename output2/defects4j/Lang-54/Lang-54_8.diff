@@ -1,0 +1,17 @@
+--- org/apache/commons/lang/LocaleUtils.java@toLocale
++++ org/apache/commons/lang/LocaleUtils.java@toLocale
+@@ -26,8 +26,13 @@
+         if (len == 5) {
+             return new Locale(str.substring(0, 2), str.substring(3, 5));
+         } else {
+-            if (str.charAt(5) != '_') {
++            if (len < 8 || str.charAt(5) != '_' || !Character.isLetterOrDigit(str.charAt(6))) {
+                 throw new IllegalArgumentException("Invalid locale format: " + str);
++            }
++            for (int i = 7; i < len; i++) {
++                if (!Character.isLetterOrDigit(str.charAt(i)) && str.charAt(i) != '_') {
++                    throw new IllegalArgumentException("Invalid locale format: " + str);
++                }
+             }
+             return new Locale(str.substring(0, 2), str.substring(3, 5), str.substring(6));
+         }

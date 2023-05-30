@@ -1,0 +1,13 @@
+--- org/apache/commons/math3/util/ContinuedFraction.java@evaluate
++++ org/apache/commons/math3/util/ContinuedFraction.java@evaluate
+@@ -51,6 +51,10 @@
+         if (FastMath.abs(deltaN - 1.0) < epsilon) {
+             break;
+         }
++        // add check for when the algorithm diverges
++        if (n > 1 && FastMath.abs(deltaN - 1.0) < 0.5*(1.0 - eps)) {
++            throw new NonConvergenceException("Continued fraction for x=" + x + " diverges.");
++        }
+         dPrev = q1;
+         cPrev = cN / q2;
+         p0 = hPrev;

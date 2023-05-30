@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -95,7 +95,15 @@
+                         }
+                 }
+             }
+-            name = n.getQualifiedName();
++            // Get the qualified name for the getprop node, excluding any possible object literals
++            Node current = n;
++            while (current.getType() == Token.GETPROP) {
++                current = current.getFirstChild();
++                if (current.isObjectLit()) {
++                    return;
++                }
++            }
++            name = current.getQualifiedName();
+             if (name == null) {
+                 return;
+             }

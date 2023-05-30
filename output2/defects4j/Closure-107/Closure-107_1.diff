@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -23,8 +23,8 @@
+     for (FormattingOption formattingOption : flags.formatting) {
+         formattingOption.applyToOptions(options);
+     }
+-    options.closurePass = flags.processClosurePrimitives;
+-    options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives;
++    options.setProcessClosurePrimitives(flags.processClosurePrimitives); // Fix: Use setProcessClosurePrimitives instead of closurePass
++    options.setProcessJqueryPrimitives(CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives); // Fix: Use setProcessJqueryPrimitives instead of jqueryPass
+     options.angularPass = flags.angularPass;
+     if (!flags.translationsFile.isEmpty()) {
+         try {

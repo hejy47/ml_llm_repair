@@ -1,0 +1,18 @@
+--- org/apache/commons/lang3/StringUtils.java@containsAny
++++ org/apache/commons/lang3/StringUtils.java@containsAny
+@@ -11,8 +11,13 @@
+         for (int j = 0; j < searchLength; j++) {
+             if (searchChars[j] == ch) {
+                 // ch is a supplementary character
+-                // ch is in the Basic Multilingual Plane
+-                return true;
++                if (Character.isHighSurrogate(ch)) {
++                    if (j < searchLength - 1 && Character.isLowSurrogate(searchChars[j + 1])) {
++                        return true;
++                    }
++                } else {
++                    return true;
++                }
+             }
+         }
+     }

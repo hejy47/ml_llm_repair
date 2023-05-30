@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
++++ com/google/javascript/jscomp/ReferenceCollectingCallback.java@isAssignedOnceInLifetime
+@@ -7,7 +7,7 @@
+     for (BasicBlock block = ref.getBasicBlock(); block != null; block = block.getParent()) {
+         if (block.isFunction) {
+             break;
+-        } else if (block.isLoop) {
++        } else if (block.isLoopHeader()) { // Fixed error, check if block is loop header instead of isLoop
+             return false;
+         }
+     }

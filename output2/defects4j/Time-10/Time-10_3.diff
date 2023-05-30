@@ -1,0 +1,11 @@
+--- org/joda/time/base/BaseSingleFieldPeriod.java@between
++++ org/joda/time/base/BaseSingleFieldPeriod.java@between
+@@ -11,7 +11,7 @@
+             throw new IllegalArgumentException("ReadablePartial objects must have the same set of fields");
+         }
+     }
+-    if (DateTimeUtils.isContiguous(start) == false) {
++    if (!DateTimeUtils.isContiguous(start)) {
+         throw new IllegalArgumentException("ReadablePartial objects must be contiguous");
+     }
+     Chronology chrono = DateTimeUtils.getChronology(start.getChronology()).withUTC();

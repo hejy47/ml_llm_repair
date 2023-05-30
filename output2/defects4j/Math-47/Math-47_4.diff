@@ -1,0 +1,63 @@
+--- org/apache/commons/math/complex/Complex.java@Complex
++++ org/apache/commons/math/complex/Complex.java@Complex
+@@ -3,4 +3,26 @@
+     this.imaginary = imaginary;
+     isNaN = Double.isNaN(real) || Double.isNaN(imaginary);
+     isInfinite = !isNaN && (Double.isInfinite(real) || Double.isInfinite(imaginary));
++    // Fix NaN and infinite values
++    if (Double.isNaN(real)) {
++        this.real = 0.0;
++        this.imaginary = 0.0;
++        isNaN = true;
++        isInfinite = false;
++    } else if (Double.isInfinite(real) && !Double.isNaN(imaginary)) {
++        this.real = Double.POSITIVE_INFINITY;
++        this.imaginary = 0.0;
++        isNaN = false;
++        isInfinite = true;
++    } else if (Double.isInfinite(imaginary) && !Double.isNaN(real)) {
++        this.real = 0.0;
++        this.imaginary = Double.POSITIVE_INFINITY;
++        isNaN = false;
++        isInfinite = true;
++    } else if (Double.isInfinite(real) && Double.isInfinite(imaginary)) {
++        this.real = Double.POSITIVE_INFINITY;
++        this.imaginary = Double.POSITIVE_INFINITY;
++        isNaN = false;
++        isInfinite = true;
++    }
+ }
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -3,14 +3,18 @@
+     if (isNaN || divisor.isNaN) {
+         return NaN;
+     }
+-    if (divisor.getReal() == 0.0 && divisor.getImaginary() == 0.0) {
++    if (divisor.real == 0.0 && divisor.imaginary == 0.0) {
+         return NaN;
+     }
+     if (divisor.isInfinite() && !isInfinite()) {
+         return ZERO;
+     }
+-    final double c = divisor.getReal();
+-    final double d = divisor.getImaginary();
++    final double c = divisor.real;
++    final double d = divisor.imaginary;
++    // Fix division by zero error
++    if (c == 0.0 && d == 0.0) {
++        return NaN;
++    }
+     if (FastMath.abs(c) < FastMath.abs(d)) {
+         double q = c / d;
+         double denominator = c * q + d;
+--- org/apache/commons/math/complex/Complex.java@divide2
++++ org/apache/commons/math/complex/Complex.java@divide2
+@@ -2,6 +2,7 @@
+     if (isNaN || Double.isNaN(divisor)) {
+         return NaN;
+     }
++    // Fix division by zero error
+     if (divisor == 0d) {
+         return NaN;
+     }

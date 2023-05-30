@@ -1,0 +1,10 @@
+--- org/apache/commons/math/distribution/FDistributionImpl.java@getInitialDomain
++++ org/apache/commons/math/distribution/FDistributionImpl.java@getInitialDomain
+@@ -1,6 +1,6 @@
+ protected double getInitialDomain(double p) {
+     double ret;
+-    double d = getDenominatorDegreesOfFreedom();
++    double d = getDegreesOfFreedom();
+     // use mean
+     ret = d / (d - 2.0);
+     return ret;

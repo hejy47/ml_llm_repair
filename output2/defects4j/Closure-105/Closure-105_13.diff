@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -19,6 +19,7 @@
+                 sb.append(joinString);
+             }
+             sb.append(NodeUtil.getStringValue(elem));
++            elem = elem.getNext(); // Fix: increment elem pointer to skip already folded nodes
+         } else {
+             if (sb.length() > 0) {
+                 // + 2 for the quotes.
+@@ -28,8 +29,8 @@
+             }
+             foldedSize += InlineCostEstimator.getCost(elem);
+             arrayFoldedChildren.add(elem);
++            elem = elem.getNext();
+         }
+-        elem = elem.getNext();
+     }
+     if (sb.length() > 0) {
+         // + 2 for the quotes.

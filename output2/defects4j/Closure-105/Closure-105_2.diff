@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -27,7 +27,7 @@
+                 sb = new StringBuilder();
+             }
+             foldedSize += InlineCostEstimator.getCost(elem);
+-            arrayFoldedChildren.add(elem);
++            arrayFoldedChildren.add(elem.cloneTree());
+         }
+         elem = elem.getNext();
+     }

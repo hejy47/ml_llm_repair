@@ -1,0 +1,23 @@
+--- org/apache/commons/lang/ClassUtils.java@getShortClassName
++++ org/apache/commons/lang/ClassUtils.java@getShortClassName
+@@ -12,6 +12,7 @@
+     String out = className.substring(lastDotIdx + 1);
+     if (innerIdx != -1) {
+         out = out.replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR);
++        out = out.substring(0, innerIdx - lastDotIdx - 1) + out.substring(innerIdx - lastDotIdx);
+     }
+     return out;
+ }
+--- org/apache/commons/lang/ClassUtils.java@getPackageName
++++ org/apache/commons/lang/ClassUtils.java@getPackageName
+@@ -8,5 +8,9 @@
+     if (i == -1) {
+         return StringUtils.EMPTY;
+     }
+-    return className.substring(0, i);
++    int j = className.lastIndexOf(INNER_CLASS_SEPARATOR_CHAR);
++    if (j == -1) {
++        return className.substring(0, i);
++    }
++    return className.substring(0, Math.min(i, j));
+ }

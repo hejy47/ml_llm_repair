@@ -1,0 +1,40 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -22,28 +22,17 @@
+     }
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]
+     Node fnParam = NodeUtil.getFunctionParameters(fnNode).getFirstChild();
+-    while (cArg != null || fnParam != null) {
++    while (cArg != null && fnParam != null) {
+         // For each named parameter check if a mutable argument use more than one.
+-        if (fnParam != null) {
+-            if (cArg != null) {
+-                // Check for arguments that are evaluated more than once.
+-                // Note: Unlike block inlining, there it is not possible that a
+-                // parameter reference will be in a loop.
+-                if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+-                    return CanInlineResult.NO;
+-                }
+-            }
+-            // Move to the next name.
+-            fnParam = fnParam.getNext();
++        if (NodeUtil.isName(fnParam) && NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++            return CanInlineResult.NO;
+         }
+-        // For every call argument check for side-effects, even if there
+-        // isn't a named parameter to match.
+-        if (cArg != null) {
+-            if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
+-                return CanInlineResult.NO;
+-            }
+-            cArg = cArg.getNext();
+-        }
++        cArg = cArg.getNext();
++        fnParam = fnParam.getNext();
++    }
++    // If either argument or parameter list still has elements, return NO.
++    if (cArg != null || fnParam != null) {
++        return CanInlineResult.NO;
+     }
+     return CanInlineResult.YES;
+ }

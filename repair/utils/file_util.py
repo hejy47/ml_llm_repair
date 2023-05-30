@@ -7,15 +7,23 @@ logger = logging.getLogger()
 def read_file_to_str(file_path):
     assert os.path.exists(file_path)
     file_str = ""
-    with open(file_path, 'r') as f:
-        file_str = f.read()
+    try:
+        with open(file_path, 'r') as f:
+            file_str = f.read()
+    except:
+        with open(file_path, 'r', encoding="ISO-8859-1") as f:
+            file_str = f.read()
     return file_str
 
 def read_file_to_lines(file_path):
     assert os.path.exists(file_path)
     file_lines = []
-    with open(file_path, 'r') as f:
-        file_lines = f.readlines()
+    try:
+        with open(file_path, 'r') as f:
+            file_lines = f.readlines()
+    except:
+        with open(file_path, 'r', encoding="ISO-8859-1") as f:
+            file_lines = f.readlines()
     return file_lines
 
 def remove_file(file_path):

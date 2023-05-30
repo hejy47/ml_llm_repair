@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitCall
++++ com/google/javascript/jscomp/TypeCheck.java@visitCall
+@@ -1,7 +1,7 @@
+ private void visitCall(NodeTraversal t, Node n) {
+     Node child = n.getFirstChild();
+     JSType childType = getJSType(child).restrictByNotNullOrUndefined();
+-    if (!childType.canBeCalled()) {
++    if (!childType.isSubtypeOf(getNativeType(JSTypeNative.FUNCTION_INSTANCE_TYPE))) {
+         report(t, n, NOT_CALLABLE, childType.toString());
+         ensureTyped(t, n);
+         return;
+@@ -23,7 +23,7 @@
+         if (functionType.isConstructor() && !functionType.isNativeObjectType() && (functionType.getReturnType().isUnknownType() || functionType.getReturnType().isVoidType() || !isExtern)) {
+             report(t, n, CONSTRUCTOR_NOT_CALLABLE, childType.toString());
+         }
+-        // Functions with explcit 'this' types must be called in a GETPROP
++        // Functions with explicit 'this' types must be called in a GETPROP
+         // or GETELEM.
+         visitParameterList(t, n, functionType);
+         ensureTyped(t, n, functionType.getReturnType());

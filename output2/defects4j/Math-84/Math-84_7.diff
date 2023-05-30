@@ -1,0 +1,41 @@
+--- org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
++++ org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
+@@ -10,18 +10,33 @@
+         if (comparator.compare(reflected, best) < 0) {
+             // compute the expanded simplex
+             final RealPointValuePair[] reflectedSimplex = simplex;
+-            final RealPointValuePair expanded = evaluateNewSimplex(original, khi, comparator);
+-            if (comparator.compare(reflected, expanded) <= 0) {
++            final RealPointValuePair expanded = evaluateNewSimplex(reflectedSimplex, khi, comparator);
++            if (comparator.compare(expanded, reflected) < 0) {
++                // accept the expanded simplex
++                simplex = reflectedSimplex;
++            } else {
+                 // accept the reflected simplex
+-                simplex = reflectedSimplex;
++                simplex = reflected;
+             }
+-            return;
++            continue;
+         }
+         // compute the contracted simplex
+         final RealPointValuePair contracted = evaluateNewSimplex(original, gamma, comparator);
+         if (comparator.compare(contracted, best) < 0) {
+             // accept the contracted simplex
+-            // check convergence
++            simplex = contracted;
++            continue;
++        }
++        // check convergence
++        final RealPointValuePair[] newSimplex = simplex;
++        boolean isConverged = true;
++        for (int i = 1; i < newSimplex.length; i++) {
++            if (comparator.compare(newSimplex[i], newSimplex[0]) > 0) {
++                isConverged = false;
++                break;
++            }
++        }
++        if (isConverged) {
+             return;
+         }
+     }

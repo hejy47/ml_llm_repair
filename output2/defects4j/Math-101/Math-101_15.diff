@@ -1,0 +1,25 @@
+--- org/apache/commons/math/complex/ComplexFormat.java@parse
++++ org/apache/commons/math/complex/ComplexFormat.java@parse
+@@ -46,16 +46,17 @@
+         return null;
+     }
+     // parse imaginary character
+-    int n = getImaginaryCharacter().length();
++    String imaginaryCharacter = getImaginaryCharacter();
++    int n = imaginaryCharacter.length();
+     startIndex = pos.getIndex();
+     int endIndex = startIndex + n;
+-    if (source.substring(startIndex, endIndex).compareTo(getImaginaryCharacter()) != 0) {
++    if (source.length() >= endIndex && source.substring(startIndex, endIndex).compareTo(imaginaryCharacter) == 0) {
++        pos.setIndex(endIndex);
++        return new Complex(re.doubleValue(), im.doubleValue() * sign);
++    } else {
+         // set index back to initial, error index should be the start index
+-        // character examined.
+         pos.setIndex(initialIndex);
+         pos.setErrorIndex(startIndex);
+         return null;
+     }
+-    pos.setIndex(endIndex);
+-    return new Complex(re.doubleValue(), im.doubleValue() * sign);
+ }

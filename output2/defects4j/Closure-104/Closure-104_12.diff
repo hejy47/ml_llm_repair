@@ -1,0 +1,27 @@
+--- com/google/javascript/rhino/jstype/UnionType.java@meet
++++ com/google/javascript/rhino/jstype/UnionType.java@meet
+@@ -11,15 +11,19 @@
+                 builder.addAlternate(otherAlternate);
+             }
+         }
+-    } else if (that.isSubtype(this)) {
+-        builder.addAlternate(that);
++    } else {
++        if (that.isSubtype(this)) {
++            builder.addAlternate(that);
++        }
+     }
+     JSType result = builder.build();
+     if (result != null) {
+         return result;
+-    } else if (this.isObject() && that.isObject()) {
+-        return getNativeType(JSTypeNative.NO_OBJECT_TYPE);
+     } else {
+-        return getNativeType(JSTypeNative.NO_TYPE);
++        if (this.isObject() && that.isObject()) {
++            return getNativeType(JSTypeNative.NO_OBJECT_TYPE);
++        } else {
++            return getNativeType(JSTypeNative.NO_TYPE);
++        }
+     }
+ }

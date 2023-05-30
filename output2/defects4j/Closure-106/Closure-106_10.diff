@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@canCollapseUnannotatedChildNames
++++ com/google/javascript/jscomp/GlobalNamespace.java@canCollapseUnannotatedChildNames
+@@ -8,5 +8,6 @@
+     if (isClassOrEnum) {
+         return true;
+     }
+-    return (type == Type.FUNCTION || aliasingGets == 0) && (parent == null || parent.canCollapseUnannotatedChildNames());
++    // Added condition to check for aliasingSets being 0.
++    return (type == Type.FUNCTION || aliasingGets == 0 || aliasingSets == 0) && (parent == null || parent.canCollapseUnannotatedChildNames());
+ }
+--- com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
++++ com/google/javascript/rhino/JSDocInfoBuilder.java@recordBlockDescription
+@@ -1,6 +1,10 @@
+ public boolean recordBlockDescription(String description) {
+     if (parseDocumentation) {
+-        populated = true;
++        // Changed the if statement to check for false instead of true.
++        // Otherwise, it would always set populated to true.
++        if (!populated) {
++            populated = true;
++        }
+     }
+     return currentInfo.documentBlock(description);
+ }

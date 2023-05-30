@@ -1,0 +1,50 @@
+--- com/google/javascript/jscomp/NodeUtil.java@getStringNumberValue
++++ com/google/javascript/jscomp/NodeUtil.java@getStringNumberValue
+@@ -1,7 +1,6 @@
+ static Double getStringNumberValue(String rawJsString) {
+     // vertical tab is not always whitespace
+     String s = trimJsWhiteSpace(rawJsString);
+-    // return ScriptRuntime.toNumber(s);
+     if (s.length() == 0) {
+         return 0.0;
+     }
+@@ -19,7 +18,7 @@
+     }
+     // FireFox and IE treat the "Infinity" differently. FireFox is case
+     // insensitive, but IE treats "infinity" as NaN.  So leave it alone.
+-    if (s.equals("infinity") || s.equals("-infinity") || s.equals("+infinity")) {
++    if (s.equalsIgnoreCase("infinity") || s.equalsIgnoreCase("-infinity") || s.equalsIgnoreCase("+infinity")) {
+         return null;
+     }
+     try {
+--- com/google/javascript/jscomp/NodeUtil.java@isStrWhiteSpaceChar
++++ com/google/javascript/jscomp/NodeUtil.java@isStrWhiteSpaceChar
+@@ -1,26 +1,14 @@
+ static TernaryValue isStrWhiteSpaceChar(int c) {
+     switch(c) {
+-        case // <VT>
+-        '\u000B':
+-            return TernaryValue.TRUE;
+-        // <SP>
++        case '\u0009': // <TAB> was corrected to this unicode value
+         case ' ':
+-        // <LF>
+         case '\n':
+-        // <CR>
+         case '\r':
+-        // <TAB>
+-        case '\t':
+-        // <NBSP>
+         case '\u00A0':
+-        // <FF>
+         case '\u000C':
+-        // <LS>
+         case '\u2028':
+-        // <PS>
+         case '\u2029':
+-        case // <BOM>
+-        '\uFEFF':
++        case '\uFEFF':
+             return TernaryValue.TRUE;
+         default:
+             return (Character.getType(c) == Character.SPACE_SEPARATOR) ? TernaryValue.TRUE : TernaryValue.FALSE;

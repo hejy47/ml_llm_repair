@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -2,7 +2,7 @@
+     // Unlike other operations, ADD operands are not always converted
+     // to Number.
+     if (opType == Token.ADD && (NodeUtil.mayBeString(left, false) || NodeUtil.mayBeString(right, false))) {
+-        return null;
++        return Node.newString(Token.ADD, ""); // Return an empty string instead of null to prevent NullPointerExceptions
+     }
+     double result;
+     // TODO(johnlenz): Handle NaN with unknown value. BIT ops convert NaN
+@@ -55,7 +55,7 @@
+     }
+     // TODO(johnlenz): consider removing the result length check.
+     // length of the left and right value plus 1 byte for the operator.
+-    if (String.valueOf(result).length() <= String.valueOf(lval).length() + String.valueOf(rval).length() + 1 && // Do not try to fold arithmetic for numbers > 2^53. After that
++    if (String.valueOf(result).length() <= Math.max(String.valueOf(lval).length(), String.valueOf(rval).length()) + (opType == Token.ADD ? 1 : 0) && // Do not try to fold arithmetic for numbers > 2^53. After that
+     // point, fixed-point math starts to break down and become inaccurate.
+     Math.abs(result) <= MAX_FOLD_NUMBER) {
+         Node newNumber = Node.newNumber(result);

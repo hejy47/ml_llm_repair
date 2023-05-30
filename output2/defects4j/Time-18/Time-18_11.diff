@@ -1,0 +1,21 @@
+--- org/joda/time/chrono/GJChronology.java@getDateTimeMillis
++++ org/joda/time/chrono/GJChronology.java@getDateTimeMillis
+@@ -5,14 +5,16 @@
+     }
+     // Assume date is Gregorian.
+     long instant;
+-    instant = iGregorianChronology.getDateTimeMillis(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
++    instant = gregorianToFixed(year, monthOfYear, dayOfMonth, isLeapYear(year));
++    
+     if (instant < iCutoverMillis) {
+         // Maybe it's Julian.
+-        instant = iJulianChronology.getDateTimeMillis(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
++        instant = julianToFixed(year, monthOfYear, dayOfMonth, isLeapYear(year));
+         if (instant >= iCutoverMillis) {
+             // Okay, it's in the illegal cutover gap.
+             throw new IllegalArgumentException("Specified date does not exist");
+         }
+     }
++    instant += timeToMillis(hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
+     return instant;
+ }

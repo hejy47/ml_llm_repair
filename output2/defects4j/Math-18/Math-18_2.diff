@@ -1,0 +1,45 @@
+--- org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@encode
++++ org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@encode
+@@ -5,7 +5,11 @@
+     double[] res = new double[x.length];
+     for (int i = 0; i < x.length; i++) {
+         double diff = boundaries[1][i] - boundaries[0][i];
+-        res[i] = (x[i] - boundaries[0][i]) / diff;
++        if (diff == 0) {
++            res[i] = 0;
++        } else {
++            res[i] = (x[i] - boundaries[0][i]) / diff;
++        }
+     }
+     return res;
+ }
+--- org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@decode
++++ org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@decode
+@@ -5,7 +5,11 @@
+     double[] res = new double[x.length];
+     for (int i = 0; i < x.length; i++) {
+         double diff = boundaries[1][i] - boundaries[0][i];
+-        res[i] = diff * x[i] + boundaries[0][i];
++        if (diff == 0) {
++            res[i] = boundaries[0][i];
++        } else {
++            res[i] = diff * x[i] + boundaries[0][i];
++        }
+     }
+     return res;
+ }
+--- org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@isFeasible
++++ org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@isFeasible
+@@ -3,10 +3,10 @@
+         return true;
+     }
+     for (int i = 0; i < x.length; i++) {
+-        if (x[i] < 0) {
++        if (x[i] < boundaries[0][i]) {
+             return false;
+         }
+-        if (x[i] > 1.0) {
++        if (x[i] > boundaries[1][i]) {
+             return false;
+         }
+     }

@@ -1,0 +1,12 @@
+--- org/apache/commons/lang3/StringUtils.java@equals
++++ org/apache/commons/lang3/StringUtils.java@equals
+@@ -7,5 +7,9 @@
+     if (cs1 == null || cs2 == null) {
+         return false;
+     }
++    // Check for class type compatibility before calling the equals method
++    if (cs1.getClass() != cs2.getClass()) {
++        return false;
++    }
+     return cs1.equals(cs2);
+ }

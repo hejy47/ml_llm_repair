@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitNew
++++ com/google/javascript/jscomp/TypeCheck.java@visitNew
+@@ -9,7 +9,7 @@
+         } else {
+             ensureTyped(t, n);
+         }
+-    } else {
++    } else if (!type.isAllType()) { // Check if NOT an instance of Object
+         report(t, n, NOT_A_CONSTRUCTOR);
+         ensureTyped(t, n);
+     }

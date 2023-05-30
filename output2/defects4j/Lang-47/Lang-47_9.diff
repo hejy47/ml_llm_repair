@@ -1,0 +1,42 @@
+--- org/apache/commons/lang/text/StrBuilder.java@appendFixedWidthPadLeft
++++ org/apache/commons/lang/text/StrBuilder.java@appendFixedWidthPadLeft
+@@ -6,14 +6,16 @@
+         int strLen = str.length();
+         if (strLen >= width) {
+             str.getChars(strLen - width, strLen, buffer, size);
++            size += width;
+         } else {
+             int padLen = width - strLen;
+             for (int i = 0; i < padLen; i++) {
+                 buffer[size + i] = padChar;
+             }
+-            str.getChars(0, strLen, buffer, size + padLen);
++            size += padLen;
++            str.getChars(0, strLen, buffer, size);
++            size += strLen;
+         }
+-        size += width;
+     }
+     return this;
+ }
+--- org/apache/commons/lang/text/StrBuilder.java@appendFixedWidthPadRight
++++ org/apache/commons/lang/text/StrBuilder.java@appendFixedWidthPadRight
+@@ -5,14 +5,16 @@
+         int strLen = str.length();
+         if (strLen >= width) {
+             str.getChars(0, width, buffer, size);
++            size += width;
+         } else {
+             int padLen = width - strLen;
+             str.getChars(0, strLen, buffer, size);
++            size += strLen;
+             for (int i = 0; i < padLen; i++) {
+-                buffer[size + strLen + i] = padChar;
++                buffer[size + i] = padChar;
+             }
++            size += padLen;
+         }
+-        size += width;
+     }
+     return this;
+ }

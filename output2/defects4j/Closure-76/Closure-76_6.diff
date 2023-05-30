@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -26,5 +26,6 @@
+         }
+         n = n.getParent();
+     }
+-    return false;
++    // If the last node is a variable read, we should consider it as live. 
++    return (n != null && NodeUtil.isName(n) && variable.equals(n.getString()));
+ }

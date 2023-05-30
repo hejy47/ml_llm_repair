@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -28,6 +28,17 @@
+             result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
+             break;
+         case Token.ADD:
++            if (NodeUtil.isNumericExpression(left) && NodeUtil.isNumericExpression(right)) {
++                // Ensure that large numbers are not subject to precision loss
++                // due to JavaScript's representation of floating point numbers.
++                double sum = lval + rval;
++                // The following check looks redundant, but it's essential.
++                // For some edge cases where lval or rval overflow, the value of
++                // sum might be incorrect.
++                if (sum != Double.POSITIVE_INFINITY && sum != Double.NEGATIVE_INFINITY) {
++                    return Node.newNumber(sum);
++                }
++            }
+             result = lval + rval;
+             break;
+         case Token.SUB:

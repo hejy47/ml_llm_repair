@@ -1,0 +1,25 @@
+--- org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
++++ org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
+@@ -25,16 +25,16 @@
+     } else {
+         // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))
+         // r - x
+-        subtract(tmp1, 0, x, xOffset, tmp2, 0);
++        subtract(tmp1, 0, tmp2, 0, x, xOffset);
+         // y /(r - x)
+-        divide(y, yOffset, tmp2, 0, tmp1, 0);
++        divide(y, yOffset, tmp1, 0, tmp2, 0);
+         // atan(y / (r - x))
+-        atan(tmp1, 0, tmp2, 0);
++        atan(tmp2, 0, tmp1, 0);
+         result[resultOffset] = // +/-pi - 2 * atan(y / (r - x))
+-        ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0];
+-        for (int i = 1; i < tmp2.length; ++i) {
++        ((tmp1[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp1[0];
++        for (int i = 1; i < tmp1.length; ++i) {
+             // +/-pi - 2 * atan(y / (r - x))
+-            result[resultOffset + i] = -2 * tmp2[i];
++            result[resultOffset + i] = -2 * tmp1[i];
+         }
+     }
+     // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly

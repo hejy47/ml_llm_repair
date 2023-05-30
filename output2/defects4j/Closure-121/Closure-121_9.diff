@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -39,16 +39,16 @@
+     // inline an alias of it. (If the variable was inlined, then the
+     // reference data is out of sync. We're better off just waiting for
+     // the next pass.)
+-    if (!maybeModifiedArguments && !staleVars.contains(v) && referenceInfo.isWellDefined() && referenceInfo.isAssignedOnceInLifetime()) {
++    if (!maybeModifiedArguments && !staleVars.contains(v) && referenceInfo.isWellDefined() && referenceInfo.isAssignedOnceInLifetime() && !isImmutableVariable(v)) {
+         // Inlining the variable based solely on well-defined and assigned
+         // once is *NOT* correct. We relax the correctness requirement if
+         // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
++        for (int i = 1; i < refs.size(); i++) {
+             Node nameNode = refs.get(i).getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);
+-                if (!staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias)) {
++                if (!staleVars.contains(candidate.alias) && !isVarInlineForbidden(candidate.alias) && !isImmutableVariable(candidate.alias)) {
+                     Reference aliasInit;
+                     aliasInit = candidate.refInfo.getInitializingReference();
+                     Node value = aliasInit.getAssignedValue();

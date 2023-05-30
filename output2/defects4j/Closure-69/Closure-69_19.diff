@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitCall
++++ com/google/javascript/jscomp/TypeCheck.java@visitCall
+@@ -15,7 +15,9 @@
+         if (functionJSDocInfo != null) {
+             String sourceName = functionJSDocInfo.getSourceName();
+             CompilerInput functionSource = compiler.getInput(sourceName);
+-            isExtern = functionSource.isExtern();
++            if (functionSource != null) { // Added null check
++                isExtern = functionSource.isExtern();
++            }
+         }
+         // Non-native constructors should not be called directly
+         // unless they specify a return type and are defined

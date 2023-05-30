@@ -1,0 +1,11 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
++++ org/apache/commons/lang3/math/NumberUtils.java@createBigDecimal
+@@ -10,5 +10,8 @@
+     // it accepts this as a legal value, but it does not appear
+     // to be in specification of class. OS X Java parses it to
+     // a wrong value.
++    if(str.trim().length() == 0) {
++        throw new NumberFormatException("String value is an empty string");
++    }
+     return new BigDecimal(str);
+ }

@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitNew
++++ com/google/javascript/jscomp/TypeCheck.java@visitNew
+@@ -9,6 +9,9 @@
+         } else {
+             ensureTyped(t, n);
+         }
++    } else if (type.isFunctionPrototypeObject()) { // Fix: Added check for function prototype object
++        visitParameterList(t, n, null); // Fix: Pass null for fnType, as not applicable for function prototype objects
++        ensureTyped(t, n, type); // Fix: Ensure type is function prototype object type, not instance type
+     } else {
+         report(t, n, NOT_A_CONSTRUCTOR);
+         ensureTyped(t, n);

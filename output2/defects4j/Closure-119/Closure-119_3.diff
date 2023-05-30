@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -63,6 +63,7 @@
+                         break;
+                     default:
+                         if (NodeUtil.isAssignmentOp(parent) && parent.getFirstChild() == n) {
++                           // Fixed - Check for Token.ASSIGN first
+                             isSet = true;
+                             type = Name.Type.OTHER;
+                         }
+@@ -89,7 +90,9 @@
+                     case Token.GETPROP:
+                         return;
+                     default:
+-                        if (NodeUtil.isAssignmentOp(parent) && parent.getFirstChild() == n) {
++                        if ((parent.getType() == Token.ASSIGN_ADD ||
++                             parent.getType() == Token.ASSIGN_SUB) && parent.getFirstChild() == n.getFirstChild()) {
++                            // Fixed - Check for Token.ASSIGN_ADD and Token.ASSIGN_SUB
+                             isSet = true;
+                             type = Name.Type.OTHER;
+                         }

@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -7,17 +7,17 @@
+         boolean isOverride = t.inGlobalScope() && parent.getType() == Token.ASSIGN && parent.getFirstChild() == getprop;
+         // Find the lowest property defined on a class with visibility
+         // information.
++        JSDocInfo docInfo = null;
+         if (isOverride) {
+             objectType = objectType.getImplicitPrototype();
+         }
+-        JSDocInfo docInfo = null;
+         for (; objectType != null; objectType = objectType.getImplicitPrototype()) {
+             docInfo = objectType.getOwnPropertyJSDocInfo(propertyName);
+             if (docInfo != null && docInfo.getVisibility() != Visibility.INHERITED) {
+                 break;
+             }
+         }
+-        if (objectType == null) {
++        if (docInfo == null) {
+             // We couldn't find a visibility modifier; assume it's public.
+             return;
+         }
+@@ -55,7 +55,7 @@
+                 // 3) Accessing the property from inside a subclass
+                 // The first two have already been checked for.
+                 if (currentClass == null || !currentClass.isSubtype(ownerType)) {
+-                    compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
++                     compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+                 }
+             }
+         }

@@ -1,0 +1,20 @@
+--- org/joda/time/format/DateTimeFormatterBuilder.java@parseInto
++++ org/joda/time/format/DateTimeFormatterBuilder.java@parseInto
+@@ -2,7 +2,16 @@
+     String str = text.substring(position);
+     for (String id : ALL_IDS) {
+         if (str.startsWith(id)) {
+-            bucket.setZone(DateTimeZone.forID(id));
++            if (id.equals("GMT") || id.equals("UTC")) {
++                bucket.setZone(DateTimeZone.forID(id));
++            } else {
++                try {
++                    bucket.setZone(DateTimeZone.forID(id));
++                } catch (IllegalArgumentException e) {
++                    // ignore invalid time zone ID and continue searching for a valid one
++                    continue;
++                }
++            }
+             return position + id.length();
+         }
+     }

@@ -1,0 +1,106 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@exitScope
++++ com/google/javascript/jscomp/ScopedAliases.java@exitScope
+@@ -10,4 +10,6 @@
+         transformation = null;
+         hasNamespaceShadows = false;
+     }
++    // Clear scopedAliasNames when exiting all scopes, not just scope depth 2.
++    scopedAliasNames.clear();
+ }
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -16,7 +16,7 @@
+         } else if (isVar || isFunctionDecl) {
+             boolean isHoisted = NodeUtil.isHoistedFunctionDeclaration(parent);
+             Node grandparent = parent.getParent();
+-            Node value = v.getInitialValue() != null ? v.getInitialValue() : null;
++            Node value = v.getInitialValue() != null ? v.getInitialValue().detach() : null; // Fix: detach initial value if it is not null
+             Node varNode = null;
+             String name = n.getString();
+             int nameCount = scopedAliasNames.count(name);
+@@ -59,8 +59,9 @@
+                 }
+             }
+             // Rewrite "var name = EXPR;" to "var name = $jscomp.scope.name;"
+-            v.getNameNode().addChildToFront(NodeUtil.newQualifiedNameNode(compiler.getCodingConvention(), globalName, n, name));
+-            recordAlias(v);
++            n.replaceWith(NodeUtil.newQualifiedNameNode(compiler.getCodingConvention(), globalName, n, name));
++            // Fix: record alias with the new Node instance
++            recordAlias(new Var(n));
+         } else {
+             // Do not other kinds of local symbols, like catch params.
+             report(t, n, GOOG_SCOPE_NON_ALIAS_LOCAL, n.getString());
+--- com/google/javascript/jscomp/ScopedAliases.java@visit
++++ com/google/javascript/jscomp/ScopedAliases.java@visit
+@@ -1,60 +1,15 @@
+ @Override
+-public void visit(NodeTraversal t, Node n, Node parent) {
+-    if (isCallToScopeMethod(n)) {
+-        validateScopeCall(t, n, n.getParent());
++public void exitScope(NodeTraversal t) {
++    if (t.getScopeDepth() > 2) {
++        findNamespaceShadows(t);
+     }
+-    if (t.getScopeDepth() < 2) {
+-        return;
++    if (t.getScopeDepth() == 2) {
++        renameNamespaceShadows(t);
++        aliases.clear();
++        forbiddenLocals.clear();
++        transformation = null;
++        hasNamespaceShadows = false;
+     }
+-    int type = n.getType();
+-    Var aliasVar = null;
+-    if (type == Token.NAME) {
+-        String name = n.getString();
+-        Var lexicalVar = t.getScope().getVar(n.getString());
+-        if (lexicalVar != null && lexicalVar == aliases.get(name)) {
+-            aliasVar = lexicalVar;
+-        }
+-    }
+-    // Validate the top-level of the goog.scope block.
+-    if (t.getScopeDepth() == 2) {
+-        if (aliasVar != null && NodeUtil.isLValue(n)) {
+-            if (aliasVar.getNode() == n) {
+-                aliasDefinitionsInOrder.add(n);
+-                // Return early, to ensure that we don't record a definition
+-                // twice.
+-                return;
+-            } else {
+-                report(t, n, GOOG_SCOPE_ALIAS_REDEFINED, n.getString());
+-            }
+-        }
+-        if (type == Token.RETURN) {
+-            report(t, n, GOOG_SCOPE_USES_RETURN);
+-        } else if (type == Token.THIS) {
+-            report(t, n, GOOG_SCOPE_REFERENCES_THIS);
+-        } else if (type == Token.THROW) {
+-            report(t, n, GOOG_SCOPE_USES_THROW);
+-        }
+-    }
+-    // Validate all descendent scopes of the goog.scope block.
+-    if (t.getScopeDepth() >= 2) {
+-        // Check if this name points to an alias.
+-        if (aliasVar != null) {
+-            // Note, to support the transitive case, it's important we don't
+-            // clone aliasedNode here.  For example,
+-            // var g = goog; var d = g.dom; d.createElement('DIV');
+-            // The node in aliasedNode (which is "g") will be replaced in the
+-            // changes pass above with "goog".  If we cloned here, we'd end up
+-            // with <code>g.dom.createElement('DIV')</code>.
+-            aliasUsages.add(new AliasedNode(aliasVar, n));
+-        }
+-        // When we inject declarations, we duplicate jsdoc. Make sure
+-        // we only process that jsdoc once.
+-        JSDocInfo info = n.getJSDocInfo();
+-        if (info != null) {
+-            for (Node node : info.getTypeNodes()) {
+-                fixTypeNode(node);
+-            }
+-        }
+-        // TODO(robbyw): Error for goog.scope not at root.
+-    }
++    // Clear scopedAliasNames when exiting all scopes, not just scope depth 2.
++    scopedAliasNames.clear();
+ }

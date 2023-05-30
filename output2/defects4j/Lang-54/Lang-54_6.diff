@@ -1,0 +1,20 @@
+--- org/apache/commons/lang/LocaleUtils.java@toLocale
++++ org/apache/commons/lang/LocaleUtils.java@toLocale
+@@ -9,7 +9,7 @@
+     }
+     char ch0 = str.charAt(0);
+     char ch1 = str.charAt(1);
+-    if (ch0 < 'a' || ch0 > 'z' || ch1 < 'a' || ch1 > 'z') {
++    if (!Character.isLowerCase(ch0) || !Character.isLowerCase(ch1)) {
+         throw new IllegalArgumentException("Invalid locale format: " + str);
+     }
+     if (len == 2) {
+@@ -20,7 +20,7 @@
+         }
+         char ch3 = str.charAt(3);
+         char ch4 = str.charAt(4);
+-        if (ch3 < 'A' || ch3 > 'Z' || ch4 < 'A' || ch4 > 'Z') {
++        if (!Character.isUpperCase(ch3) || !Character.isUpperCase(ch4)) {
+             throw new IllegalArgumentException("Invalid locale format: " + str);
+         }
+         if (len == 5) {

@@ -1,0 +1,170 @@
+--- org/apache/commons/math/dfp/Dfp.java@Dfp
++++ org/apache/commons/math/dfp/Dfp.java@Dfp
+@@ -5,44 +5,50 @@
+     exp = 0;
+     nans = FINITE;
+     this.field = field;
+-    long bits = Double.doubleToLongBits(x);
+-    long mantissa = bits & 0x000fffffffffffffL;
+-    int exponent = (int) ((bits & 0x7ff0000000000000L) >> 52) - 1023;
+-    if (exponent == -1023) {
+-        // Zero or sub-normal
+-        if (x == 0) {
+-            // make sure 0 has the right sign
+-            return;
+-        }
+-        exponent++;
+-        // Normalize the subnormal number
+-        while ((mantissa & 0x0010000000000000L) == 0) {
+-            exponent--;
+-            mantissa <<= 1;
+-        }
+-        mantissa &= 0x000fffffffffffffL;
+-    }
+-    if (exponent == 1024) {
+-        // infinity or NAN
+-        if (x != x) {
+-            sign = (byte) 1;
+-            nans = QNAN;
+-        } else if (x < 0) {
+-            sign = (byte) -1;
+-            nans = INFINITE;
+-        } else {
+-            sign = (byte) 1;
+-            nans = INFINITE;
+-        }
++
++    if (Double.isNaN(x)) {
++        sign = (byte) 1;
++        nans = QNAN;
+         return;
+     }
+-    Dfp xdfp = new Dfp(field, mantissa);
+-    // Divide by 2^52, then add one
+-    xdfp = xdfp.divide(new Dfp(field, 4503599627370496l)).add(field.getOne());
+-    xdfp = xdfp.multiply(DfpMath.pow(field.getTwo(), exponent));
+-    if ((bits & 0x8000000000000000L) != 0) {
++
++    if ( Double.isInfinite(x)) {
++        sign = x > 0 ? (byte) 1 : (byte) -1;
++        nans = INFINITE;
++        return;
++    }
++
++    if (x == 0.0) {
++        return;
++    }
++
++    if (x < 0) {
++        sign = -1;
++        x = -x;
++    } else {
++        sign = 1;
++    }
++
++    int exponent = (int) Math.floor(Math.log(x) / Math.log(2));
++    x = x * Math.pow(2, -exponent);
++
++    Dfp xdfp = new Dfp(field);
++    xdfp.exp = exponent + 1;
++
++    for (int i = 0; i < field.getRadixDigits(); i++) {
++        x *= 2.0;
++        if (x >= 1.0) {
++            xdfp.mant[i] = 1;
++            x -= 1.0;
++        } else {
++            xdfp.mant[i] = 0;
++        }
++    }
++    xdfp.normalize();
++    if (sign == -1) {
+         xdfp = xdfp.negate();
+     }
++
+     System.arraycopy(xdfp.mant, 0, mant, 0, mant.length);
+     sign = xdfp.sign;
+     exp = xdfp.exp;
+--- org/apache/commons/math/dfp/Dfp.java@toDouble
++++ org/apache/commons/math/dfp/Dfp.java@toDouble
+@@ -1,60 +1,30 @@
+ public double toDouble() {
+     if (isInfinite()) {
+-        if (lessThan(getZero())) {
+-            return Double.NEGATIVE_INFINITY;
+-        } else {
+-            return Double.POSITIVE_INFINITY;
+-        }
++        return sign > 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+     }
+     if (isNaN()) {
+         return Double.NaN;
+     }
+-    Dfp y = this;
+-    boolean negate = false;
+-    if (lessThan(getZero())) {
+-        y = negate();
+-        negate = true;
++    Dfp y = abs();
++    boolean negate = sign < 0;
++    int exponent = exp;
++    Dfp tempDfp;
++    if (lessThan(DfpMath.getOne())) {
++        tempDfp = y.multiply(DfpMath.pow(DfpMath.getTwo(), 1074));
++        exponent -= 1076;
++    } else {
++        tempDfp = y;
+     }
+-        int exponent = (int) (y.log10() * 3.32);
+-    if (exponent < 0) {
+-        exponent--;
++    tempDfp = tempDfp.multiply(DfpMath.pow(DfpMath.getTwo(), 52 - getRadixDigits()));
++    long bits = tempDfp.mant[getRadixDigits() - 1];
++    for (int i = getRadixDigits() - 2; i >= 0; i--) {
++        bits <<= 32;
++        bits |= tempDfp.mant[i] & 0xffffffffL;
+     }
+-    Dfp tempDfp = DfpMath.pow(getTwo(), exponent);
+-    while (tempDfp.lessThan(y) || tempDfp.equals(y)) {
+-        tempDfp = tempDfp.multiply(2);
+-        exponent++;
+-    }
+-    exponent--;
+-        y = y.divide(DfpMath.pow(getTwo(), exponent));
+-    if (exponent > -1023) {
+-        y = y.subtract(getOne());
+-    }
+-    if (exponent < -1074) {
+-        return 0;
+-    }
+-    if (exponent > 1023) {
+-        return negate ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+-    }
+-    y = y.multiply(newInstance(4503599627370496l)).rint();
+-    String str = y.toString();
+-    str = str.substring(0, str.length() - 1);
+-    long mantissa = Long.parseLong(str);
+-    if (mantissa == 4503599627370496L) {
+-        // Handle special case where we round up to next power of two
+-        mantissa = 0;
+-        exponent++;
+-    }
+-        if (exponent <= -1023) {
+-        exponent--;
+-    }
+-    while (exponent < -1023) {
+-        exponent++;
+-        mantissa >>>= 1;
+-    }
+-    long bits = mantissa | ((exponent + 1023L) << 52);
++    bits >>>= 12;
++    exponent += (int) (bits >>> 52);
++    bits &= 0x000fffffffffffffL;
++    bits |= ((long) (exponent + 1023)) << 52;
+     double x = Double.longBitsToDouble(bits);
+-    if (negate) {
+-        x = -x;
+-    }
+-    return x;
++    return negate ? -x : x;
+ }

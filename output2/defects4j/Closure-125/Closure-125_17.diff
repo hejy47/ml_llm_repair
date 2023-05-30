@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitNew
++++ com/google/javascript/jscomp/TypeCheck.java@visitNew
+@@ -5,7 +5,11 @@
+         FunctionType fnType = type.toMaybeFunctionType();
+         if (fnType != null) {
+             visitParameterList(t, n, fnType);
+-            ensureTyped(t, n, fnType.getInstanceType());
++            if (fnType.getInstanceType() != null) {
++                ensureTyped(t, n, fnType.getInstanceType());
++            } else {
++                ensureTyped(t, n);
++            }
+         } else {
+             ensureTyped(t, n);
+         }

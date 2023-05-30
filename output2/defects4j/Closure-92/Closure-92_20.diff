@@ -1,0 +1,56 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -11,23 +11,20 @@
+         compiler.reportCodeChange();
+         // Does this need a VAR keyword?
+         replacementNode = candidateDefinition;
+-        if (NodeUtil.isExpressionNode(candidateDefinition)) {
+-            candidateDefinition.putBooleanProp(Node.IS_NAMESPACE, true);
++        if (NodeUtil.isExpressionResultUsed(explicitNode)) {
+             Node assignNode = candidateDefinition.getFirstChild();
+             Node nameNode = assignNode.getFirstChild();
+-            if (nameNode.getType() == Token.NAME) {
+-                // Need to convert this assign to a var declaration.
+-                Node valueNode = nameNode.getNext();
+-                assignNode.removeChild(nameNode);
+-                assignNode.removeChild(valueNode);
+-                nameNode.addChildToFront(valueNode);
+-                Node varNode = new Node(Token.VAR, nameNode);
+-                varNode.copyInformationFrom(candidateDefinition);
+-                candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
+-                nameNode.setJSDocInfo(assignNode.getJSDocInfo());
+-                compiler.reportCodeChange();
+-                replacementNode = varNode;
+-            }
++            Node valueNode = nameNode.getNext();
++            assignNode.removeChild(nameNode);
++            assignNode.removeChild(valueNode);
++            Node varNode = new Node(Token.VAR, nameNode);
++            varNode.copyInformationFrom(candidateDefinition);
++            varNode.getJSDocInfo().setFrom(explicitNode.getJSDocInfo());
++            nameNode.addChildToFront(valueNode);
++            varNode.setDeclaredTypeExpression(explicitNode.getDeclaredTypeExpression());
++            candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
++            compiler.reportCodeChange();
++            replacementNode = varNode;
+         }
+     } else {
+         // Handle the case where there's not a duplicate definition.
+@@ -37,7 +34,7 @@
+         } else {
+             // In this case, the name was implicitly provided by two independent
+             // modules. We need to move this code up to a common module.
+-            int indexOfDot = namespace.indexOf('.');
++            int indexOfDot = namespace.lastIndexOf('.');
+             if (indexOfDot == -1) {
+                 // Any old place is fine.
+                 compiler.getNodeForCodeInsertion(minimumModule).addChildToBack(replacementNode);
+@@ -50,7 +47,7 @@
+             }
+         }
+         if (explicitNode != null) {
+-            explicitNode.detachFromParent();
++            NodeUtil.deleteNode(explicitNode, compiler);
+         }
+         compiler.reportCodeChange();
+     }

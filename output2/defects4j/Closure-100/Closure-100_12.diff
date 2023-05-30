@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -11,6 +11,8 @@
+         // var a = function() { }; // or
+         // function a() {} // or
+         // a.x = function() {};
++        return NodeUtil.canBeObjectDefinePropertiesFunction(n) || NodeUtil.isFunctionExpression(n)
++                || NodeUtil.isGetOrSetKey(n);
+     }
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+         Node lhs = parent.getFirstChild();
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -4,5 +4,10 @@
+         return true;
+     }
+     // Also report a THIS with a property access.
++    if (n.isGetProp() || n.isGetElem()) {
++        if (n.getFirstChild().isThis()) {
++            return true;
++        }
++    }
+     return false;
+ }

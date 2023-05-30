@@ -1,0 +1,19 @@
+--- org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
++++ org/apache/commons/math/stat/clustering/KMeansPlusPlusClusterer.java@chooseInitialCenters
+@@ -23,6 +23,16 @@
+             if (dx2[i] >= r) {
+                 final T p = pointSet.remove(i);
+                 resultSet.add(new Cluster<T>(p));
++                // Reset the sum of the distances.
++                sum = 0;
++                // Recompute the distances after adding the new point.
++                for (int j = 0; j < pointSet.size(); j++) {
++                    final T point = pointSet.get(j);
++                    final Cluster<T> nearestCluster = getNearestCluster(resultSet, point);
++                    final double distance = point.distanceFrom(nearestCluster.getCenter());
++                    sum += distance * distance;
++                    dx2[j] = sum;
++                }
+                 break;
+             }
+         }

@@ -1,0 +1,28 @@
+--- org/apache/commons/math/complex/Complex.java@equals
++++ org/apache/commons/math/complex/Complex.java@equals
+@@ -2,19 +2,14 @@
+     boolean ret;
+     if (this == other) {
+         ret = true;
+-    } else if (other == null) {
++    } else if (other == null || getClass() != other.getClass()) { // fix: add getClass() check to avoid ClassCastException
+         ret = false;
+     } else {
+-        try {
+-            Complex rhs = (Complex) other;
+-            if (rhs.isNaN()) {
+-                ret = this.isNaN();
+-            } else {
+-                ret = (Double.doubleToRawLongBits(real) == Double.doubleToRawLongBits(rhs.getReal())) && (Double.doubleToRawLongBits(imaginary) == Double.doubleToRawLongBits(rhs.getImaginary()));
+-            }
+-        } catch (ClassCastException ex) {
+-            // ignore exception
+-            ret = false;
++        Complex rhs = (Complex) other;
++        if (rhs.isNaN()) {
++            ret = this.isNaN();
++        } else {
++            ret = (Double.doubleToRawLongBits(real) == Double.doubleToRawLongBits(rhs.getReal())) && (Double.doubleToRawLongBits(imaginary) == Double.doubleToRawLongBits(rhs.getImaginary()));
+         }
+     }
+     return ret;

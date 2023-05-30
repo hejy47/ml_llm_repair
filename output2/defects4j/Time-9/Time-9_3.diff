@@ -1,0 +1,11 @@
+--- org/joda/time/DateTimeZone.java@forOffsetHoursMinutes
++++ org/joda/time/DateTimeZone.java@forOffsetHoursMinutes
+@@ -15,7 +15,7 @@
+         }
+         offset = FieldUtils.safeMultiply(minutesOffset, DateTimeConstants.MILLIS_PER_MINUTE);
+     } catch (ArithmeticException ex) {
+-        throw new IllegalArgumentException("Offset is too large");
++        throw new IllegalArgumentException("Offset is too large", ex);
+     }
+     return forOffsetMillis(offset);
+ }

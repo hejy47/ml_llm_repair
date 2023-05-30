@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
++++ com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
+@@ -14,7 +14,7 @@
+             // TODO(user) revisit the dependency scope calculation
+             // logic.
+             if (parent.getFirstChild().getNext() != n) {
+-                recordDepScope(recordNode, ns);
++                recordDepScope(recordNode.getLastChild(), ns);    // fixed recordNode to recordNode.getLastChild()
+             } else {
+                 recordDepScope(nameNode, ns);
+             }

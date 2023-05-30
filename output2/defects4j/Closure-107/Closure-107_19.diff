@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -15,7 +15,7 @@
+     if (flags.useTypesForOptimization) {
+         level.setTypeBasedOptimizationOptions(options);
+     }
+-    if (flags.generateExports) {
++    if (flags.generateExports != null) { // Check if generateExports is not null
+         options.setGenerateExports(flags.generateExports);
+     }
+     WarningLevel wLevel = flags.warningLevel;
+@@ -32,7 +32,7 @@
+         } catch (IOException e) {
+             throw new RuntimeException("Reading XTB file", e);
+         }
+-    } else if (CompilationLevel.ADVANCED_OPTIMIZATIONS == level) {
++    } else if (CompilationLevel.ADVANCED_OPTIMIZATIONS == level && options.messageBundle != null) { // Check if messageBundle is not null
+         // In SIMPLE or WHITESPACE mode, if the user hasn't specified a
+         // translations file, they might reasonably try to write their own
+         // implementation of goog.getMsg that makes the substitution at

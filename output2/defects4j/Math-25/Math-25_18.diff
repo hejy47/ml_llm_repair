@@ -1,0 +1,40 @@
+--- org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
++++ org/apache/commons/math3/optimization/fitting/HarmonicFitter.java@guessAOmega
+@@ -16,12 +16,19 @@
+         final double previousY = currentY;
+         currentX = observations[i].getX();
+         currentY = observations[i].getY();
+-        // update the integrals of f<sup>2</sup> and f'<sup>2</sup>
+-        // considering a linear model for f (and therefore constant f')
++        // update the integrals of f^2 and f'^2
+         final double dx = currentX - previousX;
+         final double dy = currentY - previousY;
+-        final double f2StepIntegral = dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;
+-        final double fPrime2StepIntegral = dy * dy / dx;
++        double f2StepIntegral;
++        double fPrime2StepIntegral;
++        if (dx != 0) { // fix division by zero
++            // considering a linear model for f (and therefore constant f')
++            f2StepIntegral = dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;
++            fPrime2StepIntegral = dy * dy / dx;
++        } else {
++            f2StepIntegral = 0;
++            fPrime2StepIntegral = 0;
++        }
+         final double x = currentX - startX;
+         f2Integral += f2StepIntegral;
+         fPrime2Integral += fPrime2StepIntegral;
+@@ -59,7 +66,11 @@
+     } else {
+         // In some ill-conditioned cases (cf. MATH-844), the guesser
+         // procedure cannot produce sensible results.
+-        a = FastMath.sqrt(c1 / c2);
+-        omega = FastMath.sqrt(c2 / c3);
++        if (c2 != 0 && c3 != 0) { // fix division by zero
++            a = FastMath.sqrt(c1 / c2);
++            omega = FastMath.sqrt(c2 / c3);
++        } else {
++            throw new ArithmeticException("Division by zero error");
++        }
+     }
+ }

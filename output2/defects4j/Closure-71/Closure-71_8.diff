@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -35,13 +35,13 @@
+             if (visibility == Visibility.PRIVATE && !sameInput) {
+                 compiler.report(t.makeError(getprop, PRIVATE_OVERRIDE, objectType.toString()));
+             } else if (overridingVisibility != Visibility.INHERITED && overridingVisibility != visibility) {
+-                compiler.report(t.makeError(getprop, VISIBILITY_MISMATCH, visibility.name(), objectType.toString(), overridingVisibility.name()));
++                compiler.report(t.makeError(getprop, VISIBILITY_MISMATCH, objectType.toString(), visibility.name(), overridingVisibility.name()));
+             }
+         } else {
+             if (sameInput) {
+                 // private access is always allowed in the same file.
+                 return;
+-            } else if (visibility == Visibility.PRIVATE && (currentClass == null || ownerType.differsFrom(currentClass))) {
++            } else if (visibility == Visibility.PRIVATE && (currentClass == null || !ownerType.equals(currentClass))) {
+                 if (docInfo.isConstructor() && isValidPrivateConstructorAccess(parent)) {
+                     return;
+                 }
+@@ -54,7 +54,7 @@
+                 // 2) Overriding the property in a subclass
+                 // 3) Accessing the property from inside a subclass
+                 // The first two have already been checked for.
+-                if (currentClass == null || !currentClass.isSubtype(ownerType)) {
++                if (currentClass == null || !currentClass.isSubclassOf(ownerType)) {
+                     compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+                 }
+             }

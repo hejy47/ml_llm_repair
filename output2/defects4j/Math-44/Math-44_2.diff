@@ -1,0 +1,28 @@
+--- org/apache/commons/math/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math/ode/AbstractIntegrator.java@acceptStep
+@@ -13,7 +13,7 @@
+     final int orderingSign = interpolator.isForward() ? +1 : -1;
+     SortedSet<EventState> occuringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
+ 
+-                public int compare(EventState es0, EventState es1) {
++        public int compare(EventState es0, EventState es1) {
+             return orderingSign * Double.compare(es0.getEventTime(), es1.getEventTime());
+         }
+     });
+@@ -50,7 +50,7 @@
+             // some event handler has triggered changes that
+             // invalidate the derivatives, we need to recompute them
+             System.arraycopy(eventY, 0, y, 0, y.length);
+-            computeDerivatives(eventT, y, yDot);
++            yDot = computeDerivatives(eventT, eventY);
+             resetOccurred = true;
+             return eventT;
+         }
+@@ -66,6 +66,7 @@
+     }
+     interpolator.setInterpolatedTime(currentT);
+     final double[] currentY = interpolator.getInterpolatedState();
++    yDot = computeDerivatives(currentT, currentY);
+     for (final EventState state : eventsStates) {
+         state.stepAccepted(currentT, currentY);
+         isLastStep = isLastStep || state.stop();

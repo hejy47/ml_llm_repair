@@ -1,0 +1,8 @@
+--- org/mockito/internal/util/MockUtil.java@resetMock
++++ org/mockito/internal/util/MockUtil.java@resetMock
+@@ -3,4 +3,5 @@
+     MockHandler<T> newMockHandler = new MockHandler<T>(oldMockHandler);
+     MethodInterceptorFilter newFilter = new MethodInterceptorFilter(newMockHandler, (MockSettingsImpl) org.mockito.Mockito.withSettings().defaultAnswer(org.mockito.Mockito.RETURNS_DEFAULTS));
+     ((Factory) mock).setCallback(0, newFilter);
++    ((Factory) mock).setCallbacks(new Callback[] { newFilter });
+ }

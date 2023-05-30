@@ -1,0 +1,30 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -43,14 +43,25 @@
+         } else {
+             switch(method) {
+                 case ILLINOIS:
+-                    f0 *= 0.5;
++                    if (inverted) {
++                        f0 *= 0.5;
++                    } else {
++                        f1 *= 0.5;
++                    }
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    if (inverted) {
++                        f0 *= f1 / (f1 + fx);
++                    } else {
++                        f1 *= f0 / (f0 - fx);
++                    }
+                     break;
+                 // Update formula cannot make any progress: Update the
+                 // search interval.
+                 default:
++                    x0 = x1;
++                    f0 = f1;
++                    break;
+             }
+         }
+         // Update from [x0, x1] to [x0, x].

@@ -1,0 +1,18 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@answer
+@@ -4,5 +4,5 @@
+     if (!new MockCreationValidator().isTypeMockable(rawType)) {
+         return delegate.returnValueFor(rawType);
+     }
+-    return getMock(invocation);
++    return mockCreationSettings.getMockName().getMockitoMock().get(returnTypeGenericMetadata.resolveType(), invocation.getArgument(0));
+ }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@getMock
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@getMock
+@@ -8,5 +8,5 @@
+         }
+     }
+     // deep stub
+-    return recordDeepStubMock(invocation, container);
++    return handleDeepStubbing(invocation, container);
+ }

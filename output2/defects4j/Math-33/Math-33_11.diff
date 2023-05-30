@@ -1,0 +1,11 @@
+--- org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
++++ org/apache/commons/math3/optimization/linear/SimplexTableau.java@dropPhase1Objective
+@@ -7,7 +7,7 @@
+     // positive cost non-artificial variables
+     for (int i = getNumObjectiveFunctions(); i < getArtificialVariableOffset(); i++) {
+         final double entry = tableau.getEntry(0, i);
+-        if (Precision.compareTo(entry, 0d, maxUlps) > 0) {
++        if (Precision.compareTo(entry, 0d, maxUlps) > 0 && !isInfeasibleDirection(entry)) {
+             columnsToDrop.add(i);
+         }
+     }

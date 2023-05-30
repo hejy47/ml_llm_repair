@@ -1,0 +1,9 @@
+--- org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BracketingNthOrderBrentSolver.java@doSolve
+@@ -1,5 +1,5 @@
+ @Override
+-protected double doSolve() {
++protected double doSolve() throws ConvergenceException, FunctionEvaluationException {
+     // prepare arrays with the first points
+     final double[] x = new double[maximalOrder + 1];
+     final double[] y = new double[maximalOrder + 1];

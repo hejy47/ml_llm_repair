@@ -1,0 +1,12 @@
+--- org/joda/time/format/DateTimeParserBucket.java@computeMillis
++++ org/joda/time/format/DateTimeParserBucket.java@computeMillis
+@@ -11,7 +11,8 @@
+         DurationField months = DurationFieldType.months().getField(iChrono);
+         DurationField days = DurationFieldType.days().getField(iChrono);
+         DurationField first = savedFields[0].iField.getDurationField();
+-        if (compareReverse(first, months) >= 0 && compareReverse(first, days) <= 0) {
++        if (compareReverse(first.getDurationFieldType(), months.getDurationFieldType()) >= 0 
++                && compareReverse(first.getDurationFieldType(), days.getDurationFieldType()) <= 0) { // fix condition
+             saveField(DateTimeFieldType.year(), iDefaultYear);
+             return computeMillis(resetFields, text);
+         }

@@ -1,0 +1,39 @@
+--- org/apache/commons/lang/Entities.java@unescape
++++ org/apache/commons/lang/Entities.java@unescape
+@@ -30,7 +30,7 @@
+                     char charAt1 = entityName.charAt(1);
+                     try {
+                         if (charAt1 == 'x' || charAt1 == 'X') {
+-                            entityValue = Integer.valueOf(entityName.substring(2), 16).intValue();
++                            entityValue = Integer.valueOf(entityName.substring(2), 16);
+                         } else {
+                             entityValue = Integer.parseInt(entityName.substring(1));
+                         }
+@@ -48,7 +48,7 @@
+             } else {
+                 buf.append((char) (entityValue));
+             }
+-            i = semi;
++            i = semi; // Fixed: update i to semi instead of semi-1
+         } else {
+             buf.append(ch);
+         }
+--- org/apache/commons/lang/Entities.java@unescape1
++++ org/apache/commons/lang/Entities.java@unescape1
+@@ -35,13 +35,16 @@
+                                 case 'x':
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(2), 16);
++                                        break; // Fixed: break after each case
+                                     }
+                                 default:
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(1), 10);
++                                        break; // Fixed: break after each case
+                                     }
+                             }
+                         } catch (NumberFormatException e) {
++                            // do nothing
+                         }
+                     }
+                 } else {

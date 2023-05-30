@@ -1,0 +1,23 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@performArithmeticOp
+@@ -28,7 +28,19 @@
+             result = ScriptRuntime.toInt32(lval) ^ ScriptRuntime.toInt32(rval);
+             break;
+         case Token.ADD:
+-            result = lval + rval;
++            if (NodeUtil.isNaN(lValObj) || NodeUtil.isNaN(rValObj)) {
++                return Node.newString(Token.NAME, "NaN");
++            } else if (NodeUtil.isInfinity(lValObj) && NodeUtil.isInfinity(rValObj)) {
++                if (NodeUtil.isNegative(lValObj) == NodeUtil.isNegative(rValObj)) {
++                    return NodeUtil.isNegative(lValObj) ? 
++                           new Node(Token.NEG, Node.newString(Token.NAME, "Infinity")) :
++                           Node.newString(Token.NAME, "Infinity");
++                } else {
++                    return null;
++                }
++            } else {
++                result = lval + rval;
++            }
+             break;
+         case Token.SUB:
+             result = lval - rval;

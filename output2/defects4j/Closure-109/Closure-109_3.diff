@@ -1,0 +1,10 @@
+--- com/google/javascript/jscomp/parsing/JsDocInfoParser.java@parseContextTypeExpression
++++ com/google/javascript/jscomp/parsing/JsDocInfoParser.java@parseContextTypeExpression
+@@ -1,3 +1,6 @@
+ private Node parseContextTypeExpression(JsDocToken token) {
+-    return parseTypeName(token);
++    if (token != null) {
++        return parseTypeName(token);
++    }
++    return null;
+ }

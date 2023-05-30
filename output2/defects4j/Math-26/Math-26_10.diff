@@ -1,0 +1,18 @@
+--- org/apache/commons/math3/fraction/Fraction.java@Fraction
++++ org/apache/commons/math3/fraction/Fraction.java@Fraction
+@@ -22,7 +22,14 @@
+     boolean stop = false;
+     do {
+         ++n;
+-        double r1 = 1.0 / (r0 - a0);
++        double r1 = r0 - a0;
++        if (r1 < Double.MIN_VALUE) {
++            break;
++        }
++        if (r1 > Double.MAX_VALUE) {
++            throw new FractionConversionException(value, Double.POSITIVE_INFINITY);
++        }
++        r1 = 1 / r1;
+         long a1 = (long) FastMath.floor(r1);
+         p2 = (a1 * p1) + p0;
+         q2 = (a1 * q1) + q0;

@@ -1,0 +1,54 @@
+--- org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@filterCandidate
++++ org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@filterCandidate
+@@ -5,7 +5,16 @@
+ 
+             public boolean thenInject() {
+                 try {
+-                    new FieldSetter(fieldInstance, field).set(matchingMock);
++                    if (field.isAccessible() || Modifier.isPublic(field.getModifiers())) {
++                        field.set(fieldInstance, matchingMock);
++                    } else {
++                        field.setAccessible(true);
++                        try {
++                            field.set(fieldInstance, matchingMock);
++                        } finally {
++                            field.setAccessible(false);
++                        }
++                    }
+                 } catch (Exception e) {
+                     throw new MockitoException("Problems injecting dependency in " + field.getName(), e);
+                 }
+--- org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@thenInject
++++ org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java@thenInject
+@@ -1,8 +1,26 @@
+ public boolean thenInject() {
+-    try {
+-        new FieldSetter(fieldInstance, field).set(matchingMock);
+-    } catch (Exception e) {
+-        throw new MockitoException("Problems injecting dependency in " + field.getName(), e);
++                try {
++                    if (field.isAccessible() || Modifier.isPublic(field.getModifiers())) {
++                        field.set(fieldInstance, matchingMock);
++                    } else {
++                        field.setAccessible(true);
++                        try {
++                            field.set(fieldInstance, matchingMock);
++                        } finally {
++                            field.setAccessible(false);
++                        }
++                    }
++                } catch (Exception e) {
++                    throw new MockitoException("Problems injecting dependency in " + field.getName(), e);
++                }
++                return true;
++            }
++        };
+     }
+-    return true;
++    return new OngoingInjecter() {
++
++        public boolean thenInject() {
++            return false;
++        }
++    };
+ }

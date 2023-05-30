@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -50,6 +50,7 @@
+                     if (compareResult != null) {
+                         result = compareResult;
+                     } else {
++                        // Return the node itself instead of null.
+                         return n;
+                     }
+                     break;
+@@ -115,7 +116,8 @@
+             if (compareResult != null) {
+                 result = compareResult;
+             } else {
+-                return null;
++                // Return the node itself instead of null.
++                return n;
+             }
+             break;
+         case Token.NAME:

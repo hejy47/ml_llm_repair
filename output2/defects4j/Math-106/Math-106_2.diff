@@ -1,0 +1,15 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -1,6 +1,11 @@
+ public Fraction parse(String source, ParsePosition pos) {
+     // try to parse improper fraction
+-    Fraction ret = super.parse(source, pos);
++    Fraction ret = null;
++    try {
++        ret = super.parse(source, pos);
++    } catch (IllegalArgumentException ex) {
++        // ignore and continue parsing
++    }
+     if (ret != null) {
+         return ret;
+     }

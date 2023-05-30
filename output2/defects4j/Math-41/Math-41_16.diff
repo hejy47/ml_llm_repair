@@ -1,0 +1,23 @@
+--- org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
++++ org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
+@@ -1,9 +1,9 @@
+ public double evaluate(final double[] values, final double[] weights, final double mean, final int begin, final int length) {
+     double var = Double.NaN;
+     if (test(values, weights, begin, length)) {
+-        if (length == 1) {
++        if (length <= 1) { // Fixed: changed condition to include case when length = 1
+             var = 0.0;
+-        } else if (length > 1) {
++        } else {
+             double accum = 0.0;
+             double dev = 0.0;
+             double accum2 = 0.0;
+@@ -13,7 +13,7 @@
+                 accum2 += weights[i] * dev;
+             }
+             double sumWts = 0;
+-            for (int i = 0; i < weights.length; i++) {
++            for (int i = begin; i < begin + length; i++) { // Fixed: changed to only sum weights within subset
+                 sumWts += weights[i];
+             }
+             if (isBiasCorrected) {

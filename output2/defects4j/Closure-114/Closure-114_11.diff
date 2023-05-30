@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
++++ com/google/javascript/jscomp/NameAnalyzer.java@recordAssignment
+@@ -14,9 +14,9 @@
+             // TODO(user) revisit the dependency scope calculation
+             // logic.
+             if (parent.getFirstChild().getNext() != n) {
+-                recordDepScope(recordNode, ns);
++                recordDepScope(nameNode.getFirstChild(), ns);
+             } else {
+-                recordDepScope(nameNode, ns);
++                recordDepScope(nameNode.getNext(), ns);
+             }
+         } else {
+             // The rhs of the assignment is the caller, so it's used by the

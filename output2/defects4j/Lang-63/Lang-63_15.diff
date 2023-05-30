@@ -1,0 +1,79 @@
+--- org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
++++ org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
+@@ -7,9 +7,9 @@
+     // timezones get funky around 0, so normalizing everything to GMT
+     // stops the hours being off
+     Calendar start = Calendar.getInstance(timezone);
+-    start.setTime(new Date(startMillis));
++    start.setTimeInMillis(startMillis);
+     Calendar end = Calendar.getInstance(timezone);
+-    end.setTime(new Date(endMillis));
++    end.setTimeInMillis(endMillis);
+     // initial estimates
+     int milliseconds = end.get(Calendar.MILLISECOND) - start.get(Calendar.MILLISECOND);
+     int seconds = end.get(Calendar.SECOND) - start.get(Calendar.SECOND);
+@@ -36,12 +36,7 @@
+         days -= 1;
+     }
+     while (days < 0) {
+-        days += 31;
+-        //days += 31; // TODO: Need tests to show this is bad and the new code is good.
+-        // HEN: It's a tricky subject. Jan 15th to March 10th. If I count days-first it is
+-        // 1 month and 26 days, but if I count month-first then it is 1 month and 23 days.
+-        // Also it's contextual - if asked for no M in the format then I should probably
+-        // be doing no calculating here.
++        days += end.getActualMaximum(Calendar.DAY_OF_MONTH);
+         months -= 1;
+     }
+     while (months < 0) {
+@@ -58,33 +53,33 @@
+     // This next block of code adds in values that
+     // aren't requested. This allows the user to ask for the
+     // number of months and get the real count and not just 0->11.
+-    if (!Token.containsTokenWithValue(tokens, y)) {
+-        if (Token.containsTokenWithValue(tokens, M)) {
++    if (!Token.containsTokenWithValue(tokens, Token.y)) {
++        if (Token.containsTokenWithValue(tokens, Token.M)) {
+             months += 12 * years;
+             years = 0;
+         } else {
+             // TODO: this is a bit weak, needs work to know about leap years
+-            days += 365 * years;
++            days += end.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR);
+             years = 0;
+         }
+     }
+-    if (!Token.containsTokenWithValue(tokens, M)) {
++    if (!Token.containsTokenWithValue(tokens, Token.M)) {
+         days += end.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR);
+         months = 0;
+     }
+-    if (!Token.containsTokenWithValue(tokens, d)) {
++    if (!Token.containsTokenWithValue(tokens, Token.d)) {
+         hours += 24 * days;
+         days = 0;
+     }
+-    if (!Token.containsTokenWithValue(tokens, H)) {
++    if (!Token.containsTokenWithValue(tokens, Token.H)) {
+         minutes += 60 * hours;
+         hours = 0;
+     }
+-    if (!Token.containsTokenWithValue(tokens, m)) {
++    if (!Token.containsTokenWithValue(tokens, Token.m)) {
+         seconds += 60 * minutes;
+         minutes = 0;
+     }
+-    if (!Token.containsTokenWithValue(tokens, s)) {
++    if (!Token.containsTokenWithValue(tokens, Token.s)) {
+         milliseconds += 1000 * seconds;
+         seconds = 0;
+     }
+--- org/apache/commons/lang/time/DurationFormatUtils.java@reduceAndCorrect
++++ org/apache/commons/lang/time/DurationFormatUtils.java@reduceAndCorrect
+@@ -1,5 +1,5 @@
+ static int reduceAndCorrect(Calendar start, Calendar end, int field, int difference) {
+-    end.add(field, -1 * difference);
++    end.add(field, -difference);
+     int endValue = end.get(field);
+     int startValue = start.get(field);
+     if (endValue < startValue) {

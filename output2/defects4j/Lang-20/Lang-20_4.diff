@@ -1,0 +1,42 @@
+--- org/apache/commons/lang3/StringUtils.java@join
++++ org/apache/commons/lang3/StringUtils.java@join
+@@ -1,12 +1,8 @@
+ public static String join(Object[] array, char separator, int startIndex, int endIndex) {
+-    if (array == null) {
+-        return null;
++    if (array == null || array.length == 0 || startIndex >= endIndex) {
++        return "";
+     }
+-    int noOfItems = (endIndex - startIndex);
+-    if (noOfItems <= 0) {
+-        return EMPTY;
+-    }
+-    StringBuilder buf = new StringBuilder((array[startIndex] == null ? 16 : array[startIndex].toString().length()) + 1);
++    StringBuilder buf = new StringBuilder();
+     for (int i = startIndex; i < endIndex; i++) {
+         if (i > startIndex) {
+             buf.append(separator);
+--- org/apache/commons/lang3/StringUtils.java@join1
++++ org/apache/commons/lang3/StringUtils.java@join1
+@@ -1,17 +1,11 @@
+ public static String join(Object[] array, String separator, int startIndex, int endIndex) {
+-    if (array == null) {
+-        return null;
++    if (array == null || array.length == 0 || startIndex >= endIndex) {
++        return "";
+     }
+     if (separator == null) {
+-        separator = EMPTY;
++        separator = "";
+     }
+-    // endIndex - startIndex > 0:   Len = NofStrings *(len(firstString) + len(separator))
+-    //           (Assuming that all Strings are roughly equally long)
+-    int noOfItems = (endIndex - startIndex);
+-    if (noOfItems <= 0) {
+-        return EMPTY;
+-    }
+-    StringBuilder buf = new StringBuilder((array[startIndex] == null ? 16 : array[startIndex].toString().length()) + separator.length());
++    StringBuilder buf = new StringBuilder();
+     for (int i = startIndex; i < endIndex; i++) {
+         if (i > startIndex) {
+             buf.append(separator);

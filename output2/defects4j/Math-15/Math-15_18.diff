@@ -1,0 +1,48 @@
+--- org/apache/commons/math3/util/FastMath.java@pow
++++ org/apache/commons/math3/util/FastMath.java@pow
+@@ -5,7 +5,7 @@
+     }
+     if (x != x) {
+         // X is NaN
+-        return x;
++        return Double.NaN;
+     }
+     if (x == 0) {
+         long bits = Double.doubleToLongBits(x);
+@@ -22,15 +22,15 @@
+         if (y < 0) {
+             return Double.POSITIVE_INFINITY;
+         }
+-        if (y > 0) {
++        if (y > 0) { 
+             return 0.0;
+         }
+-        return Double.NaN;
++        return 1.0;
+     }
+     if (x == Double.POSITIVE_INFINITY) {
+         if (y != y) {
+             // y is NaN
+-            return y;
++            return Double.NaN;
+         }
+         if (y < 0.0) {
+             return 0.0;
+@@ -51,7 +51,7 @@
+     if (x == Double.NEGATIVE_INFINITY) {
+         if (y != y) {
+             // y is NaN
+-            return y;
++            return Double.NaN;
+         }
+         if (y < 0) {
+             long yi = (long) y;
+@@ -124,7 +124,5 @@
+     z = z * lnb + 0.5;
+     z = z * lnb + 1.0;
+     z = z * lnb;
+-    final double result = exp(lna, z, null);
+-    //result = result + result * z;
+-    return result;
++    return exp(lna, z, null);
+ }

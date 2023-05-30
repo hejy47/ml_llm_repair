@@ -1,0 +1,10 @@
+--- org/apache/commons/math/optimization/linear/SimplexTableau.java@getSolution
++++ org/apache/commons/math/optimization/linear/SimplexTableau.java@getSolution
+@@ -1,6 +1,6 @@
+ protected RealPointValuePair getSolution() {
+     int negativeVarColumn = columnLabels.indexOf(NEGATIVE_VAR_COLUMN_LABEL);
+-    Integer negativeVarBasicRow = negativeVarColumn > 0 ? getBasicRow(negativeVarColumn) : null;
++    Integer negativeVarBasicRow = negativeVarColumn >= 0 ? getBasicRow(negativeVarColumn) : null; // fixed bounds for negativeVarColumn
+     double mostNegative = negativeVarBasicRow == null ? 0 : getEntry(negativeVarBasicRow, getRhsOffset());
+     Set<Integer> basicRows = new HashSet<Integer>();
+     double[] coefficients = new double[getOriginalNumDecisionVariables()];

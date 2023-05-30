@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -37,7 +37,7 @@
+             // Make sure we copy over all the jsdoc and debug info.
+             if (value != null || v.getJSDocInfo() != null) {
+                 Node newDecl = NodeUtil.newQualifiedNameNodeDeclaration(compiler.getCodingConvention(), globalName, value, v.getJSDocInfo()).useSourceInfoIfMissingFromForTree(n);
+-                NodeUtil.setDebugInformation(newDecl.getFirstChild().getFirstChild(), n, name);
++                NodeUtil.setDebugInformation(newDecl.getFirstFirstChild(), n, name); // Fixed here: use getFirstFirstChild instead of getFirstChild
+                 grandparent.addChildBefore(newDecl, varNode);
+             }
+             // Rewrite "var name = EXPR;" to "var name = $jscomp.scope.name;"
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -3,11 +3,11 @@
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
++    while (n.next != null) { // Fixed here: check for null before accessing next
++        if (n.next == child) {
++            return n;
++        }
+         n = n.next;
+-        if (n == null) {
+-            throw new RuntimeException("node is not a child");
+-        }
+     }
+-    return n;
++    throw new RuntimeException("node is not a child");
+ }

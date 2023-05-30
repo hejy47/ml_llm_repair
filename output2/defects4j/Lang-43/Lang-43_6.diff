@@ -1,0 +1,19 @@
+--- org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
++++ org/apache/commons/lang/text/ExtendedMessageFormat.java@appendQuotedString
+@@ -16,6 +16,16 @@
+             case QUOTE:
+                 next(pos);
+                 return appendTo == null ? null : appendTo.append(c, lastHold, pos.getIndex() - lastHold);
++            
++            // add a case for the ESCAPED_QUOTE character
++            case ESCAPED_QUOTE:
++                if (!escapingOn) {
++                    appendTo.append(c, lastHold, pos.getIndex() - lastHold).append(ESCAPED_QUOTE);
++                    pos.setIndex(pos.getIndex() + ESCAPED_QUOTE.length());
++                    lastHold = pos.getIndex();
++                }
++                break;
++                
+             default:
+                 next(pos);
+         }

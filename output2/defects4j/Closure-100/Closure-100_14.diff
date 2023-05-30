@@ -1,0 +1,42 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -6,11 +6,11 @@
+         if (jsDoc != null && (jsDoc.isConstructor() || jsDoc.hasThisType())) {
+             return false;
+         }
+-        // Don't traverse functions unless they would normally
+-        // be able to have a @this annotation associated with them. e.g.,
+-        // var a = function() { }; // or
+-        // function a() {} // or
+-        // a.x = function() {};
++        // Don't traverse functions that are not named function expressions.
++        String functionName = NodeUtil.getNearestFunctionName(n);
++        if (functionName.isEmpty()) {
++            return false;
++        }
+     }
+     if (parent != null && parent.getType() == Token.ASSIGN) {
+         Node lhs = parent.getFirstChild();
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -3,6 +3,18 @@
+         // Always report a THIS on the left side of an assign.
+         return true;
+     }
+-    // Also report a THIS with a property access.
+-    return false;
++    // Also report a THIS with a property access if it's not a prototype property.
++    if (parent != null && parent.getType() == Token.GETPROP) {
++        Node grandParent = parent.getParent();
++        if (grandParent != null && grandParent.getType() == Token.ASSIGN) {
++            Node lhs = grandParent.getFirstChild();
++            if (lhs.getType() == Token.GETPROP) {
++                String fullName = lhs.getQualifiedName();
++                if (fullName != null && fullName.contains(".prototype.")) {
++                    return false;
++                }
++            }
++        }
++    }
++    return true;
+ }

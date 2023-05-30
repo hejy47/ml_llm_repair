@@ -1,0 +1,50 @@
+--- com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
++++ com/google/javascript/jscomp/InlineVariables.java@inlineNonConstants
+@@ -14,7 +14,9 @@
+             Node srcLocation = declaration.getNode();
+             value = NodeUtil.newUndefinedNode(srcLocation);
+         }
+-        Preconditions.checkNotNull(value);
++        if (value == null) {
++            throw new NullPointerException("Assigned value cannot be null");
++        }
+         inlineWellDefinedVariable(v, value, referenceInfo.references);
+         staleVars.add(v);
+     } else if (refCount == firstRefAfterInit) {
+@@ -25,12 +27,14 @@
+             inline(v, declaration, init, reference);
+             staleVars.add(v);
+         }
+-    } else if (declaration != init && refCount == 2) {
++    } else if (declaration != null && init != null && declaration != init && refCount == 2) {
+         if (isValidDeclaration(declaration) && isValidInitialization(init)) {
+             // The only reference is the initialization, remove the assignment and
+             // the variable declaration.
+             Node value = init.getAssignedValue();
+-            Preconditions.checkNotNull(value);
++            if (value == null) {
++                throw new NullPointerException("Assigned value cannot be null");
++            }
+             inlineWellDefinedVariable(v, value, referenceInfo.references);
+             staleVars.add(v);
+         }
+@@ -44,7 +48,7 @@
+         // once is *NOT* correct. We relax the correctness requirement if
+         // the variable is declared constant.
+         List<Reference> refs = referenceInfo.references;
+-        for (int i = 1;         i < refs.size(); i++) {
++        for (int i = 1; i < refs.size(); i++) {
+             Node nameNode = refs.get(i).getNode();
+             if (aliasCandidates.containsKey(nameNode)) {
+                 AliasCandidate candidate = aliasCandidates.get(nameNode);
+@@ -52,7 +56,9 @@
+                     Reference aliasInit;
+                     aliasInit = candidate.refInfo.getInitializingReference();
+                     Node value = aliasInit.getAssignedValue();
+-                    Preconditions.checkNotNull(value);
++                    if (value == null) {
++                        throw new NullPointerException("Assigned value cannot be null");
++                    }
+                     inlineWellDefinedVariable(candidate.alias, value, candidate.refInfo.references);
+                     staleVars.add(candidate.alias);
+                 }

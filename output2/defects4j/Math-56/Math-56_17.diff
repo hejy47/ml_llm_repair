@@ -1,0 +1,33 @@
+--- org/apache/commons/math/util/MultidimensionalCounter.java@getCounts
++++ org/apache/commons/math/util/MultidimensionalCounter.java@getCounts
+@@ -1,26 +1,23 @@
+ public int[] getCounts(int index) {
+     if (index < 0 || index >= totalSize) {
+-        throw new OutOfRangeException(index, 0, totalSize);
++        throw new OutOfRangeException(index, 0, totalSize-1);
+     }
+     final int[] indices = new int[dimension];
+     int count = 0;
+     for (int i = 0; i < last; i++) {
+         int idx = 0;
+         final int offset = uniCounterOffset[i];
+-        while (count <= index) {
++        while (count + offset <= index) { // fixed comparison here
+             count += offset;
+             ++idx;
+         }
+-        --idx;
+-        count -= offset;
+-        indices[i] = idx;
++        indices[i] = idx - 1; // moved decrement outside the while loop
+     }
+     int idx = 1;
+     while (count < index) {
+         count += idx;
+         ++idx;
+     }
+-    --idx;
+-    indices[last] = idx;
++    indices[last] = idx - 1; // moved decrement outside the while loop
+     return indices;
+ }

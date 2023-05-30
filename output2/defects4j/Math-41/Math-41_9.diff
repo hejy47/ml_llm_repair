@@ -1,0 +1,22 @@
+--- org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
++++ org/apache/commons/math/stat/descriptive/moment/Variance.java@evaluate
+@@ -8,13 +8,15 @@
+             double dev = 0.0;
+             double accum2 = 0.0;
+             for (int i = begin; i < begin + length; i++) {
++                int weightIndex = i - begin;
+                 dev = values[i] - mean;
+-                accum += weights[i] * (dev * dev);
+-                accum2 += weights[i] * dev;
++                accum += weights[weightIndex] * (dev * dev);
++                accum2 += weights[weightIndex] * dev;
+             }
+             double sumWts = 0;
+-            for (int i = 0; i < weights.length; i++) {
+-                sumWts += weights[i];
++            for (int i = begin; i < begin + length; i++) {
++                int weightIndex = i - begin;
++                sumWts += weights[weightIndex];
+             }
+             if (isBiasCorrected) {
+                 var = (accum - (accum2 * accum2 / sumWts)) / (sumWts - 1.0);

@@ -1,0 +1,55 @@
+--- org/apache/commons/lang3/StringUtils.java@indexOfAny
++++ org/apache/commons/lang3/StringUtils.java@indexOfAny
+@@ -10,7 +10,6 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLen; j++) {
+             if (searchChars[j] == ch) {
+-                // ch is a supplementary character
+                 return i;
+             }
+         }
+--- org/apache/commons/lang3/StringUtils.java@containsAny
++++ org/apache/commons/lang3/StringUtils.java@containsAny
+@@ -12,13 +12,13 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLength; j++) {
+             if (searchChars[j] == ch) {
+-                if (i < csLast && j < searchLast && ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_HIGH_SURROGATE) {
+-                    // missing low surrogate, fine, like String.indexOf(String)
++                if (i < csLast && j < searchLast && Character.isHighSurrogate(ch)) {
++                    // Missing low surrogate
+                     if (searchChars[j + 1] == cs.charAt(i + 1)) {
+                         return true;
+                     }
+                 } else {
+-                    // ch is in the Basic Multilingual Plane
++                    // Ch is in the Basic Multilingual Plane
+                     return true;
+                 }
+             }
+--- org/apache/commons/lang3/StringUtils.java@containsNone
++++ org/apache/commons/lang3/StringUtils.java@containsNone
+@@ -10,8 +10,21 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLen; j++) {
+             if (searchChars[j] == ch) {
+-                // missing low surrogate, fine, like String.indexOf(String)
+-                // ch is in the Basic Multilingual Plane
++                // Missing low surrogate
++                if (Character.isHighSurrogate(ch)) {
++                    // validating the low surrogate
++                    if (j == searchLen - 1) {
++                        return false;
++                    } else {
++                        char next = searchChars[j + 1];
++                        if (Character.isLowSurrogate(next)) {
++                            if (Character.toCodePoint(ch, next) == Character.toCodePoint(searchChars[j], next)) {
++                                continue;
++                            }
++                        }
++                    }
++                }
++                // Ch is in the Basic Multilingual Plane
+                 return false;
+             }
+         }

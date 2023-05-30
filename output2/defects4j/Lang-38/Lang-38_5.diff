@@ -1,0 +1,10 @@
+--- org/apache/commons/lang3/time/FastDateFormat.java@format
++++ org/apache/commons/lang3/time/FastDateFormat.java@format
+@@ -3,5 +3,6 @@
+         calendar = (Calendar) calendar.clone();
+         calendar.setTimeZone(mTimeZone);
+     }
+-    return applyRules(calendar, buf);
++    applyRules(calendar, buf); // call the method without returning
++    return buf; // return the modified buffer
+ }

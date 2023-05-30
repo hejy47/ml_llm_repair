@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -20,7 +20,7 @@
+             int nameCount = scopedAliasNames.count(name);
+             scopedAliasNames.add(name);
+             String globalName = "$jscomp.scope." + name + (nameCount == 0 ? "" : ("$" + nameCount));
+-            compiler.ensureLibraryInjected("base");
++            compiler.enforceLibraryInjection("base", false);
+             // First, we need to free up the function expression (EXPR)
+             // to be used in another expression.
+             // Replace "function NAME() { ... }" with "var NAME;".
+@@ -36,7 +36,7 @@
+             // Add $jscomp.scope.name = EXPR;
+             // Make sure we copy over all the jsdoc and debug info.
+             if (value != null || v.getJSDocInfo() != null) {
+-                Node newDecl = NodeUtil.newQualifiedNameNodeDeclaration(compiler.getCodingConvention(), globalName, value, v.getJSDocInfo()).useSourceInfoIfMissingFromForTree(n);
++                Node newDecl = NodeUtil.newQualifiedNameNodeDeclaration(compiler.getCodingConvention(), globalName, value, v.getJSDocInfo()).useSourceInfoFrom(n);
+                 NodeUtil.setDebugInformation(newDecl.getFirstChild().getFirstChild(), n, name);
+                 grandparent.addChildBefore(newDecl, varNode);
+             }
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -3,8 +3,8 @@
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
+-        n = n.next;
++    while (n.nextSibling != child) {
++        n = n.nextSibling;
+         if (n == null) {
+             throw new RuntimeException("node is not a child");
+         }

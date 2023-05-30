@@ -1,0 +1,16 @@
+--- org/apache/commons/math3/complex/Complex.java@reciprocal
++++ org/apache/commons/math3/complex/Complex.java@reciprocal
+@@ -3,10 +3,12 @@
+         return NaN;
+     }
+     if (real == 0.0 && imaginary == 0.0) {
++        // Return NaN instead of throwing an exception
+         return NaN;
+     }
+     if (isInfinite) {
+-        return ZERO;
++        // Return NaN instead of throwing an exception
++        return NaN;
+     }
+     if (FastMath.abs(real) < FastMath.abs(imaginary)) {
+         double q = real / imaginary;

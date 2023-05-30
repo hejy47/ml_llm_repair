@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -32,7 +32,7 @@
+             if (lhs.getType() == Token.GETPROP && lhs.getLastChild().getString().equals("prototype")) {
+                 return false;
+             }
+-            if (lhs.getQualifiedName() != null && lhs.getQualifiedName().contains(".prototype.")) {
++            if (lhs.getType() == Token.GETELEM && lhs.getFirstChild().isQualifiedName() && lhs.getLastChild().getString().equals("prototype")) {
+                 return false;
+             }
+         }

@@ -1,0 +1,67 @@
+--- org/joda/time/chrono/GJChronology.java@getInstance
++++ org/joda/time/chrono/GJChronology.java@getInstance
+@@ -13,7 +13,7 @@
+             chronos = new ArrayList<GJChronology>(2);
+             cCache.put(zone, chronos);
+         } else {
+-            for (int i = chronos.size(); --i >= 0; ) {
++            for (int i = chronos.size() - 1; i >= 0; i--) { // avoid ArrayIndexOutOfBoundsException
+                 chrono = chronos.get(i);
+                 if (minDaysInFirstWeek == chrono.getMinimumDaysInFirstWeek() && cutoverInstant.equals(chrono.getGregorianCutover())) {
+                     return chrono;
+--- org/joda/time/chrono/GJChronology.java@add
++++ org/joda/time/chrono/GJChronology.java@add
+@@ -1,21 +1,8 @@
+ public long add(long instant, int value) {
+-    if (instant >= iCutover) {
+-        instant = iGregorianField.add(instant, value);
+-        if (instant < iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
+-                instant = gregorianToJulian(instant);
+-            }
+-        }
+-    } else {
+-        instant = iJulianField.add(instant, value);
+-        if (instant >= iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
+-                // no special handling for year zero as cutover always after year zero
+-                instant = julianToGregorian(instant);
+-            }
+-        }
++    boolean isBeforeCutover = (instant < iCutover);
++    instant = (isBeforeCutover ? iJulianField : iGregorianField).add(instant, value);
++    if (isBeforeCutover != (instant < iCutover)) { // check if there's a transition
++        return handleTransition(instant);
+     }
+     return instant;
+ }
+--- org/joda/time/chrono/GJChronology.java@add2
++++ org/joda/time/chrono/GJChronology.java@add2
+@@ -1,21 +1,8 @@
+ public long add(long instant, long value) {
+-    if (instant >= iCutover) {
+-        instant = iGregorianField.add(instant, value);
+-        if (instant < iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant + iGapDuration < iCutover) {
+-                instant = gregorianToJulian(instant);
+-            }
+-        }
+-    } else {
+-        instant = iJulianField.add(instant, value);
+-        if (instant >= iCutover) {
+-            // Only adjust if gap fully crossed.
+-            if (instant - iGapDuration >= iCutover) {
+-                // no special handling for year zero as cutover always after year zero
+-                instant = julianToGregorian(instant);
+-            }
+-        }
++    boolean isBeforeCutover = (instant < iCutover);
++    instant = (isBeforeCutover ? iJulianField : iGregorianField).add(instant, value);
++    if (isBeforeCutover != (instant < iCutover)) { // check if there's a transition
++        return handleTransition(instant);
+     }
+     return instant;
+ }

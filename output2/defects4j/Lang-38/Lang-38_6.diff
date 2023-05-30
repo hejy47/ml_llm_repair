@@ -1,0 +1,16 @@
+--- org/apache/commons/lang3/time/FastDateFormat.java@format
++++ org/apache/commons/lang3/time/FastDateFormat.java@format
+@@ -1,7 +1,10 @@
+ public StringBuffer format(Calendar calendar, StringBuffer buf) {
++    Calendar cal;
+     if (mTimeZoneForced) {
+-        calendar = (Calendar) calendar.clone();
+-        calendar.setTimeZone(mTimeZone);
++        cal = (Calendar) calendar.clone();
++        cal.setTimeZone(mTimeZone);
++    } else {
++        cal = calendar;
+     }
+-    return applyRules(calendar, buf);
++    return applyRules(cal, buf);
+ }

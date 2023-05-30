@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -12,7 +12,7 @@
+         } else if (parent.getType() == Token.LP) {
+             // Parameters of the scope function also get a BAD_PARAMETERS
+             // error.
+-        } else if (isVar) {
++        } else if (isVar && !v.isLet() && !v.isConst()) { // fixed condition to exclude let and const declarations
+             Node grandparent = parent.getParent();
+             Node value = n.hasChildren() ? v.getInitialValue().detachFromParent() : null;
+             Node varNode = parent;
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -1,9 +1,9 @@
+ public Node getChildBefore(Node child) {
+-    if (child == first) {
++    if (child == first || child == null || first == null) { // added condition to handle null pointers and empty list
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
++    while (n.next != null && n.next != child) { // added condition to handle null pointers
+         n = n.next;
+         if (n == null) {
+             throw new RuntimeException("node is not a child");

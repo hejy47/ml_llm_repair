@@ -1,0 +1,21 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -46,11 +46,17 @@
+                     f0 *= 0.5;
+                     break;
+                 case PEGASUS:
+-                    f0 *= f1 / (f1 + fx);
++                    if (f0 == f1) {
++                        f0 = fx / 2.0;
++                    } else {
++                        f0 *= f1 / (f1 - fx);
++                    }
+                     break;
+                 // Update formula cannot make any progress: Update the
+                 // search interval.
+                 default:
++                    x0 = x1;
++                    f0 = f1;
+             }
+         }
+         // Update from [x0, x1] to [x0, x].

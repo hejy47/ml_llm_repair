@@ -1,0 +1,60 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -11,11 +11,12 @@
+             return true;
+         case Token.FUNCTION:
+             return false;
++        default:
++            for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
++                if (!ControlFlowGraph.isEnteringNewCfgNode(c) && mayThrowException(c)) {
++                    return true;
++                }
++            }
++            return false;
+     }
+-    for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+-        if (!ControlFlowGraph.isEnteringNewCfgNode(c) && mayThrowException(c)) {
+-            return true;
+-        }
+-    }
+-    return false;
+ }
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -1,7 +1,7 @@
+ @Override
+ public ObjectType getTypeWithProperty(String field, JSType type) {
+     if (!(type instanceof ObjectType)) {
+-        if (type.autoboxesTo() != null) {
++        if (type.autoboxesTo() != null && type.autoboxesTo() instanceof ObjectType) {
+             type = type.autoboxesTo();
+         } else {
+             return null;
+@@ -12,11 +12,11 @@
+         return null;
+     }
+     // We look up the prototype chain to find the highest place (if any) that
+-    // this appears.  This will make references to overriden properties look
++    // this appears.  This will make references to overridden properties look
+     // like references to the initial property, so they are renamed alike.
+     ObjectType foundType = null;
+     ObjectType objType = ObjectType.cast(type);
+-    while (objType != null && objType.getImplicitPrototype() != objType) {
++    while (objType != null && objType != getNativeObjectType(OBJECT_TYPE).getPrototype()) {
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
+         }
+@@ -26,6 +26,12 @@
+     // type is an object type, see if any subtype has the property.
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+-    // so we have to double check.
++    // so we have to double-check.
++    if (foundType == null && type instanceof ObjectType) {
++        foundType = ((ObjectType) type).getGreatestSubtypeWithProperty(field);
++        if (foundType != null && !foundType.hasOwnProperty(field)) {
++            foundType = null;
++        }
++    }
+     return foundType;
+ }

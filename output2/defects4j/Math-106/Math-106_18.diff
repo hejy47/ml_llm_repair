@@ -1,0 +1,37 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -27,15 +27,13 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
+-    // minus signs should be leading, invalid expression
++    int startIndex = pos.getIndex();
+     // parse '/'
+-    int startIndex = pos.getIndex();
+     char c = parseNextCharacter(source, pos);
+-    switch(c) {
++    switch (c) {
+         case 0:
+-            // no '/'
+-            // return num as a fraction
+-            return new Fraction(num.intValue(), 1);
++            // no '/', return a fraction with the whole as the numerator and 1 as the denominator
++            return new Fraction(whole.intValue(), 1);
+         case '/':
+             // found '/', continue parsing denominator
+             break;
+@@ -58,9 +56,13 @@
+         pos.setIndex(initialIndex);
+         return null;
+     }
+-    // minus signs must be leading, invalid
+     int w = whole.intValue();
+     int n = num.intValue();
+     int d = den.intValue();
++    // check for leading minus sign
++    if (w < 0 || n < 0 || d < 0) {
++        pos.setIndex(initialIndex);
++        return null;
++    }
+     return new Fraction(((Math.abs(w) * d) + n) * MathUtils.sign(w), d);
+ }

@@ -1,0 +1,72 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -4,13 +4,27 @@
+         switch(n.getParent().getType()) {
+             case Token.OR:
+             case Token.AND:
+-            // If the currently node is the first child of
+-            // AND/OR, be conservative only consider the READs
+-            // of the second operand.
++                // If the currently node is the first child of
++                // AND/OR, be conservative only consider the READs
++                // of the second operand.
++                if (n.getNext() != null && n.getNext().getNext() != null && n.getNext().getNext().isEquivalentTo(n)) {
++                    n = n.getNext().getNext();
++                } else {
++                    n = n.getParent();
++                }
++                break;
+             case Token.HOOK:
+-            // If current node is the condition, check each following
+-            // branch, otherwise it is a conditional branch and the
+-            // other branch can be ignored.
++                // If current node is the condition, check each following
++                // branch, otherwise it is a conditional branch and the
++                // other branch can be ignored.
++                if (n.getFirstChild().isEquivalentTo(n)) {
++                    n = n.getFirstChild().getNext();
++                } else if (n.getLastChild().isEquivalentTo(n)) {
++                    n = n.getLastChild();
++                } else {
++                    n = n.getParent();
++                }
++                break;
+             default:
+                 for (Node sibling = n.getNext(); sibling != null; sibling = sibling.getNext()) {
+                     if (!ControlFlowGraph.isEnteringNewCfgNode(sibling)) {
+@@ -23,8 +37,8 @@
+                         }
+                     }
+                 }
++                n = n.getParent();
+         }
+-        n = n.getParent();
+     }
+     return false;
+ }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -19,10 +19,20 @@
+         // Conditionals
+         case Token.OR:
+         case Token.AND:
+-        // With a AND/OR the first branch always runs, but the second is
+-        // may not.
++            // With a AND/OR the first branch always runs, but the second is
++            // may not.
++            if (n.getNext().isEquivalentTo(n)) {
++                return checkHookBranchReadBeforeKill(n.getNext().getNext(), n.getLastChild(), variable);
++            } else {
++                return checkHookBranchReadBeforeKill(n.getFirstChild(), n, variable);
++            }
++        // Ternary expression
+         case Token.HOOK:
+-            return checkHookBranchReadBeforeKill(n.getFirstChild().getNext(), n.getLastChild(), variable);
++            if (n.getLastChild().isEquivalentTo(n)) {
++                return checkHookBranchReadBeforeKill(n.getFirstChild().getNext(), n.getLastChild().getFirstChild(), variable);
++            } else {
++                return checkHookBranchReadBeforeKill(n.getFirstChild(), n, variable);
++            }
+         default:
+             // Expressions are evaluated left-right, depth first.
+             for (Node child = n.getFirstChild(); child != null; child = child.getNext()) {

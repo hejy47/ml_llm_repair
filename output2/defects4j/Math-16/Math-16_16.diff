@@ -1,0 +1,54 @@
+--- org/apache/commons/math3/util/FastMath.java@cosh
++++ org/apache/commons/math3/util/FastMath.java@cosh
+@@ -1,17 +1,19 @@
+ public static double cosh(double x) {
+-    if (x != x) {
+-        return x;
++    if (Double.isNaN(x)) {
++        return Double.NaN;
+     }
+     // cosh[z] = (exp(z) + exp(-z))/2
+     // for numbers with magnitude 20 or so,
+     // exp(-z) can be ignored in comparison with exp(z)
+     if (x > 20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(x);
++        double exp_x = exp(x);
++        return (exp_x / 2.0);
+     }
+     if (x < -20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(-x);
++        double exp_neg_x = exp(-x);
++        return (exp_neg_x / 2.0);
+     }
+     final double[] hiPrec = new double[2];
+     if (x < 0.0) {
+--- org/apache/commons/math3/util/FastMath.java@sinh
++++ org/apache/commons/math3/util/FastMath.java@sinh
+@@ -1,18 +1,20 @@
+ public static double sinh(double x) {
++    if (Double.isNaN(x)) {
++        return Double.NaN;
++    }
+     boolean negate = false;
+-    if (x != x) {
+-        return x;
+-    }
+     // sinh[z] = (exp(z) - exp(-z) / 2
+     // for values of z larger than about 20,
+     // exp(-z) can be ignored in comparison with exp(z)
+     if (x > 20) {
+         // Avoid overflow (MATH-905).
+-        return 0.5 * exp(x);
++        double exp_x = exp(x);
++        return (exp_x / 2.0);
+     }
+     if (x < -20) {
+         // Avoid overflow (MATH-905).
+-        return -0.5 * exp(-x);
++        double exp_neg_x = exp(-x);
++        return (-exp_neg_x / 2.0);
+     }
+     if (x == 0) {
+         return x;

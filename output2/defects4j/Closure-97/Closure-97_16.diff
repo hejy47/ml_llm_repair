@@ -1,0 +1,44 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldShift
+@@ -15,29 +15,27 @@
+             error(SHIFT_AMOUNT_OUT_OF_BOUNDS, right);
+             return n;
+         }
+-        // Convert the numbers to ints
+-        int lvalInt = (int) lval;
+-        if (lvalInt != lval) {
++        // Convert the numbers to longs (to handle unsigned shifts)
++        long lvalLong = (long) lval;
++        long rvalLong = (long) rval;
++        if (rvalLong < 0 || rvalLong >= 64) {
++            error(SHIFT_AMOUNT_OUT_OF_BOUNDS, right);
++            return n;
++        }
++        if (lvalLong != lval) {
+             error(FRACTIONAL_BITWISE_OPERAND, left);
+             return n;
+         }
+-        int rvalInt = (int) rval;
+-        if (rvalInt != rval) {
+-            error(FRACTIONAL_BITWISE_OPERAND, right);
+-            return n;
+-        }
++        // handle different shift operators
+         switch(n.getType()) {
+             case Token.LSH:
+-                result = lvalInt << rvalInt;
++                result = lvalLong << rvalLong;
+                 break;
+             case Token.RSH:
+-                result = lvalInt >> rvalInt;
++                result = lvalLong >> rvalLong;
+                 break;
+             case Token.URSH:
+-                // JavaScript handles zero shifts on signed numbers differently than
+-                // Java as an Java int can not represent the unsigned 32-bit number
+-                // where JavaScript can so use a long here.
+-                result = lvalInt >>> rvalInt;
++                result = lvalLong >>> rvalLong;
+                 break;
+             default:
+                 throw new AssertionError("Unknown shift operator: " + Node.tokenToName(n.getType()));

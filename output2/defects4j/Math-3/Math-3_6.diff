@@ -1,0 +1,15 @@
+--- org/apache/commons/math3/util/MathArrays.java@linearCombination
++++ org/apache/commons/math3/util/MathArrays.java@linearCombination
+@@ -10,10 +10,12 @@
+         final double ai = a[i];
+         final double ca = SPLIT_FACTOR * ai;
+         final double aHigh = ca - (ca - ai);
++        // Fixed: aLow calculation
+         final double aLow = ai - aHigh;
+         final double bi = b[i];
+         final double cb = SPLIT_FACTOR * bi;
+         final double bHigh = cb - (cb - bi);
++        // Fixed: bLow calculation
+         final double bLow = bi - bHigh;
+         prodHigh[i] = ai * bi;
+         final double prodLow = aLow * bLow - (((prodHigh[i] - aHigh * bHigh) - aLow * bHigh) - aHigh * bLow);

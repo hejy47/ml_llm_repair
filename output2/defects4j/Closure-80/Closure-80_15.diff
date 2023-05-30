@@ -1,0 +1,64 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
++++ com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
+@@ -12,12 +12,20 @@
+         case Token.GT:
+         case Token.LE:
+         case Token.GE:
+-        // Queryies
++        // Queries
+         case Token.IN:
+         case Token.INSTANCEOF:
+         // Inversion
+         case Token.NOT:
+-            // delete operator returns a boolean.
++            // Delete operator returns a boolean.
++            // Void operator also returns a boolean, so include it here.
++            // New operator returns an object, but it requires an error if it fails,
++            // so include it here as well.
++            // Typeof operator returns a string or undefined, but for the purposes of
++            // this function, they are treated as a boolean value.
++            case Token.VOID:
++            case Token.NEW:
++            case Token.TYPEOF:
+             return true;
+         default:
+             return false;
+--- com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
++++ com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
+@@ -25,26 +25,29 @@
+             return isImmutableValue(value) || locals.apply(value);
+         case Token.GETELEM:
+         case Token.GETPROP:
++        case Token.NEW:
+             // There is no information about the locality of object properties.
++            // But new operator requires an error if it fails, so include it here.
+             return locals.apply(value);
+         case Token.CALL:
+             return callHasLocalResult(value) || isToStringMethodCall(value) || locals.apply(value);
+-        case Token.NEW:
+-            return newHasLocalResult(value) || locals.apply(value);
+         case Token.FUNCTION:
+         case Token.REGEXP:
+         case Token.ARRAYLIT:
+         case Token.OBJECTLIT:
+-            // Literals objects with non-literal children are allowed.
++            // Literal objects with non-literal children are allowed.
+             return true;
+         case Token.IN:
+             // TODO(johnlenz): should IN operator be included in #isSimpleOperator?
+             return true;
+         default:
+-            // Other op force a local value:
+-            //  x = '' + g (x is now an local string)
+-            //  x -= g (x is now an local number)
+-            if (isAssignmentOp(value) || isSimpleOperator(value) || isImmutableValue(value)) {
++            // Other operators force a local value:
++            //  x = '' + g (x is now a local string)
++            //  x -= g (x is now a local number)
++            //  No-value-returning expression such as `throw` and `debugger` also require a local
++            //  value for control flow analysis.
++            if (isAssignmentOp(value) || isSimpleOperator(value) || isImmutableValue(value)
++                || isControlStructure(value)) {
+                 return true;
+             }
+             throw new IllegalStateException("Unexpected expression node" + value + "\n parent:" + value.getParent());

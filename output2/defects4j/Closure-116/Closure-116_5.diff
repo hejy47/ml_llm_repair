@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -11,7 +11,8 @@
+     if (!callNode.getFirstChild().isName()) {
+         if (NodeUtil.isFunctionObjectCall(callNode)) {
+             // TODO(johnlenz): Support replace this with a value.
+-            if (cArg == null || !cArg.isThis()) {
++	    // updated code
++            if (cArg == null || !NodeUtil.isImmutableValue(cArg)) {
+                 return CanInlineResult.NO;
+             }
+             cArg = cArg.getNext();
+@@ -29,7 +30,8 @@
+                 // Check for arguments that are evaluated more than once.
+                 // Note: Unlike block inlining, there it is not possible that a
+                 // parameter reference will be in a loop.
+-                if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
++                // Updated code
++                if (NodeUtil.mayHaveSideEffects(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+                     return CanInlineResult.NO;
+                 }
+             }

@@ -1,0 +1,57 @@
+--- org/apache/commons/math/ode/AbstractIntegrator.java@acceptStep
++++ org/apache/commons/math/ode/AbstractIntegrator.java@acceptStep
+@@ -11,7 +11,7 @@
+     }
+     // search for next events that may occur during the step
+     final int orderingSign = interpolator.isForward() ? +1 : -1;
+-    SortedSet<EventState> occuringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
++    TreeSet<EventState> occurringEvents = new TreeSet<EventState>(new Comparator<EventState>() {
+ 
+                 public int compare(EventState es0, EventState es1) {
+             return orderingSign * Double.compare(es0.getEventTime(), es1.getEventTime());
+@@ -20,12 +20,12 @@
+     for (final EventState state : eventsStates) {
+         if (state.evaluateStep(interpolator)) {
+             // the event occurs during the current step
+-            occuringEvents.add(state);
++            occurringEvents.add(state);
+         }
+     }
+-    while (!occuringEvents.isEmpty()) {
++    while (!occurringEvents.isEmpty()) {
+         // handle the chronologically first event
+-        final Iterator<EventState> iterator = occuringEvents.iterator();
++        final Iterator<EventState> iterator = occurringEvents.iterator();
+         final EventState currentEvent = iterator.next();
+         iterator.remove();
+         // restrict the interpolator to the first part of the step, up to the event
+@@ -34,7 +34,7 @@
+         interpolator.setSoftCurrentTime(eventT);
+         // trigger the event
+         interpolator.setInterpolatedTime(eventT);
+-        final double[] eventY = interpolator.getInterpolatedState();
++        final double[] eventY = interpolator.getInterpolatedState().clone();
+         currentEvent.stepAccepted(eventT, eventY);
+         isLastStep = currentEvent.stop();
+         // handle the first part of the step, up to the event
+@@ -61,11 +61,11 @@
+         // check if the same event occurs again in the remaining part of the step
+         if (currentEvent.evaluateStep(interpolator)) {
+             // the event occurs during the current step
+-            occuringEvents.add(currentEvent);
++            occurringEvents.add(currentEvent);
+         }
+     }
+     interpolator.setInterpolatedTime(currentT);
+-    final double[] currentY = interpolator.getInterpolatedState();
++    final double[] currentY = interpolator.getInterpolatedState().clone();
+     for (final EventState state : eventsStates) {
+         state.stepAccepted(currentT, currentY);
+         isLastStep = isLastStep || state.stop();
+@@ -75,5 +75,6 @@
+     for (StepHandler handler : stepHandlers) {
+         handler.handleStep(interpolator, isLastStep);
+     }
++    System.arraycopy(currentY, 0, y, 0, y.length);
+     return currentT;
+ }

@@ -1,0 +1,15 @@
+--- org/joda/time/format/DateTimeFormatter.java@parseInto
++++ org/joda/time/format/DateTimeFormatter.java@parseInto
+@@ -4,11 +4,8 @@
+     if (instant == null) {
+         throw new IllegalArgumentException("Instant must not be null");
+     }
+-    long instantMillis = instant.getMillis();
+     Chronology chrono = instant.getChronology();
+-    long instantLocal = instantMillis + chrono.getZone().getOffset(instantMillis);
+-    chrono = selectChronology(chrono);
+-    DateTimeParserBucket bucket = new DateTimeParserBucket(instantLocal, chrono, iLocale, iPivotYear, iDefaultYear);
++    DateTimeParserBucket bucket = new DateTimeParserBucket(instant, chrono, iLocale, iPivotYear, iDefaultYear);
+     int newPos = parser.parseInto(bucket, text, position);
+     instant.setMillis(bucket.computeMillis(false, text));
+     if (iOffsetParsed && bucket.getOffsetInteger() != null) {

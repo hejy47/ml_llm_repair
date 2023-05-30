@@ -1,0 +1,25 @@
+--- org/apache/commons/math3/util/FastMath.java@cosh
++++ org/apache/commons/math3/util/FastMath.java@cosh
+@@ -1,6 +1,6 @@
+ public static double cosh(double x) {
+-    if (x != x) {
+-        return x;
++    if (Double.isNaN(x)) {
++        return Double.NaN;
+     }
+     // cosh[z] = (exp(z) + exp(-z))/2
+     // for numbers with magnitude 20 or so,
+--- org/apache/commons/math3/util/FastMath.java@sinh
++++ org/apache/commons/math3/util/FastMath.java@sinh
+@@ -1,8 +1,8 @@
+ public static double sinh(double x) {
++    if (Double.isNaN(x)) {
++        return Double.NaN;
++    }
+     boolean negate = false;
+-    if (x != x) {
+-        return x;
+-    }
+     // sinh[z] = (exp(z) - exp(-z) / 2
+     // for values of z larger than about 20,
+     // exp(-z) can be ignored in comparison with exp(z)

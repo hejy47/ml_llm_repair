@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -26,7 +26,11 @@
+                 arrayFoldedChildren.add(Node.newString(sb.toString()));
+                 sb = new StringBuilder();
+             }
+-            foldedSize += InlineCostEstimator.getCost(elem);
++            int inlineCost = InlineCostEstimator.getCost(elem);
++            if (inlineCost < 0) {
++                return; // if we can't estimate its size we shouldn't fold it.
++            }
++            foldedSize += inlineCost;
+             arrayFoldedChildren.add(elem);
+         }
+         elem = elem.getNext();

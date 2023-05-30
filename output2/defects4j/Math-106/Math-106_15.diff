@@ -1,0 +1,13 @@
+--- org/apache/commons/math/fraction/ProperFractionFormat.java@parse
++++ org/apache/commons/math/fraction/ProperFractionFormat.java@parse
+@@ -34,8 +34,8 @@
+     switch(c) {
+         case 0:
+             // no '/'
+-            // return num as a fraction
+-            return new Fraction(num.intValue(), 1);
++            // return whole as a fraction
++            return new Fraction(whole.intValue(), 1);
+         case '/':
+             // found '/', continue parsing denominator
+             break;

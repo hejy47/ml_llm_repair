@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -2,7 +2,7 @@
+ Node processFunctionNode(FunctionNode functionNode) {
+     Name name = functionNode.getFunctionName();
+     Boolean isUnnamedFunction = false;
+-    if (name == null) {
++    if (name == null || name.getIdentifier().isEmpty()) {
+         name = new Name();
+         name.setIdentifier("");
+         isUnnamedFunction = true;

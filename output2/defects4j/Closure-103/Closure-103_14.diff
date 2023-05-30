@@ -1,0 +1,37 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -1,5 +1,5 @@
+ private static boolean mayThrowException(Node n) {
+-    switch(n.getType()) {
++    switch(n.getToken()) { // Use getToken() instead of getType() to fix bug
+         case Token.CALL:
+         case Token.GETPROP:
+         case Token.GETELEM:
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -12,11 +12,11 @@
+         return null;
+     }
+     // We look up the prototype chain to find the highest place (if any) that
+-    // this appears.  This will make references to overriden properties look
++    // this appears.  This will make references to overridden properties look
+     // like references to the initial property, so they are renamed alike.
+     ObjectType foundType = null;
+     ObjectType objType = ObjectType.cast(type);
+-    while (objType != null && objType.getImplicitPrototype() != objType) {
++    while (objType != null && !objType.equals(objType.getImplicitPrototype())) { // Use equals() instead of != to fix bug
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
+         }
+@@ -27,5 +27,11 @@
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+     // so we have to double check.
++    if (foundType == null && type instanceof ObjectType) {
++        foundType = ObjectType.cast(((ObjectType) type).getGreatestSubtypeWithProperty(field));
++        if (foundType != null && !foundType.hasOwnProperty(field)) {
++            foundType = null;
++        }
++    }
+     return foundType;
+ }

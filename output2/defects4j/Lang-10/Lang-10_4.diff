@@ -1,0 +1,11 @@
+--- org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
++++ org/apache/commons/lang3/time/FastDateParser.java@escapeRegex
+@@ -36,6 +36,8 @@
+             case '$':
+             case '.':
+                 regex.append('\\');
++            default:
++                break;
+         }
+         regex.append(c);
+     }

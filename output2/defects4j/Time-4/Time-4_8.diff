@@ -1,0 +1,12 @@
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -21,6 +21,9 @@
+                     } else if (compare == 0) {
+                         DurationField rangeField = fieldType.getRangeDurationType().getField(iChronology);
+                         DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
++                        if (rangeField.compareTo(loopRangeField) == 0) {
++                            throw new IllegalArgumentException("Different "+ fieldType.getName()+" values for " + fieldType + " and " + loopType);
++                        }
+                         if (rangeField.compareTo(loopRangeField) > 0) {
+                             break;
+                         }

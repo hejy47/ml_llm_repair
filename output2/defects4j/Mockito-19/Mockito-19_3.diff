@@ -1,0 +1,77 @@
+--- org/mockito/internal/configuration/injection/filter/FinalMockCandidateFilter.java@filterCandidate
++++ org/mockito/internal/configuration/injection/filter/FinalMockCandidateFilter.java@filterCandidate
+@@ -5,7 +5,8 @@
+ 
+             public Object thenInject() {
+                 try {
+-                    if (!new BeanPropertySetter(fieldInstance, field).set(matchingMock)) {
++                    boolean beanPropertySet = new BeanPropertySetter(fieldInstance, field).set(matchingMock);
++                    if (!beanPropertySet) {
+                         new FieldSetter(fieldInstance, field).set(matchingMock);
+                     }
+                 } catch (RuntimeException e) {
+--- org/mockito/internal/configuration/injection/filter/MockCandidateFilter.java@filterCandidate
++++ org/mockito/internal/configuration/injection/filter/MockCandidateFilter.java@filterCandidate
+@@ -1 +1,15 @@
+ OngoingInjecter filterCandidate(Collection<Object> mocks, Field fieldToBeInjected, Object fieldInstance);
++
++## Fixed Function 3
++public OngoingInjecter filterCandidate(Collection<Object> mocks, Field field, Object fieldInstance) {
++    List<Object> mockNameMatches = new ArrayList<Object>();
++    if (mocks.size() > 1) {
++        for (Object mock : mocks) {
++            if (Objects.equals(field.getName(), mockUtil.getMockName(mock).toString())) {
++                mockNameMatches.add(mock);
++            }
++        }
++        return next.filterCandidate(mockNameMatches, field, fieldInstance);
++    }
++    return next.filterCandidate(mocks, field, fieldInstance);
++}
+--- org/mockito/internal/configuration/injection/filter/NameBasedCandidateFilter.java@filterCandidate
++++ org/mockito/internal/configuration/injection/filter/NameBasedCandidateFilter.java@filterCandidate
+@@ -2,11 +2,11 @@
+     List<Object> mockNameMatches = new ArrayList<Object>();
+     if (mocks.size() > 1) {
+         for (Object mock : mocks) {
+-            if (field.getName().equals(mockUtil.getMockName(mock).toString())) {
++            if (Objects.equals(field.getName(), mockUtil.getMockName(mock).toString())) {
+                 mockNameMatches.add(mock);
+             }
+         }
+         return next.filterCandidate(mockNameMatches, field, fieldInstance);
+-            }
++    }
+     return next.filterCandidate(mocks, field, fieldInstance);
+ }
+--- org/mockito/internal/configuration/injection/filter/TypeBasedCandidateFilter.java@filterCandidate
++++ org/mockito/internal/configuration/injection/filter/TypeBasedCandidateFilter.java@filterCandidate
+@@ -1,9 +1,12 @@
+ public OngoingInjecter filterCandidate(Collection<Object> mocks, Field field, Object fieldInstance) {
+-    List<Object> mockTypeMatches = new ArrayList<Object>();
+-    for (Object mock : mocks) {
+-        if (field.getType().isAssignableFrom(mock.getClass())) {
+-            mockTypeMatches.add(mock);
++    List<Object> mockNameMatches = new ArrayList<Object>();
++    if (mocks.size() > 1) {
++        for (Object mock : mocks) {
++            if (Objects.equals(field.getName(), mockUtil.getMockName(mock).toString())) {
++                mockNameMatches.add(mock);
++            }
+         }
++        return next.filterCandidate(mockNameMatches, field, fieldInstance);
+     }
+-    return next.filterCandidate(mockTypeMatches, field, fieldInstance);
++    return next.filterCandidate(mocks, field, fieldInstance);
+ }
+--- org/mockito/internal/configuration/injection/PropertyAndSetterInjection.java@injectMockCandidatesOnFields
++++ org/mockito/internal/configuration/injection/PropertyAndSetterInjection.java@injectMockCandidatesOnFields
+@@ -3,7 +3,7 @@
+         Field field = it.next();
+         Object injected = mockCandidateFilter.filterCandidate(mocks, field, instance).thenInject();
+         if (injected != null) {
+-            injectionOccurred |= true;
++            injectionOccurred = true;
+             mocks.remove(injected);
+             it.remove();
+         }

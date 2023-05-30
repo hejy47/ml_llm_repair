@@ -1,0 +1,27 @@
+--- org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
++++ org/apache/commons/math3/analysis/differentiation/DSCompiler.java@atan2
+@@ -30,12 +30,18 @@
+         divide(y, yOffset, tmp2, 0, tmp1, 0);
+         // atan(y / (r - x))
+         atan(tmp1, 0, tmp2, 0);
+-        result[resultOffset] = // +/-pi - 2 * atan(y / (r - x))
+-        ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0];
+-        for (int i = 1; i < tmp2.length; ++i) {
+-            // +/-pi - 2 * atan(y / (r - x))
+-            result[resultOffset + i] = -2 * tmp2[i];
++        // check special case of atan(y / (r - x))=pi
++        if (tmp2[0] == FastMath.PI) {
++            result[resultOffset] = tmp2[0];
++            for (int i = 1; i < tmp2.length; ++i) {
++                result[resultOffset + i] = 0;
++            }
++        } else {
++            result[resultOffset] = ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0];
++            for (int i = 1; i < tmp2.length; ++i) {
++                // +/-pi - 2 * atan(y / (r - x))
++                result[resultOffset + i] = -2 * tmp2[i];
++            }
+         }
+     }
+-    // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly
+ }

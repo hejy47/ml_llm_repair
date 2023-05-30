@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@tryMinimizeIf
+@@ -2,7 +2,7 @@
+     Node parent = n.getParent();
+     Node cond = n.getFirstChild();
+         if (NodeUtil.isLiteralValue(cond, true)) {
+-        return n;
++        return cond; // return the literal value directly
+     }
+     Node thenBranch = cond.getNext();
+     Node elseBranch = thenBranch.getNext();

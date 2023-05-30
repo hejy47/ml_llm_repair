@@ -1,0 +1,35 @@
+--- org/apache/commons/math3/linear/OpenMapRealVector.java@ebeDivide
++++ org/apache/commons/math3/linear/OpenMapRealVector.java@ebeDivide
+@@ -2,10 +2,10 @@
+ public OpenMapRealVector ebeDivide(RealVector v) {
+     checkVectorDimensions(v.getDimension());
+     OpenMapRealVector res = new OpenMapRealVector(this);
+-        Iterator iter = entries.iterator();
++    Iterator<Entry> iter = entries.iterator();
+     while (iter.hasNext()) {
+-        iter.advance();
+-        res.setEntry(iter.key(), iter.value() / v.getEntry(iter.key()));
++        Entry e = iter.next();
++        res.setEntry(e.getKey(), e.getValue() / v.getEntry(e.getKey()));
+     }
+     return res;
+ }
+--- org/apache/commons/math3/linear/OpenMapRealVector.java@ebeMultiply
++++ org/apache/commons/math3/linear/OpenMapRealVector.java@ebeMultiply
+@@ -1,11 +1,11 @@
+ @Override
+-public OpenMapRealVector ebeMultiply(RealVector v) {
++public OpenMapRealVector ebeDivide(RealVector v) {
+     checkVectorDimensions(v.getDimension());
+     OpenMapRealVector res = new OpenMapRealVector(this);
+-    Iterator iter = entries.iterator();
++    Iterator<Entry> iter = entries.iterator();
+     while (iter.hasNext()) {
+-        iter.advance();
+-        res.setEntry(iter.key(), iter.value() * v.getEntry(iter.key()));
++        Entry e = iter.next();
++        res.setEntry(e.getKey(), e.getValue() / v.getEntry(e.getKey()));
+     }
+-        return res;
++    return res;
+ }

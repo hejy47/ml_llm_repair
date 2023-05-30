@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -45,7 +45,17 @@
+     // Convert "if (blah) break;  if (blah2) break; other_stmt;" to
+     // become "if (blah); else { if (blah2); else { other_stmt; } }"
+     // which will get converted to "if (!blah && !blah2) { other_stmt; }".
++    Node prevChild = null; // added for fix
+     for (Node c : n.children()) {
++        // Fix: skip if c is the last child and has no children
++        if (c == n.getLastChild() && !c.hasChildren()) {
++            continue;
++        }
++        // Fix: If prevChild is an IF, skip since it was already processed
++        if (prevChild != null && prevChild.isIf()) {
++            prevChild = c;
++            continue;
++        }
+         // An 'if' block to process below.
+         if (c.isIf()) {
+             Node ifTree = c;
+@@ -61,9 +71,7 @@
+             if (falseBlock != null) {
+                 tryMinimizeIfBlockExits(falseBlock, trueBlock, ifTree, exitType, labelName);
+             }
+-        }
+-        if (c == n.getLastChild()) {
+-            break;
++            prevChild = c; // added for fix
+         }
+     }
+     // Now try to minimize the exits of the last child, if it is removed

@@ -1,0 +1,20 @@
+--- org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getV
++++ org/apache/commons/math/linear/SingularValueDecompositionImpl.java@getV
+@@ -3,7 +3,7 @@
+         final int p = singularValues.length;
+         if (m >= n) {
+             // the tridiagonal matrix is Bt.B, where B is upper bidiagonal
+-            final RealMatrix e = eigenDecomposition.getV().getSubMatrix(0, n - 1, 0, p - 1);
++            final RealMatrix e = eigenDecomposition.getV().getSubMatrix(0, p - 1, 0, n - 1).transpose();
+             cachedV = transformer.getV().multiply(e);
+         } else {
+             // the tridiagonal matrix is B.Bt, where B is lower bidiagonal
+@@ -28,7 +28,7 @@
+             for (int i = p; i < n; ++i) {
+                 wData[i] = new double[p];
+             }
+-            cachedV = transformer.getV().multiply(MatrixUtils.createRealMatrix(wData));
++            cachedV = transformer.getV().multiply(MatrixUtils.createRealMatrix(wData)).transpose();
+         }
+     }
+     // return the cached matrix

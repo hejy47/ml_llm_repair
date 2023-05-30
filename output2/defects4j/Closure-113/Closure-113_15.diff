@@ -1,0 +1,20 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@processRequireCall
+@@ -11,7 +11,7 @@
+             // This must be non-null, because there was an explicit provide.
+             Preconditions.checkNotNull(providedModule);
+             JSModule module = t.getModule();
+-            if (moduleGraph != null && module != providedModule && !moduleGraph.dependsOn(module, providedModule)) {
++            if (moduleGraph != null && module != providedModule && !moduleGraph.dependsOn(module.getName(), providedModule.getName())) {
+                 compiler.report(t.makeError(n, XMODULE_REQUIRE_ERROR, ns, providedModule.getName(), module.getName()));
+             }
+         }
+@@ -23,7 +23,7 @@
+         // allow broken requires to be preserved by the first run to
+         // let them be caught in the subsequent run.
+         if (provided != null) {
+-            parent.detachFromParent();
++            parent.removeChild(n);
+             compiler.reportCodeChange();
+         }
+     }

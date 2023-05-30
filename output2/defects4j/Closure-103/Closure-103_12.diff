@@ -1,0 +1,33 @@
+--- com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
++++ com/google/javascript/jscomp/ControlFlowAnalysis.java@mayThrowException
+@@ -11,6 +11,8 @@
+             return true;
+         case Token.FUNCTION:
+             return false;
++        default:
++            break; // Add default case to handle all other cases
+     }
+     for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {
+         if (!ControlFlowGraph.isEnteringNewCfgNode(c) && mayThrowException(c)) {
+--- com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
++++ com/google/javascript/jscomp/DisambiguateProperties.java@getTypeWithProperty
+@@ -19,6 +19,7 @@
+     while (objType != null && objType.getImplicitPrototype() != objType) {
+         if (objType.hasOwnProperty(field)) {
+             foundType = objType;
++            break; // Add break statement to stop iteration when property is found
+         }
+         objType = objType.getImplicitPrototype();
+     }
+@@ -27,5 +28,11 @@
+     // getGreatestSubtypeWithProperty does not guarantee that the property
+     // is defined on the returned type, it just indicates that it might be,
+     // so we have to double check.
++    if (foundType == null && type instanceof ObjectType) {
++        foundType = ((ObjectType) type).getGreatestSubtypeWithProperty(field);
++        if (foundType != null && !foundType.hasOwnProperty(field)) {
++            foundType = null;
++        }
++    }
+     return foundType;
+ }

@@ -1,0 +1,26 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -21,10 +21,9 @@
+     initIntegration(equations.getTime(), y0, t);
+     // main integration loop
+     isLastStep = false;
+-    do {
++    double error = 10;
++    while (!isLastStep) {
+         interpolator.shift();
+-        // iterate over step size, ensuring local normalized error is smaller than 1
+-        double error = 10;
+         while (error >= 1.0) {
+             if (firstTime || !fsal) {
+                 // first stage
+@@ -96,8 +95,9 @@
+             if (filteredNextIsLast) {
+                 hNew = t - stepStart;
+             }
++            error = 10;
+         }
+-    } while (!isLastStep);
++    }
+     // dispatch results
+     equations.setTime(stepStart);
+     equations.setCompleteState(y);

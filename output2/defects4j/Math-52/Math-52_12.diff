@@ -1,0 +1,23 @@
+--- org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
++++ org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
+@@ -37,9 +37,7 @@
+             // the (q1, q2, q3) vector is also close to the (u1, u3) plane,
+             // it is almost aligned with u1: we try (u2, u3) and (v2, v3)
+             k = v2Su2.crossProduct(v3Su3);
+-            ;
+             c = k.dotProduct(u2.crossProduct(u3));
+-            ;
+             if (c == 0) {
+                 // the (q1, q2, q3) vector is aligned with everything
+                 // this is really the identity rotation
+@@ -63,4 +61,10 @@
+     // compute the scalar part
+     k = new Vector3D(uRef.getY() * q3 - uRef.getZ() * q2, uRef.getZ() * q1 - uRef.getX() * q3, uRef.getX() * q2 - uRef.getY() * q1);
+     q0 = vRef.dotProduct(k) / (2 * k.getNormSq());
++    // Normalize quaternion
++    double norm = FastMath.sqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
++    q0 /= norm;
++    q1 /= norm;
++    q2 /= norm;
++    q3 /= norm;
+ }

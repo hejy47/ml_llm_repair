@@ -1,0 +1,43 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -36,11 +36,11 @@
+             switch(op) {
+                 case Token.SHEQ:
+                 case Token.EQ:
+-                    result = lhType == rhType;
++                    result = (left.getType() == right.getType());
+                     break;
+                 case Token.SHNE:
+                 case Token.NE:
+-                    result = lhType != rhType;
++                    result = (left.getType() != right.getType());
+                     break;
+                 case Token.GE:
+                 case Token.LE:
+@@ -84,7 +84,7 @@
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (Token.STRING != right.getType()) {
++            if (rhType != Token.STRING) {
+                 // Only eval if they are the same type
+                 return n;
+             }
+@@ -107,7 +107,7 @@
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (Token.NUMBER != right.getType()) {
++            if (rhType != Token.NUMBER) {
+                 // Only eval if they are the same type
+                 return n;
+             }
+@@ -130,7 +130,7 @@
+                     break;
+                 }
+             }
+-            if (Token.NAME != right.getType()) {
++            if (rhType != Token.NAME) {
+                 // Only eval if they are the same type
+                 return n;
+             }

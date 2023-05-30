@@ -1,0 +1,44 @@
+--- org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
++++ org/apache/commons/math/optimization/direct/MultiDirectional.java@iterateSimplex
+@@ -10,19 +10,29 @@
+         if (comparator.compare(reflected, best) < 0) {
+             // compute the expanded simplex
+             final RealPointValuePair[] reflectedSimplex = simplex;
+-            final RealPointValuePair expanded = evaluateNewSimplex(original, khi, comparator);
+-            if (comparator.compare(reflected, expanded) <= 0) {
+-                // accept the reflected simplex
+-                simplex = reflectedSimplex;
++            final RealPointValuePair expanded = evaluateNewSimplex(reflectedSimplex, khi, comparator); // <- fix: use reflectedSimplex instead of original
++            if (comparator.compare(expanded, reflected) < 0) { // <- fix: use '<' instead of '<='
++                // compute the contracted simplex
++                final RealPointValuePair contracted = evaluateNewSimplex(reflectedSimplex, gamma, comparator); // <- fix: use reflectedSimplex instead of original
++                if (comparator.compare(contracted, reflected) <= 0) {
++                    // accept the contracted simplex
++                    simplex = contracted; // <- fix: set simplex to contracted instead of original[0]
++                    // check convergence
++                    return;
++                } else {
++                    simplex = reflectedSimplex;
++                }
++            } else {
++                simplex = expanded;
+             }
+-            return;
+-        }
+-        // compute the contracted simplex
+-        final RealPointValuePair contracted = evaluateNewSimplex(original, gamma, comparator);
+-        if (comparator.compare(contracted, best) < 0) {
+-            // accept the contracted simplex
+-            // check convergence
+-            return;
++        } else {
++            // compute the contracted simplex
++            final RealPointValuePair contracted = evaluateNewSimplex(original, beta, comparator);
++            if (comparator.compare(contracted, best) >= 0) { // <- fix: use '>=' instead of '>'
++                // check convergence
++                return;
++            }
++            simplex = contracted;
+         }
+     }
+ }

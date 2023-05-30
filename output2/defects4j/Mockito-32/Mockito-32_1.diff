@@ -1,0 +1,11 @@
+--- org/mockito/internal/configuration/SpyAnnotationEngine.java@process
++++ org/mockito/internal/configuration/SpyAnnotationEngine.java@process
+@@ -11,7 +11,7 @@
+                 if (instance == null) {
+                     throw new MockitoException("Cannot create a @Spy for '" + field.getName() + "' field because the *instance* is missing\n" + "The instance must be created *before* initMocks();\n" + "Example of correct usage of @Spy:\n" + "   @Spy List mock = new LinkedList();\n" + "   //also, don't forget about MockitoAnnotations.initMocks();");
+                 }
+-                if (new MockUtil().isMock(instance)) {
++                if (Mockito.mockingDetails(instance).isMock()) {
+                     // instance has been spied earlier
+                     Mockito.reset(instance);
+                 } else {

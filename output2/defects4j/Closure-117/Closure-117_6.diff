@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -7,7 +7,8 @@
+         ObjectType objectType = getJSType(n.getFirstChild()).dereference();
+         if (objectType != null) {
+             String propName = n.getLastChild().getString();
+-            if (objectType.getConstructor() != null && objectType.getConstructor().isInterface()) {
++            // Check if the objectType is an instance of a class or interface
++            if (objectType.getConstructor() != null && (objectType.getConstructor().isInterface() || objectType.getConstructor().isNominalConstructor())) {
+                 objectType = FunctionType.getTopDefiningInterface(objectType, propName);
+             } else {
+                 // classes

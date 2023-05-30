@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -33,7 +33,18 @@
+         // Handle the case where there's not a duplicate definition.
+         replacementNode = createDeclarationNode();
+         if (firstModule == minimumModule) {
+-            firstNode.getParent().addChildBefore(replacementNode, firstNode);
++            JSModule module = firstNode.getModule();
++            Preconditions.checkNotNull(module);
++            module.adoptChild(replacementNode);
++            Node parent = firstNode.getParent();
++            if (parent != null) {
++                parent.addChildBefore(replacementNode, firstNode);
++            } else {
++                // It is some sort of function declaration.
++                Preconditions.checkState(firstNode.isFunction(), firstNode);
++                Preconditions.checkState(firstNode.getParent().isFunctionBlock(), firstNode.getParent());
++                firstNode.getParent().addChildBefore(replacementNode, firstNode);
++            }
+         } else {
+             // In this case, the name was implicitly provided by two independent
+             // modules. We need to move this code up to a common module.

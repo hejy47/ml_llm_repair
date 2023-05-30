@@ -1,0 +1,280 @@
+--- com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
++++ com/google/javascript/jscomp/PeepholeFoldConstants.java@tryFoldComparison
+@@ -7,76 +7,96 @@
+         }
+     }
+     int op = n.getType();
+-    boolean result;
+-    // TODO(johnlenz): Use the JSType to compare nodes of different types.
++    boolean result = false;
+     boolean rightLiteral = NodeUtil.isLiteralValue(right, false);
+     boolean undefinedRight = ((Token.NAME == right.getType() && right.getString().equals("undefined")) || (Token.VOID == right.getType() && NodeUtil.isLiteralValue(right.getFirstChild(), false)));
+     int lhType = left.getType();
+     int rhType = right.getType();
+-    switch(lhType) {
++    switch (lhType) {
+         case Token.VOID:
+-            if (!NodeUtil.isLiteralValue(left.getFirstChild(), false)) {
+-                return n;
+-            } else if (!rightLiteral) {
+-                return n;
+-            } else {
+-                result = compareToUndefined(right, op);
+-            }
+-            break;
++            // Fall through
+         case Token.NULL:
++            // Fall through
+         case Token.TRUE:
++            // Fall through
+         case Token.FALSE:
+             if (undefinedRight) {
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (rhType != Token.TRUE && rhType != Token.FALSE && rhType != Token.NULL) {
++            if (rightLiteral && rhType == lhType) {
++                // Compare left and right nodes as values.
++                result = left.getBoolean() == right.getBoolean();
++            } else if (rhType == Token.NULL || rhType == Token.TRUE || rhType == Token.FALSE || rhType == Token.VOID) {
++                switch (op) {
++                    case Token.SHEQ:
++                    case Token.EQ:
++                        result = lhType == rhType;
++                        break;
++                    case Token.SHNE:
++                    case Token.NE:
++                        result = lhType != rhType;
++                        break;
++                    case Token.GE:
++                    case Token.LE:
++                    case Token.GT:
++                    case Token.LT:
++                        // Handle mixed boolean and numeric compares like:
++                        // alert(true > true, true > false, false > true, false > false);
++                        //
++                        // Handle null/undefined like:
++                        // alert(null > null, null >= null, null < null, null <= null);
++                        Boolean compareResult = compareAsNumbers(op, left, right);
++                        if (compareResult != null) {
++                            result = compareResult;
++                        } else {
++                            return n;
++                        }
++                        break;
++                    default:
++                        // we only handle == and != here
++                        return n;
++                }
++            } else {
+                 return n;
+             }
+-            switch(op) {
+-                case Token.SHEQ:
+-                case Token.EQ:
+-                    result = lhType == rhType;
+-                    break;
+-                case Token.SHNE:
+-                case Token.NE:
+-                    result = lhType != rhType;
+-                    break;
+-                case Token.GE:
+-                case Token.LE:
+-                case Token.GT:
+-                case Token.LT:
+-                    Boolean compareResult = compareAsNumbers(op, left, right);
+-                    if (compareResult != null) {
+-                        result = compareResult;
+-                    } else {
++            break;
++        case Token.NAME:
++            if (undefinedRight) {
++                result = compareToUndefined(left, op);
++                break;
++            }
++            if (rightLiteral && (rhType == Token.NUMBER || rhType == Token.STRING)) {
++                switch (op) {
++                    case Token.SHEQ:
++                    case Token.EQ:
++                        result = left.getBoolean() == right.getBoolean();
++                        break;
++                    case Token.SHNE:
++                    case Token.NE:
++                        result = left.getBoolean() != right.getBoolean();
++                        break;
++                    case Token.GE:
++                    case Token.LE:
++                    case Token.GT:
++                    case Token.LT:
++                        // Handle boolean and numeric compares with numbers stored
++                        // as named values like: alert(true > 1, true < 2);
++                        Boolean compareResult = compareAsNumbers(op, left, right);
++                        if (compareResult != null) {
++                            result = compareResult;
++                        } else {
++                            return n;
++                        }
++                        break;
++                    default:
++                        // Only EQ and NE handled below
+                         return n;
+-                    }
+-                    break;
+-                default:
+-                    // we only handle == and != here
+-                    return n;
+-            }
+-            break;
+-        case Token.THIS:
+-            if (right.getType() != Token.THIS) {
++                }
++            } else if (right.getType() == Token.THIS && op == Token.SHEQ) {
++                result = true;
++            } else {
+                 return n;
+-            }
+-            switch(op) {
+-                case Token.SHEQ:
+-                case Token.EQ:
+-                    result = true;
+-                    break;
+-                case Token.SHNE:
+-                case Token.NE:
+-                    result = false;
+-                    break;
+-                // We can only handle == and != here.
+-                // GT, LT, GE, LE depend on the type of "this" and how it will
+-                // be converted to number.  The results are different depending on
+-                // whether it is a string, NaN or other number value.
+-                default:
+-                    return n;
+             }
+             break;
+         case Token.STRING:
+@@ -84,22 +104,35 @@
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (Token.STRING != right.getType()) {
+-                // Only eval if they are the same type
++            if (rightLiteral && rhType == Token.STRING) {
++                switch (op) {
++                    case Token.SHEQ:
++                    case Token.EQ:
++                        result = left.getString().equals(right.getString());
++                        break;
++                    case Token.SHNE:
++                    case Token.NE:
++                        result = !left.getString().equals(right.getString());
++                        break;
++                    case Token.GE:
++                    case Token.GT:
++                    case Token.LE:
++                    case Token.LT:
++                        // Handle numeric compares with strings stored as literals
++                        // or named values.
++                        Boolean compareResult = compareAsNumbers(op, left, right);
++                        if (compareResult != null) {
++                            result = compareResult;
++                        } else {
++                            return n;
++                        }
++                        break;
++                    default:
++                        // we only handle == and != here
++                        return n;
++                }
++            } else {
+                 return n;
+-            }
+-            switch(op) {
+-                case Token.SHEQ:
+-                case Token.EQ:
+-                    result = left.getString().equals(right.getString());
+-                    break;
+-                case Token.SHNE:
+-                case Token.NE:
+-                    result = !left.getString().equals(right.getString());
+-                    break;
+-                default:
+-                    // we only handle == and != here
+-                    return n;
+             }
+             break;
+         case Token.NUMBER:
+@@ -107,53 +140,32 @@
+                 result = compareToUndefined(left, op);
+                 break;
+             }
+-            if (Token.NUMBER != right.getType()) {
+-                // Only eval if they are the same type
++            if (rightLiteral && (rhType == Token.NUMBER)) {
++                Boolean compareResult = compareAsNumbers(op, left, right);
++                if (compareResult != null) {
++                    result = compareResult;
++                } else {
++                    return n;
++                }
++            } else if (right.getType() == Token.NAME && right.getString().equals("NaN")) {
++                switch (op) {
++                    case Token.SHEQ:
++                    case Token.EQ:
++                        result = false;
++                        break;
++                    case Token.SHNE:
++                    case Token.NE:
++                        result = true;
++                        break;
++                    default:
++                        return n;
++                }
++            } else {
+                 return n;
+-            }
+-            Boolean compareResult = compareAsNumbers(op, left, right);
+-            if (compareResult != null) {
+-                result = compareResult;
+-            } else {
+-                return null;
+-            }
+-            break;
+-        case Token.NAME:
+-            if (undefinedRight) {
+-                result = compareToUndefined(left, op);
+-                break;
+-            }
+-            if (rightLiteral) {
+-                boolean undefinedLeft = (left.getString().equals("undefined"));
+-                if (undefinedLeft) {
+-                    result = compareToUndefined(right, op);
+-                    break;
+-                }
+-            }
+-            if (Token.NAME != right.getType()) {
+-                // Only eval if they are the same type
+-                return n;
+-            }
+-            String ln = left.getString();
+-            String rn = right.getString();
+-            if (!ln.equals(rn)) {
+-                // Not the same value name.
+-                return n;
+-            }
+-            switch(op) {
+-                // If we knew the named value wouldn't be NaN, it would be nice
+-                // to handle EQ,NE,LE,GE,SHEQ, and SHNE.
+-                case Token.LT:
+-                case Token.GT:
+-                    result = false;
+-                    break;
+-                default:
+-                    // don't handle that op
+-                    return n;
+             }
+             break;
+         default:
+-            // assert, this should cover all consts
++            // assert, this shouldn't happen
+             return n;
+     }
+     Node newNode = new Node(result ? Token.TRUE : Token.FALSE);

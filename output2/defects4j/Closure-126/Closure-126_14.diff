@@ -1,0 +1,19 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -26,7 +26,7 @@
+             Node catchCodeBlock = catchNode.getLastChild();
+             tryMinimizeExits(catchCodeBlock, exitType, labelName);
+         }
+-                if (NodeUtil.hasFinally(n)) {
++        if (NodeUtil.hasFinally(n)) {
+             Node finallyBlock = n.getLastChild();
+             tryMinimizeExits(finallyBlock, exitType, labelName);
+         }
+@@ -35,6 +35,7 @@
+     if (n.isLabel()) {
+         Node labelBlock = n.getLastChild();
+         tryMinimizeExits(labelBlock, exitType, labelName);
++        return;
+     }
+     // TODO(johnlenz): The last case of SWITCH statement?
+     // The rest assumes a block with at least one child, bail on anything else.

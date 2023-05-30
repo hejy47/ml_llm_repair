@@ -1,0 +1,30 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -6,6 +6,11 @@
+     }
+     if (chars != null && chars.length == 0) {
+         throw new IllegalArgumentException("The chars array must not be empty");
++    }
++    if (start > end) {
++        int tempStart = start;
++        start = end;
++        end = tempStart;
+     }
+     if (start == 0 && end == 0) {
+         if (chars != null) {
+@@ -20,13 +25,13 @@
+         }
+     }
+     char[] buffer = new char[count];
+-    int gap = end - start;
++    int gap = end - start + 1; // Fix gap calculation
+     while (count-- != 0) {
+         char ch;
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+         } else {
+-            ch = chars[random.nextInt(gap) + start];
++            ch = chars[random.nextInt(gap) + start]; // Fix index calculation
+         }
+         if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
+             if (ch >= 56320 && ch <= 57343) {

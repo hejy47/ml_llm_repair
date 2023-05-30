@@ -1,0 +1,8 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -68,4 +68,5 @@
+             }
+         }
+     }
++    out.flush(); //Added this line to flush the stream after writing
+ }

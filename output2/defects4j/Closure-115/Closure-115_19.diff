@@ -1,0 +1,48 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -31,29 +31,34 @@
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]
+     Node fnParam = NodeUtil.getFunctionParameters(fnNode).getFirstChild();
+     while (cArg != null || fnParam != null) {
+-        // For each named parameter check if a mutable argument use more than one.
++        // For each named parameter check if the corresponding argument has side-effects or if it is evaluated more than once.
+         if (fnParam != null) {
+             if (cArg != null) {
+                 if (hasSideEffects && NodeUtil.canBeSideEffected(cArg)) {
+                     return CanInlineResult.NO;
+                 }
+                 // Check for arguments that are evaluated more than once.
+-                // Note: Unlike block inlining, there it is not possible that a
+-                // parameter reference will be in a loop.
+                 if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+                     return CanInlineResult.NO;
+                 }
+-            }
+-            // Move to the next name.
+-            fnParam = fnParam.getNext();
+-        }
+-        // For every call argument check for side-effects, even if there
+-        // isn't a named parameter to match.
+-        if (cArg != null) {
+-            if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++            } else {
++                // If there are no more arguments but there are still named parameters, the function can't be inlined.
+                 return CanInlineResult.NO;
+             }
++            // Move to the next name and argument.
+             cArg = cArg.getNext();
++            fnParam = fnParam.getNext();
++        } else {
++            // If there are no more named parameters but there are still arguments, check if they have side-effects.
++            if (cArg != null) {
++                if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++                    return CanInlineResult.NO;
++                }
++                cArg = cArg.getNext();
++            } else {
++                // If there are no more named parameters nor arguments, the function can be inlined.
++                break;
++            }
+         }
+     }
+     return CanInlineResult.YES;

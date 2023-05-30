@@ -1,0 +1,31 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -26,8 +26,10 @@
+         } else {
+             // ".apply" call should be filtered before this.
+             Preconditions.checkState(!NodeUtil.isFunctionObjectApply(callNode));
++            return CanInlineResult.NO; // Add return statement for consistency
+         }
+     }
++    
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]
+     Node fnParam = NodeUtil.getFunctionParameters(fnNode).getFirstChild();
+     while (cArg != null || fnParam != null) {
+@@ -43,6 +45,8 @@
+                 if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+                     return CanInlineResult.NO;
+                 }
++            } else {
++                return CanInlineResult.NO; // Add return statement for consistency
+             }
+             // Move to the next name.
+             fnParam = fnParam.getNext();
+@@ -54,6 +58,8 @@
+                 return CanInlineResult.NO;
+             }
+             cArg = cArg.getNext();
++        } else {
++            return CanInlineResult.NO; // Add return statement for consistency
+         }
+     }
+     return CanInlineResult.YES;

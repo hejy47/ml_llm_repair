@@ -1,0 +1,76 @@
+--- org/joda/time/chrono/ZonedChronology.java@add
++++ org/joda/time/chrono/ZonedChronology.java@add
+@@ -1,5 +1,5 @@
+ public long add(long instant, int value) {
+-    if (iTimeField) {
++    if (iTimeField.isSupported()) {
+         int offset = getOffsetToAdd(instant);
+         long localInstant = iField.add(instant + offset, value);
+         return localInstant - offset;
+--- org/joda/time/chrono/ZonedChronology.java@add1
++++ org/joda/time/chrono/ZonedChronology.java@add1
+@@ -1,5 +1,5 @@
+ public long add(long instant, long value) {
+-    if (iTimeField) {
++    if (iTimeField.isSupported()) {
+         int offset = getOffsetToAdd(instant);
+         long localInstant = iField.add(instant + offset, value);
+         return localInstant - offset;
+--- org/joda/time/chrono/ZonedChronology.java@addWrapField
++++ org/joda/time/chrono/ZonedChronology.java@addWrapField
+@@ -1,5 +1,5 @@
+ public long addWrapField(long instant, int value) {
+-    if (iTimeField) {
++    if (iTimeField.isSupported()) {
+         int offset = getOffsetToAdd(instant);
+         long localInstant = iField.addWrapField(instant + offset, value);
+         return localInstant - offset;
+--- org/joda/time/chrono/ZonedChronology.java@set
++++ org/joda/time/chrono/ZonedChronology.java@set
+@@ -3,7 +3,8 @@
+     localInstant = iField.set(localInstant, value);
+     long result = iZone.convertLocalToUTC(localInstant, false);
+     if (get(result) != value) {
+-        throw new IllegalFieldValueException(iField.getType(), new Integer(value), "Illegal instant due to time zone offset transition: " + DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS").print(new Instant(localInstant)) + " (" + iZone.getID() + ")");
++        throw new IllegalFieldValueException(iField.getType(), value,
++                "Illegal instant due to time zone offset transition: " + DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS").print(new Instant(localInstant)) + " (" + iZone.getID() + ")");
+     }
+     return result;
+ }
+--- org/joda/time/chrono/ZonedChronology.java@roundFloor
++++ org/joda/time/chrono/ZonedChronology.java@roundFloor
+@@ -1,5 +1,5 @@
+ public long roundFloor(long instant) {
+-    if (iTimeField) {
++    if (iTimeField.isSupported()) {
+         int offset = getOffsetToAdd(instant);
+         instant = iField.roundFloor(instant + offset);
+         return instant - offset;
+--- org/joda/time/chrono/ZonedChronology.java@roundCeiling
++++ org/joda/time/chrono/ZonedChronology.java@roundCeiling
+@@ -1,5 +1,5 @@
+ public long roundCeiling(long instant) {
+-    if (iTimeField) {
++    if (iTimeField.isSupported()) {
+         int offset = getOffsetToAdd(instant);
+         instant = iField.roundCeiling(instant + offset);
+         return instant - offset;
+--- org/joda/time/field/LenientDateTimeField.java@set
++++ org/joda/time/field/LenientDateTimeField.java@set
+@@ -1,8 +1,10 @@
+ public long set(long instant, int value) {
+-    // lenient needs to handle time zone chronologies
+-    // so we do the calculation using local milliseconds
+-    long localInstant = iBase.getZone().convertUTCToLocal(instant);
+-    long difference = FieldUtils.safeSubtract(value, get(instant));
+-    localInstant = getType().getField(iBase.withUTC()).add(localInstant, difference);
+-    return iBase.getZone().convertLocalToUTC(localInstant, false);
++    long localInstant = iZone.convertUTCToLocal(instant);
++    localInstant = iField.set(localInstant, value);
++    long result = iZone.convertLocalToUTC(localInstant, false);
++    if (get(result) != value) {
++        throw new IllegalFieldValueException(iField.getType(), value,
++                "Illegal instant due to time zone offset transition: " + DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS").print(new Instant(localInstant)) + " (" + iZone.getID() + ")");
++    }
++    return result;
+ }

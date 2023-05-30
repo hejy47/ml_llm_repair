@@ -1,0 +1,58 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -14,12 +14,15 @@
+             default:
+                 for (Node sibling = n.getNext(); sibling != null; sibling = sibling.getNext()) {
+                     if (!ControlFlowGraph.isEnteringNewCfgNode(sibling)) {
+-                        state = isVariableReadBeforeKill(sibling, variable);
+-                        // If we see a READ or KILL there is no need to continue.
+-                        if (state == VariableLiveness.READ) {
+-                            return true;
+-                        } else if (state == VariableLiveness.KILL) {
+-                            return false;
++                        // Add a check for sibling being null before calling isVariableReadBeforeKill()
++                        if (sibling != null) {
++                            state = isVariableReadBeforeKill(sibling, variable);
++                            // If we see a READ or KILL there is no need to continue.
++                            if (state == VariableLiveness.READ) {
++                                return true;
++                            } else if (state == VariableLiveness.KILL) {
++                                return false;
++                            }
+                         }
+                     }
+                 }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -6,9 +6,12 @@
+             // the RHS is evaluated (normal left to right evaluation) but the KILL
+             // occurs after the RHS is evaluated.
+             Node rhs = n.getNext();
+-            VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
+-            if (state == VariableLiveness.READ) {
+-                return state;
++            // Add a null check for rhs before calling isVariableReadBeforeKill()
++            if (rhs != null) {
++                VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
++                if (state == VariableLiveness.READ) {
++                    return state;
++                }
+             }
+             return VariableLiveness.KILL;
+         } else {
+@@ -28,9 +31,12 @@
+             for (Node child = n.getFirstChild(); child != null; child = child.getNext()) {
+                 if (!ControlFlowGraph.isEnteringNewCfgNode(child)) {
+                     // Not a FUNCTION
+-                    VariableLiveness state = isVariableReadBeforeKill(child, variable);
+-                    if (state != VariableLiveness.MAYBE_LIVE) {
+-                        return state;
++                    // Add a null check for child before calling isVariableReadBeforeKill()
++                    if (child != null) {
++                        VariableLiveness state = isVariableReadBeforeKill(child, variable);
++                        if (state != VariableLiveness.MAYBE_LIVE) {
++                            return state;
++                        }
+                     }
+                 }
+             }

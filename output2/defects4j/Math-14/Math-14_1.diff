@@ -1,0 +1,18 @@
+--- org/apache/commons/math3/optim/nonlinear/vector/jacobian/AbstractLeastSquaresOptimizer.java@squareRoot
++++ org/apache/commons/math3/optim/nonlinear/vector/jacobian/AbstractLeastSquaresOptimizer.java@squareRoot
+@@ -1,4 +1,4 @@
+ private RealMatrix squareRoot(RealMatrix m) {
+     final EigenDecomposition dec = new EigenDecomposition(m);
+-    return dec.getSquareRoot();
++    return dec.getSquareRootMatrix();
+ }
+--- org/apache/commons/math3/optim/nonlinear/vector/Weight.java@Weight
++++ org/apache/commons/math3/optim/nonlinear/vector/Weight.java@Weight
+@@ -1,6 +1,6 @@
+ public Weight(double[] weight) {
+     final int dim = weight.length;
+-    weightMatrix = org.apache.commons.math3.linear.MatrixUtils.createRealMatrix(dim, dim);
++    weightMatrix = new Array2DRowRealMatrix(dim, dim);
+     for (int i = 0; i < dim; i++) {
+         weightMatrix.setEntry(i, i, weight[i]);
+     }

@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -43,17 +43,23 @@
+                 if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+                     return CanInlineResult.NO;
+                 }
+-            }
+-            // Move to the next name.
+-            fnParam = fnParam.getNext();
+-        }
+-        // For every call argument check for side-effects, even if there
+-        // isn't a named parameter to match.
+-        if (cArg != null) {
+-            if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++                // Move to the next name.
++                fnParam = fnParam.getNext();
++                cArg = cArg.getNext();
++            } else {
+                 return CanInlineResult.NO;
+             }
+-            cArg = cArg.getNext();
++        } else {
++            // For every call argument check for side-effects, even if there
++            // isn't a named parameter to match.
++            if (cArg != null) {
++                if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++                    return CanInlineResult.NO;
++                }
++                cArg = cArg.getNext();
++            } else {
++                break;
++            }
+         }
+     }
+     return CanInlineResult.YES;

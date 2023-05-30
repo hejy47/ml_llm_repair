@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processFunctionNode
+@@ -27,14 +27,15 @@
+     // function name (or else a semicolon will be inserted.)  If there's no
+     // function name, assume the paren was on the same line as the function.
+     // TODO(bowdidge): Mark line number of paren correctly.
+-    Name fnName = functionNode.getFunctionName();
+-    if (fnName != null) {
+-        lp.setLineno(fnName.getLineno());
++    int lpLineNo = functionNode.getLineno();
++    int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
++    if (name != null) {
++        lpLineNo = name.getLineno();
++        lp.setCharno(position2charno(lparenCharno + newName.getLength()));
+     } else {
+-        lp.setLineno(functionNode.getLineno());
++        lp.setCharno(position2charno(lparenCharno));
+     }
+-    int lparenCharno = functionNode.getLp() + functionNode.getAbsolutePosition();
+-    lp.setCharno(position2charno(lparenCharno));
++    lp.setLineno(lpLineNo);
+     for (AstNode param : functionNode.getParams()) {
+         lp.addChildToBack(transform(param));
+     }

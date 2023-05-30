@@ -1,0 +1,25 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
++++ com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
+@@ -19,6 +19,10 @@
+         case Token.NOT:
+             // delete operator returns a boolean.
+             return true;
++        // Fix: Add case for Token.NULLABLE and Token.POS
++        case Token.NULLABLE:
++        case Token.POS:
++            return false;
+         default:
+             return false;
+     }
+--- com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
++++ com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
+@@ -26,7 +26,8 @@
+         case Token.GETELEM:
+         case Token.GETPROP:
+             // There is no information about the locality of object properties.
+-            return locals.apply(value);
++            // Fix: include evaluation of whether the object is a local value
++            return evaluatesToLocalValue(value.getFirstChild(), locals) && locals.apply(value);
+         case Token.CALL:
+             return callHasLocalResult(value) || isToStringMethodCall(value) || locals.apply(value);
+         case Token.NEW:

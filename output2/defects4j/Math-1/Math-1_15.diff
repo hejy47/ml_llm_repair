@@ -1,0 +1,30 @@
+--- org/apache/commons/math3/fraction/BigFraction.java@BigFraction
++++ org/apache/commons/math3/fraction/BigFraction.java@BigFraction
+@@ -24,9 +24,9 @@
+         ++n;
+         final double r1 = 1.0 / (r0 - a0);
+         final long a1 = (long) FastMath.floor(r1);
+-        p2 = (a1 * p1) + p0;
+-        q2 = (a1 * q1) + q0;
+-        if ((p2 > overflow) || (q2 > overflow)) {
++        p2 = a1 * p1 + p0;
++        q2 = a1 * q1 + q0;
++        if ((p2 > overflow / 2) || (q2 > overflow / 2)) {
+             // in maxDenominator mode, if the last fraction was very close to the actual value
+             // q2 may overflow in the next iteration; in this case return the last one.
+             throw new FractionConversionException(value, p2, q2);
+--- org/apache/commons/math3/fraction/Fraction.java@Fraction
++++ org/apache/commons/math3/fraction/Fraction.java@Fraction
+@@ -23,9 +23,9 @@
+         ++n;
+         double r1 = 1.0 / (r0 - a0);
+         long a1 = (long) FastMath.floor(r1);
+-        p2 = (a1 * p1) + p0;
+-        q2 = (a1 * q1) + q0;
+-        if ((FastMath.abs(p2) > overflow) || (FastMath.abs(q2) > overflow)) {
++        p2 = a1 * p1 + p0;
++        q2 = a1 * q1 + q0;
++        if ((FastMath.abs(p2) > overflow / 2) || (FastMath.abs(q2) > overflow / 2)) {
+             // in maxDenominator mode, if the last fraction was very close to the actual value
+             // q2 may overflow in the next iteration; in this case return the last one.
+             throw new FractionConversionException(value, p2, q2);

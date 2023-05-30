@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -13,6 +13,9 @@
+             // other branch can be ignored.
+             default:
+                 for (Node sibling = n.getNext(); sibling != null; sibling = sibling.getNext()) {
++                    if (sibling == exprRoot) {
++                        break;
++                    }
+                     if (!ControlFlowGraph.isEnteringNewCfgNode(sibling)) {
+                         state = isVariableReadBeforeKill(sibling, variable);
+                         // If we see a READ or KILL there is no need to continue.
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -9,8 +9,10 @@
+             VariableLiveness state = isVariableReadBeforeKill(rhs, variable);
+             if (state == VariableLiveness.READ) {
+                 return state;
++            } else if (state == VariableLiveness.KILL) {
++                return VariableLiveness.KILL;
+             }
+-            return VariableLiveness.KILL;
++            return VariableLiveness.MAYBE_LIVE;
+         } else {
+             return VariableLiveness.READ;
+         }

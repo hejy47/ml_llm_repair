@@ -1,0 +1,24 @@
+--- com/google/javascript/jscomp/ScopedAliases.java@findAliases
++++ com/google/javascript/jscomp/ScopedAliases.java@findAliases
+@@ -39,6 +39,8 @@
+                 Node newDecl = NodeUtil.newQualifiedNameNodeDeclaration(compiler.getCodingConvention(), globalName, value, v.getJSDocInfo()).useSourceInfoIfMissingFromForTree(n);
+                 NodeUtil.setDebugInformation(newDecl.getFirstChild().getFirstChild(), n, name);
+                 grandparent.addChildBefore(newDecl, varNode);
++                // The parent now has an additional child node, so update the scope.
++                scope = t.getScope();
+             }
+             // Rewrite "var name = EXPR;" to "var name = $jscomp.scope.name;"
+             v.getNameNode().addChildToFront(NodeUtil.newQualifiedNameNode(compiler.getCodingConvention(), globalName, n, name));
+--- com/google/javascript/rhino/Node.java@getChildBefore
++++ com/google/javascript/rhino/Node.java@getChildBefore
+@@ -3,8 +3,8 @@
+         return null;
+     }
+     Node n = first;
+-    while (n.next != child) {
+-        n = n.next;
++    while (n.getNext() != child) { // Use getNext instead of next
++        n = n.getNext(); // Use getNext instead of next
+         if (n == null) {
+             throw new RuntimeException("node is not a child");
+         }

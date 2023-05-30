@@ -1,0 +1,61 @@
+--- org/apache/commons/lang3/math/NumberUtils.java@isNumber
++++ org/apache/commons/lang3/math/NumberUtils.java@isNumber
+@@ -9,7 +9,10 @@
+     boolean allowSigns = false;
+     boolean foundDigit = false;
+     // deal with any possible sign up front
+-    int start = (chars[0] == '-') ? 1 : 0;
++    int start = 0;
++    if (sz > 1 && chars[0] == '-') {
++        start++;
++    }
+     if (sz > start + 1) {
+         if (chars[start] == '0' && chars[start + 1] == 'x') {
+             int i = start + 2;
+@@ -26,7 +29,7 @@
+             return true;
+         }
+     }
+-    // don't want to loop to the last char, check it afterwords
++    // don't want to loop to the last char, check it afterwards
+     sz--;
+     // for type qualifiers
+     int i = start;
+@@ -38,7 +41,7 @@
+             allowSigns = false;
+         } else if (chars[i] == '.') {
+             if (hasDecPoint || hasExp) {
+-                // two decimal points or dec in exponent
++                // two decimal points or decimal in exponent
+                 return false;
+             }
+             hasDecPoint = true;
+@@ -54,7 +57,7 @@
+             hasExp = true;
+             allowSigns = true;
+         } else if (chars[i] == '+' || chars[i] == '-') {
+-            if (!allowSigns) {
++            if (!allowSigns && i != start) {
+                 return false;
+             }
+             allowSigns = false;
+@@ -76,18 +79,11 @@
+         }
+         if (chars[i] == '.') {
+             if (hasDecPoint || hasExp) {
+-                // two decimal points or dec in exponent
++                // two decimal points or decimal in exponent
+                 return false;
+             }
+             // single trailing decimal point after non-exponent is ok
+             return foundDigit;
+-        }
+-        if (!allowSigns && (chars[i] == 'd' || chars[i] == 'D' || chars[i] == 'f' || chars[i] == 'F')) {
+-            return foundDigit;
+-        }
+-        if (chars[i] == 'l' || chars[i] == 'L') {
+-            // not allowing L with an exponent or decimal point
+-            return foundDigit && !hasExp;
+         }
+         // last character is illegal
+         return false;

@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@isFoldableExpressBlock
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@isFoldableExpressBlock
+@@ -1,5 +1,8 @@
+ private boolean isFoldableExpressBlock(Node n) {
+     if (n.getType() == Token.BLOCK) {
++        if (n.isFirstChild() && n.getFirstChild().getType() == Token.EXPR_RESULT) {
++            return false;
++        }
+         if (n.hasOneChild()) {
+             Node maybeExpr = n.getFirstChild();
+             // IE has a bug where event handlers behave differently when

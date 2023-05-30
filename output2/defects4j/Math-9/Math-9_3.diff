@@ -1,0 +1,8 @@
+--- org/apache/commons/math3/geometry/euclidean/threed/Line.java@revert
++++ org/apache/commons/math3/geometry/euclidean/threed/Line.java@revert
+@@ -1,4 +1,4 @@
+ public Line revert() {
+-    final Line reverted = new Line(zero, zero.subtract(direction));
++    final Line reverted = new Line(getPoint(), getDirection().negate());
+     return reverted;
+ }

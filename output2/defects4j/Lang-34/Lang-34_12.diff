@@ -1,0 +1,12 @@
+--- org/apache/commons/lang3/builder/ToStringStyle.java@getRegistry
++++ org/apache/commons/lang3/builder/ToStringStyle.java@getRegistry
+@@ -1,3 +1,8 @@
+ static Map<Object, Object> getRegistry() {
+-    return REGISTRY.get() != null ? REGISTRY.get() : Collections.<Object, Object>emptyMap();
++    Map<Object, Object> registry = REGISTRY.get();
++    if (registry != null) {
++        return registry;
++    } else {
++        return Collections.emptyMap();
++    }
+ }

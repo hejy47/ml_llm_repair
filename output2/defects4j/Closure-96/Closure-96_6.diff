@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitParameterList
++++ com/google/javascript/jscomp/TypeCheck.java@visitParameterList
+@@ -12,7 +12,11 @@
+         parameter = parameters.next();
+         argument = arguments.next();
+         ordinal++;
+-        validator.expectArgumentMatchesParameter(t, argument, getJSType(argument), getJSType(parameter), call, ordinal);
++        JSType argumentType = getJSType(argument);
++        JSType parameterType = getJSType(parameter);
++        if (argumentType != null && parameterType != null) {
++            validator.expectArgumentMatchesParameter(t, argument, argumentType, parameterType, call, ordinal);
++        }
+     }
+     int numArgs = call.getChildCount() - 1;
+     int minArgs = functionType.getMinArguments();

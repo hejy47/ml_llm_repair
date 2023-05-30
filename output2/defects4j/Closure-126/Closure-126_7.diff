@@ -1,0 +1,47 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -26,8 +26,8 @@
+             Node catchCodeBlock = catchNode.getLastChild();
+             tryMinimizeExits(catchCodeBlock, exitType, labelName);
+         }
+-                if (NodeUtil.hasFinally(n)) {
+-            Node finallyBlock = n.getLastChild();
++        if (NodeUtil.hasFinally(n)) {
++            Node finallyBlock = n.getNext();
+             tryMinimizeExits(finallyBlock, exitType, labelName);
+         }
+     }
+@@ -36,7 +36,6 @@
+         Node labelBlock = n.getLastChild();
+         tryMinimizeExits(labelBlock, exitType, labelName);
+     }
+-    // TODO(johnlenz): The last case of SWITCH statement?
+     // The rest assumes a block with at least one child, bail on anything else.
+     if (!n.isBlock() || n.getLastChild() == null) {
+         return;
+@@ -45,7 +44,9 @@
+     // Convert "if (blah) break;  if (blah2) break; other_stmt;" to
+     // become "if (blah); else { if (blah2); else { other_stmt; } }"
+     // which will get converted to "if (!blah && !blah2) { other_stmt; }".
+-    for (Node c : n.children()) {
++    NodeList children = n.children();
++    for (int i = 0; i < children.getLength(); i++) {
++        Node c = children.item(i);
+         // An 'if' block to process below.
+         if (c.isIf()) {
+             Node ifTree = c;
+@@ -68,11 +69,13 @@
+     }
+     // Now try to minimize the exits of the last child, if it is removed
+     // look at what has become the last child.
+-    for (Node c = n.getLastChild(); c != null; c = n.getLastChild()) {
++    for (Node c = n.getLastChild(); c != null;) {
++        Node prev = c.getPrevious();
+         tryMinimizeExits(c, exitType, labelName);
+         // If the node is still the last child, we are done.
+         if (c == n.getLastChild()) {
+             break;
+         }
++        c = prev;
+     }
+ }

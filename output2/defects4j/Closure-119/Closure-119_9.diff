@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/GlobalNamespace.java@collect
++++ com/google/javascript/jscomp/GlobalNamespace.java@collect
+@@ -19,7 +19,7 @@
+             isSet = true;
+             switch(n.getType()) {
+                 case Token.STRING_KEY:
+-                    type = getValueType(n.getFirstChild());
++                    type = getValueType(n.getSecondChild());
+                     break;
+                 case Token.GETTER_DEF:
+                     type = Name.Type.GET;
+@@ -47,6 +47,7 @@
+                         }
+                         break;
+                     case Token.GETPROP:
++                    case Token.OBJECTLIT:
+                         return;
+                     case Token.FUNCTION:
+                         Node gramps = parent.getParent();
+@@ -87,6 +88,7 @@
+                         type = Name.Type.OTHER;
+                         break;
+                     case Token.GETPROP:
++                    case Token.OBJECTLIT:
+                         return;
+                     default:
+                         if (NodeUtil.isAssignmentOp(parent) && parent.getFirstChild() == n) {

@@ -1,0 +1,27 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
++++ com/google/javascript/jscomp/CollapseProperties.java@updateSimpleDeclaration
+@@ -35,14 +35,20 @@
+         // AFTER:
+         // var x$y;
+         // ... (x$y = 3);
+-        Node current = gramps;
+-        Node currentParent = gramps.getParent();
+-        for (; currentParent.getType() != Token.SCRIPT && currentParent.getType() != Token.BLOCK; current = currentParent, currentParent = currentParent.getParent()) {
++        Node currentParent = gramps;
++        for (;;) {
++            currentParent = currentParent.getParent();
++            if (currentParent == null) {
++                // Could not find a SCRIPT or BLOCK parent node above gramps
++                throw new IllegalStateException("Could not find a SCRIPT or BLOCK parent node for complex assignment");
++            } else if (currentParent.getType() == Token.SCRIPT || currentParent.getType() == Token.BLOCK) {
++                break;
++            }
+         }
+         // Create a stub variable declaration right
+         // before the current statement.
+         Node stubVar = new Node(Token.VAR, nameNode.cloneTree()).copyInformationFrom(nameNode);
+-        currentParent.addChildBefore(stubVar, current);
++        currentParent.addChildBefore(stubVar, gramps);
+         parent.replaceChild(ref.node, nameNode);
+     }
+     compiler.reportCodeChange();

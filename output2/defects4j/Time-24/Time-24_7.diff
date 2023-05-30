@@ -1,0 +1,23 @@
+--- org/joda/time/format/DateTimeParserBucket.java@computeMillis
++++ org/joda/time/format/DateTimeParserBucket.java@computeMillis
+@@ -2,15 +2,18 @@
+     SavedField[] savedFields = iSavedFields;
+     int count = iSavedFieldsCount;
+     if (iSavedFieldsShared) {
+-        iSavedFields = savedFields = (SavedField[]) iSavedFields.clone();
++        iSavedFields = savedFields = Arrays.copyOf(savedFields, count);
+         iSavedFieldsShared = false;
+     }
+-    sort(savedFields, count);
++    Arrays.sort(savedFields, 0, count);
+     if (count > 0) {
+         // alter base year for parsing if first field is month or day
+         DurationField months = DurationFieldType.months().getField(iChrono);
+         DurationField days = DurationFieldType.days().getField(iChrono);
+         DurationField first = savedFields[0].iField.getDurationField();
++        if (first instanceof DecoratedDurationField) {
++            first = ((DecoratedDurationField) first).getWrappedField();
++        }
+         if (compareReverse(first, months) >= 0 && compareReverse(first, days) <= 0) {
+             saveField(DateTimeFieldType.year(), iDefaultYear);
+             return computeMillis(resetFields, text);

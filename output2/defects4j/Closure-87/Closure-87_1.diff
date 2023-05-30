@@ -1,0 +1,16 @@
+--- com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@isFoldableExpressBlock
++++ com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java@isFoldableExpressBlock
+@@ -8,9 +8,11 @@
+             // http://code.google.com/p/closure-compiler/issues/detail?id=291
+             // We try to detect this case, and not fold EXPR_RESULTs
+             // into other expressions.
+-            // We only have to worry about methods with an implicit 'this'
++            // We only have to worry about methods with an explicit 'this'
+             // param, or this doesn't happen.
+-            return NodeUtil.isExpressionNode(maybeExpr);
++            
++            // Fix: changed 'implicit' to 'explicit'
++            return NodeUtil.isExpressionNode(maybeExpr) && !NodeUtil.isFunctionExpression(maybeExpr);
+         }
+     }
+     return false;

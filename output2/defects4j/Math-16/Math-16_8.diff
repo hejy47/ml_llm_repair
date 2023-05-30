@@ -1,0 +1,40 @@
+--- org/apache/commons/math3/util/FastMath.java@cosh
++++ org/apache/commons/math3/util/FastMath.java@cosh
+@@ -41,5 +41,8 @@
+     ya = temp;
+     double result = ya + yb;
+     result *= 0.5;
++    if (Double.isNaN(result)) {
++        throw new ArithmeticException("cosh() overflow: " + x);
++    }
+     return result;
+ }
+--- org/apache/commons/math3/util/FastMath.java@sinh
++++ org/apache/commons/math3/util/FastMath.java@sinh
+@@ -50,12 +50,15 @@
+         ya = temp;
+         result = ya + yb;
+         result *= 0.5;
++        if (Double.isNaN(result)) {
++            throw new ArithmeticException("sinh() overflow: " + x);
++        }
+     } else {
+         double[] hiPrec = new double[2];
+         expm1(x, hiPrec);
+         double ya = hiPrec[0] + hiPrec[1];
+         double yb = -(ya - hiPrec[0] - hiPrec[1]);
+-                double denom = 1.0 + ya;
++        double denom = 1.0 + ya;
+         double denomr = 1.0 / denom;
+         double denomb = -(denom - 1.0 - ya) + yb;
+         double ratio = ya * denomr;
+@@ -80,6 +83,9 @@
+         ya = temp;
+         result = ya + yb;
+         result *= 0.5;
++        if (Double.isNaN(result)) {
++            throw new ArithmeticException("sinh() overflow: " + x);
++        }
+     }
+     if (negate) {
+         result = -result;

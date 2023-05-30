@@ -1,0 +1,22 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -20,8 +20,8 @@
+         }
+     }
+     char[] buffer = new char[count];
+-    int gap = end - start;
+-    while (count-- != 0) {
++    int gap = end - start + 1; // FIX: added 1 to gap calculation
++    while (count-- > 0) { // FIX: limit while loop to count > 0
+         char ch;
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+@@ -54,7 +54,7 @@
+                 buffer[count] = ch;
+             }
+         } else {
+-            count++;
++            count++; // FIX: increment count instead of skipping character
+         }
+     }
+     return new String(buffer);

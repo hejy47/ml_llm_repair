@@ -1,0 +1,37 @@
+--- org/apache/commons/lang/Entities.java@unescape
++++ org/apache/commons/lang/Entities.java@unescape
+@@ -3,8 +3,8 @@
+     if (firstAmp < 0) {
+         return str;
+     }
+-    StringBuffer buf = new StringBuffer(str.length());
+-    buf.append(str.substring(0, firstAmp));
++    StringBuilder buf = new StringBuilder(str.length());
++    buf.append(str, 0, firstAmp);
+     for (int i = firstAmp; i < str.length(); ++i) {
+         char ch = str.charAt(i);
+         if (ch == '&') {
+@@ -30,7 +30,7 @@
+                     char charAt1 = entityName.charAt(1);
+                     try {
+                         if (charAt1 == 'x' || charAt1 == 'X') {
+-                            entityValue = Integer.valueOf(entityName.substring(2), 16).intValue();
++                            entityValue = Integer.valueOf(entityName.substring(2), 16);
+                         } else {
+                             entityValue = Integer.parseInt(entityName.substring(1));
+                         }
+--- org/apache/commons/lang/Entities.java@unescape1
++++ org/apache/commons/lang/Entities.java@unescape1
+@@ -35,10 +35,12 @@
+                                 case 'x':
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(2), 16);
++                                        break;
+                                     }
+                                 default:
+                                     {
+                                         entityValue = Integer.parseInt(entityContent.substring(1), 10);
++                                        break;
+                                     }
+                             }
+                         } catch (NumberFormatException e) {

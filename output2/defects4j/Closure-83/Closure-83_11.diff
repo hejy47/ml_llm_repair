@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@parseArguments
++++ com/google/javascript/jscomp/CommandLineRunner.java@parseArguments
+@@ -3,7 +3,7 @@
+     String param = params.getParameter(0);
+     if (param == null) {
+         setter.addValue(true);
+-        return 0;
++        return 1;
+     } else {
+         String lowerParam = param.toLowerCase();
+         if (TRUES.contains(lowerParam)) {
+@@ -11,8 +11,12 @@
+         } else if (FALSES.contains(lowerParam)) {
+             setter.addValue(false);
+         } else {
+-            setter.addValue(true);
+-            return 0;
++            throw new CmdLineException(owner, new Localizable() {
++                @Override
++                public String getKey() {
++                    return "java.lang.BooleanConverter.message";
++                }
++            }, param);
+         }
+         return 1;
+     }

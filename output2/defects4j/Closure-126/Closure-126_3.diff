@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
++++ com/google/javascript/jscomp/MinimizeExitPoints.java@tryMinimizeExits
+@@ -23,7 +23,7 @@
+         if (NodeUtil.hasCatchHandler(allCatchNodes)) {
+             Preconditions.checkState(allCatchNodes.hasOneChild());
+             Node catchNode = allCatchNodes.getFirstChild();
+-            Node catchCodeBlock = catchNode.getLastChild();
++            Node catchCodeBlock = catchNode.getFirstChild(); //fixed to get into the catch block
+             tryMinimizeExits(catchCodeBlock, exitType, labelName);
+         }
+                 if (NodeUtil.hasFinally(n)) {

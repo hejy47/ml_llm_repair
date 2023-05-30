@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -30,7 +30,7 @@
+         }
+     }
+     if (type.isFunctionPrototypeType() || (type.toObjectType() != null && type.toObjectType().getConstructor() != null)) {
+-        return type.toString();
++        return type.toMaybeFunctionType().getDisplayName();
+     }
+     String qualifiedName = n.getQualifiedName();
+     if (qualifiedName != null) {

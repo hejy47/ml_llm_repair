@@ -1,0 +1,9 @@
+--- org/apache/commons/math3/optimization/general/AbstractLeastSquaresOptimizer.java@squareRoot
++++ org/apache/commons/math3/optimization/general/AbstractLeastSquaresOptimizer.java@squareRoot
+@@ -1,4 +1,5 @@
+ private RealMatrix squareRoot(RealMatrix m) {
+     final EigenDecomposition dec = new EigenDecomposition(m);
+-    return dec.getSquareRoot();
++    RealMatrix result = dec.getV().multiply(dec.getD().sqrt()).multiply(dec.getV().transpose());
++    return result;
+ }

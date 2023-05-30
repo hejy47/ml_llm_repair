@@ -1,0 +1,18 @@
+--- org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
++++ org/joda/time/format/PeriodFormatterBuilder.java@calculatePrintedLength
+@@ -1,5 +1,5 @@
+ public int calculatePrintedLength(ReadablePeriod period, Locale locale) {
+-    long valueLong = getFieldValue(period);
++    long valueLong = getMillis(period); // uses getMillis instead of getFieldValue
+     if (valueLong == Long.MAX_VALUE) {
+         return 0;
+     }
+--- org/joda/time/format/PeriodFormatterBuilder.java@printTo
++++ org/joda/time/format/PeriodFormatterBuilder.java@printTo
+@@ -1,5 +1,5 @@
+ public void printTo(StringBuffer buf, ReadablePeriod period, Locale locale) {
+-    long valueLong = getFieldValue(period);
++    long valueLong = getMillis(period); // uses getMillis instead of getFieldValue
+     if (valueLong == Long.MAX_VALUE) {
+         return;
+     }

@@ -1,0 +1,21 @@
+--- org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
++++ org/apache/commons/math/geometry/euclidean/threed/Rotation.java@Rotation
+@@ -5,7 +5,7 @@
+     double v1v1 = v1.getNormSq();
+     double v2v2 = v2.getNormSq();
+     if ((u1u1 == 0) || (u2u2 == 0) || (v1v1 == 0) || (v2v2 == 0)) {
+-        throw MathRuntimeException.createIllegalArgumentException(LocalizedFormats.ZERO_NORM_FOR_ROTATION_DEFINING_VECTOR);
++        throw new MathIllegalArgumentException(LocalizedFormats.ZERO_NORM_FOR_ROTATION_DEFINING_VECTOR);
+     }
+     // normalize v1 in order to have (v1'|v1') = (u1|u1)
+     v1 = new Vector3D(FastMath.sqrt(u1u1 / v1v1), v1);
+@@ -37,9 +37,7 @@
+             // the (q1, q2, q3) vector is also close to the (u1, u3) plane,
+             // it is almost aligned with u1: we try (u2, u3) and (v2, v3)
+             k = v2Su2.crossProduct(v3Su3);
+-            ;
+             c = k.dotProduct(u2.crossProduct(u3));
+-            ;
+             if (c == 0) {
+                 // the (q1, q2, q3) vector is aligned with everything
+                 // this is really the identity rotation

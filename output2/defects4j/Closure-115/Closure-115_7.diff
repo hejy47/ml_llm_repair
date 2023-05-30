@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -23,9 +23,19 @@
+                 return CanInlineResult.NO;
+             }
+             cArg = cArg.getNext();
++        } else if (NodeUtil.isFunctionObjectApply(callNode)) {
++            // Fixed to handle ".apply" call.
++            Node applyArg = cArg.getNext();
++            while (applyArg != null) {
++                if (NodeUtil.mayHaveSideEffects(applyArg, compiler)) {
++                    return CanInlineResult.NO;
++                }
++                applyArg = applyArg.getNext();
++            }
++            cArg = cArg.getNext();
+         } else {
+-            // ".apply" call should be filtered before this.
+-            Preconditions.checkState(!NodeUtil.isFunctionObjectApply(callNode));
++            // filter anything that is not a direct call or ".apply" call.
++            return CanInlineResult.NO;
+         }
+     }
+     // FUNCTION NODE -> LP NODE: [ ARG1, ARG2, ... ]
+@@ -43,6 +53,10 @@
+                 if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+                     return CanInlineResult.NO;
+                 }
++            } else if (NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 0) {
++                // Fixed to handle a parameter that has no corresponding argument
++                // but is still referenced in the block.
++                return CanInlineResult.NO;
+             }
+             // Move to the next name.
+             fnParam = fnParam.getNext();

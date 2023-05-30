@@ -1,0 +1,26 @@
+--- org/apache/commons/math/complex/Complex.java@divide
++++ org/apache/commons/math/complex/Complex.java@divide
+@@ -3,9 +3,8 @@
+     if (isNaN || divisor.isNaN) {
+         return NaN;
+     }
+-    if (divisor.isZero) {
+-        // return isZero ? NaN : INF; // See MATH-657
+-        return isZero ? NaN : INF;
++    if (divisor.isZero()) {
++        return isZero() ? NaN : INF;
+     }
+     if (divisor.isInfinite() && !isInfinite()) {
+         return ZERO;
+--- org/apache/commons/math/complex/Complex.java@divide1
++++ org/apache/commons/math/complex/Complex.java@divide1
+@@ -3,8 +3,7 @@
+         return NaN;
+     }
+     if (divisor == 0d) {
+-        // return isZero ? NaN : INF; // See MATH-657
+-        return isZero ? NaN : INF;
++        return isZero() ? NaN : INF;
+     }
+     if (Double.isInfinite(divisor)) {
+         return !isInfinite() ? ZERO : NaN;

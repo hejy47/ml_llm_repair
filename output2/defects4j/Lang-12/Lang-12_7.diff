@@ -1,0 +1,18 @@
+--- org/apache/commons/lang3/RandomStringUtils.java@random
++++ org/apache/commons/lang3/RandomStringUtils.java@random
+@@ -13,13 +13,13 @@
+         }
+     }
+     char[] buffer = new char[count];
+-    int gap = end - start;
++    int gap = end - start + 1;  //fix here: add 1 to include the end character
+     while (count-- != 0) {
+         char ch;
+         if (chars == null) {
+             ch = (char) (random.nextInt(gap) + start);
+         } else {
+-            ch = chars[random.nextInt(gap) + start];
++            ch = chars[random.nextInt(chars.length)];
+         }
+         if (letters && Character.isLetter(ch) || numbers && Character.isDigit(ch) || !letters && !numbers) {
+             if (ch >= 56320 && ch <= 57343) {

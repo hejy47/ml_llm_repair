@@ -1,0 +1,12 @@
+--- com/google/javascript/jscomp/TypeCheck.java@visitParameterList
++++ com/google/javascript/jscomp/TypeCheck.java@visitParameterList
+@@ -17,7 +17,8 @@
+     int numArgs = call.getChildCount() - 1;
+     int minArgs = functionType.getMinArguments();
+     int maxArgs = functionType.getMaxArguments();
+-    if (minArgs > numArgs || maxArgs < numArgs) {
++    if (numArgs < minArgs || numArgs > maxArgs) {
++        // fixed the condition on the if statement to check if the number of arguments is within the range
+         report(t, call, WRONG_ARGUMENT_COUNT, validator.getReadableJSTypeName(call.getFirstChild(), false), String.valueOf(numArgs), String.valueOf(minArgs), maxArgs != Integer.MAX_VALUE ? " and no more than " + maxArgs + " argument(s)" : "");
+     }
+ }

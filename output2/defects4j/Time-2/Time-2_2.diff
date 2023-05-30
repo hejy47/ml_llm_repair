@@ -1,0 +1,115 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,3 +1,11 @@
+ public int compareTo(DurationField durationField) {
+-    return 0;
++    if (durationField instanceof PreciseDurationField) {
++        PreciseDurationField other = (PreciseDurationField) durationField;
++        long otherUnitMillis = other.getUnitMillis();
++        long thisUnitMillis = getUnitMillis();
++        return (thisUnitMillis < otherUnitMillis ? -1 : (thisUnitMillis == otherUnitMillis ? 0 : 1));
++    }
++    long thisDuration = getUnitMillis();
++    long otherDuration = durationField.getUnitMillis();
++    return (thisDuration < otherDuration ? -1 : (thisDuration == otherDuration ? 0 : 1));
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -22,6 +22,7 @@
+         }
+     }
+     DurationField lastUnitField = null;
++    DurationField lastRangeField = null;
+     for (int i = 0; i < types.length; i++) {
+         DateTimeFieldType loopType = types[i];
+         DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+@@ -38,7 +39,6 @@
+                     if (loopType.getRangeDurationType() == null) {
+                         throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+                     }
+-                    DurationField lastRangeField = types[i - 1].getRangeDurationType().getField(iChronology);
+                     DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
+                     if (lastRangeField.compareTo(loopRangeField) < 0) {
+                         throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+@@ -50,6 +50,9 @@
+             }
+         }
+         lastUnitField = loopUnitField;
++        if (loopType.getRangeDurationType() != null) {
++            lastRangeField = loopType.getRangeDurationType().getField(iChronology);
++        }
+     }
+     iTypes = (DateTimeFieldType[]) types.clone();
+     chronology.validate(this, values);
+--- org/joda/time/Partial.java@with
++++ org/joda/time/Partial.java@with
+@@ -5,45 +5,34 @@
+     }
+     int index = indexOf(fieldType);
+     if (index == -1) {
++        int[] newValues = new int[iTypes.length + 1];
+         DateTimeFieldType[] newTypes = new DateTimeFieldType[iTypes.length + 1];
+-        int[] newValues = new int[newTypes.length];
+-        // find correct insertion point to keep largest-smallest order
+-        int i = 0;
+-        DurationField unitField = fieldType.getDurationType().getField(iChronology);
+-        if (unitField.isSupported()) {
+-            for (; i < iTypes.length; i++) {
+-                DateTimeFieldType loopType = iTypes[i];
+-                DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
+-                if (loopUnitField.isSupported()) {
+-                    int compare = unitField.compareTo(loopUnitField);
+-                    if (compare > 0) {
+-                        break;
+-                    } else if (compare == 0) {
+-                        DurationField rangeField = fieldType.getRangeDurationType().getField(iChronology);
+-                        DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
+-                        if (rangeField.compareTo(loopRangeField) > 0) {
+-                            break;
+-                        }
+-                    }
++        int i;
++        for (i = 0; i < iTypes.length; i++) {
++            DateTimeFieldType loopType = iTypes[i];
++            DurationField loopField = loopType.getDurationType().getField(iChronology);
++            if (loopField.compareTo(fieldType.getDurationType().getField(iChronology)) > 0) {
++                break;
++            } else if (loopField.compareTo(fieldType.getDurationType().getField(iChronology)) == 0) {
++                if ((loopType.getRangeDurationType() == null && fieldType.getRangeDurationType() == null) ||
++                    (loopType.getRangeDurationType() != null && fieldType.getRangeDurationType() == null) ||
++                    (loopType.getRangeDurationType() != null && fieldType.getRangeDurationType() != null && loopType.getRangeDurationType().getField(iChronology).compareTo(fieldType.getRangeDurationType().getField(iChronology)) > 0)) {
++                    break;
+                 }
+             }
+         }
+-        System.arraycopy(iTypes, 0, newTypes, 0, i);
+-        System.arraycopy(iValues, 0, newValues, 0, i);
+-        newTypes[i] = fieldType;
+-        newValues[i] = value;
+-        System.arraycopy(iTypes, i, newTypes, i + 1, newTypes.length - i - 1);
+-        System.arraycopy(iValues, i, newValues, i + 1, newValues.length - i - 1);
+-        // use public constructor to ensure full validation
+-        // this isn't overly efficient, but is safe
+-        Partial newPartial = new Partial(newTypes, newValues, iChronology);
+-        iChronology.validate(newPartial, newValues);
+-        return newPartial;
++        int newPos = i;
++        newTypes[newPos] = fieldType;
++        newValues[newPos] = value;
++        for (; i < iTypes.length; i++) {
++            newTypes[i + 1] = iTypes[i];
++            newValues[i + 1] = iValues[i];
++        }
++        // create new object with new values
++        return new Partial(newTypes, newValues, iChronology);
+     }
+-    if (value == getValue(index)) {
+-        return this;
++    else {
++        int[] newValues = getField(index).set(this, index, iValues, value);
++        return new Partial(this, newValues);
+     }
+-    int[] newValues = getValues();
+-    newValues = getField(index).set(this, index, newValues, value);
+-    return new Partial(this, newValues);
+ }

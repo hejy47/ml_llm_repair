@@ -1,0 +1,59 @@
+--- org/joda/time/field/UnsupportedDurationField.java@compareTo
++++ org/joda/time/field/UnsupportedDurationField.java@compareTo
+@@ -1,6 +1,9 @@
+ public int compareTo(DurationField durationField) {
++    if (this == durationField) {
++        return 0;
++    }
+     if (durationField.isSupported()) {
+-        return 1;
++        return -1;
+     }
+-    return 0;
++    throw new IllegalArgumentException("DurationField is unsupported: " + durationField);
+ }
+--- org/joda/time/Partial.java@Partial
++++ org/joda/time/Partial.java@Partial
+@@ -22,22 +22,26 @@
+         }
+     }
+     DurationField lastUnitField = null;
++    boolean seenRDT = false; // to ensure at least one RDT seen
+     for (int i = 0; i < types.length; i++) {
+         DateTimeFieldType loopType = types[i];
+-        DurationField loopUnitField = loopType.getDurationType().getField(iChronology);
++        DurationFieldType loopDurationType = loopType.getDurationType();
++        if (loopDurationType == null || !loopDurationType.isSupported()) {
++            throw new IllegalArgumentException("Field '" + loopType + "' is not supported");
++        }
++        DurationField loopUnitField = loopDurationType.getField(iChronology);
+         if (i > 0) {
+             int compare = lastUnitField.compareTo(loopUnitField);
+             if (compare < 0) {
+                 throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+             } else if (compare == 0) {
+-                if (types[i - 1].getRangeDurationType() == null) {
+-                    if (loopType.getRangeDurationType() == null) {
+-                        throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + loopType.getName());
+-                    }
++                DurationFieldType lastDurationType = types[i - 1].getDurationType();
++                if (lastDurationType == null || !lastDurationType.isSupported()) {
++                    throw new IllegalArgumentException("Field '" + types[i - 1] + "' is not supported");
++                }
++                if (seenRDT || loopDurationType == null) {
++                    throw new IllegalArgumentException("Types array must not contain duplicate: " + types[i - 1].getName() + " and " + loopType.getName());
+                 } else {
+-                    if (loopType.getRangeDurationType() == null) {
+-                        throw new IllegalArgumentException("Types array must be in order largest-smallest: " + types[i - 1].getName() + " < " + loopType.getName());
+-                    }
+                     DurationField lastRangeField = types[i - 1].getRangeDurationType().getField(iChronology);
+                     DurationField loopRangeField = loopType.getRangeDurationType().getField(iChronology);
+                     if (lastRangeField.compareTo(loopRangeField) < 0) {
+@@ -49,6 +53,7 @@
+                 }
+             }
+         }
++        seenRDT |= loopDurationType == null;
+         lastUnitField = loopUnitField;
+     }
+     iTypes = (DateTimeFieldType[]) types.clone();

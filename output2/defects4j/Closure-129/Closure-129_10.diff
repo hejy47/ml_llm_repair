@@ -1,0 +1,14 @@
+--- com/google/javascript/jscomp/PrepareAst.java@annotateCalls
++++ com/google/javascript/jscomp/PrepareAst.java@annotateCalls
+@@ -6,10 +6,7 @@
+     // ignore cast nodes.
+     if (!NodeUtil.isGet(first)) {
+         n.putBooleanProp(Node.FREE_CALL, true);
+-    }
+-    // Keep track of the context in which eval is called. It is important
+-    // to distinguish between "(0, eval)()" and "eval()".
+-    if (first.isName() && "eval".equals(first.getString())) {
++    } else if (first.isGetProp() && first.getLastChild().isString() && first.getLastChild().getString().equals("eval")) {
+         first.putBooleanProp(Node.DIRECT_EVAL, true);
+     }
+ }

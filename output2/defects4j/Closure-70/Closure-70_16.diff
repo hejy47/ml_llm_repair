@@ -1,0 +1,21 @@
+--- com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
++++ com/google/javascript/jscomp/TypedScopeCreator.java@declareArguments
+@@ -8,9 +8,17 @@
+             Node jsDocParameter = jsDocParameters.getFirstChild();
+             for (Node astParameter : astParameters.children()) {
+                 if (jsDocParameter != null) {
+-                    defineSlot(astParameter, functionNode, jsDocParameter.getJSType(), true);
++                    // Check if JSDoc parameter has a name and define slot with type
++                    String paramName = jsDocParameter.getString();
++                    if (paramName != null) {
++                        defineSlot(astParameter, functionNode, jsDocParameter.getJSType(), true);
++                    } else {
++                        // If the parameter name is null, define slot without type
++                        defineSlot(astParameter, functionNode, null, true);
++                    }
+                     jsDocParameter = jsDocParameter.getNext();
+                 } else {
++                    // If no JSDoc parameter is provided, define slot without type
+                     defineSlot(astParameter, functionNode, null, true);
+                 }
+             }

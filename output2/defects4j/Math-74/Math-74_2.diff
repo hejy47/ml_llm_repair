@@ -1,0 +1,20 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -22,7 +22,7 @@
+     }
+     interpolator.storeTime(t0);
+     // set up integration control objects
+-    stepStart = t0;
++    double stepStart = t0; // Change 1: Set stepStart as a local variable
+     double hNew = 0;
+     boolean firstTime = true;
+     for (StepHandler handler : stepHandlers) {
+@@ -50,7 +50,7 @@
+                 hNew = initializeStep(equations, forward, getOrder(), scale, stepStart, y, yDotK[0], yTmp, yDotK[1]);
+                 firstTime = false;
+             }
+-            stepSize = hNew;
++            double stepSize = hNew; // Change 2: Set stepSize as a local variable
+             // next stages
+             for (int k = 1; k < stages; ++k) {
+                 for (int j = 0; j < y0.length; ++j) {

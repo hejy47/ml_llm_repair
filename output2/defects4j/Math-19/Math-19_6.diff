@@ -1,0 +1,36 @@
+--- org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@checkParameters
++++ org/apache/commons/math3/optimization/direct/CMAESOptimizer.java@checkParameters
+@@ -5,7 +5,7 @@
+     // Checks whether there is at least one finite bound value.
+     boolean hasFiniteBounds = false;
+     for (int i = 0; i < lB.length; i++) {
+-        if (!Double.isInfinite(lB[i]) || !Double.isInfinite(uB[i])) {
++        if (!Double.isInfinite(lB[i]) && !Double.isInfinite(uB[i])) { // fix: use && instead of ||
+             hasFiniteBounds = true;
+             break;
+         }
+@@ -29,6 +29,12 @@
+             boundaries[0] = lB;
+             boundaries[1] = uB;
+             // Abort early if the normalization will overflow (cf. "encode" method).
++            for (int i = 0; i < lB.length; i++) {
++                if (Math.abs(uB[i] - lB[i]) < Math.ulp((double) (1f))) { // fix: use double instead of float
++                    throw new MathIllegalArgumentException(
++                        LocalizedFormats.ZERO_FRACTION_POINT);
++                }
++            }
+         }
+     } else {
+         // Convert API to internal handling of boundaries.
+@@ -46,6 +52,11 @@
+                 if (inputSigma[i] > boundaries[1][i] - boundaries[0][i]) {
+                     throw new OutOfRangeException(inputSigma[i], 0, boundaries[1][i] - boundaries[0][i]);
+                 }
++            } else {
++                if (inputSigma[i] == 0) { // fix: add check for inputSigma being 0
++                    throw new MathIllegalArgumentException(
++                        LocalizedFormats.ZERO_SIGMA);
++                }
+             }
+         }
+     }

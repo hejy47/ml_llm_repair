@@ -1,0 +1,11 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -83,7 +83,7 @@
+             interpolator.storeTime(stepStart);
+             if (fsal) {
+                 // save the last evaluation for the next step
+-                System.arraycopy(yDotTmp, 0, yDotK[0], 0, y0.length);
++                System.arraycopy(yDotK[stages-1], 0, yDotK[0], 0, y0.length);
+             }
+             // stepsize control for next step
+             final double factor = FastMath.min(maxGrowth, FastMath.max(minReduction, safety * FastMath.pow(error, exp)));

@@ -1,0 +1,9 @@
+--- com/google/javascript/jscomp/Normalize.java@process
++++ com/google/javascript/jscomp/Normalize.java@process
+@@ -7,5 +7,5 @@
+         t.traverseRoots(externs, root);
+     }
+     removeDuplicateDeclarations(root);
+-    new PropogateConstantAnnotations(compiler, assertOnChange).process(externs, root);
++    new PropagateConstantAnnotations(compiler, assertOnChange).process(externs, root);
+ }

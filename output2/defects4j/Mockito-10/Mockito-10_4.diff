@@ -1,0 +1,27 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@deepStub
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@deepStub
+@@ -3,7 +3,7 @@
+     InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
+     // matches invocation for verification
+     for (StubbedInvocationMatcher stubbedInvocationMatcher : container.getStubbedInvocations()) {
+-        if (container.getInvocationForStubbing().matches(stubbedInvocationMatcher.getInvocation())) {
++        if (stubbedInvocationMatcher.matches(invocation)) { // fix: use matches() method of StubbedInvocationMatcher
+             return stubbedInvocationMatcher.answer(invocation);
+         }
+     }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@newDeepStubMock
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@newDeepStubMock
+@@ -1,3 +1,4 @@
+ private Object newDeepStubMock(GenericMetadataSupport returnTypeGenericMetadata) {
+-    return mockitoCore().mock(returnTypeGenericMetadata.rawType(), withSettingsUsing(returnTypeGenericMetadata));
++    MockitoCore mockitoCore = new MockitoCore();
++    return mockitoCore.mock(returnTypeGenericMetadata.rawType(), withSettingsUsing(returnTypeGenericMetadata));
+ }
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java@withSettingsUsing
+@@ -1,4 +1,4 @@
+ private MockSettings withSettingsUsing(GenericMetadataSupport returnTypeGenericMetadata) {
+     MockSettings mockSettings = returnTypeGenericMetadata.hasRawExtraInterfaces() ? withSettings().extraInterfaces(returnTypeGenericMetadata.rawExtraInterfaces()) : withSettings();
+-    return mockSettings.serializable().defaultAnswer(returnsDeepStubsAnswerUsing(returnTypeGenericMetadata));
++    return mockSettings.serializable().defaultAnswer(new ReturnsDeepStubsAnswer(returnTypeGenericMetadata)); // fix: create a new instance of ReturnsDeepStubsAnswer instead of referencing the method
+ }

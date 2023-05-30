@@ -1,0 +1,11 @@
+--- org/joda/time/chrono/GJChronology.java@getDateTimeMillis
++++ org/joda/time/chrono/GJChronology.java@getDateTimeMillis
+@@ -6,7 +6,7 @@
+     // Assume date is Gregorian.
+     long instant;
+     instant = iGregorianChronology.getDateTimeMillis(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
+-    if (instant < iCutoverMillis) {
++    if (instant < iCutoverMillis && iJulianChronology != null) { // check if there is a Julian Chronology
+         // Maybe it's Julian.
+         instant = iJulianChronology.getDateTimeMillis(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
+         if (instant >= iCutoverMillis) {

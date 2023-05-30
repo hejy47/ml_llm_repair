@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
++++ com/google/javascript/jscomp/ProcessClosurePrimitives.java@replace
+@@ -20,13 +20,30 @@
+                 Node valueNode = nameNode.getNext();
+                 assignNode.removeChild(nameNode);
+                 assignNode.removeChild(valueNode);
+-                nameNode.addChildToFront(valueNode);
+                 Node varNode = new Node(Token.VAR, nameNode);
+                 varNode.copyInformationFrom(candidateDefinition);
++                varNode.setDeclaredTypeExpression(assignNode.getDeclaredTypeExpression());
++                varNode.setJSDocInfo(assignNode.getJSDocInfo());
++                nameNode.addChildToFront(valueNode);
++                varNode.copyInformationFrom(candidateDefinition);
+                 candidateDefinition.getParent().replaceChild(candidateDefinition, varNode);
+-                nameNode.setJSDocInfo(assignNode.getJSDocInfo());
+                 compiler.reportCodeChange();
+                 replacementNode = varNode;
++            } else if (nameNode.getType() == Token.ARRAY_PATTERN
++                       || nameNode.getType() == Token.OBJECT_PATTERN) {
++                candidateDefinition.setToken(Token.VAR);
++                Node varNode = IR.var(candidateDefinition);
++                candidateDefinition.detach();
++                varNode.copyInformationFrom(candidateDefinition);
++                varNode.setJSDocInfo(assignNode.getJSDocInfo());
++                if (nameNode.getType() == Token.OBJECT_PATTERN) {
++                    generateObjectPatternDeclarations(nameNode, varNode);
++                } else {
++                    generateArrayPatternDeclarations(nameNode, varNode);
++                }
++                candidateDefinition.replaceWith(varNode);
++                replacementNode = varNode;
++                compiler.reportCodeChange();
+             }
+         }
+     } else {

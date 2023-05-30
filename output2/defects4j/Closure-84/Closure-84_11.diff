@@ -1,0 +1,35 @@
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processAssignment
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processAssignment
+@@ -1,5 +1,7 @@
+ @Override
+ Node processAssignment(Assignment assignmentNode) {
+-    Node assign = processInfixExpression(assignmentNode);
+-    return assign;
++    VariableDeclarationFragment fragment = (VariableDeclarationFragment) assignmentNode.leftHandSide;
++    String variableName = fragment.getName().getIdentifier();
++    Node value = processExpression(assignmentNode.rightHandSide);
++    return new AssignmentNode(variableName, value);
+ }
+--- com/google/javascript/jscomp/parsing/IRFactory.java@processUnaryExpression
++++ com/google/javascript/jscomp/parsing/IRFactory.java@processUnaryExpression
+@@ -1,15 +1,7 @@
+ @Override
+-Node processUnaryExpression(UnaryExpression exprNode) {
+-    int type = transformTokenType(exprNode.getType());
+-    Node operand = transform(exprNode.getOperand());
+-    if (type == Token.NEG && operand.getType() == Token.NUMBER) {
+-        operand.setDouble(-operand.getDouble());
+-        return operand;
+-    } else {
+-        Node node = newNode(type, operand);
+-        if (exprNode.isPostfix()) {
+-            node.putBooleanProp(Node.INCRDECR_PROP, true);
+-        }
+-        return node;
+-    }
++Node processAssignment(Assignment assignmentNode) {
++    VariableDeclarationFragment fragment = (VariableDeclarationFragment) assignmentNode.leftHandSide;
++    String variableName = fragment.getName().getIdentifier();
++    Node value = processExpression(assignmentNode.rightHandSide);
++    return new AssignmentNode(variableName, value);
+ }

@@ -1,0 +1,8 @@
+--- com/google/javascript/jscomp/parsing/JsDocInfoParser.java@getRemainingJSDocLine
++++ com/google/javascript/jscomp/parsing/JsDocInfoParser.java@getRemainingJSDocLine
+@@ -1,4 +1,4 @@
+ private String getRemainingJSDocLine() {
+-    String result = stream.getRemainingJSDocLine();
++    String result = stream.getRemainingJSDoc();
+     return result;
+ }

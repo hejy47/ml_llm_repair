@@ -1,0 +1,11 @@
+--- org/apache/commons/lang3/ArrayUtils.java@addAll
++++ org/apache/commons/lang3/ArrayUtils.java@addAll
+@@ -10,5 +10,8 @@
+     System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+     System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+     // Check if problem is incompatible types
++    if (!type1.isInstance(array2[0])) {
++        throw new ArrayStoreException("Cannot store " + array2[0].getClass() + " in an array of " + type1);
++    }
+     return joinedArray;
+ }

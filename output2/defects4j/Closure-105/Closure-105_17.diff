@@ -1,0 +1,28 @@
+--- com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
++++ com/google/javascript/jscomp/FoldConstants.java@tryFoldStringJoin
+@@ -1,5 +1,6 @@
+ void tryFoldStringJoin(NodeTraversal t, Node n, Node left, Node right, Node parent) {
+-    if (!NodeUtil.isGetProp(left) || !NodeUtil.isImmutableValue(right)) {
++    if (!(NodeUtil.isGetProp(left) && NodeUtil.isImmutableValue(right))) {
++        // Check both conditions in a single if statement
+         return;
+     }
+     Node arrayNode = left.getFirstChild();
+@@ -27,7 +28,7 @@
+                 sb = new StringBuilder();
+             }
+             foldedSize += InlineCostEstimator.getCost(elem);
+-            arrayFoldedChildren.add(elem);
++            arrayFoldedChildren.add(elem.cloneTree()); // add cloned tree instead of original node
+         }
+         elem = elem.getNext();
+     }
+@@ -39,7 +40,7 @@
+     // one for each comma.
+     foldedSize += arrayFoldedChildren.size() - 1;
+     int originalSize = InlineCostEstimator.getCost(n);
+-    switch(arrayFoldedChildren.size()) {
++    switch (arrayFoldedChildren.size()) {
+         case 0:
+             Node emptyStringNode = Node.newString("");
+             parent.replaceChild(n, emptyStringNode);

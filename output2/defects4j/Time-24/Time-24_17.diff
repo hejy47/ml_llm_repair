@@ -1,0 +1,14 @@
+--- org/joda/time/format/DateTimeParserBucket.java@computeMillis
++++ org/joda/time/format/DateTimeParserBucket.java@computeMillis
+@@ -21,9 +21,9 @@
+         for (int i = 0; i < count; i++) {
+             millis = savedFields[i].set(millis, resetFields);
+         }
+-    } catch (IllegalFieldValueException e) {
++    } catch (IllegalArgumentException e) { // Changed from IllegalFieldValueException to IllegalArgumentException
+         if (text != null) {
+-            e.prependMessage("Cannot parse \"" + text + '"');
++            e = new IllegalArgumentException("Cannot parse \"" + text + '": ' + e.getMessage()); // Modified message construction
+         }
+         throw e;
+     }

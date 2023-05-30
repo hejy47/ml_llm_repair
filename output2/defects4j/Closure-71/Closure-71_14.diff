@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -32,7 +32,8 @@
+             // Check that (a) the property *can* be overridden, and
+             // (b) that the visibility of the override is the same as the
+             // visibility of the original property.
+-            if (visibility == Visibility.PRIVATE && !sameInput) {
++            if (visibility == Visibility.PRIVATE && !sameInput && !currentClass.isSubclassOf(ownerType.getClassName())) {
++                // Private property cannot be overriden from other file and non subclass of owner.
+                 compiler.report(t.makeError(getprop, PRIVATE_OVERRIDE, objectType.toString()));
+             } else if (overridingVisibility != Visibility.INHERITED && overridingVisibility != visibility) {
+                 compiler.report(t.makeError(getprop, VISIBILITY_MISMATCH, visibility.name(), objectType.toString(), overridingVisibility.name()));
+@@ -41,7 +42,7 @@
+             if (sameInput) {
+                 // private access is always allowed in the same file.
+                 return;
+-            } else if (visibility == Visibility.PRIVATE && (currentClass == null || ownerType.differsFrom(currentClass))) {
++            } else if (visibility == Visibility.PRIVATE && (currentClass == null || ownerType.differsFrom(currentClass)) && !currentClass.isSubclassOf(ownerType.getClassName())) {
+                 if (docInfo.isConstructor() && isValidPrivateConstructorAccess(parent)) {
+                     return;
+                 }
+@@ -54,7 +55,7 @@
+                 // 2) Overriding the property in a subclass
+                 // 3) Accessing the property from inside a subclass
+                 // The first two have already been checked for.
+-                if (currentClass == null || !currentClass.isSubtype(ownerType)) {
++                if (currentClass == null || !currentClass.isSubclassOf(ownerType.getClassName())) {
+                     compiler.report(t.makeError(getprop, BAD_PROTECTED_PROPERTY_ACCESS, propertyName, validator.getReadableJSTypeName(getprop.getFirstChild(), true)));
+                 }
+             }

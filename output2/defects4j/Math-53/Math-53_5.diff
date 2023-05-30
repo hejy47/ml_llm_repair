@@ -1,0 +1,8 @@
+--- org/apache/commons/math/complex/Complex.java@add
++++ org/apache/commons/math/complex/Complex.java@add
+@@ -1,4 +1,4 @@
+ public Complex add(Complex rhs) throws NullArgumentException {
+     MathUtils.checkNotNull(rhs);
+-    return createComplex(real + rhs.getReal(), imaginary + rhs.getImaginary());
++    return createComplex(this.real + rhs.getReal(), this.imaginary + rhs.getImaginary());
+ }

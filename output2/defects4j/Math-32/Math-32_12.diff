@@ -1,0 +1,13 @@
+--- org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java@computeGeometricalProperties
++++ org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java@computeGeometricalProperties
+@@ -11,8 +11,8 @@
+             setSize(0);
+             setBarycenter(new Vector2D(0, 0));
+         }
+-    } else if (v[0][0] == null) {
+-        // there is at least one open-loop: the polygon is infinite
++    } else if (v[0] == null || v[0][0] == null) {
++        // there is at least one open-loop or all of the points are null: the polygon is infinite
+         setSize(Double.POSITIVE_INFINITY);
+         setBarycenter(Vector2D.NaN);
+     } else {

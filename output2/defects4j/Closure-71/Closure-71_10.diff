@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
++++ com/google/javascript/jscomp/CheckAccessControls.java@checkPropertyVisibility
+@@ -13,7 +13,7 @@
+         JSDocInfo docInfo = null;
+         for (; objectType != null; objectType = objectType.getImplicitPrototype()) {
+             docInfo = objectType.getOwnPropertyJSDocInfo(propertyName);
+-            if (docInfo != null && docInfo.getVisibility() != Visibility.INHERITED) {
++            if (docInfo != null && docInfo.getVisibility() != null && docInfo.getVisibility() != Visibility.INHERITED) {
+                 break;
+             }
+         }
+@@ -23,6 +23,10 @@
+         }
+         boolean sameInput = t.getInput().getName().equals(docInfo.getSourceName());
+         Visibility visibility = docInfo.getVisibility();
++        if (visibility == null) {
++            // If visibility is null, we assume it's public.
++            return;
++        }
+         JSType ownerType = normalizeClassType(objectType);
+         if (isOverride) {
+             // Check an ASSIGN statement that's trying to override a property

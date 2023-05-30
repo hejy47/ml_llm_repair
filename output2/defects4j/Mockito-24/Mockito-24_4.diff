@@ -1,0 +1,18 @@
+--- org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues.java@answer
++++ org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues.java@answer
+@@ -9,10 +9,11 @@
+         }
+     } else if (methodsGuru.isCompareToMethod(invocation.getMethod())) {
+         //see issue 184.
+-        //mocks by default should return 0 if references are the same, otherwise some other value because they are not the same. Hence we return 1 (anything but 0 is good).
++        //mocks by default should return 0 if references are the same, otherwise some other value because they are not the same. Hence we return a negative value (anything below 0 is good).
+         //Only for compareTo() method by the Comparable interface
+-        return 1;
++        return -1;
++    } else {
++        Class<?> returnType = invocation.getMethod().getReturnType();
++        return returnValueFor(returnType);
+     }
+-    Class<?> returnType = invocation.getMethod().getReturnType();
+-    return returnValueFor(returnType);
+ }

@@ -1,0 +1,32 @@
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableStillLiveWithinExpression
+@@ -4,8 +4,8 @@
+         switch(n.getParent().getType()) {
+             case Token.OR:
+             case Token.AND:
+-            // If the currently node is the first child of
+-            // AND/OR, be conservative only consider the READs
++            // If the current node is the first child of
++            // AND/OR, be conservative and only consider the READs
+             // of the second operand.
+             case Token.HOOK:
+             // If current node is the condition, check each following
+@@ -23,6 +23,7 @@
+                         }
+                     }
+                 }
++                break; // Add a break statement to exit the switch statement.
+         }
+         n = n.getParent();
+     }
+--- com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
++++ com/google/javascript/jscomp/DeadAssignmentsElimination.java@isVariableReadBeforeKill
+@@ -11,6 +11,8 @@
+                 return state;
+             }
+             return VariableLiveness.KILL;
++        } else if (n.getParent().getType() == Token.CATCH) { // Add an else-if statement to handle CATCH nodes.
++            return VariableLiveness.READ;
+         } else {
+             return VariableLiveness.READ;
+         }

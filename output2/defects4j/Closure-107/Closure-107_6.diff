@@ -1,0 +1,30 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -23,8 +23,8 @@
+     for (FormattingOption formattingOption : flags.formatting) {
+         formattingOption.applyToOptions(options);
+     }
+-    options.closurePass = flags.processClosurePrimitives;
+-    options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives;
++    options.setProcessClosurePrimitives(flags.processClosurePrimitives); // Fixed bug: Wrong property name used 
++    options.setProcessJqueryPrimitives(CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives); // Fixed bug: Same as above
+     options.angularPass = flags.angularPass;
+     if (!flags.translationsFile.isEmpty()) {
+         try {
+@@ -33,15 +33,8 @@
+             throw new RuntimeException("Reading XTB file", e);
+         }
+     } else if (CompilationLevel.ADVANCED_OPTIMIZATIONS == level) {
+-        // In SIMPLE or WHITESPACE mode, if the user hasn't specified a
+-        // translations file, they might reasonably try to write their own
+-        // implementation of goog.getMsg that makes the substitution at
+-        // run-time.
+-        //
+-        // In ADVANCED mode, goog.getMsg is going to be renamed anyway,
+-        // so we might as well inline it. But shut off the i18n warnings,
+-        // because the user didn't really ask for i18n.
+         options.messageBundle = new EmptyMessageBundle();
++        options.setWarningsGuard(new DiagnosticGroups());
+     }
+     return options;
+ }

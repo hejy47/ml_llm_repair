@@ -1,0 +1,22 @@
+--- com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
++++ com/google/javascript/jscomp/NodeUtil.java@isBooleanResultHelper
+@@ -17,6 +17,8 @@
+         case Token.INSTANCEOF:
+         // Inversion
+         case Token.NOT:
++        // Typeof returns a string, which can be resolved to a boolean.
++        case Token.TYPEOF:
+             // delete operator returns a boolean.
+             return true;
+         default:
+--- com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
++++ com/google/javascript/jscomp/NodeUtil.java@evaluatesToLocalValue
+@@ -44,7 +44,7 @@
+             // Other op force a local value:
+             //  x = '' + g (x is now an local string)
+             //  x -= g (x is now an local number)
+-            if (isAssignmentOp(value) || isSimpleOperator(value) || isImmutableValue(value)) {
++            if (isAssignmentOp(value) || isSimpleOperator(value) || isImmutableValue(value) || isBooleanResultHelper(value)) {
+                 return true;
+             }
+             throw new IllegalStateException("Unexpected expression node" + value + "\n parent:" + value.getParent());

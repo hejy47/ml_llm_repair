@@ -1,0 +1,26 @@
+--- org/joda/time/LocalDate.java@fromDateFields
++++ org/joda/time/LocalDate.java@fromDateFields
+@@ -4,5 +4,7 @@
+         throw new IllegalArgumentException("The date must not be null");
+     }
+     // handle years in era BC
+-    return new LocalDate(date.getYear() + 1900, date.getMonth() + 1, date.getDate());
++    int year = date.getYear() + 1900;
++    int dayOfYear = date.getMonth() + 1;
++    return LocalDate.ofYearDay(year, dayOfYear);
+ }
+--- org/joda/time/LocalDateTime.java@fromDateFields
++++ org/joda/time/LocalDateTime.java@fromDateFields
+@@ -1,8 +1,10 @@
+ @SuppressWarnings("deprecation")
+-public static LocalDateTime fromDateFields(Date date) {
++public static LocalDate fromDateFields(Date date) {
+     if (date == null) {
+         throw new IllegalArgumentException("The date must not be null");
+     }
+     // handle years in era BC
+-    return new LocalDateTime(date.getYear() + 1900, date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), (((int) (date.getTime() % 1000)) + 1000) % 1000);
++    int year = date.getYear() + 1900;
++    int dayOfYear = date.getMonth() + 1;
++    return LocalDate.ofYearDay(year, dayOfYear);
+ }

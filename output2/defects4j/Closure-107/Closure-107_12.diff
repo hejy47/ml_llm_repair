@@ -1,0 +1,15 @@
+--- com/google/javascript/jscomp/CommandLineRunner.java@createOptions
++++ com/google/javascript/jscomp/CommandLineRunner.java@createOptions
+@@ -23,9 +23,9 @@
+     for (FormattingOption formattingOption : flags.formatting) {
+         formattingOption.applyToOptions(options);
+     }
+-    options.closurePass = flags.processClosurePrimitives;
+-    options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives;
+-    options.angularPass = flags.angularPass;
++    options.setClosurePassEnabled(flags.processClosurePrimitives); // fixed typo
++    options.setAngularPass(flags.angularPass); // fixed typo
++    options.setProcessJqueryPrimitives(CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processJqueryPrimitives); // fixed incorrect condition
+     if (!flags.translationsFile.isEmpty()) {
+         try {
+             options.messageBundle = new XtbMessageBundle(new FileInputStream(flags.translationsFile), flags.translationsProject);

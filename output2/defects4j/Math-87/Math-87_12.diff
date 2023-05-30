@@ -1,0 +1,16 @@
+--- org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
++++ org/apache/commons/math/optimization/linear/SimplexTableau.java@getBasicRow
+@@ -4,8 +4,11 @@
+         if (!MathUtils.equals(getEntry(i, col), 0.0, epsilon)) {
+             if (row == null) {
+                 row = i;
+-            } else {
+-                return null;
++            } 
++            // return null only if there are multiple non-zero entries in the column
++            else {
++                row = null;
++                break;
+             }
+         }
+     }

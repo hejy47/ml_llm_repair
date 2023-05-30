@@ -1,0 +1,41 @@
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJava
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJava
+@@ -1,5 +1,5 @@
+ // Java and JavaScript
+ //--------------------------------------------------------------------------
+ public static String escapeJava(String str) {
+-    return escapeJavaStyleString(str, false);
++    return escapeJavaStyleString(str, true); // escape single quotes as well
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJava1
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJava1
+@@ -1,3 +1,3 @@
+ public static void escapeJava(Writer out, String str) throws IOException {
+-    escapeJavaStyleString(out, str, false);
++    escapeJavaStyleString(out, str, true); // escape single quotes as well
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript
+@@ -1,3 +1,3 @@
+ public static String escapeJavaScript(String str) {
+-    return escapeJavaStyleString(str, true);
++    return escapeJavaScriptStyleString(str, false); // do not escape single quotes
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript3
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaScript3
+@@ -1,3 +1,3 @@
+ public static void escapeJavaScript(Writer out, String str) throws IOException {
+-    escapeJavaStyleString(out, str, true);
++    escapeJavaScriptStyleString(out, str, false); // do not escape single quotes
+ }
+--- org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
++++ org/apache/commons/lang/StringEscapeUtils.java@escapeJavaStyleString
+@@ -4,7 +4,7 @@
+     }
+     try {
+         StringWriter writer = new StringWriter(str.length() * 2);
+-        escapeJavaStyleString(writer, str, escapeSingleQuotes);
++        escapeJavaStyleString(writer, str, false, escapeSingleQuotes); // fix call to include escapeSingleQuotes parameter
+         return writer.toString();
+     } catch (IOException ioe) {
+         // this should never ever happen while writing to a StringWriter

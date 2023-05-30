@@ -1,0 +1,105 @@
+--- org/mockito/Matchers.java@anyBoolean
++++ org/mockito/Matchers.java@anyBoolean
+@@ -1,3 +1,3 @@
+ public static boolean anyBoolean() {
+-    return reportMatcher(Any.ANY).returnFalse();
++    return reportMatcher(Any.ANY_BOOLEAN).returnFalse();
+ }
+--- org/mockito/Matchers.java@anyByte
++++ org/mockito/Matchers.java@anyByte
+@@ -1,3 +1,3 @@
+ public static byte anyByte() {
+-    return reportMatcher(Any.ANY).returnZero();
++    return reportMatcher(Any.ANY_BYTE).returnZero();
+ }
+--- org/mockito/Matchers.java@anyChar
++++ org/mockito/Matchers.java@anyChar
+@@ -1,3 +1,3 @@
+ public static char anyChar() {
+-    return reportMatcher(Any.ANY).returnChar();
++    return reportMatcher(Any.ANY_CHAR).returnChar();
+ }
+--- org/mockito/Matchers.java@anyInt
++++ org/mockito/Matchers.java@anyInt
+@@ -1,3 +1,3 @@
+ public static int anyInt() {
+-    return reportMatcher(Any.ANY).returnZero();
++    return reportMatcher(Any.ANY_INT).returnZero();
+ }
+--- org/mockito/Matchers.java@anyLong
++++ org/mockito/Matchers.java@anyLong
+@@ -1,3 +1,3 @@
+ public static long anyLong() {
+-    return reportMatcher(Any.ANY).returnZero();
++    return reportMatcher(Any.ANY_LONG).returnZero();
+ }
+--- org/mockito/Matchers.java@anyFloat
++++ org/mockito/Matchers.java@anyFloat
+@@ -1,3 +1,3 @@
+ public static float anyFloat() {
+-    return reportMatcher(Any.ANY).returnZero();
++    return reportMatcher(Any.ANY_FLOAT).returnZero();
+ }
+--- org/mockito/Matchers.java@anyDouble
++++ org/mockito/Matchers.java@anyDouble
+@@ -1,3 +1,3 @@
+ public static double anyDouble() {
+-    return reportMatcher(Any.ANY).returnZero();
++    return reportMatcher(Any.ANY_DOUBLE).returnZero();
+ }
+--- org/mockito/Matchers.java@anyShort
++++ org/mockito/Matchers.java@anyShort
+@@ -1,3 +1,3 @@
+ public static short anyShort() {
+-    return reportMatcher(Any.ANY).returnZero();
++    return reportMatcher(Any.ANY_SHORT).returnZero();
+ }
+--- org/mockito/Matchers.java@any
++++ org/mockito/Matchers.java@any
+@@ -1,3 +1,3 @@
+ public static <T> T any(Class<T> clazz) {
+-    return (T) reportMatcher(Any.ANY).returnFor(clazz);
++    return (T) reportMatcher(Any.ANY(clazz)).returnValue();
+ }
+--- org/mockito/Matchers.java@any10
++++ org/mockito/Matchers.java@any10
+@@ -1,3 +1,3 @@
+ public static <T> T any() {
+-    return (T) anyObject();
++    return (T) anyObject(Object.class);
+ }
+--- org/mockito/Matchers.java@anyString
++++ org/mockito/Matchers.java@anyString
+@@ -1,3 +1,3 @@
+ public static String anyString() {
+-    return reportMatcher(Any.ANY).returnString();
++    return reportMatcher(Any.ANY_STRING).returnString();
+ }
+--- org/mockito/Matchers.java@anyListOf
++++ org/mockito/Matchers.java@anyListOf
+@@ -1,3 +1,3 @@
+ public static <T> List<T> anyListOf(Class<T> clazz) {
+-    return (List) reportMatcher(Any.ANY).returnList();
++    return (List) reportMatcher(Any.ANY_LIST(clazz)).returnList();
+ }
+--- org/mockito/Matchers.java@anySetOf
++++ org/mockito/Matchers.java@anySetOf
+@@ -1,3 +1,3 @@
+ public static <T> Set<T> anySetOf(Class<T> clazz) {
+-    return (Set) reportMatcher(Any.ANY).returnSet();
++    return (Set) reportMatcher(Any.ANY_SET(clazz)).returnSet();
+ }
+--- org/mockito/Matchers.java@anyMapOf
++++ org/mockito/Matchers.java@anyMapOf
+@@ -1,3 +1,3 @@
+ public static <K, V> Map<K, V> anyMapOf(Class<K> keyClazz, Class<V> valueClazz) {
+-    return reportMatcher(Any.ANY).returnMap();
++    return (Map) reportMatcher(Any.ANY_MAP(keyClazz, valueClazz)).returnMap();
+ }
+--- org/mockito/Matchers.java@anyCollectionOf
++++ org/mockito/Matchers.java@anyCollectionOf
+@@ -1,3 +1,3 @@
+ public static <T> Collection<T> anyCollectionOf(Class<T> clazz) {
+-    return (Collection) reportMatcher(Any.ANY).returnList();
++    return (Collection) reportMatcher(Any.ANY_LIST(clazz)).returnList();
+ }

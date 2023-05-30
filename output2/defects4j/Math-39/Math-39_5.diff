@@ -1,0 +1,16 @@
+--- org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
++++ org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java@integrate
+@@ -8,11 +8,11 @@
+     final double[] y = y0.clone();
+     final int stages = c.length + 1;
+     final double[][] yDotK = new double[stages][y.length];
+-    final double[] yTmp = y0.clone();
++    final double[] yTmp = new double[y0.length];
+     final double[] yDotTmp = new double[y.length];
+     // set up an interpolator sharing the integrator arrays
+     final RungeKuttaStepInterpolator interpolator = (RungeKuttaStepInterpolator) prototype.copy();
+-    interpolator.reinitialize(this, yTmp, yDotK, forward, equations.getPrimaryMapper(), equations.getSecondaryMappers());
++    interpolator.reinitialize(this, y, yDotK, forward, equations.getPrimaryMapper(), equations.getSecondaryMappers());
+     interpolator.storeTime(equations.getTime());
+     // set up integration control objects
+     stepStart = equations.getTime();

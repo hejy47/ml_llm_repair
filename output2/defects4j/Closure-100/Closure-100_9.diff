@@ -1,0 +1,70 @@
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldTraverse
+@@ -1,39 +1,39 @@
+ public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+-    if (n.getType() == Token.FUNCTION) {
++    if (n.isFunction()) {
+         // Don't traverse functions that are constructors or have the @this
+         // annotation.
+-        JSDocInfo jsDoc = getFunctionJsDocInfo(n);
++        JSDocInfo jsDoc = NodeUtil.getBestJSDocInfo(n);
+         if (jsDoc != null && (jsDoc.isConstructor() || jsDoc.hasThisType())) {
+             return false;
+         }
++
+         // Don't traverse functions unless they would normally
+         // be able to have a @this annotation associated with them. e.g.,
+         // var a = function() { }; // or
+         // function a() {} // or
+         // a.x = function() {};
++        if (!NodeUtil.functionHasInlineOrNonEmptyJsDocDescription(n) &&
++                !NodeUtil.hasLValue(n)) {
++            return false;
++        }
+     }
+-    if (parent != null && parent.getType() == Token.ASSIGN) {
++    if (parent != null && parent.isAssign()) {
+         Node lhs = parent.getFirstChild();
+         Node rhs = lhs.getNext();
+-        if (n == lhs) {
++        if (n.isFirstChildOf(lhs)) {
+             // Always traverse the left side of the assignment. To handle
+             // nested assignments properly (e.g., (a = this).property = c;),
+             // assignLhsChild should not be overridden.
+-            if (assignLhsChild == null) {
+-                assignLhsChild = lhs;
+-            }
++            return true;
+         } else {
+             // Only traverse the right side if it's not an assignment to a prototype
+             // property or subproperty.
+-            if (lhs.getType() == Token.GETPROP) {
+-                if (lhs.getLastChild().getString().equals("prototype")) {
+-                    return false;
+-                }
+-                String leftName = lhs.getQualifiedName();
+-                if (leftName != null && leftName.contains(".prototype.")) {
+-                    return false;
+-                }
++            if (lhs.isGetProp() &&
++                    "prototype".equals(lhs.getLastChild().getString())) {
++                return false;
+             }
++            String leftName = lhs.getQualifiedName();
++            return leftName == null || !leftName.contains(".prototype.");
+         }
+     }
+     return true;
+--- com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
++++ com/google/javascript/jscomp/CheckGlobalThis.java@shouldReportThis
+@@ -1,8 +1,8 @@
+ private boolean shouldReportThis(Node n, Node parent) {
+-    if (assignLhsChild != null) {
++    if (assignLhsChild != null && n == assignLhsChild) {
+         // Always report a THIS on the left side of an assign.
+         return true;
+     }
+     // Also report a THIS with a property access.
+-    return false;
++    return NodeUtil.isObjectLitKey(n) || NodeUtil.isGet(n);
+ }

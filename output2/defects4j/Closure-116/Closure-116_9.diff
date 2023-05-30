@@ -1,0 +1,13 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -35,6 +35,10 @@
+             }
+             // Move to the next name.
+             fnParam = fnParam.getNext();
++            if (fnParam != null && fnParam.isRest()) {
++                // Ignore rest parameter
++                fnParam = null;
++            }
+         }
+         // For every call argument check for side-effects, even if there
+         // isn't a named parameter to match.

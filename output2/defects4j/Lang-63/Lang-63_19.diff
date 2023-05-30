@@ -1,0 +1,51 @@
+--- org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
++++ org/apache/commons/lang/time/DurationFormatUtils.java@formatPeriod
+@@ -18,7 +18,8 @@
+     int days = end.get(Calendar.DAY_OF_MONTH) - start.get(Calendar.DAY_OF_MONTH);
+     int months = end.get(Calendar.MONTH) - start.get(Calendar.MONTH);
+     int years = end.get(Calendar.YEAR) - start.get(Calendar.YEAR);
+-    // each initial estimate is adjusted in case it is under 0
++
++    // ADDED to avoid months with different number of days
+     while (milliseconds < 0) {
+         milliseconds += 1000;
+         seconds -= 1;
+@@ -36,18 +37,15 @@
+         days -= 1;
+     }
+     while (days < 0) {
+-        days += 31;
+-        //days += 31; // TODO: Need tests to show this is bad and the new code is good.
+-        // HEN: It's a tricky subject. Jan 15th to March 10th. If I count days-first it is
+-        // 1 month and 26 days, but if I count month-first then it is 1 month and 23 days.
+-        // Also it's contextual - if asked for no M in the format then I should probably
+-        // be doing no calculating here.
++        end.add(Calendar.MONTH, -1);
++        days += end.getActualMaximum(Calendar.DAY_OF_MONTH);
+         months -= 1;
+     }
+     while (months < 0) {
+         months += 12;
+         years -= 1;
+     }
++
+     milliseconds -= reduceAndCorrect(start, end, Calendar.MILLISECOND, milliseconds);
+     seconds -= reduceAndCorrect(start, end, Calendar.SECOND, seconds);
+     minutes -= reduceAndCorrect(start, end, Calendar.MINUTE, minutes);
+@@ -55,6 +53,7 @@
+     days -= reduceAndCorrect(start, end, Calendar.DAY_OF_MONTH, days);
+     months -= reduceAndCorrect(start, end, Calendar.MONTH, months);
+     years -= reduceAndCorrect(start, end, Calendar.YEAR, years);
++
+     // This next block of code adds in values that
+     // aren't requested. This allows the user to ask for the
+     // number of months and get the real count and not just 0->11.
+@@ -64,7 +63,7 @@
+             years = 0;
+         } else {
+             // TODO: this is a bit weak, needs work to know about leap years
+-            days += 365 * years;
++            days += end.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR);
+             years = 0;
+         }
+     }

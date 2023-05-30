@@ -1,0 +1,52 @@
+--- com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
++++ com/google/javascript/jscomp/FunctionInjector.java@canInlineReferenceDirectly
+@@ -9,8 +9,19 @@
+         Node stmt = block.getFirstChild();
+         if (stmt.isReturn()) {
+             hasSideEffects = NodeUtil.mayHaveSideEffects(stmt.getFirstChild(), compiler);
++        } else if (NodeUtil.isStatementBlock(stmt)) { // new else-if block added
++            // traverse statement block to check for side-effects
++            Node child = stmt.getFirstChild();
++            while (child != null && !hasSideEffects) {
++                if (NodeUtil.mayHaveSideEffects(child, compiler)) {
++                    hasSideEffects = true;
++                } else {
++                    child = child.getNext();
++                }
++            }
+         }
+-    }
++    } // end if block has children
++
+     // CALL NODE: [ NAME, ARG1, ARG2, ... ]
+     Node cArg = callNode.getFirstChild().getNext();
+     // Functions called via 'call' and 'apply' have a this-object as
+@@ -43,9 +54,20 @@
+                 if (NodeUtil.mayEffectMutableState(cArg, compiler) && NodeUtil.getNameReferenceCount(block, fnParam.getString()) > 1) {
+                     return CanInlineResult.NO;
+                 }
++            } else { // new else block added for named parameter with no argument
++                return CanInlineResult.NO;
+             }
+             // Move to the next name.
+             fnParam = fnParam.getNext();
++        } else { // new else block added for extra argument with no named parameter
++            if (cArg != null) {
++                if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
++                    return CanInlineResult.NO;
++                }
++                cArg = cArg.getNext();
++            } else {
++                break;
++            }
+         }
+         // For every call argument check for side-effects, even if there
+         // isn't a named parameter to match.
+@@ -55,6 +77,6 @@
+             }
+             cArg = cArg.getNext();
+         }
+-    }
++    } // end while loop
+     return CanInlineResult.YES;
+ }

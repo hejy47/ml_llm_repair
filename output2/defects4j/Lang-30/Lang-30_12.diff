@@ -1,0 +1,23 @@
+--- org/apache/commons/lang3/StringUtils.java@containsAny
++++ org/apache/commons/lang3/StringUtils.java@containsAny
+@@ -12,7 +12,7 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLength; j++) {
+             if (searchChars[j] == ch) {
+-                if (i < csLast && j < searchLast && ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_HIGH_SURROGATE) {
++                if (i < csLast && j < searchLast && Character.isHighSurrogate(ch)) {
+                     // missing low surrogate, fine, like String.indexOf(String)
+                     if (searchChars[j + 1] == cs.charAt(i + 1)) {
+                         return true;
+--- org/apache/commons/lang3/StringUtils.java@containsNone
++++ org/apache/commons/lang3/StringUtils.java@containsNone
+@@ -10,8 +10,7 @@
+         char ch = cs.charAt(i);
+         for (int j = 0; j < searchLen; j++) {
+             if (searchChars[j] == ch) {
+-                // missing low surrogate, fine, like String.indexOf(String)
+-                // ch is in the Basic Multilingual Plane
++                // ch is in the Supplemental Multilingual Plane
+                 return false;
+             }
+         }

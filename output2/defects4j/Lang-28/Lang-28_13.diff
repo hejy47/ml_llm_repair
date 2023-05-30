@@ -1,0 +1,26 @@
+--- org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java@translate
++++ org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java@translate
+@@ -1,7 +1,7 @@
+ @Override
+ public int translate(CharSequence input, int index, Writer out) throws IOException {
+-    // TODO: Protect from ArrayIndexOutOfBounds
+-    if (input.charAt(index) == '&' && input.charAt(index + 1) == '#') {
++    // Check if index and index+1 are within the input CharSequence bounds.
++    if (index < input.length() && input.charAt(index) == '&' && index + 1 < input.length() && input.charAt(index + 1) == '#') {
+         int start = index + 2;
+         boolean isHex = false;
+         char firstChar = input.charAt(start);
+@@ -10,8 +10,12 @@
+             isHex = true;
+         }
+         int end = start;
+-        while (input.charAt(end) != ';') {
++        while (end < input.length() && input.charAt(end) != ';') {
+             end++;
++        }
++        if (end >= input.length()) {
++            // Return if end position exceeds input bounds.
++            return 0;
+         }
+         int entityValue;
+         try {

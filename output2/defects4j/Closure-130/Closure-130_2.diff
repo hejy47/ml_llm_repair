@@ -1,0 +1,26 @@
+--- com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
++++ com/google/javascript/jscomp/CollapseProperties.java@inlineAliases
+@@ -8,15 +8,14 @@
+             continue;
+         }
+         if (name.globalSets == 1 && name.localSets == 0 && name.aliasingGets > 0) {
+-            // {@code name} meets condition (b). Find all of its local aliases
+-            // and try to inline them.
+-            List<Ref> refs = Lists.newArrayList(name.getRefs());
+-            for (Ref ref : refs) {
+-                if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {
+-                    // {@code name} meets condition (c). Try to inline it.
+-                    if (inlineAliasIfPossible(ref, namespace)) {
+-                        name.removeRef(ref);
+-                    }
++            // {@code name} meets condition (b).
++            List<Ref> aliasingRefs = name.getRefs(Type.ALIASING_GET);
++            // Only proceed if there is exactly one local alias
++            if (aliasingRefs.size() == 1 && aliasingRefs.get(0).scope.isLocal()) {
++                Ref ref = aliasingRefs.get(0);
++                // {@code name} meets condition (c).
++                if (inlineAliasIfPossible(ref, namespace)) {
++                    name.removeRef(ref);
+                 }
+             }
+         }

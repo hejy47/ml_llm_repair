@@ -1,0 +1,11 @@
+--- com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
++++ com/google/javascript/jscomp/TypeValidator.java@getReadableJSTypeName
+@@ -23,7 +23,7 @@
+         }
+     }
+     JSType type = getJSType(n);
+-    if (dereference) {
++    if (dereference && (type instanceof ObjectType || type instanceof FunctionType)) {
+         ObjectType dereferenced = type.dereference();
+         if (dereferenced != null) {
+             type = dereferenced;

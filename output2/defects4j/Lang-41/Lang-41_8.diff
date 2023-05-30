@@ -1,0 +1,27 @@
+--- org/apache/commons/lang/ClassUtils.java@getShortClassName
++++ org/apache/commons/lang/ClassUtils.java@getShortClassName
+@@ -9,9 +9,9 @@
+     // Strip Object type encoding
+     int lastDotIdx = className.lastIndexOf(PACKAGE_SEPARATOR_CHAR);
+     int innerIdx = className.indexOf(INNER_CLASS_SEPARATOR_CHAR, lastDotIdx == -1 ? 0 : lastDotIdx + 1);
+-    String out = className.substring(lastDotIdx + 1);
+-    if (innerIdx != -1) {
+-        out = out.replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR);
++    if (innerIdx == -1) {
++        return className.substring(lastDotIdx + 1);
++    } else {
++        return className.substring(lastDotIdx + 1, innerIdx).replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR) + PACKAGE_SEPARATOR_CHAR + className.substring(innerIdx + 1, className.length());
+     }
+-    return out;
+ }
+--- org/apache/commons/lang/ClassUtils.java@getPackageName
++++ org/apache/commons/lang/ClassUtils.java@getPackageName
+@@ -7,6 +7,7 @@
+     int i = className.lastIndexOf(PACKAGE_SEPARATOR_CHAR);
+     if (i == -1) {
+         return StringUtils.EMPTY;
++    } else {
++        return className.substring(0, i);
+     }
+-    return className.substring(0, i);
+ }

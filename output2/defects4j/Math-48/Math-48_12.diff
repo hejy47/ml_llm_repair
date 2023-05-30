@@ -1,0 +1,42 @@
+--- org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
++++ org/apache/commons/math/analysis/solvers/BaseSecantSolver.java@doSolve
+@@ -25,7 +25,11 @@
+     // Keep finding better approximations.
+     while (true) {
+         // Calculate the next approximation.
+-        final double x = x1 - ((f1 * (x1 - x0)) / (f1 - f0));
++        final double denominator = (f1 - f0);
++        if (denominator == 0) {
++            throw new ConvergenceException(LocalizedFormats.ZERO_DENOMINATOR, x0, x1);
++        }
++        final double x = x1 - ((f1 * (x1 - x0)) / denominator);
+         final double fx = computeObjectiveValue(x);
+         // If the new approximation is the exact root, return it. Since
+         // this is not an under-approximation or an over-approximation,
+@@ -51,6 +55,15 @@
+                 case REGULA_FALSI:
+                     // Detect early that algorithm is stuck, instead of waiting
+                     // for the maximum number of iterations to be exceeded.
++                    if (FastMath.signum(fx) == FastMath.signum(f1)) {
++                        // Out of the signs comparison "f1 < 0" and "f1 > 0", one
++                        // and only one must be true, except at the rare situations 
++                        // where x0 and x1 actually brackets a root at small
++                        // resolution distance (i.e. "f1" is very small).  
++                        if (FastMath.abs(fx) >= FastMath.abs(f1)) {
++                            f0 *= 0.5;
++                        }
++                    }
+                     break;
+                 default:
+                     // Should never happen.
+@@ -64,6 +77,10 @@
+         // given the function value accuracy, then we can't get closer to
+         // the root than we already are.
+         if (FastMath.abs(f1) <= ftol) {
++            final double t = FastMath.abs(rtol * x1);
++            if (t < atol) {
++                t = atol;
++            }
+             switch(allowed) {
+                 case ANY_SIDE:
+                     return x1;

@@ -1,0 +1,47 @@
+--- org/joda/time/chrono/GJChronology.java@getInstance
++++ org/joda/time/chrono/GJChronology.java@getInstance
+@@ -23,7 +23,7 @@
+         if (zone == DateTimeZone.UTC) {
+             chrono = new GJChronology(JulianChronology.getInstance(zone, minDaysInFirstWeek), GregorianChronology.getInstance(zone, minDaysInFirstWeek), cutoverInstant);
+         } else {
+-            chrono = getInstance(DateTimeZone.UTC, cutoverInstant, minDaysInFirstWeek);
++            chrono = getInstance(zone, cutoverInstant, minDaysInFirstWeek); // Recursive call to the fixed function
+             chrono = new GJChronology(ZonedChronology.getInstance(chrono, zone), chrono.iJulianChronology, chrono.iGregorianChronology, chrono.iCutoverInstant);
+         }
+         chronos.add(chrono);
+--- org/joda/time/chrono/GJChronology.java@add
++++ org/joda/time/chrono/GJChronology.java@add
+@@ -5,6 +5,7 @@
+             // Only adjust if gap fully crossed.
+             if (instant + iGapDuration < iCutover) {
+                 instant = gregorianToJulian(instant);
++                instant = iGregorianField.add(instant, value); // Add the value again after conversion
+             }
+         }
+     } else {
+@@ -14,6 +15,7 @@
+             if (instant - iGapDuration >= iCutover) {
+                 // no special handling for year zero as cutover always after year zero
+                 instant = julianToGregorian(instant);
++                instant = iGregorianField.add(instant, value); // Add the value again after conversion
+             }
+         }
+     }
+--- org/joda/time/chrono/GJChronology.java@add2
++++ org/joda/time/chrono/GJChronology.java@add2
+@@ -5,6 +5,7 @@
+             // Only adjust if gap fully crossed.
+             if (instant + iGapDuration < iCutover) {
+                 instant = gregorianToJulian(instant);
++                instant = iGregorianField.add(instant, value); // Add the value again after conversion
+             }
+         }
+     } else {
+@@ -14,6 +15,7 @@
+             if (instant - iGapDuration >= iCutover) {
+                 // no special handling for year zero as cutover always after year zero
+                 instant = julianToGregorian(instant);
++                instant = iGregorianField.add(instant, value); // Add the value again after conversion
+             }
+         }
+     }
