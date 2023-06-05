@@ -13,9 +13,13 @@ class Dataset:
         pass
 
     @abc.abstractclassmethod
-    def generate_prompt(self):
+    def generate_prompt_with_multi_functions(self, project, bug_id):
         pass
 
     @abc.abstractclassmethod
-    def validate(self):
+    def generate_prompts_with_single_function(self, project, bug_id):
+        pass
+
+    @abc.abstractclassmethod
+    def validate(self, bug, fix, skip_val=True):
         pass

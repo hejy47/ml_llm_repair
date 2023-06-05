@@ -1,5 +1,10 @@
 import openai
 import time
+import config
+
+key_list = open(config.API_KEY_FILE, "r").readlines()
+current_index = 0
+openai.api_key = key_list[current_index].strip()
 
 def create_openai_config(prompt,
                          engine_name="code-davinci-002",
@@ -20,6 +25,7 @@ def create_openai_config(prompt,
 # Handles requests to OpenAI API
 def request_engine(config):
     ret = None
+    try_num = 0
     while ret is None:
         try:
             ret = openai.Completion.create(**config)
@@ -33,6 +39,12 @@ def request_engine(config):
                 return None
         except openai.error.RateLimitError as e:
             print("Rate limit exceeded. Waiting...")
+            try_num += 1
+            if try_num >= 5:
+                current_index += 1
+                if current_index >= len(key_list):
+                    current_index = 0
+                openai.api_key = key_list[current_index].strip()
             time.sleep(60) # wait for a minute
         except openai.error.APIConnectionError as e:
             print("API connection error. Waiting...")

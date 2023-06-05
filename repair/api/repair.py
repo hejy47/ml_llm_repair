@@ -5,7 +5,7 @@ from utils import diff_util, file_util
 from dataset import DatasetFactory
 from api import api_request
 
-openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
+# openai.api_key = open(config.API_KEY_FILE, "r").read().strip()
 
 def repair_loop(dataset, prompt, project, bug_id, bug, t_chances, stop=None, skip_val=True):
     start = time.time()
@@ -86,10 +86,10 @@ def repair_loop_by_chat(dataset, prompt, project, bug_id, bug, t_chances, stop=N
     return repair_result
 
 def repair_single(dataset, project, bug_id, chances):
-    prompt = dataset.generate_prompt(project, bug_id)
+    prompt = dataset.generate_prompt_with_multi_functions(project, bug_id)
     bug = dataset.get_bug(project, bug_id)
     repair_result = repair_loop_by_chat(dataset, prompt, project, bug_id, bug, chances)
-    output_path = os.path.join(config.OUTPUT_DIR, dataset.get_name(), "{}-{}.json".format(project, bug_id))
+    output_path = os.path.join(config.OUTPUT_DIR_SINGLE_PROMPT, dataset.get_name(), "{}-{}.json".format(project, bug_id))
     file_util.write_json_file(repair_result, output_path)
 
 def repair_all(dataset, chances):
@@ -109,8 +109,8 @@ def apply_patch_and_validate(dataset):
             if bug == {}:
                 continue
             dataset.set_current_bug(project, bug_id)
-            repairs = file_util.read_json_file(os.path.join(config.OUTPUT_DIR, dataset.get_name(), "{}-{}.json".format(project, bug_id)))
-            output_path = os.path.join(config.OUTPUT2_DIR, dataset.get_name(), "{}-{}".format(project, bug_id))
+            repairs = file_util.read_json_file(os.path.join(config.OUTPUT_DIR_SINGLE_PROMPT, dataset.get_name(), "{}-{}.json".format(project, bug_id)))
+            output_path = os.path.join(config.OUTPUT2_DIR_SINGLE_PROMPT, dataset.get_name(), "{}-{}".format(project, bug_id))
 
             repair_result = []
             valid_result = ""

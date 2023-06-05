@@ -43,9 +43,9 @@ class Defects4J(Dataset.Dataset):
         proj_dir = os.path.join(config.DATASET_DIR, "defects4j", self.current_bug_id)
         return proj_dir
     
-    def generate_prompt(self, project, bug_id):
+    def generate_prompt_with_multi_functions(self, project, bug_id):
         bug = self.bugs["{}-{}".format(project.lower(), bug_id)]
-        used_prompt = prompt.EXAMPLE_PROMPT
+        used_prompt = prompt.EXAMPLE_PROMPT_MULTI_FUNCTIONS
 
         used_prompt += "# There exist {} buggy function(s) in the {} project. Provide the corresponding fix(es) for the buggy function(s).\n\n".format(len(bug), project)
         used_prompt += "# Buggy Functions\n"
@@ -59,6 +59,22 @@ class Defects4J(Dataset.Dataset):
         
         used_prompt += "# Fixed Functions\n"
         return used_prompt
+    
+    def generate_prompts_with_single_functions(self, project, bug_id):
+        bug = self.bugs["{}-{}".format(project.lower(), bug_id)]
+
+        prompts = []
+        for buggy_function_name, buggy_function in bug.items():
+            used_prompt = prompt.EXAMPLE_PROMPT_SINGLE_FUNCTION
+
+            used_prompt += "# There exists a buggy function in the {} project. Provide the corresponding fix for the buggy function.\n\n".format(project)
+            used_prompt += "# Buggy Function\n"
+            used_prompt += buggy_function["buggy_content"]
+            used_prompt += "\n\n"
+            used_prompt += "# Fixed Function\n"
+            prompts.append(used_prompt)
+        
+        return prompts
 
     def validate(self, bug, fix, skip_val=True):
         if skip_val:
