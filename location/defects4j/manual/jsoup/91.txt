@@ -1,0 +1,10 @@
+org.jsoup.parser.CharacterReader#36
+org.jsoup.parser.CharacterReader#37
+org.jsoup.parser.CharacterReader#451
+org.jsoup.parser.CharacterReader#452
+org.jsoup.parser.CharacterReader#456
+org.jsoup.parser.CharacterReader#457
+org.jsoup.parser.CharacterReader#458
+org.jsoup.parser.CharacterReader#459
+org.jsoup.UncheckedIOException#9
+org.jsoup.UncheckedIOException#10

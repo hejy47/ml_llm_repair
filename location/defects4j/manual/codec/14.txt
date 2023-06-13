@@ -1,0 +1,14 @@
+org.apache.commons.codec.language.bm.Lang#98
+org.apache.commons.codec.language.bm.Lang#100
+org.apache.commons.codec.language.bm.Lang#101
+org.apache.commons.codec.language.bm.Lang#102
+org.apache.commons.codec.language.bm.PhoneticEngine#31
+org.apache.commons.codec.language.bm.PhoneticEngine#336
+org.apache.commons.codec.language.bm.PhoneticEngine#337
+org.apache.commons.codec.language.bm.PhoneticEngine#338
+org.apache.commons.codec.language.bm.PhoneticEngine#358
+org.apache.commons.codec.language.bm.PhoneticEngine#359
+org.apache.commons.codec.language.bm.PhoneticEngine#361
+org.apache.commons.codec.language.bm.PhoneticEngine#364
+org.apache.commons.codec.language.bm.Rule#157
+org.apache.commons.codec.language.bm.Rule#158

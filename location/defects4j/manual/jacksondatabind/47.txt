@@ -1,0 +1,5 @@
+com.fasterxml.jackson.databind.AnnotationIntrospector#815
+com.fasterxml.jackson.databind.AnnotationIntrospector#816
+com.fasterxml.jackson.databind.AnnotationIntrospector#818
+com.fasterxml.jackson.databind.AnnotationIntrospector#819
+com.fasterxml.jackson.databind.AnnotationIntrospector#820

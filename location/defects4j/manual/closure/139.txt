@@ -1,0 +1,14 @@
+com.google.javascript.jscomp.Normalize#280
+com.google.javascript.jscomp.Normalize#281
+com.google.javascript.jscomp.Normalize#291
+com.google.javascript.jscomp.Normalize#292
+com.google.javascript.jscomp.Normalize#308
+com.google.javascript.jscomp.Normalize#309
+com.google.javascript.jscomp.Normalize#310
+com.google.javascript.jscomp.Normalize#311
+com.google.javascript.jscomp.Normalize#312
+com.google.javascript.jscomp.Normalize#313
+com.google.javascript.jscomp.Normalize#314
+com.google.javascript.jscomp.Normalize#315
+com.google.javascript.jscomp.Normalize#521
+com.google.javascript.jscomp.Normalize#522

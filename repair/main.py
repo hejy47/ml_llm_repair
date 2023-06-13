@@ -12,8 +12,8 @@ def main():
     args = parser.parse_args()
     dataset = DatasetFactory.create_dataset(args.dataset)
     # repair.repair_single(dataset, "Chart", 7, args.chances)
-    repair2.repair_all(dataset, args.chances)
-    # repair.apply_patch_and_validate(dataset)
+    # repair2.repair_all(dataset, args.chances)
+    repair2.apply_patch_and_validate(dataset)
 
 if __name__ == "__main__":
     main()

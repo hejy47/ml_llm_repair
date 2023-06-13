@@ -1,0 +1,8 @@
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#78
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#79
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#85
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#86
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#144
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#145
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#150
+com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver#151

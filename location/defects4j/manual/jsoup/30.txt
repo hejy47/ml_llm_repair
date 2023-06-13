@@ -1,0 +1,16 @@
+org.jsoup.safety.Cleaner#5
+org.jsoup.safety.Cleaner#6
+org.jsoup.safety.Cleaner#70
+org.jsoup.safety.Cleaner#71
+org.jsoup.safety.Cleaner#72
+org.jsoup.safety.Cleaner#74
+org.jsoup.safety.Cleaner#79
+org.jsoup.safety.Cleaner#80
+org.jsoup.safety.Cleaner#84
+org.jsoup.safety.Cleaner#85
+org.jsoup.safety.Cleaner#86
+org.jsoup.safety.Cleaner#87
+org.jsoup.safety.Cleaner#88
+org.jsoup.safety.Cleaner#89
+org.jsoup.safety.Cleaner#90
+org.jsoup.safety.Cleaner#95

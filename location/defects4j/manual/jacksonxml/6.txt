@@ -1,0 +1,13 @@
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#842
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#843
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#844
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#845
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#846
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#847
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#848
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#849
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#850
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#851
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#865
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#866
+com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator#867

@@ -98,9 +98,18 @@ def repair_all(dataset, chances):
     bug_info = dataset.get_bug_info()
     for project, bug_ids in bug_info.items():
         for bug_id in bug_ids:
-            if project.lower() in ["chart", "closure", "lang"] or (project.lower() == "math" and bug_id < 92):
-                continue
             repair_single(dataset, project, bug_id, chances)
+
+def combine_repairs(repairs):
+    if len(repairs) == 1:
+        return [{"output":x["output"]} for x in repairs[0]]
+    else:
+        result = []
+        for x in repairs[0]:
+            for y in combine_repairs(repairs[1:]):
+                tmp_result = x["output"] + "\n\n" + y["output"]
+                result.append({"output": tmp_result})
+        return result
 
 def apply_patch_and_validate(dataset):
     if dataset.get_name().lower() in ["defects4j"]:
@@ -108,17 +117,27 @@ def apply_patch_and_validate(dataset):
     bug_info = dataset.get_bug_info()
     for project, bug_ids in bug_info.items():
         for bug_id in bug_ids:
+            if project.lower() == "chart" and bug_id == 2:
+                continue
+            repair_dir = os.path.join(config.OUTPUT_DIR_MULTI_PROMPT, dataset.get_name(), "{}-{}".format(project, bug_id))
+            if not os.path.exists(repair_dir):
+                continue
             print("validating {} {}".format(project, bug_id))
             bug = dataset.get_bug(project, bug_id)
             if bug == {}:
                 continue
             dataset.set_current_bug(project, bug_id)
-            repairs = file_util.read_json_file(os.path.join(config.OUTPUT_DIR_MULTI_PROMPT, dataset.get_name(), "{}-{}.json".format(project, bug_id)))
-            output_path = os.path.join(config.OUTPUT2_DIR_MULTI_PROMPT, dataset.get_name(), "{}-{}".format(project, bug_id))
 
+            all_repairs = []
+            for repair_file in os.listdir(repair_dir):
+                tmp_repairs = file_util.read_json_file(os.path.join(repair_dir, repair_file))
+                all_repairs.append(tmp_repairs)
+            all_repairs = combine_repairs(all_repairs)
+
+            output_path = os.path.join(config.OUTPUT2_DIR_MULTI_PROMPT, dataset.get_name(), "{}-{}".format(project, bug_id))
             repair_result = []
             valid_result = ""
-            for i, repair in enumerate(repairs):
+            for i, repair in enumerate(all_repairs[:10000]):
                 output = repair["output"]
                 valid = dataset.validate(bug, output, skip_val=False)
                 valid_result += "{}-{}_{}:{}\n".format(project, bug_id, i+1, str(valid))
@@ -128,8 +147,6 @@ def apply_patch_and_validate(dataset):
 
                 repair_result.append({'output': output,
                                     'diff': diff,
-                                    'finish_reason': repair["finish_reason"],
-                                    'valid': valid,
-                                    'num': repair["num"]})
+                                    'valid': valid})
             file_util.write_str_to_file(valid_result, os.path.join(output_path, "{}-{}_validation.txt".format(project, bug_id)))
             file_util.write_json_file(repair_result, os.path.join(output_path, "{}-{}.json".format(project, bug_id)))

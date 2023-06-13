@@ -1,0 +1,12 @@
+com.fasterxml.jackson.core.io.NumberInput#294
+com.fasterxml.jackson.core.io.NumberInput#295
+com.fasterxml.jackson.core.io.NumberInput#296
+com.fasterxml.jackson.core.io.NumberInput#304
+com.fasterxml.jackson.core.io.NumberInput#305
+com.fasterxml.jackson.core.io.NumberInput#306
+com.fasterxml.jackson.core.io.NumberInput#307
+com.fasterxml.jackson.core.io.NumberInput#308
+com.fasterxml.jackson.core.util.TextBuffer#390
+com.fasterxml.jackson.core.util.TextBuffer#392
+com.fasterxml.jackson.core.util.TextBuffer#393
+com.fasterxml.jackson.core.util.TextBuffer#394

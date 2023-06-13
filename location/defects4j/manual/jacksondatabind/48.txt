@@ -1,0 +1,4 @@
+com.fasterxml.jackson.databind.DeserializationConfig#779
+com.fasterxml.jackson.databind.DeserializationConfig#780
+com.fasterxml.jackson.databind.SerializationConfig#864
+com.fasterxml.jackson.databind.SerializationConfig#865

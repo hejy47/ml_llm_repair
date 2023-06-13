@@ -1,0 +1,15 @@
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#23
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#24
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#29
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#31
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#32
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#33
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#50
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#51
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#73
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#74
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#80
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#81
+com.fasterxml.jackson.databind.ser.AnyGetterWriter#82
+com.fasterxml.jackson.databind.ser.BeanSerializerFactory#395
+com.fasterxml.jackson.databind.ser.BeanSerializerFactory#396

@@ -160,6 +160,7 @@ cython_debug/
 #.idea/
 
 **/api_key.txt
+output2/multi_prompt/
 
 .vscode/*
 

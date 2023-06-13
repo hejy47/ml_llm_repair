@@ -1,0 +1,10 @@
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#58
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#59
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#74
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#75
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#76
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#92
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#93
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#101
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#102
+com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer#103

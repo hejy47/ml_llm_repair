@@ -1,0 +1,16 @@
+com.fasterxml.jackson.databind.ObjectMapper#2509
+com.fasterxml.jackson.databind.ObjectMapper#2510
+com.fasterxml.jackson.databind.ObjectMapper#3425
+com.fasterxml.jackson.databind.ObjectMapper#3426
+com.fasterxml.jackson.databind.util.TokenBuffer#79
+com.fasterxml.jackson.databind.util.TokenBuffer#80
+com.fasterxml.jackson.databind.util.TokenBuffer#187
+com.fasterxml.jackson.databind.util.TokenBuffer#188
+com.fasterxml.jackson.databind.util.TokenBuffer#192
+com.fasterxml.jackson.databind.util.TokenBuffer#193
+com.fasterxml.jackson.databind.util.TokenBuffer#958
+com.fasterxml.jackson.databind.util.TokenBuffer#959
+com.fasterxml.jackson.databind.util.TokenBuffer#963
+com.fasterxml.jackson.databind.util.TokenBuffer#964
+com.fasterxml.jackson.databind.util.TokenBuffer#972
+com.fasterxml.jackson.databind.util.TokenBuffer#973

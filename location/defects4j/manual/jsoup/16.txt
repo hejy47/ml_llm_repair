@@ -1,0 +1,8 @@
+org.jsoup.nodes.DocumentType#3
+org.jsoup.nodes.DocumentType#4
+org.jsoup.nodes.DocumentType#20
+org.jsoup.nodes.DocumentType#21
+org.jsoup.nodes.DocumentType#33
+org.jsoup.nodes.DocumentType#35
+org.jsoup.nodes.DocumentType#36
+org.jsoup.nodes.DocumentType#37

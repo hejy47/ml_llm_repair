@@ -1,0 +1,4 @@
+com.fasterxml.jackson.databind.cfg.BaseSettings#234
+com.fasterxml.jackson.databind.cfg.BaseSettings#235
+com.fasterxml.jackson.databind.cfg.BaseSettings#236
+com.fasterxml.jackson.databind.cfg.BaseSettings#237

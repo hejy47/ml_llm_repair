@@ -1,0 +1,6 @@
+com.fasterxml.jackson.databind.JsonMappingException#10
+com.fasterxml.jackson.databind.JsonMappingException#129
+com.fasterxml.jackson.databind.JsonMappingException#130
+com.fasterxml.jackson.databind.JsonMappingException#134
+com.fasterxml.jackson.databind.JsonMappingException#135
+com.fasterxml.jackson.databind.JsonMappingException#136

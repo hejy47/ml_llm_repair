@@ -1,0 +1,12 @@
+com.fasterxml.jackson.databind.type.CollectionType#2
+com.fasterxml.jackson.databind.type.CollectionType#3
+com.fasterxml.jackson.databind.type.CollectionType#50
+com.fasterxml.jackson.databind.type.MapType#2
+com.fasterxml.jackson.databind.type.MapType#3
+com.fasterxml.jackson.databind.type.MapType#46
+com.fasterxml.jackson.databind.type.MapType#47
+com.fasterxml.jackson.databind.type.MapType#48
+com.fasterxml.jackson.databind.type.SimpleType#116
+com.fasterxml.jackson.databind.type.SimpleType#117
+com.fasterxml.jackson.databind.type.SimpleType#248
+com.fasterxml.jackson.databind.type.SimpleType#249

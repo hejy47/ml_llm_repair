@@ -1,0 +1,3 @@
+com.fasterxml.jackson.databind.introspect.AnnotatedClass#657
+com.fasterxml.jackson.databind.introspect.AnnotatedClass#658
+com.fasterxml.jackson.databind.introspect.AnnotatedClass#659

@@ -1,0 +1,4 @@
+org.apache.commons.jxpath.ri.compiler.CoreOperationCompare#57
+org.apache.commons.jxpath.ri.compiler.CoreOperationCompare#59
+org.apache.commons.jxpath.ri.compiler.CoreOperationCompare#60
+org.apache.commons.jxpath.ri.compiler.CoreOperationCompare#61

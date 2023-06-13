@@ -1,0 +1,6 @@
+com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder#73
+com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder#74
+com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder#103
+com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder#104
+com.fasterxml.jackson.databind.ObjectMapper#231
+com.fasterxml.jackson.databind.ObjectMapper#232

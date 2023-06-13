@@ -1,0 +1,6 @@
+com.google.javascript.jscomp.DevirtualizePrototypeMethods#361
+com.google.javascript.jscomp.DevirtualizePrototypeMethods#362
+com.google.javascript.rhino.jstype.FunctionType#411
+com.google.javascript.rhino.jstype.FunctionType#412
+com.google.javascript.rhino.jstype.FunctionType#471
+com.google.javascript.rhino.jstype.FunctionType#472

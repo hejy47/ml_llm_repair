@@ -73,31 +73,58 @@ if __name__ == "__main__":
     jar_path = "/mnt/Code/NPR/mfl_llm_apr/data_prepare/JavaParser/javaparser-core-3.25.4-SNAPSHOT.jar"
     jpype.startJVM(classpath=jar_path)
 
-    d4j_v1_info = {
-        "Chart": 26,
-        "Closure": 133,
-        "Lang": 65,
-        "Math": 106,
-        "Mockito": 38,
-        "Time": 27
+    d4jv1_info = {
+        "Chart": [i for i in range(1, 27)],
+        "Closure": [i for i in range(1, 134) if i not in [63, 93]],
+        "Lang": [i for i in range(1, 66) if i not in [2]],
+        "Math": [i for i in range(1, 107)],
+        "Mockito": [i for i in range(1, 39)],
+        "Time": [i for i in range(1, 28) if i not in [21]]
     }
-    for project, sum in d4j_v1_info.items():
-        for i in range(1, sum+1):
-            if project == "Closure" and i in [63, 93]: continue
-            if project == "Lang" and i == 2: continue
-            if project == "Time" and i == 21: continue
-            project_dir0 = "/mnt/Code/NPR/Dataset/d4j-v1.4/{}/buggy_version/{}_{}/".format(project, project.lower(), i)
+    
+    d4j_info = {
+        "Chart": [i for i in range(1, 27)],
+        "Cli": [i for i in range(1, 41) if i not in [6]],
+        "Closure": [i for i in range(1, 177) if i not in [63, 93]],
+        "Codec": [i for i in range(1, 19)],
+        "Collections": [i for i in range(25, 29)],
+        "Compress": [i for i in range(1, 48)],
+        "Csv": [i for i in range(1, 17)],
+        "Gson": [i for i in range(1, 19)],
+        "JacksonCore": [i for i in range(1, 27)],
+        "JacksonDatabind": [i for i in range(1, 113)],
+        "JacksonXml": [i for i in range(1, 7)],
+        "Jsoup": [i for i in range(1, 94)],
+        "JxPath": [i for i in range(1, 23)],
+        "Lang": [i for i in range(1, 66) if i not in [2]],
+        "Math": [i for i in range(1, 107)],
+        "Mockito": [i for i in range(1, 39)],
+        "Time": [i for i in range(1, 28) if i not in [21]]
+    }
+    for project, bug_ids in d4j_info.items():
+        for bug_id in bug_ids:
+            if project in d4jv1_info and bug_id in d4jv1_info[project]:
+                continue
+            project_dir0 = "/mnt/Dataset/defects4j/{}-{}/".format(project.lower(), bug_id)
+            source_dir = "source"
             if project == "Chart":
-                project_dir = os.path.join(project_dir0, "source")
-            elif project == "Closure" or project == "Mockito":
-                project_dir = os.path.join(project_dir0, "src")
-            elif project == "Lang" or project == "Math" or project == "Time":
-                project_dir = os.path.join(project_dir0, "src/main/java")
-                if project == "Lang" and i >= 36 or project == "Math" and i >= 85:
-                    project_dir = os.path.join(project_dir0, "src/java")
+                source_dir = "source"
+            elif project in ["Closure", "Mockito"]:
+                source_dir = "src"
+            elif project in ["Lang", "Math", "Time", "Collections", "Compress", "Csv", "JacksonCore", "JacksonDatabind", "JacksonXml", "Jsoup"]:
+                source_dir = "src/main/java"
+                if project == "Lang" and bug_id >= 36 or project == "Math" and bug_id >= 85:
+                    source_dir = "src/java"
+            elif project in ["Cli", "Codec", "JxPath"]:
+                source_dir = "src/java"
+                if project == "Cli" and bug_id >= 30 or project == "Codec" and bug_id >= 11:
+                    source_dir = "src/main/java"
+            elif project == "Gson":
+                source_dir = "gson/src/main/java"
+            project_dir = os.path.join(project_dir0, source_dir)
 
-            fl_result = "/mnt/Code/NPR/mfl_llm_apr/location/defects4j/manual/{}/{}.txt".format(project.lower(), i)
-            output_path = "/mnt/Code/NPR/mfl_llm_apr/data/defects4j/{}-{}.json".format(project.lower(), i)
+            fl_result = "/mnt/Code/NPR/mfl_llm_apr/location/defects4j/manual/{}/{}.txt".format(project.lower(), bug_id)
+            output_path = "/mnt/Code/NPR/mfl_llm_apr/data/defects4j/{}-{}.json".format(project.lower(), bug_id)
             suspicious_methods_content = get_suspicious_methods(project_dir, fl_result)
             with open(output_path, "w") as f:
                 json.dump(suspicious_methods_content, f)

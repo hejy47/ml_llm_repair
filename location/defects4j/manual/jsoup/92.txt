@@ -1,0 +1,16 @@
+org.jsoup.nodes.Attributes#5
+org.jsoup.nodes.Attributes#6
+org.jsoup.nodes.Attributes#118
+org.jsoup.nodes.Attributes#121
+org.jsoup.nodes.Attributes#122
+org.jsoup.nodes.Attributes#237
+org.jsoup.nodes.Attributes#238
+org.jsoup.nodes.Attributes#395
+org.jsoup.nodes.Attributes#396
+org.jsoup.parser.HtmlTreeBuilder#198
+org.jsoup.parser.HtmlTreeBuilder#199
+org.jsoup.parser.ParseSettings#37
+org.jsoup.parser.ParseSettings#38
+org.jsoup.parser.Token#116
+org.jsoup.parser.XmlTreeBuilder#77
+org.jsoup.parser.XmlTreeBuilder#78

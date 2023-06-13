@@ -1,0 +1,7 @@
+com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty#6
+com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty#7
+com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty#78
+com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty#83
+com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty#84
+com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty#85
+com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty#86

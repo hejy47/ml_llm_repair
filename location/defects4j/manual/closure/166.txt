@@ -1,0 +1,2 @@
+com.google.javascript.rhino.jstype.PrototypeObjectType#572
+com.google.javascript.rhino.jstype.PrototypeObjectType#573

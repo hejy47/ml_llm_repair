@@ -1,0 +1,8 @@
+org.jsoup.Jsoup#250
+org.jsoup.parser.Parser#128
+org.jsoup.parser.Parser#129
+org.jsoup.safety.Cleaner#16
+org.jsoup.safety.Cleaner#17
+org.jsoup.safety.Cleaner#78
+org.jsoup.safety.Cleaner#79
+org.jsoup.safety.Cleaner#80

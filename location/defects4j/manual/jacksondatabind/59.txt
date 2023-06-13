@@ -1,0 +1,9 @@
+com.fasterxml.jackson.databind.JavaType#139
+com.fasterxml.jackson.databind.JavaType#140
+com.fasterxml.jackson.databind.type.CollectionLikeType#135
+com.fasterxml.jackson.databind.type.CollectionLikeType#136
+com.fasterxml.jackson.databind.type.MapLikeType#147
+com.fasterxml.jackson.databind.type.MapLikeType#148
+com.fasterxml.jackson.databind.type.MapLikeType#149
+com.fasterxml.jackson.databind.type.TypeFactory#427
+com.fasterxml.jackson.databind.type.TypeFactory#428

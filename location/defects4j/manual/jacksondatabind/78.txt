@@ -1,0 +1,13 @@
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#47
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#48
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#49
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#50
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#55
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#56
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#155
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#156
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#877
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#878
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#879
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#880
+com.fasterxml.jackson.databind.deser.BeanDeserializerFactory#881

@@ -1,0 +1,7 @@
+org.jsoup.nodes.Entities#64
+org.jsoup.nodes.Entities#2233
+org.jsoup.nodes.Entities#2234
+org.jsoup.nodes.Entities#2235
+org.jsoup.nodes.Entities#2237
+org.jsoup.nodes.Entities#2238
+org.jsoup.nodes.Entities#2240

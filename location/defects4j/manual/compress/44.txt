@@ -1,0 +1,3 @@
+org.apache.commons.compress.utils.ChecksumCalculatingInputStream#34
+org.apache.commons.compress.utils.ChecksumCalculatingInputStream#35
+org.apache.commons.compress.utils.ChecksumCalculatingInputStream#36

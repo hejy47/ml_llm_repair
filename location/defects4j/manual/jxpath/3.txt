@@ -1,0 +1,7 @@
+org.apache.commons.jxpath.ri.model.beans.NullPropertyPointer#18
+org.apache.commons.jxpath.ri.model.beans.NullPropertyPointer#19
+org.apache.commons.jxpath.ri.model.beans.NullPropertyPointer#108
+org.apache.commons.jxpath.ri.model.beans.NullPropertyPointer#109
+org.apache.commons.jxpath.ri.model.beans.NullPropertyPointer#137
+org.apache.commons.jxpath.ri.model.beans.NullPropertyPointer#138
+org.apache.commons.jxpath.ri.model.beans.NullPropertyPointer#224
