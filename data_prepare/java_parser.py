@@ -56,17 +56,22 @@ def get_suspicious_methods(project_dir, fl_result):
 
     suspicious_methods = {}
     for suspicious_file, fl_lines in suspicious_files.items():
-        tree = parse_java_file(os.path.join(project_dir, suspicious_file))
+        if not os.path.exists(os.path.join(project_dir, suspicious_file)):
+            continue
+        try:
+            tree = parse_java_file(os.path.join(project_dir, suspicious_file))
 
-        suspicious_method_contents = get_method_by_name(tree, fl_lines)
-        for i, (method_name, method_position, method_content, map_fl_lines) in enumerate(suspicious_method_contents):
-            key = "{}.{}".format(suspicious_file[:-5].replace("/", "."), method_name)
-            if key in suspicious_methods: key = key + "{}".format(i)
-            suspicious_methods[key] = {
-                "buggy_content": method_content,
-                "method_range": "{}-{}".format(method_position[0], method_position[1]),
-                "fault_locations": ",".join(map_fl_lines)
-            }
+            suspicious_method_contents = get_method_by_name(tree, fl_lines)
+            for i, (method_name, method_position, method_content, map_fl_lines) in enumerate(suspicious_method_contents):
+                key = "{}.{}".format(suspicious_file[:-5].replace("/", "."), method_name)
+                if key in suspicious_methods: key = key + "{}".format(i)
+                suspicious_methods[key] = {
+                    "buggy_content": method_content,
+                    "method_range": "{}-{}".format(method_position[0], method_position[1]),
+                    "fault_locations": ",".join(map_fl_lines)
+                }
+        except:
+            continue
     return suspicious_methods
     
 if __name__ == "__main__":
@@ -123,8 +128,8 @@ if __name__ == "__main__":
                 source_dir = "gson/src/main/java"
             project_dir = os.path.join(project_dir0, source_dir)
 
-            fl_result = "/mnt/Code/NPR/mfl_llm_apr/location/defects4j/manual/{}/{}.txt".format(project.lower(), bug_id)
-            output_path = "/mnt/Code/NPR/mfl_llm_apr/data/defects4j/{}-{}.json".format(project.lower(), bug_id)
+            fl_result = "/mnt/Code/mfl_llm_apr/location/defects4j/manual/{}/{}.txt".format(project.lower(), bug_id)
+            output_path = "/mnt/Code/mfl_llm_apr/data/defects4j/{}-{}.json".format(project.lower(), bug_id)
             suspicious_methods_content = get_suspicious_methods(project_dir, fl_result)
             with open(output_path, "w") as f:
                 json.dump(suspicious_methods_content, f)

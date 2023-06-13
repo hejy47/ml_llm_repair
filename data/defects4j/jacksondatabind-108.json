@@ -1,0 +1,1 @@
+{"com.fasterxml.jackson.databind.ObjectReader.readTree": {"buggy_content": "@SuppressWarnings(\"unchecked\")\n@Override\npublic <T extends TreeNode> T readTree(JsonParser p) throws IOException {\n    return (T) _bindAsTree(p);\n}", "method_range": "1166-1170", "fault_locations": "1169"}}

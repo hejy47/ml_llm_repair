@@ -1,0 +1,1 @@
+{"org.apache.commons.csv.CSVRecord.putIn": {"buggy_content": "<M extends Map<String, String>> M putIn(final M map) {\n    for (final Entry<String, Integer> entry : mapping.entrySet()) {\n        final int col = entry.getValue().intValue();\n        map.put(entry.getKey(), values[col]);\n    }\n    return map;\n}", "method_range": "179-185", "fault_locations": "181,182,183"}}

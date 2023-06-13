@@ -1,0 +1,1 @@
+{"org.apache.commons.codec.binary.Base64.encodeBase64String": {"buggy_content": "public static String encodeBase64String(byte[] binaryData) {\n    return StringUtils.newStringUtf8(encodeBase64(binaryData, true));\n}", "method_range": "669-671", "fault_locations": "670"}}

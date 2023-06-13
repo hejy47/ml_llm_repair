@@ -1,0 +1,1 @@
+{"org.jsoup.nodes.Element.html": {"buggy_content": "public String html() {\n    StringBuilder accum = new StringBuilder();\n    html(accum);\n    return accum.toString().trim();\n}", "method_range": "1098-1102", "fault_locations": "1101"}}

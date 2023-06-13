@@ -1,0 +1,1 @@
+{"org.apache.commons.csv.CSVPrinter.println": {"buggy_content": "public void println() throws IOException {\n    final String recordSeparator = format.getRecordSeparator();\n    out.append(recordSeparator);\n    newRecord = true;\n}", "method_range": "323-327", "fault_locations": "324,325,326"}}

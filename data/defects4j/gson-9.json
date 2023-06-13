@@ -1,0 +1,1 @@
+{"com.google.gson.internal.bind.TypeAdapters.write": {"buggy_content": "@Override\npublic void write(JsonWriter out, Boolean value) throws IOException {\n    if (value == null) {\n        out.nullValue();\n        return;\n    }\n    out.value(value);\n}", "method_range": "163-170", "fault_locations": "165,166,167,168"}}

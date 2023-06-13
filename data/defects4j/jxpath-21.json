@@ -1,0 +1,1 @@
+{"org.apache.commons.jxpath.ri.model.beans.PropertyPointer.getLength": {"buggy_content": "public int getLength() {\n    return ValueUtils.getLength(getBaseValue());\n}", "method_range": "151-153", "fault_locations": "152"}}

@@ -1,0 +1,1 @@
+{"com.fasterxml.jackson.core.util.DefaultPrettyPrinter.createInstance": {"buggy_content": "@Override\npublic DefaultPrettyPrinter createInstance() {\n    return new DefaultPrettyPrinter(this);\n}", "method_range": "253-256", "fault_locations": "254,255"}}

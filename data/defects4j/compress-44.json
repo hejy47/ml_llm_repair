@@ -1,0 +1,1 @@
+{"org.apache.commons.compress.utils.ChecksumCalculatingInputStream.ChecksumCalculatingInputStream": {"buggy_content": "public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream in) {\n    this.checksum = checksum;\n    this.in = in;\n}", "method_range": "33-39", "fault_locations": "34,35,36"}}

@@ -1,0 +1,1 @@
+{"org.apache.commons.jxpath.ri.compiler.CoreOperationRelationalExpression.computeValue": {"buggy_content": "public final Object computeValue(EvalContext context) {\n    return compute(args[0].computeValue(context), args[1].computeValue(context)) ? Boolean.TRUE : Boolean.FALSE;\n}", "method_range": "41-44", "fault_locations": "42"}}

@@ -1,0 +1,1 @@
+{"org.apache.commons.compress.archivers.zip.ZipArchiveEntry.isUnixSymlink": {"buggy_content": "public boolean isUnixSymlink() {\n    return (getUnixMode() & UnixStat.LINK_FLAG) == UnixStat.LINK_FLAG;\n}", "method_range": "296-298", "fault_locations": "297"}}

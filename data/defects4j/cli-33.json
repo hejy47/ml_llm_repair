@@ -1,0 +1,1 @@
+{"org.apache.commons.cli.HelpFormatter.printWrapped": {"buggy_content": "public void printWrapped(PrintWriter pw, int width, int nextLineTabStop, String text) {\n    StringBuffer sb = new StringBuffer(text.length());\n    renderWrappedText(sb, width, nextLineTabStop, text);\n    pw.println(sb.toString());\n}", "method_range": "726-732", "fault_locations": "730"}}

@@ -1,0 +1,1 @@
+{"org.apache.commons.cli.Parser.setOptions": {"buggy_content": "protected void setOptions(final Options options) {\n    this.options = options;\n    this.requiredOptions = options.getRequiredOptions();\n}", "method_range": "44-47", "fault_locations": "46"}}

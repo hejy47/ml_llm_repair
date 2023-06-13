@@ -1,0 +1,1 @@
+{"org.apache.commons.csv.ExtendedBufferedReader.read": {"buggy_content": "@Override\npublic int read() throws IOException {\n    int current = super.read();\n    if (current == '\\n') {\n        lineCounter++;\n    }\n    lastChar = current;\n    return lastChar;\n}", "method_range": "55-63", "fault_locations": "58"}}

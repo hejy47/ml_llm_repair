@@ -1,0 +1,1 @@
+{"org.jsoup.nodes.Element.clone": {"buggy_content": "@Override\npublic Element clone() {\n    Element clone = (Element) super.clone();\n    clone.classNames();\n    return clone;\n}", "method_range": "1135-1140", "fault_locations": "1138"}}

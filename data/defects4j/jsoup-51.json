@@ -1,0 +1,1 @@
+{"org.jsoup.parser.CharacterReader.matchesLetter": {"buggy_content": "boolean matchesLetter() {\n    if (isEmpty())\n        return false;\n    char c = input[pos];\n    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');\n}", "method_range": "296-301", "fault_locations": "300"}}

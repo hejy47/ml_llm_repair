@@ -1,0 +1,1 @@
+{"org.jsoup.nodes.Document.title": {"buggy_content": "public String title() {\n    // title is a preserve whitespace tag (for document output), but normalised here\n    Element titleEl = getElementsByTag(\"title\").first();\n    return titleEl != null ? titleEl.text().trim() : \"\";\n}", "method_range": "66-70", "fault_locations": "69"}}

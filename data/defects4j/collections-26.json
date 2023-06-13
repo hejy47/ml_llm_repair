@@ -1,0 +1,1 @@
+{"org.apache.commons.collections4.keyvalue.MultiKey.readResolve": {"buggy_content": "private Object readResolve() {\n    calculateHashCode(keys);\n    return this;\n}", "method_range": "277-280", "fault_locations": "277"}}

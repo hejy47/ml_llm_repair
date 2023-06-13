@@ -1,0 +1,1 @@
+{"org.jsoup.nodes.Attribute.getValue": {"buggy_content": "public String getValue() {\n    return val;\n}", "method_range": "79-81", "fault_locations": "80"}}

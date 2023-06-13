@@ -1,0 +1,1 @@
+{"org.apache.commons.codec.language.DoubleMetaphone.isDoubleMetaphoneEqual": {"buggy_content": "public boolean isDoubleMetaphoneEqual(final String value1, final String value2, final boolean alternate) {\n    return doubleMetaphone(value1, alternate).equals(doubleMetaphone(value2, alternate));\n}", "method_range": "243-245", "fault_locations": "244"}}

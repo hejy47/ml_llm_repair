@@ -1,0 +1,1 @@
+{"org.apache.commons.compress.archivers.zip.ZipArchiveEntry.setName": {"buggy_content": "protected void setName(String name) {\n    this.name = name;\n}", "method_range": "511-513", "fault_locations": "511,512"}}

@@ -1,0 +1,1 @@
+{"org.jsoup.parser.HtmlTreeBuilderState.handleRawtext": {"buggy_content": "private static void handleRawtext(Token.StartTag startTag, HtmlTreeBuilder tb) {\n    tb.insert(startTag);\n    tb.tokeniser.transition(TokeniserState.Rawtext);\n    tb.markInsertionMode();\n    tb.transition(Text);\n}", "method_range": "1488-1493", "fault_locations": "1489,1491,1492"}}

@@ -1,0 +1,1 @@
+{"org.apache.commons.cli.TypeHandler.createNumber": {"buggy_content": "public static Number createNumber(String str) {\n    try {\n        return NumberUtils.createNumber(str);\n    } catch (NumberFormatException nfe) {\n        System.err.println(nfe.getMessage());\n    }\n    return null;\n}", "method_range": "158-170", "fault_locations": "160,161,162"}}

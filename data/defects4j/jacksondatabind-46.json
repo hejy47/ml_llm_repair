@@ -1,0 +1,1 @@
+{"com.fasterxml.jackson.databind.type.ReferenceType.getGenericSignature": {"buggy_content": "@Override\npublic StringBuilder getGenericSignature(StringBuilder sb) {\n    _classSignature(_class, sb, false);\n    sb.append('<');\n    sb = _referencedType.getGenericSignature(sb);\n    sb.append(';');\n    return sb;\n}", "method_range": "150-158", "fault_locations": "156"}}

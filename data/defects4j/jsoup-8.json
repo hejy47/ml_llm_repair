@@ -1,0 +1,1 @@
+{"org.jsoup.nodes.Node.outerHtml": {"buggy_content": "protected void outerHtml(StringBuilder accum) {\n    new NodeTraversor(new OuterHtmlVisitor(accum, ownerDocument().outputSettings())).traverse(this);\n}", "method_range": "362-364", "fault_locations": "363"}}

@@ -1,0 +1,1 @@
+{"org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream.close": {"buggy_content": "public void close() throws IOException {\n    if (!this.closed) {\n        super.close();\n        this.closed = true;\n    }\n}", "method_range": "344-349", "fault_locations": "345,346"}}

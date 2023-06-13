@@ -1,0 +1,1 @@
+{"org.jsoup.parser.CharacterReader.CharacterReader": {"buggy_content": "public CharacterReader(Reader input, int sz) {\n    Validate.notNull(input);\n    Validate.isTrue(input.markSupported());\n    reader = input;\n    charBuf = new char[sz > maxBufferLen ? maxBufferLen : sz];\n    bufferUp();\n}", "method_range": "30-37", "fault_locations": "36,37"}}

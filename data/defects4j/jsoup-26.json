@@ -1,0 +1,1 @@
+{"org.jsoup.safety.Cleaner.clean": {"buggy_content": "public Document clean(Document dirtyDocument) {\n    Validate.notNull(dirtyDocument);\n    Document clean = Document.createShell(dirtyDocument.baseUri());\n    copySafeNodes(dirtyDocument.body(), clean.body());\n    return clean;\n}", "method_range": "39-46", "fault_locations": "42,43"}}

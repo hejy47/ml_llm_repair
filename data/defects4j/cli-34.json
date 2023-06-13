@@ -1,0 +1,1 @@
+{"org.apache.commons.cli.OptionBuilder.reset": {"buggy_content": "private static void reset() {\n    description = null;\n    argName = null;\n    longopt = null;\n    type = null;\n    required = false;\n    numberOfArgs = Option.UNINITIALIZED;\n    optionalArg = false;\n    valuesep = (char) 0;\n}", "method_range": "79-89", "fault_locations": "84"}}

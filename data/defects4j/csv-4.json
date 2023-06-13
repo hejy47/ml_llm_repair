@@ -1,0 +1,1 @@
+{"org.apache.commons.csv.CSVParser.getHeaderMap": {"buggy_content": "public Map<String, Integer> getHeaderMap() {\n    return new LinkedHashMap<String, Integer>(this.headerMap);\n}", "method_range": "287-289", "fault_locations": "288"}}
