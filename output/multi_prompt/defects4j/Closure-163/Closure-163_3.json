@@ -1,0 +1,1 @@
+[{"output": "function LiteralProperty(key, value, map, assign, module) {\n    this.key = key;\n    this.value = value;\n    this.map = map;\n    this.assign = assign;\n    this.module = module;\n}", "diff": "", "finish_reason": "stop", "valid": false, "num": 20}]

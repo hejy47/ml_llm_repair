@@ -1,0 +1,1 @@
+[{"output": "private static String getOriginalNameInternal(String name, int index) {\n    if (index <= 0 || index > name.length()) {\n        return name;\n    }\n    return name.substring(0, index);\n}", "diff": "", "finish_reason": "stop", "valid": false, "num": 20}]

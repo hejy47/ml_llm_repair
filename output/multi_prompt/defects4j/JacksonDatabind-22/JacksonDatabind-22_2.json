@@ -1,0 +1,1 @@
+[{"output": "public JsonSerializer<?> buildEnumSetSerializer(JavaType enumType) {\n    if(!enumType.isEnumType()) {\n        return null;\n    }\n    return new EnumSetSerializer(enumType);\n}", "diff": "", "finish_reason": "stop", "valid": false, "num": 20}]

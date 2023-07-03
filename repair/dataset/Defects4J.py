@@ -7,7 +7,7 @@ class Defects4J(Dataset.Dataset):
     def __init__(self):
         self.name = self.__class__.__name__.lower()
         super().__init__(self.name)
-        self.bug_info = {
+        self.bug_info_v1 = {
             "Chart": [i for i in range(1, 27)],
             "Closure": [i for i in range(1, 134) if i not in [63, 93]],
             "Lang": [i for i in range(1, 66) if i not in [2]],
@@ -15,6 +15,21 @@ class Defects4J(Dataset.Dataset):
             "Mockito": [i for i in range(1, 39)],
             "Time": [i for i in range(1, 28) if i not in [21]]
         }
+        self.bug_info_v2 = {
+            "Cli": [i for i in range(1, 41) if i not in [6]],
+            "Closure": [i for i in range(134, 177)],
+            "Codec": [i for i in range(1, 19)],
+            "Collections": [i for i in range(25, 29)],
+            "Compress": [i for i in range(1, 48)],
+            "Csv": [i for i in range(1, 17)],
+            "Gson": [i for i in range(1, 19)],
+            "JacksonCore": [i for i in range(1, 27)],
+            "JacksonDatabind": [i for i in range(1, 113)],
+            "JacksonXml": [i for i in range(1, 7)],
+            "Jsoup": [i for i in range(1, 94)],
+            "JxPath": [i for i in range(1, 23)]
+        }
+        self.bug_info = self.bug_info_v2
         self.bug_info_dir = os.path.join(config.BUG_DATA_DIR, "defects4j")
         self.get_bugs()
 

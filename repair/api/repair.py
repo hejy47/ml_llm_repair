@@ -96,6 +96,8 @@ def repair_all(dataset, chances):
     bug_info = dataset.get_bug_info()
     for project, bug_ids in bug_info.items():
         for bug_id in bug_ids:
+            if project.lower() in ["cli", "closure", "codec", "collections", "compress", "csv", "gson", "jacksoncore"] or project.lower() == "jacksondatabind" and bug_id < 58:
+                continue
             repair_single(dataset, project, bug_id, chances)
 
 def apply_patch_and_validate(dataset):
